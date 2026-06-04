@@ -2,10 +2,24 @@
 
 中長線股票研究助理是一個 Flutter Web MVP，定位為研究與教育用途的股票研究工具。第一版以本地模擬資料呈現財報趨勢、估值區間、風險提醒、條件篩選、策略回測與研究日記流程。
 
-## 執行方式
+## GitHub Pages Demo
+
+公開 Demo：
+
+```text
+https://dany1230000.github.io/longterm_stock_research_assistant/
+```
+
+## Demo 狀態
+
+- 目前是 Web MVP Demo 版本。
+- 目前使用本地模擬資料，不串接真實股市 API。
+- 內容僅供研究與教育用途，不構成投資建議、買賣建議或收益保證。
+- 目前沒有登入、後端、訂閱制或永久資料儲存。
+
+## 本機開發方式
 
 ```bash
-flutter create . --platforms=web
 flutter pub get
 dart format .
 flutter analyze
@@ -13,7 +27,23 @@ flutter test
 flutter run -d chrome
 ```
 
-## 目前功能
+## Web Build 方式
+
+一般本機 build：
+
+```bash
+flutter build web
+```
+
+GitHub Pages project page build：
+
+```bash
+flutter build web --base-href="/longterm_stock_research_assistant/"
+```
+
+`build/web` 是部署產物。
+
+## 主要功能
 
 - 首頁 Dashboard：今日研究摘要、需要注意的觀察清單、估值偏高清單、營收轉強清單、自選股列表。
 - 個股詳情頁：總覽、財務、估值、風險、筆記五個分段。
