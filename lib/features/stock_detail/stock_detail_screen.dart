@@ -18,8 +18,10 @@ enum _DetailSection {
   overview('總覽'),
   financial('財務'),
   valuation('估值'),
+  revenue('營收'),
+  observation('籌碼 / 觀察資料'),
   risk('風險'),
-  notes('筆記');
+  notes('研究筆記');
 
   const _DetailSection(this.label);
 
@@ -88,6 +90,10 @@ class _StockDetailContentState extends State<_StockDetailContent> {
         return _FinancialSection(stock: stock);
       case _DetailSection.valuation:
         return _ValuationSection(stock: stock);
+      case _DetailSection.revenue:
+        return _RevenueSection(stock: stock);
+      case _DetailSection.observation:
+        return _ObservationSection(stock: stock);
       case _DetailSection.risk:
         return _RiskSection(stock: stock);
       case _DetailSection.notes:
@@ -107,7 +113,7 @@ class _SectionSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCompact = MediaQuery.sizeOf(context).width < 430;
+    final isCompact = MediaQuery.sizeOf(context).width < 760;
 
     if (isCompact) {
       return Wrap(
@@ -246,6 +252,10 @@ class _OverviewSection extends StatelessWidget {
                   MetricTile(
                       label: '市值', value: formatCurrency(stock.marketCap)),
                   MetricTile(
+                    label: '市值級距',
+                    value: _marketCapRange(stock.marketCap),
+                  ),
+                  MetricTile(
                       label: '最新價格', value: formatNumber(stock.latestClose)),
                   MetricTile(
                       label: '52 週高點', value: formatNumber(stock.high52Week)),
@@ -288,6 +298,19 @@ class _OverviewSection extends StatelessWidget {
       ],
     );
   }
+}
+
+String _marketCapRange(double marketCap) {
+  if (marketCap >= 10000) {
+    return '超大型';
+  }
+  if (marketCap >= 1000) {
+    return '大型';
+  }
+  if (marketCap >= 500) {
+    return '中大型';
+  }
+  return '中小型';
 }
 
 class _FinancialSection extends StatelessWidget {
@@ -379,6 +402,133 @@ class _ValuationSection extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _RevenueSection extends StatelessWidget {
+  const _RevenueSection({required this.stock});
+
+  final Stock stock;
+
+  @override
+  Widget build(BuildContext context) {
+    final revenueValues = stock.financialTrend.revenueYoyLast12Months;
+    final first = revenueValues.first;
+    final last = revenueValues.last;
+    final direction = last >= first ? '近月營收 YoY 較期初改善' : '近月營收 YoY 較期初轉弱';
+
+    return Column(
+      children: [
+        SectionCard(
+          title: '營收趨勢',
+          subtitle: '以下為近 12 個月營收 YoY 模擬資料，僅供研究流程展示。',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _TrendChart(
+                title: '近 12 個月營收 YoY',
+                values: revenueValues,
+                lineColor: const Color(0xFFE9A23B),
+                suffix: '%',
+              ),
+              const SizedBox(height: 14),
+              _MetricGrid(
+                children: [
+                  MetricTile(
+                    label: '期初 YoY',
+                    value: formatPercent(first),
+                  ),
+                  MetricTile(
+                    label: '最新 YoY',
+                    value: formatPercent(last),
+                  ),
+                  MetricTile(
+                    label: '變化',
+                    value: formatSignedPercent(last - first),
+                  ),
+                  MetricTile(
+                    label: '狀態',
+                    value: stock.tags.contains('營收轉弱') ? '需觀察' : '維持追蹤',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Text(
+                '$direction。此判讀只描述模擬資料變化，不代表未來營收表現。',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(height: 1.5),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ObservationSection extends StatelessWidget {
+  const _ObservationSection({required this.stock});
+
+  final Stock stock;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SectionCard(
+          title: '籌碼 / 觀察資料',
+          subtitle: '第一版尚未串接籌碼資料，以下為模擬觀察欄位與趨勢條件。',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _MetricGrid(
+                children: [
+                  MetricTile(
+                    label: '長期均線',
+                    value: stock.metric.aboveMa200 ? '站上' : '未站上',
+                    caption: 'mock 200 日均線',
+                  ),
+                  MetricTile(
+                    label: '趨勢分數',
+                    value: '${stock.metric.trendScore}',
+                    caption: '0 - 100',
+                  ),
+                  MetricTile(
+                    label: '近一年表現',
+                    value: formatSignedPercent(stock.metric.lastYearReturn),
+                  ),
+                  MetricTile(
+                    label: '價格位置',
+                    value: stock.latestClose >=
+                            stock.low52Week +
+                                (stock.high52Week - stock.low52Week) * 0.7
+                        ? '區間偏高'
+                        : '區間中低',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Text(
+                stock.pricePositionDescription,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(height: 1.5),
+              ),
+              const SizedBox(height: 14),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children:
+                    stock.tags.map((tag) => RiskChip(label: tag)).toList(),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

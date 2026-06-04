@@ -32,17 +32,69 @@ class MockStockRepository implements StockRepository {
       final metric = stock.metric;
       final valuation = stock.valuation;
       final maCondition = !condition.requireAboveMa200 || metric.aboveMa200;
+      final industryCondition =
+          condition.industry == '全部' || stock.industry == condition.industry;
+      final maxSeverity = _maxRiskSeverity(stock);
+      final riskCondition = _severityRank(maxSeverity) <=
+          _severityRank(condition.maxRiskSeverity);
       return metric.roe >= condition.minRoe &&
           metric.revenueYoy >= condition.minRevenueYoy &&
           valuation.pe <= condition.maxPe &&
+          valuation.pb <= condition.maxPb &&
           valuation.dividendYield >= condition.minDividendYield &&
           metric.qualityScore >= condition.minQualityScore &&
-          maCondition;
+          metric.growthScore >= condition.minGrowthScore &&
+          metric.valuationScore >= condition.minValuationScore &&
+          riskCondition &&
+          maCondition &&
+          industryCondition;
     }).toList();
 
-    result
-        .sort((a, b) => b.metric.qualityScore.compareTo(a.metric.qualityScore));
+    result.sort((a, b) {
+      switch (condition.sortOption) {
+        case ScreenerSortOption.qualityScore:
+          return b.metric.qualityScore.compareTo(a.metric.qualityScore);
+        case ScreenerSortOption.valuationScore:
+          return b.metric.valuationScore.compareTo(a.metric.valuationScore);
+        case ScreenerSortOption.growthScore:
+          return b.metric.growthScore.compareTo(a.metric.growthScore);
+        case ScreenerSortOption.riskLevel:
+          return _severityRank(_maxRiskSeverity(a))
+              .compareTo(_severityRank(_maxRiskSeverity(b)));
+        case ScreenerSortOption.lastYearReturn:
+          return b.metric.lastYearReturn.compareTo(a.metric.lastYearReturn);
+      }
+    });
     return result;
+  }
+
+  @override
+  Future<List<String>> fetchIndustries() async {
+    final industries = _stocks.map((stock) => stock.industry).toSet().toList()
+      ..sort();
+    return ['全部', ...industries];
+  }
+
+  RiskSeverity _maxRiskSeverity(Stock stock) {
+    if (stock.riskAlerts.any((alert) => alert.severity == RiskSeverity.high)) {
+      return RiskSeverity.high;
+    }
+    if (stock.riskAlerts
+        .any((alert) => alert.severity == RiskSeverity.medium)) {
+      return RiskSeverity.medium;
+    }
+    return RiskSeverity.low;
+  }
+
+  int _severityRank(RiskSeverity severity) {
+    switch (severity) {
+      case RiskSeverity.low:
+        return 0;
+      case RiskSeverity.medium:
+        return 1;
+      case RiskSeverity.high:
+        return 2;
+    }
   }
 }
 

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../models/risk_alert.dart';
 import '../../models/screener_condition.dart';
+import '../../models/screener_preset.dart';
 import '../../models/stock.dart';
 import '../../repositories/repository_providers.dart';
 import '../../shared/utils/formatters.dart';
@@ -24,6 +26,9 @@ class _ScreenerScreenState extends ConsumerState<ScreenerScreen> {
   @override
   Widget build(BuildContext context) {
     final results = ref.watch(screenerResultsProvider(_submittedCondition));
+    final industries =
+        ref.watch(industryOptionsProvider).valueOrNull ?? const ['全部'];
+    final presets = ref.watch(screenerPresetControllerProvider);
 
     return SafeArea(
       child: ListView(
@@ -46,7 +51,7 @@ class _ScreenerScreenState extends ConsumerState<ScreenerScreen> {
           const SizedBox(height: 16),
           SectionCard(
             title: '條件設定',
-            subtitle: '調整門檻後按下套用，結果會依體質分數排序。',
+            subtitle: '調整門檻後按下套用，結果會依指定排序產生研究清單。',
             child: Column(
               children: [
                 _ConditionSlider(
@@ -89,6 +94,18 @@ class _ScreenerScreenState extends ConsumerState<ScreenerScreen> {
                   },
                 ),
                 _ConditionSlider(
+                  label: 'PB 小於',
+                  value: _draftCondition.maxPb,
+                  min: 0.8,
+                  max: 10,
+                  divisions: 46,
+                  onChanged: (value) {
+                    setState(() {
+                      _draftCondition = _draftCondition.copyWith(maxPb: value);
+                    });
+                  },
+                ),
+                _ConditionSlider(
                   label: '殖利率大於',
                   value: _draftCondition.minDividendYield,
                   min: 0,
@@ -115,6 +132,91 @@ class _ScreenerScreenState extends ConsumerState<ScreenerScreen> {
                     });
                   },
                 ),
+                _ConditionSlider(
+                  label: '成長分數大於',
+                  value: _draftCondition.minGrowthScore,
+                  min: 30,
+                  max: 95,
+                  divisions: 65,
+                  onChanged: (value) {
+                    setState(() {
+                      _draftCondition =
+                          _draftCondition.copyWith(minGrowthScore: value);
+                    });
+                  },
+                ),
+                _ConditionSlider(
+                  label: '估值分數大於',
+                  value: _draftCondition.minValuationScore,
+                  min: 30,
+                  max: 95,
+                  divisions: 65,
+                  onChanged: (value) {
+                    setState(() {
+                      _draftCondition =
+                          _draftCondition.copyWith(minValuationScore: value);
+                    });
+                  },
+                ),
+                DropdownButtonFormField<RiskSeverity>(
+                  initialValue: _draftCondition.maxRiskSeverity,
+                  decoration: const InputDecoration(labelText: '風險程度低於'),
+                  items: RiskSeverity.values.map((severity) {
+                    return DropdownMenuItem(
+                      value: severity,
+                      child: Text('最高 ${severity.label} 風險'),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _draftCondition =
+                            _draftCondition.copyWith(maxRiskSeverity: value);
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  initialValue: industries.contains(_draftCondition.industry)
+                      ? _draftCondition.industry
+                      : '全部',
+                  decoration: const InputDecoration(labelText: '產業篩選'),
+                  items: industries.map((industry) {
+                    return DropdownMenuItem(
+                      value: industry,
+                      child: Text(industry),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _draftCondition =
+                            _draftCondition.copyWith(industry: value);
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<ScreenerSortOption>(
+                  initialValue: _draftCondition.sortOption,
+                  decoration: const InputDecoration(labelText: '結果排序'),
+                  items: ScreenerSortOption.values.map((option) {
+                    return DropdownMenuItem(
+                      value: option,
+                      child: Text(option.label),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _draftCondition =
+                            _draftCondition.copyWith(sortOption: value);
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   title: const Text('要求站上 200 日均線'),
@@ -147,9 +249,37 @@ class _ScreenerScreenState extends ConsumerState<ScreenerScreen> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _savePreset,
+                    icon: const Icon(Icons.bookmark_add_outlined),
+                    label: const Text('儲存目前條件 preset'),
+                  ),
+                ),
               ],
             ),
           ),
+          if (presets.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            SectionCard(
+              title: '已儲存條件 preset',
+              subtitle: '暫存於 local memory，重新啟動後會回到預設狀態。',
+              child: Column(
+                children: presets.map((preset) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _PresetRow(
+                      preset: preset,
+                      onLoad: () => _loadPreset(preset),
+                      onDelete: () => _deletePreset(preset.id),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           SectionCard(
             title: '目前套用的條件摘要',
@@ -181,6 +311,7 @@ class _ScreenerScreenState extends ConsumerState<ScreenerScreen> {
                 );
               }
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: stocks.map((stock) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
@@ -209,15 +340,92 @@ class _ScreenerScreenState extends ConsumerState<ScreenerScreen> {
     });
   }
 
+  void _savePreset() {
+    final preset = ScreenerPreset(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      name: '研究條件 ${ref.read(screenerPresetControllerProvider).length + 1}',
+      condition: _draftCondition,
+      createdAt: DateTime.now(),
+    );
+    ref.read(screenerPresetControllerProvider.notifier).savePreset(preset);
+  }
+
+  void _loadPreset(ScreenerPreset preset) {
+    setState(() {
+      _draftCondition = preset.condition;
+      _submittedCondition = preset.condition;
+    });
+  }
+
+  void _deletePreset(String id) {
+    ref.read(screenerPresetControllerProvider.notifier).deletePreset(id);
+  }
+
   List<String> _conditionChips(ScreenerCondition condition) {
     return [
       'ROE > ${formatNumber(condition.minRoe)}%',
       '營收 YoY > ${formatNumber(condition.minRevenueYoy)}%',
       'PE < ${formatNumber(condition.maxPe)}',
+      'PB < ${formatNumber(condition.maxPb)}',
       '殖利率 > ${formatNumber(condition.minDividendYield)}%',
       '體質 > ${formatNumber(condition.minQualityScore, decimals: 0)}',
+      '成長 > ${formatNumber(condition.minGrowthScore, decimals: 0)}',
+      '估值 > ${formatNumber(condition.minValuationScore, decimals: 0)}',
+      '最高 ${condition.maxRiskSeverity.label} 風險',
+      '產業 ${condition.industry}',
+      '排序 ${condition.sortOption.label}',
       condition.requireAboveMa200 ? '站上 200 日均線' : '不限制 200 日均線',
     ];
+  }
+}
+
+class _PresetRow extends StatelessWidget {
+  const _PresetRow({
+    required this.preset,
+    required this.onLoad,
+    required this.onDelete,
+  });
+
+  final ScreenerPreset preset;
+  final VoidCallback onLoad;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                preset.name,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'ROE > ${formatNumber(preset.condition.minRoe)}% · PE < ${formatNumber(preset.condition.maxPe)} · ${preset.condition.sortOption.label}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        IconButton(
+          tooltip: '載入',
+          onPressed: onLoad,
+          icon: const Icon(Icons.file_open_outlined),
+        ),
+        IconButton(
+          tooltip: '刪除',
+          onPressed: onDelete,
+          icon: const Icon(Icons.delete_outline),
+        ),
+      ],
+    );
   }
 }
 
@@ -340,10 +548,13 @@ class _ScreenerResultCard extends StatelessWidget {
                     label: '營收 YoY ${formatPercent(stock.metric.revenueYoy)}',
                   ),
                   RiskChip(label: 'PE ${formatNumber(stock.valuation.pe)}'),
+                  RiskChip(label: 'PB ${formatNumber(stock.valuation.pb)}'),
                   RiskChip(
                     label:
                         '殖利率 ${formatPercent(stock.valuation.dividendYield)}',
                   ),
+                  RiskChip(label: '成長 ${stock.metric.growthScore}'),
+                  RiskChip(label: '估值 ${stock.metric.valuationScore}'),
                   RiskChip(
                     label: stock.metric.aboveMa200 ? '200 日均線之上' : '200 日均線之下',
                   ),

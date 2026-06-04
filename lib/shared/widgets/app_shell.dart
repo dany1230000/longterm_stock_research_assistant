@@ -25,22 +25,22 @@ class AppShell extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.dashboard_outlined),
             selectedIcon: Icon(Icons.dashboard),
-            label: '首頁',
+            label: '研究工作台',
           ),
           NavigationDestination(
             icon: Icon(Icons.filter_alt_outlined),
             selectedIcon: Icon(Icons.filter_alt),
-            label: '篩選',
+            label: '條件篩選',
           ),
           NavigationDestination(
             icon: Icon(Icons.query_stats_outlined),
             selectedIcon: Icon(Icons.query_stats),
-            label: '回測',
+            label: '策略研究',
           ),
           NavigationDestination(
             icon: Icon(Icons.edit_note_outlined),
             selectedIcon: Icon(Icons.edit_note),
-            label: '日記',
+            label: '研究日記',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
@@ -119,7 +119,7 @@ class _DemoBanner extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Demo 版本｜目前使用模擬資料。僅供研究與教育用途，不構成投資建議、買賣建議或收益保證。',
+                  'Demo 版本｜目前使用模擬資料',
                   style: theme.textTheme.bodySmall?.copyWith(
                     height: 1.4,
                     fontWeight: FontWeight.w700,
@@ -127,10 +127,34 @@ class _DemoBanner extends StatelessWidget {
                   ),
                 ),
               ),
+              TextButton(
+                onPressed: () => _showDisclaimer(context),
+                child: const Text('免責聲明'),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showDisclaimer(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('免責聲明'),
+          content: const Text(
+            '本 App 提供之資訊僅供研究與教育用途，目前使用模擬資料，不構成任何投資建議、買賣建議或收益保證。使用者應自行判斷並承擔投資風險。',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('我知道了'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

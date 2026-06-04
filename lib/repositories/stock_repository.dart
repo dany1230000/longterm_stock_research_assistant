@@ -7,4 +7,6 @@ abstract class StockRepository {
   Future<Stock?> findBySymbol(String symbol);
 
   Future<List<Stock>> filterByCondition(ScreenerCondition condition);
+
+  Future<List<String>> fetchIndustries();
 }
