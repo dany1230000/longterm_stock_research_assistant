@@ -55,7 +55,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: [
           Text(
-            '研究日記',
+            '研究筆記',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w900,
                 ),
@@ -72,7 +72,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
           _DisciplineSummary(entries: entries),
           const SizedBox(height: 16),
           SectionCard(
-            title: '新增研究紀錄',
+            title: '新增觀察紀錄',
             subtitle: '第一版資料暫存於記憶體，重新啟動後會回到空狀態。',
             child: Column(
               children: [
@@ -164,7 +164,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
           ),
           const SizedBox(height: 18),
           Text(
-            '研究紀錄',
+            '觀察紀錄',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),

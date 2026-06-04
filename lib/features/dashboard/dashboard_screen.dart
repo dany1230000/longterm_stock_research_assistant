@@ -232,11 +232,6 @@ class _QuickActionsSection extends StatelessWidget {
           final isWide = constraints.maxWidth > 760;
           final actions = [
             const _QuickAction(
-              icon: Icons.note_add_outlined,
-              label: '新增研究紀錄',
-              route: '/journal',
-            ),
-            const _QuickAction(
               icon: Icons.filter_alt_outlined,
               label: '開始條件篩選',
               route: '/screener',
@@ -253,8 +248,13 @@ class _QuickActionsSection extends StatelessWidget {
             ),
             const _QuickAction(
               icon: Icons.account_balance_wallet_outlined,
-              label: '查看投資組合風險',
+              label: '查看投資組合',
               route: '/portfolio',
+            ),
+            const _QuickAction(
+              icon: Icons.notifications_active_outlined,
+              label: '提醒中心',
+              route: '/alerts',
             ),
           ];
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'features/alerts/alerts_screen.dart';
 import 'features/backtest/backtest_screen.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/etf_compare/etf_compare_screen.dart';
@@ -51,6 +52,10 @@ GoRouter createAppRouter({String initialLocation = '/dashboard'}) {
           GoRoute(
             path: '/etfs',
             builder: (context, state) => const EtfCompareScreen(),
+          ),
+          GoRoute(
+            path: '/alerts',
+            builder: (context, state) => const AlertsScreen(),
           ),
           GoRoute(
             path: '/portfolio',

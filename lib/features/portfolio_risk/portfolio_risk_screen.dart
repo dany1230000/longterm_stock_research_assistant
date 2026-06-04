@@ -44,19 +44,28 @@ class _PortfolioRiskContent extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       children: [
         Text(
-          '投資組合風險分析',
+          '投資組合',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w900,
               ),
         ),
         const SizedBox(height: 6),
         Text(
-          '使用 mock portfolio 做集中度、曝險與情境模擬，僅供研究參考。',
+          '使用 mock portfolio 做持股總覽、集中度、曝險與情境模擬，僅供研究參考。',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                 height: 1.5,
               ),
         ),
+        const SizedBox(height: 16),
+        const SectionCard(
+          title: 'Demo / 模擬資料提醒',
+          child: Text(
+            '本頁目前使用模擬資料，僅供研究與教育用途，不構成投資建議、買賣建議或收益保證。',
+          ),
+        ),
+        const SizedBox(height: 16),
+        _OverviewSection(risk: risk),
         const SizedBox(height: 16),
         SectionCard(
           title: risk.portfolio.name,
@@ -107,6 +116,59 @@ class _PortfolioRiskContent extends StatelessWidget {
         const SizedBox(height: 16),
         _ScenarioSection(scenarios: risk.scenarios),
       ],
+    );
+  }
+}
+
+class _OverviewSection extends StatelessWidget {
+  const _OverviewSection({required this.risk});
+
+  final PortfolioRisk risk;
+
+  @override
+  Widget build(BuildContext context) {
+    final holdings = risk.portfolio.holdings;
+    final totalWeight =
+        holdings.fold<double>(0, (sum, holding) => sum + holding.weight);
+
+    return SectionCard(
+      title: '持股總覽',
+      subtitle: '以下權重與曝險皆為 mock data。',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth > 720;
+          return GridView.count(
+            crossAxisCount: isWide ? 4 : 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: isWide ? 1.25 : 1.0,
+            children: [
+              MetricTile(
+                label: '持股數',
+                value: '${holdings.length}',
+                caption: 'mock portfolio',
+              ),
+              MetricTile(
+                label: '總權重',
+                value: formatPercent(totalWeight),
+                caption: '檢查用',
+              ),
+              MetricTile(
+                label: 'ETF 權重',
+                value: formatPercent(risk.etfWeight),
+                caption: 'mock',
+              ),
+              MetricTile(
+                label: '個股權重',
+                value: formatPercent(risk.stockWeight),
+                caption: 'mock',
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

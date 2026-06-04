@@ -38,9 +38,9 @@ class AppShell extends StatelessWidget {
             label: '策略研究',
           ),
           NavigationDestination(
-            icon: Icon(Icons.edit_note_outlined),
-            selectedIcon: Icon(Icons.edit_note),
-            label: '研究日記',
+            icon: Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: Icon(Icons.account_balance_wallet),
+            label: '投資組合',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
@@ -59,7 +59,7 @@ class AppShell extends StatelessWidget {
     if (location.startsWith('/backtest')) {
       return 2;
     }
-    if (location.startsWith('/journal')) {
+    if (location.startsWith('/portfolio')) {
       return 3;
     }
     if (location.startsWith('/settings')) {
@@ -80,7 +80,7 @@ class AppShell extends StatelessWidget {
         context.go('/backtest');
         return;
       case 3:
-        context.go('/journal');
+        context.go('/portfolio');
         return;
       case 4:
         context.go('/settings');
