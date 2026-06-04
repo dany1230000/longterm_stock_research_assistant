@@ -42,10 +42,47 @@ https://<account>.github.io/<project-name>/
 這種情境可能需要在 build 時調整 base href：
 
 ```bash
-flutter build web --base-href /<project-name>/
+flutter build web --base-href="/<project-name>/"
 ```
 
 若部署在自訂網域或 root path，則需依實際路徑設定。
+
+目前規劃的 repository 名稱為 `longterm_stock_research_assistant`，對應 build 指令為：
+
+```bash
+flutter build web --base-href="/longterm_stock_research_assistant/"
+```
+
+若 repository 名稱不同，請將 `--base-href` 改成實際 repository path。例如 repository 名稱為 `stock-research-demo` 時：
+
+```bash
+flutter build web --base-href="/stock-research-demo/"
+```
+
+## GitHub Pages With GitHub Actions
+
+本專案已提供 workflow 草稿：
+
+```text
+.github/workflows/deploy_web.yml
+```
+
+此 workflow 規劃在 push 到 `main` 時執行：
+
+- `flutter pub get`
+- `dart format --set-exit-if-changed .`
+- `flutter analyze`
+- `flutter test`
+- `flutter build web --base-href="/longterm_stock_research_assistant/"`
+- 發佈 `build/web` 到 GitHub Pages
+
+使用前需在 GitHub repository 設定：
+
+- Pages source 使用 GitHub Actions。
+- 預設分支或部署分支與 workflow 的 `main` 設定一致。
+- 若 repository 名稱不同，需同步修改 workflow 中的 `--base-href`。
+
+目前 workflow 僅為部署準備草稿，尚未 push 到 GitHub，也未設定任何密鑰。
 
 ## 部署前檢查
 
