@@ -204,6 +204,79 @@ class Etf00631LService:
                 error_message=f"Intraday NAV history summary read failed: {error}",
             )
 
+    def operations_status(self) -> dict[str, Any]:
+        now = utc_now_iso()
+        holdings = self.holdings_history_summary(limit=1)
+        intraday = self.intraday_nav_history_summary()
+        holdings_items = holdings.get("items") if isinstance(holdings.get("items"), list) else []
+        latest_holding = holdings_items[0] if holdings_items else {}
+        intraday_items = intraday.get("items") if isinstance(intraday.get("items"), list) else []
+        latest_intraday = intraday_items[0] if intraday_items else {}
+        errors = [
+            value.get("errorMessage")
+            for value in (holdings, intraday)
+            if value.get("sourceStatus") == "error" and value.get("errorMessage")
+        ]
+        source_status = (
+            "error"
+            if errors
+            else "cached"
+            if holdings_items or intraday.get("sampleCount", 0)
+            else "unavailable"
+        )
+        source_updated_at = (
+            latest_intraday.get("dataTime")
+            or latest_holding.get("sourceUpdatedAt")
+            or holdings.get("sourceUpdatedAt")
+            or intraday.get("sourceUpdatedAt")
+        )
+        return {
+            "sourceStatus": source_status,
+            "sourceContract": "00631l_operations_status",
+            "sourceUrl": "local://00631l-operations-status",
+            "fetchedAt": now,
+            "sourceUpdatedAt": source_updated_at,
+            "dataTime": source_updated_at,
+            "isStale": source_status != "cached",
+            "errorMessage": "; ".join(str(error) for error in errors) if errors else None,
+            "config": {
+                "intradaySourceMode": self._config.intraday_nav_source,
+                "twseIntradayNavConfigured": bool(self._config.twse_intraday_nav_url),
+                "yuantaIntradayNavConfigured": bool(self._config.yuanta_intraday_nav_url),
+                "profileCacheSeconds": self._config.profile_cache_seconds,
+                "holdingsCacheSeconds": self._config.holdings_cache_seconds,
+                "intradayNavCacheSeconds": self._config.intraday_cache_seconds,
+                "holdingsHistoryPathConfigured": bool(self._config.holdings_history_path),
+                "intradayNavHistoryPathConfigured": bool(self._config.intraday_nav_history_path),
+            },
+            "holdingsHistory": {
+                "sourceStatus": holdings.get("sourceStatus"),
+                "sourceContract": holdings.get("sourceContract"),
+                "itemCount": len(holdings_items),
+                "latestTradeDate": latest_holding.get("tradeDate"),
+                "sourceUpdatedAt": holdings.get("sourceUpdatedAt"),
+                "isStale": holdings.get("isStale"),
+                "errorMessage": holdings.get("errorMessage"),
+            },
+            "intradayNavHistory": {
+                "sourceStatus": intraday.get("sourceStatus"),
+                "sourceContract": intraday.get("sourceContract"),
+                "sampleCount": intraday.get("sampleCount", 0),
+                "latestDataTime": latest_intraday.get("dataTime") or intraday.get("lastDataTime"),
+                "date": intraday.get("date"),
+                "sourceUpdatedAt": intraday.get("sourceUpdatedAt"),
+                "isStale": intraday.get("isStale"),
+                "errorMessage": intraday.get("errorMessage"),
+            },
+            "collector": {
+                "oneShotCommand": "scripts\\00631l_collect_snapshot.cmd --samples 1",
+                "intradayCommand": (
+                    "scripts\\00631l_collect_snapshot.cmd --skip-profile "
+                    "--skip-holdings --samples 20 --interval-seconds 15"
+                ),
+            },
+        }
+
     def _intraday_candidates(self) -> list[tuple[str, str, Callable[..., dict[str, Any]]]]:
         mode = self._config.intraday_nav_source
         if mode not in {"twse", "yuanta", "auto"}:

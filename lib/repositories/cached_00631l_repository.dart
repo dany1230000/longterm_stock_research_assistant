@@ -18,6 +18,7 @@ class Cached00631LRepository extends Official00631LRepository {
   FuturesQuote? _futuresQuoteCache;
   EtfHoldingsHistory? _holdingsHistoryCache;
   EtfIntradayNavHistorySummary? _intradayNavHistoryCache;
+  EtfOperationsStatus? _operationsStatusCache;
 
   @override
   Future<LeveragedEtfProfile> fetchProfile() async {
@@ -108,6 +109,21 @@ class Cached00631LRepository extends Official00631LRepository {
         return _cachedIntradayHistory(cached);
       }
       return _fallback.fetchIntradayNavHistorySummary();
+    }
+  }
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    try {
+      final status = await _primary.fetchOperationsStatus();
+      _operationsStatusCache = status;
+      return status;
+    } catch (_) {
+      final cached = _operationsStatusCache;
+      if (cached != null) {
+        return _cachedOperationsStatus(cached);
+      }
+      return _fallback.fetchOperationsStatus();
     }
   }
 }
@@ -218,5 +234,30 @@ EtfIntradayNavHistorySummary _cachedIntradayHistory(
     lastFetchedAt: history.lastFetchedAt,
     isStale: history.isStale,
     errorMessage: history.errorMessage,
+  );
+}
+
+EtfOperationsStatus _cachedOperationsStatus(EtfOperationsStatus status) {
+  return EtfOperationsStatus(
+    status: EtfDataStatus.cached,
+    sourceStatusLabel: 'cached',
+    sourceContract: status.sourceContract,
+    sourceUrl: status.sourceUrl,
+    lastFetchedAt: status.lastFetchedAt,
+    sourceUpdatedAt: status.sourceUpdatedAt,
+    isStale: status.isStale,
+    intradaySourceMode: status.intradaySourceMode,
+    twseIntradayNavConfigured: status.twseIntradayNavConfigured,
+    yuantaIntradayNavConfigured: status.yuantaIntradayNavConfigured,
+    holdingsHistoryStatus: status.holdingsHistoryStatus,
+    holdingsHistoryItemCount: status.holdingsHistoryItemCount,
+    latestHoldingTradeDate: status.latestHoldingTradeDate,
+    intradayHistoryStatus: status.intradayHistoryStatus,
+    intradaySampleCount: status.intradaySampleCount,
+    latestIntradayDataTime: status.latestIntradayDataTime,
+    intradayHistoryDate: status.intradayHistoryDate,
+    collectorOneShotCommand: status.collectorOneShotCommand,
+    collectorIntradayCommand: status.collectorIntradayCommand,
+    errorMessage: status.errorMessage,
   );
 }

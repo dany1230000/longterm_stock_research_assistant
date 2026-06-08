@@ -190,6 +190,54 @@ class Proxy00631LRepository extends Official00631LRepository {
     );
   }
 
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    final payload = await _getJson('/api/etf/00631l/operations/status');
+    final rawStatus = _rawStatus(payload);
+    final config = _map(payload['config']);
+    final holdings = _map(payload['holdingsHistory']);
+    final intraday = _map(payload['intradayNavHistory']);
+    final collector = _map(payload['collector']);
+
+    return EtfOperationsStatus(
+      status: _status(payload),
+      sourceStatusLabel: rawStatus.isEmpty ? _status(payload).label : rawStatus,
+      sourceContract: _string(payload['sourceContract']),
+      sourceUrl: _string(payload['sourceUrl']),
+      lastFetchedAt: _dateTime(payload['fetchedAt']) ?? DateTime.now(),
+      sourceUpdatedAt: _wallClockDateTime(payload['sourceUpdatedAt']),
+      isStale: payload['isStale'] == true,
+      intradaySourceMode:
+          _string(config['intradaySourceMode'], fallback: 'auto'),
+      twseIntradayNavConfigured: config['twseIntradayNavConfigured'] == true,
+      yuantaIntradayNavConfigured:
+          config['yuantaIntradayNavConfigured'] == true,
+      holdingsHistoryStatus: _string(
+        holdings['sourceStatus'],
+        fallback: 'unavailable',
+      ),
+      holdingsHistoryItemCount: _int(holdings['itemCount']),
+      latestHoldingTradeDate: _nullableDate(holdings['latestTradeDate']),
+      intradayHistoryStatus: _string(
+        intraday['sourceStatus'],
+        fallback: 'unavailable',
+      ),
+      intradaySampleCount: _int(intraday['sampleCount']),
+      latestIntradayDataTime: _wallClockDateTime(intraday['latestDataTime']),
+      intradayHistoryDate: _nullableDate(intraday['date']),
+      collectorOneShotCommand: _string(
+        collector['oneShotCommand'],
+        fallback: 'scripts\\00631l_collect_snapshot.cmd --samples 1',
+      ),
+      collectorIntradayCommand: _string(
+        collector['intradayCommand'],
+        fallback:
+            'scripts\\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15',
+      ),
+      errorMessage: payload['errorMessage']?.toString(),
+    );
+  }
+
   Future<Map<String, dynamic>> _getJson(String path) async {
     final body = await _client.getString(_resolve(path), timeout: timeout);
     final decoded = jsonDecode(body);

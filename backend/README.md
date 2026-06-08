@@ -135,6 +135,18 @@ The summary endpoint returns the sample count, highest premium, lowest discount,
 
 If no intraday history exists yet, the endpoints return `sourceStatus: unavailable` with an empty `items` list. They do not fabricate official intraday history from mock data.
 
+## v1.10 operations status
+
+Endpoint:
+
+```text
+GET /api/etf/00631l/operations/status
+```
+
+This endpoint reads local configuration and local JSONL history summaries. It does not fetch Yuanta or TWSE live sources. It reports intraday source mode, whether TWSE/Yuanta intraday URLs are configured, latest holdings history trade date, intraday NAV sample count, latest intraday data time, and collector commands.
+
+If there is no local history, the endpoint returns `sourceStatus: unavailable`; it does not return mock data as official operational state.
+
 ## v1.7 snapshot collector
 
 The collector uses the same backend service as the API endpoints. It fetches profile, holdings, and intraday NAV, then relies on the service to save successful official holdings and intraday NAV payloads into the configured local JSONL history stores.

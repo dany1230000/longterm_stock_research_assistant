@@ -75,3 +75,8 @@ def intraday_nav_history(
 @app.get("/api/etf/00631l/intraday-nav/history/summary")
 def intraday_nav_history_summary(date: str | None = None) -> dict:
     return service.intraday_nav_history_summary(date=date)
+
+
+@app.get("/api/etf/00631l/operations/status")
+def operations_status() -> dict:
+    return service.operations_status()

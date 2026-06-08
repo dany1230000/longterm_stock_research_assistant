@@ -53,6 +53,8 @@ class _LabContent extends StatelessWidget {
         const SizedBox(height: 16),
         _StatusSummarySection(summary: data.statusSummary),
         const SizedBox(height: 16),
+        _OperationsStatusSection(status: data.operationsStatus),
+        const SizedBox(height: 16),
         _PremiumDiscountStatusSection(nav: data.intradayNav),
         const SizedBox(height: 16),
         _IntradayNavHistorySection(history: data.intradayNavHistory),
@@ -300,6 +302,145 @@ class _StatusSummarySection extends StatelessWidget {
                 ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OperationsStatusSection extends StatelessWidget {
+  const _OperationsStatusSection({required this.status});
+
+  final EtfOperationsStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    return SectionCard(
+      title: '資料收集狀態',
+      subtitle: '顯示 local history、collector 與 intraday NAV 設定狀態；這不是交易訊號。',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              RiskChip(label: 'sourceStatus ${status.sourceStatusLabel}'),
+              RiskChip(label: 'sourceContract ${status.sourceContract}'),
+              RiskChip(label: 'intradaySource ${status.intradaySourceMode}'),
+              RiskChip(
+                  label: 'history ${status.hasAnyHistory ? 'ready' : 'empty'}'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 720;
+              return GridView.count(
+                crossAxisCount: isWide ? 4 : 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: isWide ? 1.15 : 1.0,
+                children: [
+                  MetricTile(
+                    label: 'holdings history',
+                    value: status.holdingsHistoryItemCount.toString(),
+                    caption: status.latestHoldingTradeDate == null
+                        ? '尚無 official holdings history'
+                        : formatTaiwanDate(status.latestHoldingTradeDate!),
+                    icon: Icons.inventory_2_outlined,
+                  ),
+                  MetricTile(
+                    label: 'intraday samples',
+                    value: status.intradaySampleCount.toString(),
+                    caption: status.latestIntradayDataTime == null
+                        ? '尚無 intraday NAV history'
+                        : formatTimeSeconds(status.latestIntradayDataTime!),
+                    icon: Icons.timeline_outlined,
+                  ),
+                  MetricTile(
+                    label: 'TWSE URL',
+                    value: status.twseIntradayNavConfigured
+                        ? 'configured'
+                        : 'unset',
+                    caption: 'twse_a_k_json',
+                    icon: Icons.settings_ethernet_outlined,
+                  ),
+                  MetricTile(
+                    label: 'Yuanta URL',
+                    value: status.yuantaIntradayNavConfigured
+                        ? 'configured'
+                        : 'unset',
+                    caption: 'yuanta_inav fallback',
+                    icon: Icons.settings_backup_restore_outlined,
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          _CommandLine(
+            label: 'daily collector',
+            command: status.collectorOneShotCommand,
+          ),
+          const SizedBox(height: 8),
+          _CommandLine(
+            label: 'intraday collector',
+            command: status.collectorIntradayCommand,
+          ),
+          if (status.errorMessage != null) ...[
+            const SizedBox(height: 10),
+            Text(status.errorMessage!),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _CommandLine extends StatelessWidget {
+  const _CommandLine({
+    required this.label,
+    required this.command,
+  });
+
+  final String label;
+  final String command;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 116,
+              child: Text(
+                label,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            Expanded(
+              child: SelectableText(
+                command,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

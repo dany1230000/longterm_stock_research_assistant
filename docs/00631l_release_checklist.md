@@ -33,6 +33,7 @@ Check:
 - If no live or cached intraday data is available, endpoint returns `sourceStatus: unavailable` or `error`, not mock.
 - Holdings history trend chart renders from official/cached local history; it is hidden behind the existing empty-history state when no history exists.
 - Intraday premium/discount trend chart renders only from stored intraday NAV history; it is hidden behind the existing empty-history state when no intraday history exists.
+- `GET /api/etf/00631l/operations/status` returns local collection status without triggering live source fetch.
 
 ## Frontend Live Proxy
 

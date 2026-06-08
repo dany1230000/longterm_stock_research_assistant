@@ -72,6 +72,16 @@ class Mock00631LRepository extends Official00631LRepository {
   }
 
   @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    return EtfOperationsStatus.empty(
+      lastFetchedAt: _clock(),
+      status: EtfDataStatus.mock,
+      sourceStatusLabel: 'mock',
+      errorMessage: 'Mock mode has no collector or local history status.',
+    );
+  }
+
+  @override
   Future<Etf00631LLabData> fetchLabData() async {
     final profile = await fetchProfile();
     final snapshot = await fetchDailySnapshot();
@@ -79,6 +89,7 @@ class Mock00631LRepository extends Official00631LRepository {
     final futuresQuote = await fetchFuturesQuote();
     final history = await fetchHoldingsHistorySummary();
     final intradayHistory = await fetchIntradayNavHistorySummary();
+    final operationsStatus = await fetchOperationsStatus();
     final now = _clock();
 
     return Etf00631LLabData(
@@ -88,6 +99,7 @@ class Mock00631LRepository extends Official00631LRepository {
       futuresQuote: futuresQuote,
       holdingsHistory: history,
       intradayNavHistory: intradayHistory,
+      operationsStatus: operationsStatus,
       analysis: EtfAnalysisSummary.fromSnapshot(
         snapshot: snapshot,
         intradayNav: intradayNav,

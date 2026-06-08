@@ -858,6 +858,87 @@ class EtfStatusSummary {
   final List<String> lines;
 }
 
+class EtfOperationsStatus {
+  const EtfOperationsStatus({
+    required this.status,
+    required this.sourceStatusLabel,
+    required this.sourceContract,
+    required this.sourceUrl,
+    required this.lastFetchedAt,
+    required this.sourceUpdatedAt,
+    required this.isStale,
+    required this.intradaySourceMode,
+    required this.twseIntradayNavConfigured,
+    required this.yuantaIntradayNavConfigured,
+    required this.holdingsHistoryStatus,
+    required this.holdingsHistoryItemCount,
+    required this.latestHoldingTradeDate,
+    required this.intradayHistoryStatus,
+    required this.intradaySampleCount,
+    required this.latestIntradayDataTime,
+    required this.intradayHistoryDate,
+    required this.collectorOneShotCommand,
+    required this.collectorIntradayCommand,
+    this.errorMessage,
+  });
+
+  factory EtfOperationsStatus.empty({
+    DateTime? lastFetchedAt,
+    EtfDataStatus status = EtfDataStatus.mock,
+    String sourceStatusLabel = 'mock',
+    String? errorMessage,
+  }) {
+    return EtfOperationsStatus(
+      status: status,
+      sourceStatusLabel: sourceStatusLabel,
+      sourceContract: '00631l_operations_status',
+      sourceUrl: '',
+      lastFetchedAt: lastFetchedAt ?? DateTime.now(),
+      sourceUpdatedAt: null,
+      isStale: true,
+      intradaySourceMode: 'auto',
+      twseIntradayNavConfigured: false,
+      yuantaIntradayNavConfigured: false,
+      holdingsHistoryStatus: sourceStatusLabel,
+      holdingsHistoryItemCount: 0,
+      latestHoldingTradeDate: null,
+      intradayHistoryStatus: sourceStatusLabel,
+      intradaySampleCount: 0,
+      latestIntradayDataTime: null,
+      intradayHistoryDate: null,
+      collectorOneShotCommand:
+          'scripts\\00631l_collect_snapshot.cmd --samples 1',
+      collectorIntradayCommand:
+          'scripts\\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15',
+      errorMessage: errorMessage,
+    );
+  }
+
+  final EtfDataStatus status;
+  final String sourceStatusLabel;
+  final String sourceContract;
+  final String sourceUrl;
+  final DateTime lastFetchedAt;
+  final DateTime? sourceUpdatedAt;
+  final bool isStale;
+  final String intradaySourceMode;
+  final bool twseIntradayNavConfigured;
+  final bool yuantaIntradayNavConfigured;
+  final String holdingsHistoryStatus;
+  final int holdingsHistoryItemCount;
+  final DateTime? latestHoldingTradeDate;
+  final String intradayHistoryStatus;
+  final int intradaySampleCount;
+  final DateTime? latestIntradayDataTime;
+  final DateTime? intradayHistoryDate;
+  final String collectorOneShotCommand;
+  final String collectorIntradayCommand;
+  final String? errorMessage;
+
+  bool get hasAnyHistory =>
+      holdingsHistoryItemCount > 0 || intradaySampleCount > 0;
+}
+
 class Etf00631LLabData {
   const Etf00631LLabData({
     required this.profile,
@@ -866,6 +947,7 @@ class Etf00631LLabData {
     required this.futuresQuote,
     required this.holdingsHistory,
     required this.intradayNavHistory,
+    required this.operationsStatus,
     required this.analysis,
     required this.lastFetchedAt,
   });
@@ -876,6 +958,7 @@ class Etf00631LLabData {
   final FuturesQuote futuresQuote;
   final EtfHoldingsHistory holdingsHistory;
   final EtfIntradayNavHistorySummary intradayNavHistory;
+  final EtfOperationsStatus operationsStatus;
   final EtfAnalysisSummary analysis;
   final DateTime lastFetchedAt;
 

@@ -217,6 +217,52 @@ Custodian Fee
             self.assertEqual(summary_payload["lowestPremiumDiscountPct"], 0.75)
             self.assertEqual(summary_payload["averagePremiumDiscountPct"], 0.75)
 
+    def test_operations_status_reports_local_history_state(self) -> None:
+        holdings_fixture = (FIXTURES / "00631l_yuanta_ratio_fixture.txt").read_text(encoding="utf-8")
+        intraday_fixture = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(encoding="utf-8")
+
+        def fake_fetcher(url: str, timeout_seconds: float) -> str:
+            if url == "fixture://holdings":
+                return holdings_fixture
+            if url == "fixture://twse/all_etf":
+                return intraday_fixture
+            raise AssertionError(f"Unexpected fixture URL: {url}")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            main_module.service = Etf00631LService(
+                config=Settings(
+                    yuanta_holdings_url="fixture://holdings",
+                    twse_intraday_nav_url="fixture://twse/all_etf",
+                    intraday_nav_source="twse",
+                ),
+                fetcher=fake_fetcher,
+                cache=TimedMemoryCache(),
+                history_store=HoldingsHistoryStore(Path(temp_dir) / "history.jsonl"),
+                intraday_history_store=IntradayNavHistoryStore(
+                    Path(temp_dir) / "intraday.jsonl"
+                ),
+            )
+
+            self.assertEqual(
+                self.client.get("/api/etf/00631l/holdings").json()["sourceStatus"],
+                "official",
+            )
+            self.assertEqual(
+                self.client.get("/api/etf/00631l/intraday-nav").json()["sourceStatus"],
+                "official",
+            )
+
+            response = self.client.get("/api/etf/00631l/operations/status")
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+            self.assertEqual(payload["sourceStatus"], "cached")
+            self.assertEqual(payload["sourceContract"], "00631l_operations_status")
+            self.assertEqual(payload["holdingsHistory"]["latestTradeDate"], "2026-06-05")
+            self.assertEqual(payload["intradayNavHistory"]["sampleCount"], 1)
+            self.assertEqual(payload["config"]["intradaySourceMode"], "twse")
+            self.assertTrue(payload["config"]["twseIntradayNavConfigured"])
+            self.assertIn("oneShotCommand", payload["collector"])
+
 
 if __name__ == "__main__":
     unittest.main()

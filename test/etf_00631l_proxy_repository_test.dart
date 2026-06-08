@@ -114,6 +114,27 @@ void main() {
     expect(history.points.first.sourceContract, 'twse_a_k_json');
   });
 
+  test('proxy repository maps operations status payload', () async {
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/00631l/operations/status':
+            jsonEncode(_operationsStatusPayload()),
+      }),
+    );
+
+    final status = await repository.fetchOperationsStatus();
+
+    expect(status.status, EtfDataStatus.cached);
+    expect(status.sourceStatusLabel, 'cached');
+    expect(status.intradaySourceMode, 'auto');
+    expect(status.twseIntradayNavConfigured, isTrue);
+    expect(status.holdingsHistoryItemCount, 1);
+    expect(status.latestHoldingTradeDate, DateTime(2026, 6, 8));
+    expect(status.intradaySampleCount, 12);
+    expect(status.latestIntradayDataTime, DateTime(2026, 6, 8, 13, 31));
+    expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
+  });
+
   test('cached repository falls back to mock when proxy is down', () async {
     final repository = Cached00631LRepository(
       primary: Proxy00631LRepository(client: _FailingProxyHttpClient()),
@@ -327,5 +348,52 @@ Map<String, Object?> _intradayHistorySummaryPayload() {
     'dataTime': '2026-06-08T13:31:00+08:00',
     'isStale': false,
     'errorMessage': null,
+  };
+}
+
+Map<String, Object?> _operationsStatusPayload() {
+  return {
+    'sourceStatus': 'cached',
+    'sourceContract': '00631l_operations_status',
+    'sourceUrl': 'local://00631l-operations-status',
+    'fetchedAt': '2026-06-08T13:32:00+08:00',
+    'sourceUpdatedAt': '2026-06-08T13:31:00+08:00',
+    'dataTime': '2026-06-08T13:31:00+08:00',
+    'isStale': false,
+    'errorMessage': null,
+    'config': {
+      'intradaySourceMode': 'auto',
+      'twseIntradayNavConfigured': true,
+      'yuantaIntradayNavConfigured': true,
+      'profileCacheSeconds': 86400,
+      'holdingsCacheSeconds': 600,
+      'intradayNavCacheSeconds': 15,
+      'holdingsHistoryPathConfigured': true,
+      'intradayNavHistoryPathConfigured': true,
+    },
+    'holdingsHistory': {
+      'sourceStatus': 'cached',
+      'sourceContract': 'local_jsonl_history_summary',
+      'itemCount': 1,
+      'latestTradeDate': '2026-06-08',
+      'sourceUpdatedAt': '2026-06-08T00:00:00+08:00',
+      'isStale': false,
+      'errorMessage': null,
+    },
+    'intradayNavHistory': {
+      'sourceStatus': 'cached',
+      'sourceContract': 'local_jsonl_intraday_nav_history_summary',
+      'sampleCount': 12,
+      'latestDataTime': '2026-06-08T13:31:00+08:00',
+      'date': '2026-06-08',
+      'sourceUpdatedAt': '2026-06-08T13:31:00+08:00',
+      'isStale': false,
+      'errorMessage': null,
+    },
+    'collector': {
+      'oneShotCommand': 'scripts\\00631l_collect_snapshot.cmd --samples 1',
+      'intradayCommand':
+          'scripts\\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15',
+    },
   };
 }

@@ -195,7 +195,10 @@ GET /health
 GET /api/etf/00631l/profile
 GET /api/etf/00631l/holdings
 GET /api/etf/00631l/intraday-nav
+GET /api/etf/00631l/operations/status
 ```
+
+`/api/etf/00631l/operations/status` only reads local config and JSONL history summaries for collection status. It does not trigger live source fetch.
 
 `/api/etf/00631l/holdings` 是官方每日內容物快照，不是盤中即時內容物。盤中即時的是市價、預估淨值與折溢價。
 
