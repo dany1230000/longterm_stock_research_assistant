@@ -179,6 +179,18 @@ If there is no local history, the endpoint returns `sourceStatus: unavailable`; 
 
 This endpoint still reads only local state and configuration. It does not fetch live Yuanta or TWSE sources and does not mark missing local state as official data.
 
+## v1.15 daily cycle status
+
+`scripts\00631l_daily_cycle.cmd` calls `backend\scripts\run_00631l_daily_cycle.py`.
+
+The runner executes collect, export, and live smoke, then writes the latest result to:
+
+```text
+backend/data/00631l_daily_cycle_status.json
+```
+
+The file is local operational state and is ignored by git. `operations/status` reads it when present. If the file does not exist, the endpoint reports `dailyCycle.sourceStatus: unavailable` and `overallStatus: missing`.
+
 ## v1.13 local startup checks
 
 Environment check:

@@ -33,6 +33,7 @@ v1.0 live sources:
 - Daily cycle v1.12: `scripts/00631l_daily_cycle.cmd` runs collect, export, and live smoke in one command.
 - Local startup checks v1.13: `scripts/00631l_check_env.cmd`, `scripts/00631l_start_backend.cmd`, and `scripts/00631l_start_frontend_live.cmd` provide one-command local environment, backend, and live proxy startup flows.
 - Data freshness summary v1.14: `/api/etf/00631l/operations/status` reports local history, intraday samples, export availability, env readiness, and latest daily cycle state; `/00631l-lab` shows a compact "今日資料狀態" section.
+- Daily cycle status v1.15: `scripts/00631l_daily_cycle.cmd` records the latest run result to local ignored state at `backend/data/00631l_daily_cycle_status.json`.
 
 Local backend env:
 

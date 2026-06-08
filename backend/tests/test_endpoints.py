@@ -281,6 +281,33 @@ Custodian Fee
             self.assertEqual(payload["statusSummary"]["export"], "cached")
             self.assertIn("oneShotCommand", payload["collector"])
 
+    def test_operations_status_reports_missing_daily_cycle_status(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            main_module.service = Etf00631LService(
+                config=Settings(
+                    history_export_dir=str(Path(temp_dir) / "exports"),
+                    daily_cycle_status_path=str(
+                        Path(temp_dir) / "missing_daily_cycle_status.json"
+                    ),
+                    holdings_history_path=str(Path(temp_dir) / "history.jsonl"),
+                    intraday_nav_history_path=str(Path(temp_dir) / "intraday.jsonl"),
+                ),
+                cache=TimedMemoryCache(),
+                history_store=HoldingsHistoryStore(Path(temp_dir) / "history.jsonl"),
+                intraday_history_store=IntradayNavHistoryStore(
+                    Path(temp_dir) / "intraday.jsonl"
+                ),
+            )
+
+            response = self.client.get("/api/etf/00631l/operations/status")
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+            self.assertFalse(payload["dailyCycle"]["available"])
+            self.assertEqual(payload["dailyCycle"]["overallStatus"], "missing")
+            self.assertEqual(payload["dailyCycle"]["sourceStatus"], "unavailable")
+            self.assertFalse(payload["export"]["available"])
+            self.assertEqual(payload["statusSummary"]["dailyCycle"], "unavailable")
+
 
 if __name__ == "__main__":
     unittest.main()
