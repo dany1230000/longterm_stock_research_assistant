@@ -323,3 +323,9 @@ scripts\00631l_release_check.cmd
 ```text
 docs/00631l_troubleshooting.md
 ```
+
+部署到其他電腦或固定服務前，請先看：
+
+```text
+docs/00631l_deployment_notes.md
+```

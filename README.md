@@ -47,6 +47,7 @@ v1.0 live sources:
 - Open lab helper v1.26: `scripts/00631l_open_lab.cmd` runs the local environment check, reports backend reachability, and prints the backend, daily cycle, live frontend, and direct `/#/00631l-lab` route commands.
 - Troubleshooting v1.27: `docs/00631l_troubleshooting.md` covers common local startup, backend, intraday NAV, smoke WARN, Flutter path, CSV export, and history data issues.
 - Operations guidance v1.28: `/00631l-lab` shows app operation next steps for daily cycle, `.env`, intraday NAV availability, CSV export, backup, and data directory checks.
+- Deployment notes v1.29: `docs/00631l_deployment_notes.md` documents local mode, Flutter web build output, backend proxy needs, `.env`, data persistence, GitHub Pages limits, and home server/VPS considerations.
 
 Local backend env:
 
@@ -152,6 +153,12 @@ Troubleshooting guide:
 
 ```text
 docs/00631l_troubleshooting.md
+```
+
+Deployment notes:
+
+```text
+docs/00631l_deployment_notes.md
 ```
 
 Final v1.20 summary:
