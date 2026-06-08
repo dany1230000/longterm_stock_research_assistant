@@ -792,6 +792,72 @@ class EtfAnalysisSummary {
   }
 }
 
+enum EtfStatusSummaryLevel {
+  normal,
+  watch,
+  elevated,
+  unavailable,
+  stale,
+  error,
+}
+
+class EtfStatusSummary {
+  const EtfStatusSummary({
+    required this.level,
+    required this.label,
+    required this.lines,
+  });
+
+  factory EtfStatusSummary.evaluate({
+    required LeveragedEtfProfile profile,
+    required EtfDailyHoldingSnapshot snapshot,
+    required EtfIntradayNav? intradayNav,
+    required EtfHoldingsHistory holdingsHistory,
+    required EtfIntradayNavHistorySummary intradayNavHistory,
+    required HoldingsChangeAssessment holdingsChangeAssessment,
+    required DateTime now,
+  }) {
+    final premiumAssessment = intradayNav?.premiumDiscountAssessment ??
+        PremiumDiscountAssessment.evaluate(
+          premiumDiscountPct: null,
+          sourceStatus: EtfDataStatus.error,
+          isStale: false,
+        );
+    final level = _statusSummaryLevel(
+      profile: profile,
+      snapshot: snapshot,
+      intradayNav: intradayNav,
+      premiumAssessment: premiumAssessment,
+      holdingsChangeAssessment: holdingsChangeAssessment,
+      now: now,
+    );
+
+    final lines = <String>[
+      '官方內容物日期 ${_dateText(snapshot.tradeDate)}，holdings sourceStatus ${snapshot.status.label}。',
+      if (intradayNav == null)
+        '即時淨值資料不可用，暫時只能檢視官方每日內容物與已保存的歷史資料。'
+      else
+        '即時淨值來源 ${intradayNav.sourceContract ?? 'unavailable'}，折溢價 ${_nullableSignedPercentText(intradayNav.estimatedPremiumDiscountPct)}，狀態 ${premiumAssessment.label}。',
+      '內容物變化狀態 ${holdingsChangeAssessment.statusLabel}，history sourceStatus ${holdingsHistory.sourceStatusLabel}。',
+      if (intradayNavHistory.hasData)
+        '盤中折溢價歷史 ${intradayNavHistory.sampleCount} 筆，平均 ${_nullableSignedPercentText(intradayNavHistory.averagePremiumDiscountPct)}。'
+      else
+        '盤中折溢價歷史尚未累積，intradayHistory sourceStatus ${intradayNavHistory.sourceStatusLabel}。',
+      '此摘要只描述資料狀態與偏離程度，非買賣建議。',
+    ];
+
+    return EtfStatusSummary(
+      level: level,
+      label: _statusSummaryLabel(level),
+      lines: lines,
+    );
+  }
+
+  final EtfStatusSummaryLevel level;
+  final String label;
+  final List<String> lines;
+}
+
 class Etf00631LLabData {
   const Etf00631LLabData({
     required this.profile,
@@ -817,6 +883,18 @@ class Etf00631LLabData {
     return HoldingsChangeAssessment.evaluate(
       history: holdingsHistory,
       snapshot: snapshot,
+      now: lastFetchedAt,
+    );
+  }
+
+  EtfStatusSummary get statusSummary {
+    return EtfStatusSummary.evaluate(
+      profile: profile,
+      snapshot: snapshot,
+      intradayNav: intradayNav,
+      holdingsHistory: holdingsHistory,
+      intradayNavHistory: intradayNavHistory,
+      holdingsChangeAssessment: holdingsChangeAssessment,
       now: lastFetchedAt,
     );
   }
@@ -888,6 +966,69 @@ String _holdingNoticeStatusLabel(List<HoldingChangeNotice> notices) {
     return 'unavailable';
   }
   return 'normal';
+}
+
+EtfStatusSummaryLevel _statusSummaryLevel({
+  required LeveragedEtfProfile profile,
+  required EtfDailyHoldingSnapshot snapshot,
+  required EtfIntradayNav? intradayNav,
+  required PremiumDiscountAssessment premiumAssessment,
+  required HoldingsChangeAssessment holdingsChangeAssessment,
+  required DateTime now,
+}) {
+  if (profile.status == EtfDataStatus.error ||
+      snapshot.status == EtfDataStatus.error) {
+    return EtfStatusSummaryLevel.error;
+  }
+  if (snapshot.isStale(now) ||
+      intradayNav?.isStale == true ||
+      holdingsChangeAssessment.statusLabel == 'stale') {
+    return EtfStatusSummaryLevel.stale;
+  }
+  if (intradayNav == null ||
+      premiumAssessment.level == PremiumDiscountLevel.unavailable) {
+    return EtfStatusSummaryLevel.unavailable;
+  }
+  if (premiumAssessment.level == PremiumDiscountLevel.extreme ||
+      premiumAssessment.level == PremiumDiscountLevel.elevated ||
+      holdingsChangeAssessment.statusLabel == 'elevated') {
+    return EtfStatusSummaryLevel.elevated;
+  }
+  if (premiumAssessment.level == PremiumDiscountLevel.watch ||
+      holdingsChangeAssessment.statusLabel == 'watch' ||
+      holdingsChangeAssessment.statusLabel == 'unavailable') {
+    return EtfStatusSummaryLevel.watch;
+  }
+  return EtfStatusSummaryLevel.normal;
+}
+
+String _statusSummaryLabel(EtfStatusSummaryLevel level) {
+  switch (level) {
+    case EtfStatusSummaryLevel.normal:
+      return '資料狀態正常';
+    case EtfStatusSummaryLevel.watch:
+      return '資料狀態觀察';
+    case EtfStatusSummaryLevel.elevated:
+      return '偏離程度較高';
+    case EtfStatusSummaryLevel.unavailable:
+      return '資料不足';
+    case EtfStatusSummaryLevel.stale:
+      return '資料可能過期';
+    case EtfStatusSummaryLevel.error:
+      return '資料錯誤';
+  }
+}
+
+String _dateText(DateTime date) {
+  return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+}
+
+String _nullableSignedPercentText(double? value) {
+  if (value == null) {
+    return 'unavailable';
+  }
+  final prefix = value > 0 ? '+' : '';
+  return '$prefix${value.toStringAsFixed(2)}%';
 }
 
 int _businessDaysBetween(DateTime start, DateTime end) {

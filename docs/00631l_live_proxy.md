@@ -297,3 +297,17 @@ GET /api/etf/00631l/intraday-nav/history/summary?date=YYYY-MM-DD
 The summary endpoint returns today's sample count, highest premium, lowest discount, average premium/discount, first and last data times, latest market price, and latest estimated NAV.
 
 The backend does not fabricate official intraday history from mock, cached, error, or unavailable responses.
+
+## v1.5 status summary
+
+The status summary is computed in the Flutter model layer. No new backend endpoint is required.
+
+It combines:
+
+- Yuanta holdings freshness.
+- Intraday NAV availability and `sourceContract`.
+- Premium/discount assessment.
+- Holdings change notice state.
+- Intraday NAV history sample state.
+
+The summary is a data-health description only. It is not a trading strategy and does not provide trading instructions.

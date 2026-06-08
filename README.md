@@ -23,6 +23,7 @@ v1.0 live sources:
 - Holdings history v1.2: backend stores official Yuanta ratio snapshots locally by `tradeDate` in JSONL and exposes `/api/etf/00631l/holdings/history` plus `/summary`; default mock mode shows no official history.
 - Holdings change notices v1.3: compares the latest two official holdings history rows and shows data-status reminders for TX, TSMC, cash/margin, and exposure changes. These reminders are not trading advice.
 - Intraday premium/discount history v1.4: backend stores official intraday NAV samples locally and the app shows today's highest, lowest, and average premium/discount. This is not a trading signal.
+- Status summary v1.5: combines official holdings freshness, intraday NAV status, premium/discount state, holdings change notices, and intraday history into a non-advice data health summary.
 
 Local backend env:
 

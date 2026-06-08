@@ -50,6 +50,8 @@ class _LabContent extends StatelessWidget {
         const SizedBox(height: 16),
         _SummaryGrid(data: data),
         const SizedBox(height: 16),
+        _StatusSummarySection(summary: data.statusSummary),
+        const SizedBox(height: 16),
         _PremiumDiscountStatusSection(nav: data.intradayNav),
         const SizedBox(height: 16),
         _IntradayNavHistorySection(history: data.intradayNavHistory),
@@ -246,6 +248,59 @@ class _SummaryGrid extends StatelessWidget {
           children: cards,
         );
       },
+    );
+  }
+}
+
+class _StatusSummarySection extends StatelessWidget {
+  const _StatusSummarySection({required this.summary});
+
+  final EtfStatusSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = _statusSummaryColor(theme.colorScheme, summary.level);
+
+    return SectionCard(
+      title: '00631L 狀態總結',
+      subtitle: '整合官方內容物、即時淨值、折溢價與歷史資料狀態。此區只描述資料狀態，非買賣建議。',
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Color.alphaBlend(
+            color.withValues(alpha: 0.08),
+            theme.colorScheme.surface,
+          ),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withValues(alpha: 0.30)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Icon(_statusSummaryIcon(summary.level), color: color),
+                  RiskChip(label: summary.label),
+                ],
+              ),
+              const SizedBox(height: 10),
+              for (final line in summary.lines)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    line,
+                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -1200,5 +1255,41 @@ IconData _holdingNoticeIcon(HoldingChangeNoticeLevel level) {
       return Icons.schedule_outlined;
     case HoldingChangeNoticeLevel.unavailable:
       return Icons.history_toggle_off_outlined;
+  }
+}
+
+Color _statusSummaryColor(
+  ColorScheme colorScheme,
+  EtfStatusSummaryLevel level,
+) {
+  switch (level) {
+    case EtfStatusSummaryLevel.normal:
+      return colorScheme.primary;
+    case EtfStatusSummaryLevel.watch:
+      return colorScheme.secondary;
+    case EtfStatusSummaryLevel.elevated:
+      return colorScheme.tertiary;
+    case EtfStatusSummaryLevel.unavailable:
+    case EtfStatusSummaryLevel.stale:
+      return colorScheme.onSurfaceVariant;
+    case EtfStatusSummaryLevel.error:
+      return colorScheme.error;
+  }
+}
+
+IconData _statusSummaryIcon(EtfStatusSummaryLevel level) {
+  switch (level) {
+    case EtfStatusSummaryLevel.normal:
+      return Icons.check_circle_outline;
+    case EtfStatusSummaryLevel.watch:
+      return Icons.manage_search_outlined;
+    case EtfStatusSummaryLevel.elevated:
+      return Icons.priority_high_outlined;
+    case EtfStatusSummaryLevel.unavailable:
+      return Icons.cloud_off_outlined;
+    case EtfStatusSummaryLevel.stale:
+      return Icons.schedule_outlined;
+    case EtfStatusSummaryLevel.error:
+      return Icons.error_outline;
   }
 }

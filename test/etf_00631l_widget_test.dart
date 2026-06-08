@@ -58,6 +58,15 @@ void main() {
     expect(find.text('202606'), findsWidgets);
   });
 
+  testWidgets('00631L lab shows non-advice status summary', (tester) async {
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _scrollUntilTextVisible(tester, '00631L 狀態總結');
+    expect(find.text('00631L 狀態總結'), findsOneWidget);
+    expect(find.textContaining('非買賣建議'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('00631L lab shows daily holdings history when available',
       (tester) async {
     await _pumpLab(tester, _HistoryFixture00631LRepository());
@@ -177,7 +186,7 @@ void main() {
     );
 
     await _scrollUntilTextVisible(tester, '折溢價狀態');
-    expect(find.text('資料可能過期'), findsOneWidget);
+    expect(find.text('資料可能過期'), findsWidgets);
     expect(find.textContaining('即時淨值資料可能過期'), findsOneWidget);
     expect(find.textContaining('非買賣建議'), findsWidgets);
     _expectNoTradingActionText();
