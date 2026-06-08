@@ -37,6 +37,7 @@ v1.0 live sources:
 - Holdings history polish v1.16: `/00631l-lab` adds a recent 7-row holdings summary plus day-over-day and first-to-latest change columns for key official holdings history metrics.
 - CSV export v1.17: history export includes exposure columns, source metadata, row counts, source history range, and `00631l_history_export_metadata.json`.
 - Release check v1.18: `scripts/00631l_release_check.cmd` runs env check, Flutter validation, backend tests, daily cycle, export, smoke, wording scan, and git diff check in one command.
+- Daily usage v1.19: `docs/00631l_daily_usage.md` gives the daily startup, collection, export, status review, and fallback interpretation flow.
 
 Local backend env:
 
@@ -118,6 +119,12 @@ Release checklist:
 
 ```text
 docs/00631l_release_checklist.md
+```
+
+Daily usage guide:
+
+```text
+docs/00631l_daily_usage.md
 ```
 
 Full local validation wrapper:

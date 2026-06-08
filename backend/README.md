@@ -51,6 +51,8 @@ scripts\00631l_check_env.cmd
 
 Release checklist: `docs/00631l_release_checklist.md`.
 
+Daily usage guide: `docs/00631l_daily_usage.md`.
+
 ## Environment variables
 
 See `backend/.env.example` for the deployable template.
@@ -200,6 +202,16 @@ scripts\00631l_release_check.cmd
 ```
 
 The wrapper runs env check, Flutter analyze/test/build, backend tests, daily cycle, export, live smoke, forbidden wording scan, and `git diff --check`. It returns exit code `1` only for failures. WARN is used for expected local/off-hours conditions such as missing local `.env` while fallback mode is still operational.
+
+## v1.19 daily usage guide
+
+Daily operation is documented in:
+
+```text
+docs/00631l_daily_usage.md
+```
+
+The guide covers first setup, backend startup, Flutter live proxy startup, daily cycle, operations/status review, holdings history, CSV export, smoke WARN review, backend-down recovery, `.env` setup, and source status definitions. It keeps the scope limited to data status and does not change backend behavior.
 
 ## v1.13 local startup checks
 
