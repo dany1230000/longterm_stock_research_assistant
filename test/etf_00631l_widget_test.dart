@@ -21,6 +21,27 @@ void main() {
     expect(find.textContaining('mock'), findsWidgets);
   });
 
+  testWidgets('00631L lab remains readable on phone width', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    expect(find.textContaining('twse_a_k_json'), findsWidgets);
+    expect(find.textContaining('mock'), findsWidgets);
+
+    await _scrollUntilTextVisible(tester, 'daily collector');
+    expect(find.text('daily collector'), findsOneWidget);
+
+    await _scrollUntilTextVisible(tester, 'sourceStatus mock');
+    expect(find.text('sourceStatus mock'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('00631L lab shows fallback error state', (tester) async {
     await _pumpLab(tester, _Error00631LRepository());
 

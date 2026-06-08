@@ -129,6 +129,12 @@ Flutter 頁面 `/00631l-lab` 會顯示每日內容物歷史。主要欄位：
 
 如果尚未累積 history，頁面會顯示尚無歷史紀錄，不會把 mock 當成 official history。
 
+## 手機瀏覽器使用
+
+手機寬度下，summary、operations status 與 holdings history 摘要會改成單欄卡片，表格保留橫向捲動。sourceStatus 與 sourceContract 會以短 chip 顯示，避免擠壓主要數字。
+
+若表格欄位較多，請左右滑動表格區塊；這不代表資料缺失。
+
 ## CSV 匯出
 
 手動匯出：

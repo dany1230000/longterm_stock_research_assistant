@@ -40,6 +40,7 @@ v1.0 live sources:
 - Daily usage v1.19: `docs/00631l_daily_usage.md` gives the daily startup, collection, export, status review, and fallback interpretation flow.
 - Final daily-use release v1.20: `docs/00631l_v1_20_final_summary.md` summarizes the completed daily-use scope, live/fallback sources, scripts, endpoints, tests, and limitations.
 - Entry experience v1.21: Dashboard now has a clear `00631L 正二研究室` entry and the live frontend startup script prints the direct `/#/00631l-lab` route.
+- Mobile layout v1.22: `/00631l-lab` uses compact one-column cards and horizontal tables on phone-width screens.
 
 Local backend env:
 

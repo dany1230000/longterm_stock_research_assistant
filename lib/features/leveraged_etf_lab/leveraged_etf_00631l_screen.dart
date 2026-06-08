@@ -243,13 +243,14 @@ class _SummaryGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 900;
+        final isCompact = constraints.maxWidth < 520;
         return GridView.count(
-          crossAxisCount: isWide ? 5 : 2,
+          crossAxisCount: isCompact ? 1 : (isWide ? 5 : 2),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
-          childAspectRatio: isWide ? 1.35 : 1.05,
+          childAspectRatio: isCompact ? 2.65 : (isWide ? 1.35 : 1.05),
           children: cards,
         );
       },
@@ -338,13 +339,14 @@ class _OperationsStatusSection extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 720;
+              final isCompact = constraints.maxWidth < 520;
               return GridView.count(
-                crossAxisCount: isWide ? 4 : 2,
+                crossAxisCount: isCompact ? 1 : (isWide ? 4 : 2),
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
-                childAspectRatio: isWide ? 1.15 : 1.0,
+                childAspectRatio: isCompact ? 2.45 : (isWide ? 1.15 : 1.0),
                 children: [
                   MetricTile(
                     label: 'holdings history',
@@ -433,13 +435,14 @@ class _TodayDataStatusSection extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 860;
+              final isCompact = constraints.maxWidth < 520;
               return GridView.count(
-                crossAxisCount: isWide ? 4 : 2,
+                crossAxisCount: isCompact ? 1 : (isWide ? 4 : 2),
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
-                childAspectRatio: isWide ? 1.18 : 1.0,
+                childAspectRatio: isCompact ? 2.45 : (isWide ? 1.18 : 1.0),
                 children: [
                   MetricTile(
                     label: 'holdings 更新',
@@ -546,28 +549,41 @@ class _CommandLine extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 116,
-              child: Text(
-                label,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w800,
-                ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final labelText = Text(
+              label,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w800,
               ),
-            ),
-            Expanded(
-              child: SelectableText(
-                command,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontFamily: 'monospace',
-                ),
+            );
+            final commandText = SelectableText(
+              command,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontFamily: 'monospace',
               ),
-            ),
-          ],
+            );
+
+            if (constraints.maxWidth < 420) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  labelText,
+                  const SizedBox(height: 6),
+                  commandText,
+                ],
+              );
+            }
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(width: 116, child: labelText),
+                Expanded(child: commandText),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -1143,13 +1159,14 @@ class _HoldingsHistorySummaryCards extends StatelessWidget {
         LayoutBuilder(
           builder: (context, constraints) {
             final isWide = constraints.maxWidth > 860;
+            final isCompact = constraints.maxWidth < 520;
             return GridView.count(
-              crossAxisCount: isWide ? 4 : 2,
+              crossAxisCount: isCompact ? 1 : (isWide ? 4 : 2),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
-              childAspectRatio: isWide ? 1.16 : 1.0,
+              childAspectRatio: isCompact ? 2.45 : (isWide ? 1.16 : 1.0),
               children: [
                 MetricTile(
                   label: '最近筆數',
@@ -1784,33 +1801,36 @@ class _HorizontalTable extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: DataTable(
-        headingRowHeight: 40,
-        dataRowMinHeight: 42,
-        dataRowMaxHeight: 56,
-        columns: [
-          for (final column in columns)
-            DataColumn(
-              label: Text(
-                column,
-                style: const TextStyle(fontWeight: FontWeight.w800),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minWidth: columns.length * 118),
+        child: DataTable(
+          headingRowHeight: 40,
+          dataRowMinHeight: 42,
+          dataRowMaxHeight: 56,
+          columns: [
+            for (final column in columns)
+              DataColumn(
+                label: Text(
+                  column,
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
               ),
-            ),
-        ],
-        rows: [
-          for (final row in rows)
-            DataRow(
-              cells: [
-                for (final cell in row)
-                  DataCell(
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 220),
-                      child: Text(cell, overflow: TextOverflow.ellipsis),
+          ],
+          rows: [
+            for (final row in rows)
+              DataRow(
+                cells: [
+                  for (final cell in row)
+                    DataCell(
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 220),
+                        child: Text(cell, overflow: TextOverflow.ellipsis),
+                      ),
                     ),
-                  ),
-              ],
-            ),
-        ],
+                ],
+              ),
+          ],
+        ),
       ),
     );
   }
