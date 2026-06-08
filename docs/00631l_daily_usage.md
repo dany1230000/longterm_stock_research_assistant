@@ -311,3 +311,9 @@ scripts\00631l_start_frontend_live.cmd
 ```cmd
 scripts\00631l_release_check.cmd
 ```
+
+常見問題可先看：
+
+```text
+docs/00631l_troubleshooting.md
+```
