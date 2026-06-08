@@ -57,10 +57,23 @@ Premium/discount status on the Flutter page uses normalized intraday NAV fields:
 Smoke script:
 
 ```powershell
-py backend\scripts\smoke_00631l_live.py
+.\scripts\00631l_daily_smoke.ps1
 ```
 
-The `[overall]` block reports `PASS`, `WARN`, or `FAIL`. Freshness older than 60 seconds is a `WARN` for manual review and is expected outside regular trading hours. The live smoke remains manual and is not part of the default unit test suite.
+The wrapper loads `backend\.env` and then calls `backend\scripts\smoke_00631l_live.py`. The `[overall]` block reports `PASS`, `WARN`, or `FAIL`. Freshness older than 60 seconds is a `WARN` for manual review and is expected outside regular trading hours. The live smoke remains manual and is not part of the default unit test suite.
+
+v1.6 daily runbook:
+
+```text
+docs/00631l_v1_6_daily_runbook.md
+```
+
+If local PowerShell script execution is disabled, use the CMD wrappers:
+
+```cmd
+scripts\00631l_daily_smoke.cmd
+scripts\00631l_release_validate.cmd
+```
 
 ## Intraday NAV source update - 2026-06-08
 

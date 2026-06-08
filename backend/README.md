@@ -67,10 +67,10 @@ Manual live smoke:
 
 ```powershell
 cd C:\dev\longterm_stock_research_assistant
-py backend\scripts\smoke_00631l_live.py
+.\scripts\00631l_daily_smoke.ps1
 ```
 
-The smoke script is not part of the default unit test suite. It performs network checks against Yuanta and the optional intraday NAV URL, so failures should be reviewed manually instead of breaking CI.
+The wrapper loads `backend\.env` and then calls `backend\scripts\smoke_00631l_live.py`. The smoke script is not part of the default unit test suite. It performs network checks against Yuanta and the optional intraday NAV URL, so failures should be reviewed manually instead of breaking CI.
 
 Smoke output includes an `[overall]` block:
 
@@ -134,3 +134,15 @@ GET /api/etf/00631l/intraday-nav/history/summary?date=YYYY-MM-DD
 The summary endpoint returns the sample count, highest premium, lowest discount, average premium/discount, first data time, last data time, latest market price, and latest estimated NAV.
 
 If no intraday history exists yet, the endpoints return `sourceStatus: unavailable` with an empty `items` list. They do not fabricate official intraday history from mock data.
+
+## v1.6 daily workflow
+
+Daily runbook:
+
+```text
+docs/00631l_v1_6_daily_runbook.md
+```
+
+Use `.\backend\run_dev.ps1` for local backend startup. Use `.\scripts\00631l_daily_smoke.ps1` for daily live source observation.
+
+If local PowerShell script execution is disabled, use `scripts\00631l_daily_smoke.cmd` for smoke observation and `scripts\00631l_release_validate.cmd` for the full validation sequence.

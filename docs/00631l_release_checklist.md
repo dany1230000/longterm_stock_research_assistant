@@ -65,8 +65,31 @@ py -m unittest discover -s backend\tests
 py backend\scripts\smoke_00631l_live.py
 ```
 
+Equivalent v1.6 wrapper:
+
+```powershell
+.\scripts\00631l_release_validate.ps1
+```
+
+Daily smoke wrapper that loads `backend\.env`:
+
+```powershell
+.\scripts\00631l_daily_smoke.ps1
+```
+
+If local PowerShell script execution is disabled:
+
+```cmd
+scripts\00631l_release_validate.cmd
+scripts\00631l_daily_smoke.cmd
+```
+
 Smoke script notes:
 
 - Intraday freshness older than 60 seconds is a `WARN`, not an automatic `FAIL`.
 - Holdings trade date not matching the latest expected trading day is a `WARN`, not an automatic `FAIL`.
 - Weekend, night, or market-closed checks may warn because intraday data is not actively updating.
+
+## v1.6 Daily Operation
+
+Use `docs/00631l_v1_6_daily_runbook.md` for the daily backend, frontend live proxy, smoke observation, and web build flow.

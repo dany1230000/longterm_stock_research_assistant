@@ -24,6 +24,7 @@ v1.0 live sources:
 - Holdings change notices v1.3: compares the latest two official holdings history rows and shows data-status reminders for TX, TSMC, cash/margin, and exposure changes. These reminders are not trading advice.
 - Intraday premium/discount history v1.4: backend stores official intraday NAV samples locally and the app shows today's highest, lowest, and average premium/discount. This is not a trading signal.
 - Status summary v1.5: combines official holdings freshness, intraday NAV status, premium/discount state, holdings change notices, and intraday history into a non-advice data health summary.
+- Daily workflow v1.6: `docs/00631l_v1_6_daily_runbook.md` documents backend startup, live proxy mode, smoke checks, and web build flow. `scripts/00631l_release_validate.ps1` runs the release validation sequence.
 
 Local backend env:
 
@@ -47,7 +48,7 @@ flutter run -d chrome --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=006
 Manual smoke:
 
 ```powershell
-py backend\scripts\smoke_00631l_live.py
+.\scripts\00631l_daily_smoke.ps1
 ```
 
 Holdings history is populated by calling the backend holdings endpoint after the backend is running:
@@ -63,6 +64,18 @@ Release checklist:
 
 ```text
 docs/00631l_release_checklist.md
+```
+
+Full local validation wrapper:
+
+```powershell
+.\scripts\00631l_release_validate.ps1
+```
+
+If PowerShell script execution is disabled locally, use:
+
+```cmd
+scripts\00631l_release_validate.cmd
 ```
 
 Official daily holdings are daily snapshots. Intraday NAV is only market price, estimated NAV, premium/discount, and timestamps. If live proxy or intraday URLs are unavailable, the app must show `mock`, `cached`, `unavailable`, or `error` state clearly and must not label fallback data as official.
