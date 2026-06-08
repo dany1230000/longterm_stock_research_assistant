@@ -1084,6 +1084,10 @@ class _HoldingsHistorySection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
+          _HoldingsHistorySummaryCards(summary: history.trendSummary()),
+          const SizedBox(height: 12),
+          _HoldingsHistoryChangeTable(summary: history.trendSummary()),
+          const SizedBox(height: 12),
           _HoldingsHistoryTrend(points: history.points),
           const SizedBox(height: 12),
           _HorizontalTable(
@@ -1113,6 +1117,142 @@ class _HoldingsHistorySection extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _HoldingsHistorySummaryCards extends StatelessWidget {
+  const _HoldingsHistorySummaryCards({required this.summary});
+
+  final EtfHoldingsHistoryTrendSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final latest = summary.latest;
+    final previous = summary.previous;
+    final recentCount = summary.recentSeven.length;
+    final subtitle = previous == null
+        ? 'day-over-day n/a'
+        : 'day-over-day ${formatTaiwanDate(previous.tradeDate)}';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('最近 7 日摘要', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 8),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 860;
+            return GridView.count(
+              crossAxisCount: isWide ? 4 : 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: isWide ? 1.16 : 1.0,
+              children: [
+                MetricTile(
+                  label: '最近筆數',
+                  value: recentCount.toString(),
+                  caption: latest == null
+                      ? '尚無 history'
+                      : formatTaiwanDate(latest.tradeDate),
+                  icon: Icons.calendar_view_week_outlined,
+                ),
+                MetricTile(
+                  label: 'TX 權重',
+                  value: latest == null
+                      ? 'n/a'
+                      : formatNullablePercent(latest.txWeightPct),
+                  caption: subtitle,
+                  icon: Icons.show_chart_outlined,
+                ),
+                MetricTile(
+                  label: '台積電權重',
+                  value: latest == null
+                      ? 'n/a'
+                      : formatNullablePercent(latest.tsmcWeightPct),
+                  caption: subtitle,
+                  icon: Icons.memory_outlined,
+                ),
+                MetricTile(
+                  label: '現金/保證金',
+                  value: latest == null
+                      ? 'n/a'
+                      : formatNullablePercent(latest.cashAndMarginPct),
+                  caption: subtitle,
+                  icon: Icons.account_balance_wallet_outlined,
+                ),
+                MetricTile(
+                  label: '股票資產 %',
+                  value: latest == null
+                      ? 'n/a'
+                      : formatNullablePercent(latest.stockExposurePct),
+                  caption: subtitle,
+                  icon: Icons.pie_chart_outline,
+                ),
+                MetricTile(
+                  label: '期貨資產 %',
+                  value: latest == null
+                      ? 'n/a'
+                      : formatNullablePercent(latest.futuresExposurePct),
+                  caption: subtitle,
+                  icon: Icons.stacked_line_chart_outlined,
+                ),
+                MetricTile(
+                  label: 'NAV',
+                  value: latest == null
+                      ? 'n/a'
+                      : latest.navPerUnit.toStringAsFixed(2),
+                  caption: subtitle,
+                  icon: Icons.paid_outlined,
+                ),
+                MetricTile(
+                  label: '發行單位數',
+                  value: latest == null
+                      ? 'n/a'
+                      : formatInteger(latest.outstandingUnits),
+                  caption: subtitle,
+                  icon: Icons.confirmation_number_outlined,
+                ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _HoldingsHistoryChangeTable extends StatelessWidget {
+  const _HoldingsHistoryChangeTable({required this.summary});
+
+  final EtfHoldingsHistoryTrendSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    if (summary.changeLines.isEmpty) {
+      return const Text('尚無變化資料');
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('變化摘要', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 8),
+        _HorizontalTable(
+          columns: const ['項目', '最新', '日變化', '首末變化'],
+          rows: [
+            for (final line in summary.changeLines)
+              [
+                _historyMetricLabel(line.key),
+                _historyMetricValue(line),
+                _historyMetricDelta(line),
+                _historyMetricRangeDelta(line),
+              ],
+          ],
+        ),
+      ],
     );
   }
 }
@@ -1773,6 +1913,76 @@ String _monthDayLabel(DateTime date) {
   final month = date.month.toString().padLeft(2, '0');
   final day = date.day.toString().padLeft(2, '0');
   return '$month/$day';
+}
+
+String _historyMetricLabel(String key) {
+  switch (key) {
+    case 'txWeightPct':
+      return 'TX 權重';
+    case 'tsmcWeightPct':
+      return '台積電權重';
+    case 'stockExposurePct':
+      return '股票資產 %';
+    case 'futuresExposurePct':
+      return '期貨資產 %';
+    case 'cashAndMarginPct':
+      return '現金/保證金 %';
+    case 'navPerUnit':
+      return 'NAV';
+    case 'outstandingUnits':
+      return '發行單位數';
+    default:
+      return key;
+  }
+}
+
+String _historyMetricValue(EtfHoldingsHistoryChangeLine line) {
+  if (line.key == 'outstandingUnits') {
+    return formatInteger(line.latestValue.round());
+  }
+  if (line.isPercent) {
+    return formatNullablePercent(line.latestValue);
+  }
+  return line.latestValue.toStringAsFixed(2);
+}
+
+String _historyMetricDelta(EtfHoldingsHistoryChangeLine line) {
+  return _historyMetricDeltaValue(line, line.dayOverDayChange);
+}
+
+String _historyMetricRangeDelta(EtfHoldingsHistoryChangeLine line) {
+  return _historyMetricDeltaValue(line, line.firstToLatestChange);
+}
+
+String _historyMetricDeltaValue(
+  EtfHoldingsHistoryChangeLine line,
+  double? value,
+) {
+  if (value == null) {
+    return 'n/a';
+  }
+  if (line.key == 'outstandingUnits') {
+    return _signedInteger(value.round());
+  }
+  if (line.isPercent) {
+    return _signedPercentPoints(value);
+  }
+  return _signedNumber(value);
+}
+
+String _signedPercentPoints(double value) {
+  final prefix = value > 0 ? '+' : '';
+  return '$prefix${value.toStringAsFixed(2)} pp';
+}
+
+String _signedNumber(double value) {
+  final prefix = value > 0 ? '+' : '';
+  return '$prefix${value.toStringAsFixed(2)}';
+}
+
+String _signedInteger(int value) {
+  final prefix = value > 0 ? '+' : '';
+  return '$prefix${formatInteger(value)}';
 }
 
 double _premiumTrendMinY(List<FlSpot> spots) {

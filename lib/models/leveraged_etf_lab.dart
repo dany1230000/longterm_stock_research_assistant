@@ -421,6 +421,145 @@ class EtfHoldingsHistory {
   final String? errorMessage;
 
   bool get hasData => points.isNotEmpty;
+
+  EtfHoldingsHistoryTrendSummary trendSummary({int limit = 30}) {
+    return EtfHoldingsHistoryTrendSummary.fromPoints(points, limit: limit);
+  }
+}
+
+class EtfHoldingsHistoryTrendSummary {
+  const EtfHoldingsHistoryTrendSummary({
+    required this.points,
+    required this.recentSeven,
+    required this.latest,
+    required this.previous,
+    required this.first,
+    required this.changeLines,
+  });
+
+  factory EtfHoldingsHistoryTrendSummary.fromPoints(
+    List<EtfHoldingsHistoryPoint> points, {
+    int limit = 30,
+  }) {
+    final ordered = [...points]
+      ..sort((a, b) => b.tradeDate.compareTo(a.tradeDate));
+    final selected = ordered.take(limit).toList();
+    final latest = selected.isEmpty ? null : selected.first;
+    final previous = selected.length > 1 ? selected[1] : null;
+    final first = selected.isEmpty ? null : selected.last;
+    return EtfHoldingsHistoryTrendSummary(
+      points: selected,
+      recentSeven: ordered.take(7).toList(),
+      latest: latest,
+      previous: previous,
+      first: first,
+      changeLines: latest == null
+          ? const []
+          : [
+              _changeLine(
+                key: 'txWeightPct',
+                latest: latest,
+                previous: previous,
+                first: first,
+                valueOf: (point) => point.txWeightPct,
+                isPercent: true,
+              ),
+              _changeLine(
+                key: 'tsmcWeightPct',
+                latest: latest,
+                previous: previous,
+                first: first,
+                valueOf: (point) => point.tsmcWeightPct,
+                isPercent: true,
+              ),
+              _changeLine(
+                key: 'stockExposurePct',
+                latest: latest,
+                previous: previous,
+                first: first,
+                valueOf: (point) => point.stockExposurePct,
+                isPercent: true,
+              ),
+              _changeLine(
+                key: 'futuresExposurePct',
+                latest: latest,
+                previous: previous,
+                first: first,
+                valueOf: (point) => point.futuresExposurePct,
+                isPercent: true,
+              ),
+              _changeLine(
+                key: 'cashAndMarginPct',
+                latest: latest,
+                previous: previous,
+                first: first,
+                valueOf: (point) => point.cashAndMarginPct,
+                isPercent: true,
+              ),
+              _changeLine(
+                key: 'navPerUnit',
+                latest: latest,
+                previous: previous,
+                first: first,
+                valueOf: (point) => point.navPerUnit,
+                isPercent: false,
+              ),
+              _changeLine(
+                key: 'outstandingUnits',
+                latest: latest,
+                previous: previous,
+                first: first,
+                valueOf: (point) => point.outstandingUnits.toDouble(),
+                isPercent: false,
+              ),
+            ],
+    );
+  }
+
+  final List<EtfHoldingsHistoryPoint> points;
+  final List<EtfHoldingsHistoryPoint> recentSeven;
+  final EtfHoldingsHistoryPoint? latest;
+  final EtfHoldingsHistoryPoint? previous;
+  final EtfHoldingsHistoryPoint? first;
+  final List<EtfHoldingsHistoryChangeLine> changeLines;
+
+  bool get hasDayOverDay => previous != null;
+  bool get hasFirstToLatest =>
+      latest != null && first != null && latest != first;
+}
+
+class EtfHoldingsHistoryChangeLine {
+  const EtfHoldingsHistoryChangeLine({
+    required this.key,
+    required this.latestValue,
+    required this.dayOverDayChange,
+    required this.firstToLatestChange,
+    required this.isPercent,
+  });
+
+  final String key;
+  final double latestValue;
+  final double? dayOverDayChange;
+  final double? firstToLatestChange;
+  final bool isPercent;
+}
+
+EtfHoldingsHistoryChangeLine _changeLine({
+  required String key,
+  required EtfHoldingsHistoryPoint latest,
+  required EtfHoldingsHistoryPoint? previous,
+  required EtfHoldingsHistoryPoint? first,
+  required double Function(EtfHoldingsHistoryPoint point) valueOf,
+  required bool isPercent,
+}) {
+  final latestValue = valueOf(latest);
+  return EtfHoldingsHistoryChangeLine(
+    key: key,
+    latestValue: latestValue,
+    dayOverDayChange: previous == null ? null : latestValue - valueOf(previous),
+    firstToLatestChange: first == null ? null : latestValue - valueOf(first),
+    isPercent: isPercent,
+  );
 }
 
 enum HoldingChangeNoticeLevel {

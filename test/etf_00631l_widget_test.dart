@@ -96,13 +96,17 @@ void main() {
     expect(find.text('每日內容物歷史'), findsOneWidget);
     expect(find.text('權重趨勢'), findsOneWidget);
     expect(find.text('TX權重'), findsOneWidget);
-    expect(find.text('TX 權重'), findsOneWidget);
+    expect(find.text('TX 權重'), findsWidgets);
     expect(find.text('台積電權重'), findsWidgets);
     expect(find.text('現金與保證金'), findsWidgets);
-    expect(find.text('160.20%'), findsOneWidget);
-    expect(find.text('36.80%'), findsOneWidget);
-    expect(find.text('35.12'), findsOneWidget);
-    expect(find.text('5,200,000,000'), findsOneWidget);
+    expect(find.text('最近 7 日摘要'), findsOneWidget);
+    expect(find.text('變化摘要'), findsOneWidget);
+    expect(find.text('TX 權重'), findsWidgets);
+    expect(find.text('+6.00 pp'), findsWidgets);
+    expect(find.text('160.20%'), findsWidgets);
+    expect(find.text('36.80%'), findsWidgets);
+    expect(find.text('35.12'), findsWidgets);
+    expect(find.text('5,200,000,000'), findsWidgets);
   });
 
   testWidgets('00631L lab shows empty daily holdings history state',
