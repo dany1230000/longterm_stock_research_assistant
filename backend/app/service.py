@@ -305,6 +305,7 @@ class Etf00631LService:
         expected = [
             export_dir / "00631l_holdings_history_summary.csv",
             export_dir / "00631l_intraday_nav_history.csv",
+            export_dir / "00631l_history_export_metadata.json",
         ]
         files = []
         latest_path: Path | None = None
@@ -325,6 +326,7 @@ class Etf00631LService:
                 }
             )
         available = any(file["exists"] for file in files)
+        metadata = _read_json_file(export_dir / "00631l_history_export_metadata.json")
         return {
             "sourceStatus": "cached" if available else "unavailable",
             "sourceContract": "00631l_history_export_status",
@@ -332,6 +334,10 @@ class Etf00631LService:
             "outputDir": str(export_dir),
             "latestFile": str(latest_path) if latest_path else None,
             "latestUpdatedAt": _mtime_iso(latest_mtime) if latest_path else None,
+            "metadataPath": str(export_dir / "00631l_history_export_metadata.json"),
+            "exportedAt": metadata.get("exportedAt"),
+            "rows": metadata.get("totalRowCount"),
+            "sourceHistoryRange": metadata.get("sourceHistoryRange"),
             "files": files,
             "errorMessage": None if available else "No local CSV export files found.",
         }
@@ -433,6 +439,16 @@ def _mtime_iso(mtime: float | None) -> str | None:
 def _path_parent_ready(path_text: str) -> bool:
     path = Path(path_text)
     return path.exists() or path.parent.exists()
+
+
+def _read_json_file(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        decoded = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return decoded if isinstance(decoded, dict) else {}
 
 
 service = Etf00631LService()

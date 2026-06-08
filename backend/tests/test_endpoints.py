@@ -233,6 +233,13 @@ Custodian Fee
             export_dir.mkdir()
             export_file = export_dir / "00631l_holdings_history_summary.csv"
             export_file.write_text("tradeDate,navPerUnit\n2026-06-05,36.56\n", encoding="utf-8")
+            metadata_file = export_dir / "00631l_history_export_metadata.json"
+            metadata_file.write_text(
+                '{"exportedAt":"2026-06-08T10:10:00+00:00","totalRowCount":2,'
+                '"sourceHistoryRange":{"holdingsStartDate":"2026-06-05",'
+                '"holdingsEndDate":"2026-06-08"}}',
+                encoding="utf-8",
+            )
             status_path = Path(temp_dir) / "00631l_daily_cycle_status.json"
             status_path.write_text(
                 '{"overallStatus":"PASS","startedAt":"2026-06-08T10:00:00+00:00",'
@@ -276,6 +283,11 @@ Custodian Fee
             self.assertIn("missingKeys", payload["config"])
             self.assertTrue(payload["export"]["available"])
             self.assertEqual(payload["export"]["sourceStatus"], "cached")
+            self.assertEqual(payload["export"]["rows"], 2)
+            self.assertEqual(
+                payload["export"]["sourceHistoryRange"]["holdingsEndDate"],
+                "2026-06-08",
+            )
             self.assertEqual(payload["dailyCycle"]["overallStatus"], "PASS")
             self.assertEqual(payload["dailyCycle"]["sourceStatus"], "cached")
             self.assertEqual(payload["statusSummary"]["export"], "cached")

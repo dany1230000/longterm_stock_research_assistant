@@ -38,6 +38,12 @@ def main() -> int:
         output_dir=args.output_dir,
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+    print(
+        "[summary] "
+        f"holdingsRows={payload['holdingsRowCount']} "
+        f"intradayRows={payload['intradayRowCount']} "
+        f"metadata={payload['metadataOutputPath']}"
+    )
     return 0
 
 

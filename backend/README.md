@@ -226,6 +226,11 @@ Generated files:
 
 - `00631l_holdings_history_summary.csv`
 - `00631l_intraday_nav_history.csv`
+- `00631l_history_export_metadata.json`
+
+Holdings CSV fields include `tradeDate`, `navPerUnit`, `fundNetAssetValue`, `outstandingUnits`, `txWeightPct`, `tsmcWeightPct`, `stockExposurePct`, `futuresExposurePct`, `cashAndMarginPct`, `sourceStatus`, `sourceUrl`, `fetchedAt`, and `sourceHash`.
+
+The metadata JSON includes `exportedAt`, row counts, source history range, and output paths. `operations/status` reports the latest export file and metadata when available.
 
 `backend/exports/` is ignored by git. The exporter only reads local JSONL history; it does not fetch live sources and does not fabricate official history.
 

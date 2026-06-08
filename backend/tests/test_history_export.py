@@ -56,11 +56,24 @@ class HistoryExportTests(unittest.TestCase):
             self.assertEqual(holdings_rows[0]["tradeDate"], "2026-06-05")
             self.assertEqual(holdings_rows[0]["txWeightPct"], "161.53")
             self.assertEqual(holdings_rows[0]["tsmcWeightPct"], "37.44")
+            self.assertIn("stockExposurePct", holdings_rows[0])
+            self.assertIn("futuresExposurePct", holdings_rows[0])
+            self.assertIn("cashAndMarginPct", holdings_rows[0])
+            self.assertGreater(float(holdings_rows[0]["stockExposurePct"]), 0)
+            self.assertGreater(float(holdings_rows[0]["futuresExposurePct"]), 0)
+            self.assertGreater(float(holdings_rows[0]["cashAndMarginPct"]), 0)
 
             intraday_rows = _read_csv(Path(payload["intradayOutputPath"]))
             self.assertEqual(intraday_rows[0]["dataDate"], "2026-06-08")
             self.assertEqual(intraday_rows[0]["sourceContract"], "twse_a_k_json")
             self.assertEqual(intraday_rows[0]["premiumDiscountPct"], "0.75")
+            metadata_path = Path(payload["metadataOutputPath"])
+            self.assertTrue(metadata_path.exists())
+            self.assertEqual(payload["totalRowCount"], 2)
+            self.assertEqual(
+                payload["sourceHistoryRange"]["holdingsStartDate"],
+                "2026-06-05",
+            )
 
 
 def _read_csv(path: Path) -> list[dict[str, str]]:

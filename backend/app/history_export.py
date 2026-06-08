@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,9 @@ HOLDINGS_EXPORT_COLUMNS = [
     "payable",
     "txWeightPct",
     "tsmcWeightPct",
+    "stockExposurePct",
+    "futuresExposurePct",
+    "cashAndMarginPct",
     "sourceStatus",
     "sourceUrl",
     "fetchedAt",
@@ -56,21 +60,35 @@ def export_00631l_history(
 
     holdings_output = output / "00631l_holdings_history_summary.csv"
     intraday_output = output / "00631l_intraday_nav_history.csv"
+    metadata_output = output / "00631l_history_export_metadata.json"
 
     _write_csv(holdings_output, HOLDINGS_EXPORT_COLUMNS, holdings_rows)
     _write_csv(intraday_output, INTRADAY_EXPORT_COLUMNS, intraday_rows)
 
-    return {
+    exported_at = _utc_now_iso()
+    metadata = {
         "sourceStatus": "cached" if holdings_rows or intraday_rows else "unavailable",
         "sourceContract": "00631l_history_csv_export",
+        "exportedAt": exported_at,
         "holdingsInputPath": str(holdings_history_path),
         "intradayInputPath": str(intraday_history_path),
         "outputDir": str(output),
         "holdingsOutputPath": str(holdings_output),
         "intradayOutputPath": str(intraday_output),
+        "metadataOutputPath": str(metadata_output),
         "holdingsRowCount": len(holdings_rows),
         "intradayRowCount": len(intraday_rows),
+        "totalRowCount": len(holdings_rows) + len(intraday_rows),
+        "sourceHistoryRange": _source_history_range(
+            holdings_rows=holdings_rows,
+            intraday_rows=intraday_rows,
+        ),
     }
+    metadata_output.write_text(
+        json.dumps(metadata, ensure_ascii=False, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+    return metadata
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -109,6 +127,12 @@ def _holdings_row(record: dict[str, Any]) -> dict[str, Any]:
         if isinstance(record.get("cashBreakdown"), dict)
         else _cash_breakdown(record.get("cashHoldings"))
     )
+    fund_nav = _float(record.get("fundNetAssetValue"))
+    cash_and_margin = (
+        _float(cash_breakdown.get("cash"))
+        + _float(cash_breakdown.get("margin"))
+        + _float(cash_breakdown.get("repo"))
+    )
     return {
         "tradeDate": record.get("tradeDate"),
         "fundNetAssetValue": record.get("fundNetAssetValue"),
@@ -123,6 +147,9 @@ def _holdings_row(record: dict[str, Any]) -> dict[str, Any]:
         "payable": cash_breakdown.get("payable"),
         "txWeightPct": _holding_weight(record.get("futuresHoldings"), "TX"),
         "tsmcWeightPct": _holding_weight(record.get("stockHoldings"), "2330"),
+        "stockExposurePct": _pct(_float(asset_values.get("stock")), fund_nav),
+        "futuresExposurePct": _pct(_float(asset_values.get("futures")), fund_nav),
+        "cashAndMarginPct": _pct(cash_and_margin, fund_nav),
         "sourceStatus": record.get("sourceStatus"),
         "sourceUrl": record.get("sourceUrl"),
         "fetchedAt": record.get("fetchedAt"),
@@ -172,6 +199,35 @@ def _holding_weight(lines_value: Any, code: str) -> float:
         for line in lines
         if isinstance(line, dict) and str(line.get("code") or "") == code
     )
+
+
+def _source_history_range(
+    *,
+    holdings_rows: list[dict[str, Any]],
+    intraday_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    holding_dates = sorted(
+        str(row.get("tradeDate") or "") for row in holdings_rows if row.get("tradeDate")
+    )
+    intraday_times = sorted(
+        str(row.get("dataTime") or "") for row in intraday_rows if row.get("dataTime")
+    )
+    return {
+        "holdingsStartDate": holding_dates[0] if holding_dates else None,
+        "holdingsEndDate": holding_dates[-1] if holding_dates else None,
+        "intradayStartDataTime": intraday_times[0] if intraday_times else None,
+        "intradayEndDataTime": intraday_times[-1] if intraday_times else None,
+    }
+
+
+def _pct(value: float, denominator: float) -> float:
+    if denominator == 0:
+        return 0.0
+    return value / denominator * 100
+
+
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
 def _float(value: Any) -> float:
