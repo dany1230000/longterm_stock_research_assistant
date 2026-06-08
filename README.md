@@ -38,6 +38,7 @@ v1.0 live sources:
 - CSV export v1.17: history export includes exposure columns, source metadata, row counts, source history range, and `00631l_history_export_metadata.json`.
 - Release check v1.18: `scripts/00631l_release_check.cmd` runs env check, Flutter validation, backend tests, daily cycle, export, smoke, wording scan, and git diff check in one command.
 - Daily usage v1.19: `docs/00631l_daily_usage.md` gives the daily startup, collection, export, status review, and fallback interpretation flow.
+- Final daily-use release v1.20: `docs/00631l_v1_20_final_summary.md` summarizes the completed daily-use scope, live/fallback sources, scripts, endpoints, tests, and limitations.
 
 Local backend env:
 
@@ -125,6 +126,12 @@ Daily usage guide:
 
 ```text
 docs/00631l_daily_usage.md
+```
+
+Final v1.20 summary:
+
+```text
+docs/00631l_v1_20_final_summary.md
 ```
 
 Full local validation wrapper:
