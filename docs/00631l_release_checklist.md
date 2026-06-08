@@ -31,6 +31,7 @@ Check:
 - `sourceContract` is `twse_a_k_json` when TWSE succeeds.
 - If TWSE fails and Yuanta succeeds, `sourceContract` is `yuanta_inav`; do not label it as TWSE.
 - If no live or cached intraday data is available, endpoint returns `sourceStatus: unavailable` or `error`, not mock.
+- Holdings history trend chart renders from official/cached local history; it is hidden behind the existing empty-history state when no history exists.
 
 ## Frontend Live Proxy
 

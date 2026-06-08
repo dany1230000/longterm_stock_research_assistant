@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -674,6 +675,8 @@ class _HoldingsHistorySection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
+          _HoldingsHistoryTrend(points: history.points),
+          const SizedBox(height: 12),
           _HorizontalTable(
             columns: const [
               '日期',
@@ -701,6 +704,181 @@ class _HoldingsHistorySection extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _HoldingsHistoryTrend extends StatelessWidget {
+  const _HoldingsHistoryTrend({required this.points});
+
+  final List<EtfHoldingsHistoryPoint> points;
+
+  @override
+  Widget build(BuildContext context) {
+    final ordered = points.take(30).toList().reversed.toList();
+    final colorScheme = Theme.of(context).colorScheme;
+
+    if (ordered.length < 2) {
+      return _TrendFrame(
+        child: Text(
+          '需要至少 2 筆 official holdings history，才會顯示權重趨勢。',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      );
+    }
+
+    final txColor = colorScheme.primary;
+    final tsmcColor = colorScheme.tertiary;
+    final cashColor = Colors.teal.shade600;
+    final maxY = _trendMaxY(ordered);
+    final labelInterval = (ordered.length / 4).ceilToDouble().clamp(1, 30);
+
+    return _TrendFrame(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('權重趨勢', style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 4),
+          Text(
+            '依 official holdings history 顯示 TX、台積電、現金與保證金比例變化。',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 220,
+            child: LineChart(
+              LineChartData(
+                minX: 0,
+                maxX: (ordered.length - 1).toDouble(),
+                minY: 0,
+                maxY: maxY,
+                clipData: const FlClipData.all(),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: _trendInterval(maxY),
+                ),
+                borderData: FlBorderData(
+                  show: true,
+                  border: Border.all(color: colorScheme.outlineVariant),
+                ),
+                titlesData: FlTitlesData(
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 44,
+                      interval: _trendInterval(maxY),
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          '${value.toStringAsFixed(0)}%',
+                          style: Theme.of(context).textTheme.labelSmall,
+                        );
+                      },
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 34,
+                      interval: labelInterval.toDouble(),
+                      getTitlesWidget: (value, meta) {
+                        final index = value.round();
+                        if (index < 0 || index >= ordered.length) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Text(
+                            _monthDayLabel(ordered[index].tradeDate),
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                lineBarsData: [
+                  _trendLine(
+                    color: txColor,
+                    spots: _spots(ordered, (point) => point.txWeightPct),
+                  ),
+                  _trendLine(
+                    color: tsmcColor,
+                    spots: _spots(ordered, (point) => point.tsmcWeightPct),
+                  ),
+                  _trendLine(
+                    color: cashColor,
+                    spots: _spots(ordered, (point) => point.cashAndMarginPct),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            children: [
+              _LegendDot(color: txColor, label: 'TX 權重'),
+              _LegendDot(color: tsmcColor, label: '台積電權重'),
+              _LegendDot(color: cashColor, label: '現金與保證金'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TrendFrame extends StatelessWidget {
+  const _TrendFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(color: colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: child,
+      ),
+    );
+  }
+}
+
+class _LegendDot extends StatelessWidget {
+  const _LegendDot({required this.color, required this.label});
+
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(label),
+      ],
     );
   }
 }
@@ -1127,6 +1305,65 @@ class _InfoRow extends StatelessWidget {
       ),
     );
   }
+}
+
+LineChartBarData _trendLine({
+  required Color color,
+  required List<FlSpot> spots,
+}) {
+  return LineChartBarData(
+    spots: spots,
+    color: color,
+    barWidth: 2.5,
+    isCurved: false,
+    dotData: FlDotData(show: spots.length <= 8),
+    belowBarData: BarAreaData(show: false),
+  );
+}
+
+List<FlSpot> _spots(
+  List<EtfHoldingsHistoryPoint> points,
+  double Function(EtfHoldingsHistoryPoint point) valueOf,
+) {
+  return [
+    for (var index = 0; index < points.length; index += 1)
+      FlSpot(index.toDouble(), valueOf(points[index])),
+  ];
+}
+
+double _trendMaxY(List<EtfHoldingsHistoryPoint> points) {
+  var maxValue = 0.0;
+  for (final point in points) {
+    for (final value in [
+      point.txWeightPct,
+      point.tsmcWeightPct,
+      point.cashAndMarginPct,
+    ]) {
+      if (value > maxValue) {
+        maxValue = value;
+      }
+    }
+  }
+  if (maxValue <= 0) {
+    return 10;
+  }
+  return ((maxValue / 20).ceil() * 20).toDouble();
+}
+
+double _trendInterval(double maxY) {
+  if (maxY <= 40) {
+    return 10;
+  }
+  if (maxY <= 100) {
+    return 20;
+  }
+  return 40;
+}
+
+String _monthDayLabel(DateTime date) {
+  final month = date.month.toString().padLeft(2, '0');
+  final day = date.day.toString().padLeft(2, '0');
+  return '$month/$day';
 }
 
 class _ErrorLabState extends StatelessWidget {
