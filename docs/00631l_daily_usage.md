@@ -74,6 +74,8 @@ scripts\00631l_start_frontend_live.cmd
 /#/00631l-lab
 ```
 
+app 外殼仍叫「中長線研究助理」。若先看到 Dashboard，請點首頁的「00631L 正二研究室」入口，或在瀏覽器網址後方直接使用 `/#/00631l-lab`。
+
 如果 backend 暫時不可用，頁面應顯示 mock/error/fallback 狀態，而不是空白頁。
 
 ## 每天跑 daily cycle

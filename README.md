@@ -39,6 +39,7 @@ v1.0 live sources:
 - Release check v1.18: `scripts/00631l_release_check.cmd` runs env check, Flutter validation, backend tests, daily cycle, export, smoke, wording scan, and git diff check in one command.
 - Daily usage v1.19: `docs/00631l_daily_usage.md` gives the daily startup, collection, export, status review, and fallback interpretation flow.
 - Final daily-use release v1.20: `docs/00631l_v1_20_final_summary.md` summarizes the completed daily-use scope, live/fallback sources, scripts, endpoints, tests, and limitations.
+- Entry experience v1.21: Dashboard now has a clear `00631L 正二研究室` entry and the live frontend startup script prints the direct `/#/00631l-lab` route.
 
 Local backend env:
 

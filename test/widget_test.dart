@@ -78,4 +78,21 @@ void main() {
       expect(find.text(entry.value), findsWidgets);
     }
   });
+
+  testWidgets('dashboard has dedicated 00631L lab entry', (tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(child: LongTermStockResearchApp()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('00631L 正二研究室'), findsOneWidget);
+    expect(find.textContaining('00631L 專用研究室'), findsOneWidget);
+    expect(find.textContaining('/00631l-lab'), findsOneWidget);
+    expect(find.text('進入 00631L 正二研究室'), findsOneWidget);
+
+    await tester.tap(find.text('進入 00631L 正二研究室'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('twse_a_k_json'), findsWidgets);
+  });
 }

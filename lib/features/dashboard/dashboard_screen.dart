@@ -97,6 +97,8 @@ class _DashboardContent extends StatelessWidget {
           highRiskCount: highRiskCount,
         ),
         const SizedBox(height: 16),
+        const _Etf00631lLabEntrySection(),
+        const SizedBox(height: 16),
         LayoutBuilder(
           builder: (context, constraints) {
             final isWide = constraints.maxWidth > 760;
@@ -217,6 +219,46 @@ class _DashboardContent extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _Etf00631lLabEntrySection extends StatelessWidget {
+  const _Etf00631lLabEntrySection();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SectionCard(
+      title: '00631L 正二研究室',
+      subtitle: '這是中長線研究助理裡的 00631L 專用研究室，可直接查看官方內容物、折溢價狀態與日常資料狀態。',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '若每天只想看 00631L，請從這裡進入 /00631l-lab。此入口不改變原本 Dashboard 與其他研究頁面。',
+            style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
+          ),
+          const SizedBox(height: 12),
+          const Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              RiskChip(label: 'official holdings'),
+              RiskChip(label: 'intraday NAV'),
+              RiskChip(label: 'history CSV'),
+              RiskChip(label: '非買賣建議'),
+            ],
+          ),
+          const SizedBox(height: 14),
+          FilledButton.icon(
+            onPressed: () => context.push('/00631l-lab'),
+            icon: const Icon(Icons.science_outlined),
+            label: const Text('進入 00631L 正二研究室'),
+          ),
+        ],
+      ),
     );
   }
 }
