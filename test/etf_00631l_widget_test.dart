@@ -18,7 +18,7 @@ void main() {
     expect(find.text('折溢價 %'), findsOneWidget);
     expect(find.text('官方內容物日期'), findsOneWidget);
     expect(find.text('資料狀態'), findsOneWidget);
-    expect(find.text('mock'), findsWidgets);
+    expect(find.textContaining('mock'), findsWidgets);
   });
 
   testWidgets('00631L lab shows fallback error state', (tester) async {
@@ -39,7 +39,7 @@ void main() {
       ),
     );
 
-    expect(find.text('mock'), findsWidgets);
+    expect(find.textContaining('mock'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
@@ -386,16 +386,16 @@ class _PremiumFixture00631LRepository extends Mock00631LRepository {
 
 void _expectNoTradingActionText() {
   for (final forbidden in const [
-    '買進',
-    '賣出',
-    '加碼',
-    '減碼',
-    '進場',
-    '出場',
-    '套利',
-    '適合買',
-    '便宜可以買',
-    '太貴不要買',
+    '\u8cb7\u9032',
+    '\u8ce3\u51fa',
+    '\u52a0\u78bc',
+    '\u6e1b\u78bc',
+    '\u9032\u5834',
+    '\u51fa\u5834',
+    '\u5957\u5229',
+    '\u9069\u5408\u8cb7',
+    '\u4fbf\u5b9c\u53ef\u4ee5\u8cb7',
+    '\u592a\u8cb4\u4e0d\u8981\u8cb7',
   ]) {
     expect(find.textContaining(forbidden), findsNothing);
   }

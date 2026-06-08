@@ -31,6 +31,7 @@ v1.0 live sources:
 - Operations status v1.10: backend exposes local collector/history readiness at `/api/etf/00631l/operations/status`, and the lab page shows whether holdings history, intraday samples, and intraday NAV URLs are configured.
 - History export v1.11: `scripts/00631l_export_history.cmd` exports local holdings and intraday JSONL history into CSV files under `backend/exports/` for backup or offline review.
 - Daily cycle v1.12: `scripts/00631l_daily_cycle.cmd` runs collect, export, and live smoke in one command.
+- Local startup checks v1.13: `scripts/00631l_check_env.cmd`, `scripts/00631l_start_backend.cmd`, and `scripts/00631l_start_frontend_live.cmd` provide one-command local environment, backend, and live proxy startup flows.
 
 Local backend env:
 
@@ -45,10 +46,28 @@ Start backend:
 .\backend\run_dev.ps1
 ```
 
+CMD wrapper:
+
+```cmd
+scripts\00631l_start_backend.cmd
+```
+
 Start frontend live proxy:
 
 ```powershell
 flutter run -d chrome --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_PROXY_BASE_URL=http://127.0.0.1:8000
+```
+
+CMD wrapper:
+
+```cmd
+scripts\00631l_start_frontend_live.cmd
+```
+
+Check local environment:
+
+```cmd
+scripts\00631l_check_env.cmd
 ```
 
 Manual smoke:

@@ -13,6 +13,12 @@ $env:PATH="C:\src\flutter-clean\bin;$env:PATH"
 flutter --version
 ```
 
+Or run the local environment check:
+
+```cmd
+scripts\00631l_check_env.cmd
+```
+
 Create local backend env:
 
 ```powershell
@@ -30,6 +36,12 @@ cd C:\dev\longterm_stock_research_assistant
 ```
 
 The script loads `backend\.env` if present, then starts FastAPI at `http://127.0.0.1:8000`.
+
+CMD wrapper:
+
+```cmd
+scripts\00631l_start_backend.cmd
+```
 
 ## Daily Smoke
 
@@ -104,6 +116,12 @@ Use `--samples 1` for daily holdings collection. Use repeated intraday samples o
 
 ```powershell
 flutter run -d chrome --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_PROXY_BASE_URL=http://127.0.0.1:8000
+```
+
+CMD wrapper:
+
+```cmd
+scripts\00631l_start_frontend_live.cmd
 ```
 
 Open:

@@ -9,6 +9,12 @@ Scope: 00631L only. Do not connect TX live, expand to all leveraged ETFs, add tr
 - Confirm `backend\.env` does not contain secrets or local tokens.
 - Confirm intraday source mode is `00631L_INTRADAY_NAV_SOURCE=auto`.
 
+Run the local environment check:
+
+```cmd
+scripts\00631l_check_env.cmd
+```
+
 ## Backend
 
 ```powershell
@@ -20,6 +26,12 @@ Equivalent direct command:
 
 ```powershell
 py -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+CMD wrapper:
+
+```cmd
+scripts\00631l_start_backend.cmd
 ```
 
 Check:
@@ -39,6 +51,12 @@ Check:
 
 ```powershell
 flutter run -d chrome --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_PROXY_BASE_URL=http://127.0.0.1:8000
+```
+
+CMD wrapper:
+
+```cmd
+scripts\00631l_start_frontend_live.cmd
 ```
 
 Open:

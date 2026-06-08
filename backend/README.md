@@ -19,6 +19,12 @@ Start the backend:
 .\backend\run_dev.ps1
 ```
 
+CMD wrapper:
+
+```cmd
+scripts\00631l_start_backend.cmd
+```
+
 Equivalent command:
 
 ```powershell
@@ -29,6 +35,18 @@ Frontend live proxy mode:
 
 ```powershell
 flutter run -d chrome --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_PROXY_BASE_URL=http://127.0.0.1:8000
+```
+
+CMD wrapper:
+
+```cmd
+scripts\00631l_start_frontend_live.cmd
+```
+
+Local environment check:
+
+```cmd
+scripts\00631l_check_env.cmd
 ```
 
 Release checklist: `docs/00631l_release_checklist.md`.
@@ -146,6 +164,23 @@ GET /api/etf/00631l/operations/status
 This endpoint reads local configuration and local JSONL history summaries. It does not fetch Yuanta or TWSE live sources. It reports intraday source mode, whether TWSE/Yuanta intraday URLs are configured, latest holdings history trade date, intraday NAV sample count, latest intraday data time, and collector commands.
 
 If there is no local history, the endpoint returns `sourceStatus: unavailable`; it does not return mock data as official operational state.
+
+## v1.13 local startup checks
+
+Environment check:
+
+```cmd
+scripts\00631l_check_env.cmd
+```
+
+The check confirms the clean Flutter SDK path, Flutter/Dart/Python availability, backend dependencies, local `.env` presence, intraday NAV URL configuration, and local data/export directory readiness. A missing `backend\.env` is a warning because mock/fallback mode remains usable.
+
+Startup wrappers:
+
+```cmd
+scripts\00631l_start_backend.cmd
+scripts\00631l_start_frontend_live.cmd
+```
 
 ## v1.11 CSV history export
 
