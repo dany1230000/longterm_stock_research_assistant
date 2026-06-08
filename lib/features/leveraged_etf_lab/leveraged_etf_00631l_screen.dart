@@ -56,6 +56,8 @@ class _LabContent extends StatelessWidget {
         const SizedBox(height: 16),
         _AssetAllocationSection(snapshot: data.snapshot),
         const SizedBox(height: 16),
+        _HoldingsHistorySection(history: data.holdingsHistory),
+        const SizedBox(height: 16),
         _IntradaySection(nav: data.intradayNav),
         const SizedBox(height: 16),
         _FuturesQuoteSection(quote: data.futuresQuote),
@@ -435,6 +437,87 @@ class _AssetAllocationSection extends StatelessWidget {
                   row.label,
                   formatNtdAmount(row.amount),
                   formatNullablePercent(row.weightPct),
+                ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HoldingsHistorySection extends StatelessWidget {
+  const _HoldingsHistorySection({required this.history});
+
+  final EtfHoldingsHistory history;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!history.hasData) {
+      return SectionCard(
+        title: '每日內容物歷史',
+        subtitle:
+            '由 backend 保存 Yuanta 00631L ratio official snapshot，依 tradeDate 去重。',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                RiskChip(label: 'sourceStatus ${history.sourceStatusLabel}'),
+                RiskChip(label: 'history ${history.status.label}'),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Text('尚無歷史紀錄'),
+            if (history.errorMessage != null) ...[
+              const SizedBox(height: 8),
+              Text(history.errorMessage!),
+            ],
+          ],
+        ),
+      );
+    }
+
+    return SectionCard(
+      title: '每日內容物歷史',
+      subtitle: '最近每日 official holdings summary。官方內容物是每日快照，不是盤中即時內容物。',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              RiskChip(label: 'sourceStatus ${history.sourceStatusLabel}'),
+              RiskChip(label: 'history ${history.status.label}'),
+              RiskChip(label: 'rows ${history.points.length}'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _HorizontalTable(
+            columns: const [
+              '日期',
+              'TX權重',
+              '台積電權重',
+              '股票資產%',
+              '期貨資產%',
+              '現金與保證金%',
+              'NAV',
+              '發行單位數',
+            ],
+            rows: [
+              for (final point in history.points.take(30))
+                [
+                  formatTaiwanDate(point.tradeDate),
+                  formatNullablePercent(point.txWeightPct),
+                  formatNullablePercent(point.tsmcWeightPct),
+                  formatNullablePercent(point.stockExposurePct),
+                  formatNullablePercent(point.futuresExposurePct),
+                  formatNullablePercent(point.cashAndMarginPct),
+                  point.navPerUnit.toStringAsFixed(2),
+                  formatInteger(point.outstandingUnits),
                 ],
             ],
           ),

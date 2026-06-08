@@ -356,6 +356,73 @@ class EtfDailyHoldingSnapshot {
   }
 }
 
+class EtfHoldingsHistoryPoint {
+  const EtfHoldingsHistoryPoint({
+    required this.tradeDate,
+    required this.txWeightPct,
+    required this.tsmcWeightPct,
+    required this.stockExposurePct,
+    required this.futuresExposurePct,
+    required this.cashAndMarginPct,
+    required this.navPerUnit,
+    required this.fundNetAssetValue,
+    required this.outstandingUnits,
+    required this.status,
+    required this.sourceHash,
+  });
+
+  final DateTime tradeDate;
+  final double txWeightPct;
+  final double tsmcWeightPct;
+  final double stockExposurePct;
+  final double futuresExposurePct;
+  final double cashAndMarginPct;
+  final double navPerUnit;
+  final double fundNetAssetValue;
+  final int outstandingUnits;
+  final EtfDataStatus status;
+  final String sourceHash;
+}
+
+class EtfHoldingsHistory {
+  const EtfHoldingsHistory({
+    required this.points,
+    required this.status,
+    required this.sourceStatusLabel,
+    required this.sourceUrl,
+    required this.lastFetchedAt,
+    required this.isStale,
+    this.errorMessage,
+  });
+
+  factory EtfHoldingsHistory.empty({
+    DateTime? lastFetchedAt,
+    EtfDataStatus status = EtfDataStatus.mock,
+    String sourceStatusLabel = 'mock',
+    String? errorMessage,
+  }) {
+    return EtfHoldingsHistory(
+      points: const [],
+      status: status,
+      sourceStatusLabel: sourceStatusLabel,
+      sourceUrl: '',
+      lastFetchedAt: lastFetchedAt ?? DateTime.now(),
+      isStale: true,
+      errorMessage: errorMessage,
+    );
+  }
+
+  final List<EtfHoldingsHistoryPoint> points;
+  final EtfDataStatus status;
+  final String sourceStatusLabel;
+  final String sourceUrl;
+  final DateTime lastFetchedAt;
+  final bool isStale;
+  final String? errorMessage;
+
+  bool get hasData => points.isNotEmpty;
+}
+
 class EtfIntradayNav {
   const EtfIntradayNav({
     required this.symbol,
@@ -505,6 +572,7 @@ class Etf00631LLabData {
     required this.snapshot,
     required this.intradayNav,
     required this.futuresQuote,
+    required this.holdingsHistory,
     required this.analysis,
     required this.lastFetchedAt,
   });
@@ -513,6 +581,7 @@ class Etf00631LLabData {
   final EtfDailyHoldingSnapshot snapshot;
   final EtfIntradayNav? intradayNav;
   final FuturesQuote futuresQuote;
+  final EtfHoldingsHistory holdingsHistory;
   final EtfAnalysisSummary analysis;
   final DateTime lastFetchedAt;
 

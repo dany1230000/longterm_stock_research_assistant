@@ -58,6 +58,30 @@ void main() {
     expect(find.text('202606'), findsWidgets);
   });
 
+  testWidgets('00631L lab shows daily holdings history when available',
+      (tester) async {
+    await _pumpLab(tester, _HistoryFixture00631LRepository());
+
+    await _scrollUntilTextVisible(tester, '每日內容物歷史');
+    expect(find.text('每日內容物歷史'), findsOneWidget);
+    expect(find.text('TX權重'), findsOneWidget);
+    expect(find.text('台積電權重'), findsOneWidget);
+    expect(find.text('160.20%'), findsOneWidget);
+    expect(find.text('36.80%'), findsOneWidget);
+    expect(find.text('35.12'), findsOneWidget);
+    expect(find.text('5,200,000,000'), findsOneWidget);
+  });
+
+  testWidgets('00631L lab shows empty daily holdings history state',
+      (tester) async {
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _scrollUntilTextVisible(tester, '每日內容物歷史');
+    expect(find.text('每日內容物歷史'), findsOneWidget);
+    expect(find.text('尚無歷史紀錄'), findsOneWidget);
+    expect(find.text('sourceStatus mock'), findsOneWidget);
+  });
+
   testWidgets('00631L lab shows intraday NAV values and source contract',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
@@ -146,6 +170,36 @@ Future<void> _scrollUntilTextVisible(WidgetTester tester, String text) async {
   for (var i = 0; i < 24 && find.text(text).evaluate().isEmpty; i += 1) {
     await tester.drag(listView, const Offset(0, -360));
     await tester.pumpAndSettle();
+  }
+}
+
+class _HistoryFixture00631LRepository extends Mock00631LRepository {
+  @override
+  Future<EtfHoldingsHistory> fetchHoldingsHistorySummary({
+    int limit = 30,
+  }) async {
+    return EtfHoldingsHistory(
+      points: [
+        EtfHoldingsHistoryPoint(
+          tradeDate: DateTime(2026, 6, 6),
+          txWeightPct: 160.20,
+          tsmcWeightPct: 36.80,
+          stockExposurePct: 38.10,
+          futuresExposurePct: 161.40,
+          cashAndMarginPct: 66.10,
+          navPerUnit: 35.12,
+          fundNetAssetValue: 188000000000,
+          outstandingUnits: 5200000000,
+          status: EtfDataStatus.proxy,
+          sourceHash: 'fixture-2',
+        ),
+      ],
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'cached',
+      sourceUrl: 'local://00631l-holdings-history',
+      lastFetchedAt: DateTime(2026, 6, 8, 10, 15),
+      isStale: false,
+    );
   }
 }
 

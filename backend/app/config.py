@@ -39,6 +39,8 @@ def _env_float(name: str, default: float) -> float:
 
 _load_backend_dotenv()
 
+_BACKEND_ROOT = Path(__file__).resolve().parents[1]
+
 
 @dataclass(frozen=True)
 class Settings:
@@ -57,6 +59,10 @@ class Settings:
     profile_cache_seconds: int = _env_int("00631L_PROFILE_CACHE_SECONDS", 24 * 60 * 60)
     holdings_cache_seconds: int = _env_int("00631L_HOLDINGS_CACHE_SECONDS", 10 * 60)
     intraday_cache_seconds: int = _env_int("00631L_INTRADAY_NAV_CACHE_SECONDS", 15)
+    holdings_history_path: str = os.getenv(
+        "00631L_HOLDINGS_HISTORY_PATH",
+        str(_BACKEND_ROOT / "data" / "00631l_holdings_history.jsonl"),
+    )
 
 
 settings = Settings()

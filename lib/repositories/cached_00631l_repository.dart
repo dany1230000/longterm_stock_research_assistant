@@ -16,6 +16,7 @@ class Cached00631LRepository extends Official00631LRepository {
   EtfDailyHoldingSnapshot? _snapshotCache;
   EtfIntradayNav? _intradayNavCache;
   FuturesQuote? _futuresQuoteCache;
+  EtfHoldingsHistory? _holdingsHistoryCache;
 
   @override
   Future<LeveragedEtfProfile> fetchProfile() async {
@@ -74,6 +75,23 @@ class Cached00631LRepository extends Official00631LRepository {
         return _cachedFuturesQuote(cached);
       }
       return _fallback.fetchFuturesQuote();
+    }
+  }
+
+  @override
+  Future<EtfHoldingsHistory> fetchHoldingsHistorySummary({
+    int limit = 30,
+  }) async {
+    try {
+      final history = await _primary.fetchHoldingsHistorySummary(limit: limit);
+      _holdingsHistoryCache = history;
+      return history;
+    } catch (_) {
+      final cached = _holdingsHistoryCache;
+      if (cached != null) {
+        return _cachedHistory(cached);
+      }
+      return _fallback.fetchHoldingsHistorySummary(limit: limit);
     }
   }
 }
@@ -149,5 +167,17 @@ FuturesQuote _cachedFuturesQuote(FuturesQuote quote) {
     status: EtfDataStatus.cached,
     lastFetchedAt: quote.lastFetchedAt,
     errorMessage: quote.errorMessage,
+  );
+}
+
+EtfHoldingsHistory _cachedHistory(EtfHoldingsHistory history) {
+  return EtfHoldingsHistory(
+    points: history.points,
+    status: EtfDataStatus.cached,
+    sourceStatusLabel: 'cached',
+    sourceUrl: history.sourceUrl,
+    lastFetchedAt: history.lastFetchedAt,
+    isStale: history.isStale,
+    errorMessage: history.errorMessage,
   );
 }

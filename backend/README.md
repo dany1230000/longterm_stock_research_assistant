@@ -43,6 +43,7 @@ See `backend/.env.example` for the deployable template.
 - `00631L_PROFILE_CACHE_SECONDS`: default `86400`.
 - `00631L_HOLDINGS_CACHE_SECONDS`: default `600`.
 - `00631L_INTRADAY_NAV_CACHE_SECONDS`: default `15`.
+- `00631L_HOLDINGS_HISTORY_PATH`: local JSONL path for daily holdings history, default `backend/data/00631l_holdings_history.jsonl`.
 
 `auto` tries TWSE first and then Yuanta. If neither URL is configured, intraday NAV returns `sourceStatus: unavailable` and does not return mock data as official data.
 
@@ -102,3 +103,18 @@ If no intraday URL is configured, `/api/etf/00631l/intraday-nav` returns
 `sourceStatus: unavailable` instead of mock data.
 
 Yuanta Basic and ratio pages were verified live on 2026-06-08. TWSE `all_etf.txt` and Yuanta INAV were also smoke-tested for 00631L intraday NAV. The live smoke script is manual because network/API changes should not fail unit test CI.
+
+## v1.2 holdings history
+
+When `/api/etf/00631l/holdings` successfully fetches and parses an official Yuanta ratio snapshot, the backend saves one local JSONL history record per `tradeDate`. Repeated fetches for the same `tradeDate` and `sourceHash` are skipped; if the same `tradeDate` has a new `sourceHash`, the local record is replaced.
+
+History endpoints:
+
+```text
+GET /api/etf/00631l/holdings/history?limit=30
+GET /api/etf/00631l/holdings/history/summary?limit=30
+```
+
+The full history endpoint returns stored daily snapshots. The summary endpoint returns the trend fields used by the Flutter page: TX weight, TSMC weight, stock asset %, futures asset %, cash and margin %, NAV, fund net asset value, and outstanding units.
+
+If no history file exists yet, the endpoints return `sourceStatus: unavailable` with an empty `items` list. They do not return mock data as official history.

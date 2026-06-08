@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from .service import service
@@ -47,6 +47,16 @@ def profile() -> dict:
 @app.get("/api/etf/00631l/holdings")
 def holdings() -> dict:
     return service.holdings()
+
+
+@app.get("/api/etf/00631l/holdings/history")
+def holdings_history(limit: int = Query(30, ge=1, le=365)) -> dict:
+    return service.holdings_history(limit=limit)
+
+
+@app.get("/api/etf/00631l/holdings/history/summary")
+def holdings_history_summary(limit: int = Query(30, ge=1, le=365)) -> dict:
+    return service.holdings_history_summary(limit=limit)
 
 
 @app.get("/api/etf/00631l/intraday-nav")

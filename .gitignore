@@ -8,6 +8,7 @@ coverage/
 *.log
 .env
 backend/.env
+backend/data/
 ios/Flutter/Generated.xcconfig
 ios/Flutter/flutter_export_environment.sh
 android/.gradle/

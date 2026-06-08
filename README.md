@@ -20,6 +20,7 @@ v1.0 live sources:
 - Yuanta INAV: verified official fallback, `sourceContract: yuanta_inav`.
 - TX quote: still mock/fallback.
 - Premium/discount status: shown as a price-deviation hint only, based on intraday NAV `premiumDiscountPct`, and not shown as official when data is stale or unavailable.
+- Holdings history v1.2: backend stores official Yuanta ratio snapshots locally by `tradeDate` in JSONL and exposes `/api/etf/00631l/holdings/history` plus `/summary`; default mock mode shows no official history.
 
 Local backend env:
 
@@ -44,6 +45,13 @@ Manual smoke:
 
 ```powershell
 py backend\scripts\smoke_00631l_live.py
+```
+
+Holdings history is populated by calling the backend holdings endpoint after the backend is running:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/api/etf/00631l/holdings
+Invoke-RestMethod http://127.0.0.1:8000/api/etf/00631l/holdings/history/summary?limit=30
 ```
 
 The smoke script prints an `[overall]` block with `PASS`, `WARN`, or `FAIL`. A freshness warning after market close is a manual-review warning, not an automatic app test failure.

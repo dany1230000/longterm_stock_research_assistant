@@ -260,3 +260,17 @@ flutter test
 ```
 
 目前 backend parser tests 可用 Python stdlib 執行。endpoint tests 需要安裝 `backend\requirements.txt` 中的 FastAPI/TestClient 相關套件。
+## v1.2 holdings history endpoints
+
+The live proxy stores successful Yuanta 00631L ratio official snapshots in a local JSONL file. The default path is `backend/data/00631l_holdings_history.jsonl`, configurable with `00631L_HOLDINGS_HISTORY_PATH`.
+
+Endpoints:
+
+```text
+GET /api/etf/00631l/holdings/history?limit=30
+GET /api/etf/00631l/holdings/history/summary?limit=30
+```
+
+The history endpoint returns full stored snapshots. The summary endpoint is intended for the Flutter table and includes `tradeDate`, `txWeightPct`, `tsmcWeightPct`, `stockExposurePct`, `futuresExposurePct`, `cashAndMarginPct`, `navPerUnit`, `fundNetAssetValue`, and `outstandingUnits`.
+
+The backend does not synthesize official history from mock data. If no records exist, the response uses `sourceStatus: unavailable` and an empty `items` list.

@@ -71,6 +71,27 @@ void main() {
     expect(await repository.fetchIntradayNav(), isNull);
   });
 
+  test('proxy repository maps holdings history summary payload', () async {
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/00631l/holdings/history/summary':
+            jsonEncode(_holdingsHistorySummaryPayload()),
+      }),
+    );
+
+    final history = await repository.fetchHoldingsHistorySummary();
+
+    expect(history.status, EtfDataStatus.cached);
+    expect(history.sourceStatusLabel, 'cached');
+    expect(history.points, hasLength(2));
+    expect(history.points.first.tradeDate, DateTime(2026, 6, 6));
+    expect(history.points.first.txWeightPct, 160.20);
+    expect(history.points.first.tsmcWeightPct, 36.80);
+    expect(history.points.first.cashAndMarginPct, 66.10);
+    expect(history.points.first.navPerUnit, 35.12);
+    expect(history.points.first.outstandingUnits, 5200000000);
+  });
+
   test('cached repository falls back to mock when proxy is down', () async {
     final repository = Cached00631LRepository(
       primary: Proxy00631LRepository(client: _FailingProxyHttpClient()),
@@ -203,6 +224,47 @@ Map<String, Object?> _intradayPayload() {
     'sourceContract': 'twse_a_k_json',
     'sourceUrl': 'fixture://twse/nav',
     'fetchedAt': '2026-06-08T10:15:00+08:00',
+    'isStale': false,
+    'errorMessage': null,
+  };
+}
+
+Map<String, Object?> _holdingsHistorySummaryPayload() {
+  return {
+    'items': [
+      {
+        'tradeDate': '2026-06-06',
+        'txWeightPct': 160.20,
+        'tsmcWeightPct': 36.80,
+        'stockExposurePct': 38.10,
+        'futuresExposurePct': 161.40,
+        'cashAndMarginPct': 66.10,
+        'navPerUnit': 35.12,
+        'fundNetAssetValue': 188000000000,
+        'outstandingUnits': 5200000000,
+        'sourceStatus': 'official',
+        'sourceHash': 'fixture-2',
+      },
+      {
+        'tradeDate': '2026-06-05',
+        'txWeightPct': 161.53,
+        'tsmcWeightPct': 37.44,
+        'stockExposurePct': 37.44,
+        'futuresExposurePct': 161.53,
+        'cashAndMarginPct': 66.49,
+        'navPerUnit': 36.56,
+        'fundNetAssetValue': 189796511953,
+        'outstandingUnits': 5190848000,
+        'sourceStatus': 'official',
+        'sourceHash': 'fixture-1',
+      },
+    ],
+    'sourceStatus': 'cached',
+    'sourceContract': 'local_jsonl_history_summary',
+    'sourceUrl': 'local://00631l-holdings-history',
+    'fetchedAt': '2026-06-08T10:15:00+08:00',
+    'sourceUpdatedAt': '2026-06-06T00:00:00+08:00',
+    'dataTime': '2026-06-06T00:00:00+08:00',
     'isStale': false,
     'errorMessage': null,
   };

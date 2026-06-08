@@ -1,11 +1,13 @@
 import unittest
 from pathlib import Path
+import tempfile
 
 try:
     from fastapi.testclient import TestClient
     import backend.app.main as main_module
     from backend.app.cache import TimedMemoryCache
     from backend.app.config import Settings
+    from backend.app.holdings_history import HoldingsHistoryStore
     from backend.app.service import Etf00631LService
 
     HAS_FASTAPI = True
@@ -132,6 +134,44 @@ Custodian Fee
                 "errorMessage",
             ):
                 self.assertIn(key, payload, msg=f"{path} missing {key}")
+
+    def test_holdings_history_endpoints_return_saved_snapshots(self) -> None:
+        holdings_fixture = (FIXTURES / "00631l_yuanta_ratio_fixture.txt").read_text(encoding="utf-8")
+
+        def fake_fetcher(url: str, timeout_seconds: float) -> str:
+            self.assertEqual(url, "fixture://holdings")
+            return holdings_fixture
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            main_module.service = Etf00631LService(
+                config=Settings(yuanta_holdings_url="fixture://holdings"),
+                fetcher=fake_fetcher,
+                cache=TimedMemoryCache(),
+                history_store=HoldingsHistoryStore(Path(temp_dir) / "history.jsonl"),
+            )
+
+            holdings_response = self.client.get("/api/etf/00631l/holdings")
+            self.assertEqual(holdings_response.status_code, 200)
+            self.assertEqual(holdings_response.json()["sourceStatus"], "official")
+
+            history_response = self.client.get("/api/etf/00631l/holdings/history?limit=30")
+            self.assertEqual(history_response.status_code, 200)
+            history_payload = history_response.json()
+            self.assertEqual(history_payload["sourceStatus"], "cached")
+            self.assertEqual(len(history_payload["items"]), 1)
+            self.assertEqual(history_payload["items"][0]["tradeDate"], "2026-06-05")
+            self.assertEqual(history_payload["items"][0]["sourceStatus"], "official")
+            self.assertIn("cashBreakdown", history_payload["items"][0])
+
+            summary_response = self.client.get("/api/etf/00631l/holdings/history/summary?limit=30")
+            self.assertEqual(summary_response.status_code, 200)
+            summary_payload = summary_response.json()
+            self.assertEqual(summary_payload["sourceStatus"], "cached")
+            summary = summary_payload["items"][0]
+            self.assertEqual(summary["tradeDate"], "2026-06-05")
+            self.assertEqual(summary["txWeightPct"], 161.53)
+            self.assertEqual(summary["tsmcWeightPct"], 37.44)
+            self.assertGreater(summary["cashAndMarginPct"], 0)
 
 
 if __name__ == "__main__":

@@ -133,6 +133,30 @@ class Proxy00631LRepository extends Official00631LRepository {
     return _mockFallback.fetchFuturesQuote();
   }
 
+  @override
+  Future<EtfHoldingsHistory> fetchHoldingsHistorySummary({
+    int limit = 30,
+  }) async {
+    final payload = await _getJson(
+      '/api/etf/00631l/holdings/history/summary?limit=$limit',
+    );
+    final rawStatus = _rawStatus(payload);
+    final items = [
+      for (final item in _list(payload['items']))
+        _historyPointFromPayload(_map(item)),
+    ];
+
+    return EtfHoldingsHistory(
+      points: items,
+      status: _status(payload),
+      sourceStatusLabel: rawStatus.isEmpty ? _status(payload).label : rawStatus,
+      sourceUrl: _string(payload['sourceUrl']),
+      lastFetchedAt: _dateTime(payload['fetchedAt']) ?? DateTime.now(),
+      isStale: payload['isStale'] == true,
+      errorMessage: payload['errorMessage']?.toString(),
+    );
+  }
+
   Future<Map<String, dynamic>> _getJson(String path) async {
     final body = await _client.getString(_resolve(path), timeout: timeout);
     final decoded = jsonDecode(body);
@@ -149,6 +173,22 @@ class Proxy00631LRepository extends Official00631LRepository {
     final normalizedPath = path.startsWith('/') ? path : '/$path';
     return Uri.parse('$base$normalizedPath');
   }
+}
+
+EtfHoldingsHistoryPoint _historyPointFromPayload(Map<String, dynamic> payload) {
+  return EtfHoldingsHistoryPoint(
+    tradeDate: _date(payload['tradeDate']),
+    txWeightPct: _double(payload['txWeightPct']),
+    tsmcWeightPct: _double(payload['tsmcWeightPct']),
+    stockExposurePct: _double(payload['stockExposurePct']),
+    futuresExposurePct: _double(payload['futuresExposurePct']),
+    cashAndMarginPct: _double(payload['cashAndMarginPct']),
+    navPerUnit: _double(payload['navPerUnit']),
+    fundNetAssetValue: _double(payload['fundNetAssetValue']),
+    outstandingUnits: _int(payload['outstandingUnits']),
+    status: _status(payload),
+    sourceHash: _string(payload['sourceHash']),
+  );
 }
 
 Map<String, dynamic> _map(Object? value) {

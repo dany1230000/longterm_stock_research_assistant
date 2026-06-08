@@ -5,6 +5,7 @@ from typing import Any, Callable
 from .cache import TimedMemoryCache
 from .config import Settings, settings
 from .fetcher import FetchError, fetch_text
+from .holdings_history import HoldingsHistoryStore, empty_history_response
 from .parsers import (
     empty_holdings_response,
     mark_cached,
@@ -27,10 +28,14 @@ class Etf00631LService:
         config: Settings = settings,
         fetcher: FetchText = fetch_text,
         cache: TimedMemoryCache | None = None,
+        history_store: HoldingsHistoryStore | None = None,
     ) -> None:
         self._config = config
         self._fetcher = fetcher
         self._cache = cache or TimedMemoryCache()
+        self._history_store = history_store or HoldingsHistoryStore(
+            self._config.holdings_history_path
+        )
 
     def profile(self) -> dict[str, Any]:
         now = utc_now_iso()
@@ -74,6 +79,11 @@ class Etf00631LService:
             )
             if payload["sourceStatus"] != "error":
                 self._cache.set("holdings", payload)
+                if payload["sourceStatus"] == "official":
+                    try:
+                        self._history_store.save_official_snapshot(payload)
+                    except OSError:
+                        pass
             return payload
         except (FetchError, OSError, RuntimeError) as error:
             stale = self._cache.get_any("holdings")
@@ -83,6 +93,28 @@ class Etf00631LService:
                 source_url=self._config.yuanta_holdings_url,
                 fetched_at=now,
                 error_message=f"Live holdings fetch failed and no cached snapshot is available: {error}",
+            )
+
+    def holdings_history(self, *, limit: int = 30) -> dict[str, Any]:
+        now = utc_now_iso()
+        try:
+            return self._history_store.history_response(limit=limit, fetched_at=now)
+        except (OSError, RuntimeError) as error:
+            return empty_history_response(
+                limit=limit,
+                fetched_at=now,
+                error_message=f"Holdings history read failed: {error}",
+            )
+
+    def holdings_history_summary(self, *, limit: int = 30) -> dict[str, Any]:
+        now = utc_now_iso()
+        try:
+            return self._history_store.summary_response(limit=limit, fetched_at=now)
+        except (OSError, RuntimeError) as error:
+            return empty_history_response(
+                limit=limit,
+                fetched_at=now,
+                error_message=f"Holdings history summary read failed: {error}",
             )
 
     def intraday_nav(self) -> dict[str, Any]:
