@@ -133,6 +133,7 @@ EtfIntradayNav _cachedIntradayNav(EtfIntradayNav nav) {
     targetType: nav.targetType,
     userDelayMs: nav.userDelayMs,
     sourceContract: nav.sourceContract,
+    isStale: nav.isStale,
     status: EtfDataStatus.cached,
     lastFetchedAt: nav.lastFetchedAt,
   );

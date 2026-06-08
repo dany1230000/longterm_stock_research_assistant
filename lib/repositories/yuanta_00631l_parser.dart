@@ -136,6 +136,7 @@ class Yuanta00631LParser {
       targetType: _stringValue(item['k']) ?? '',
       userDelayMs: _parseInt(_stringValue(decoded['userDelay'])) ?? 15000,
       sourceContract: 'twse_a_k_json',
+      isStale: false,
       status: status,
       lastFetchedAt: lastFetchedAt,
     );

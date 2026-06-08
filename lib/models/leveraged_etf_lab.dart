@@ -26,6 +26,124 @@ extension EtfDataStatusLabel on EtfDataStatus {
   }
 }
 
+enum PremiumDiscountLevel {
+  unavailable,
+  normal,
+  watch,
+  elevated,
+  extreme,
+  stale,
+}
+
+class PremiumDiscountAssessment {
+  const PremiumDiscountAssessment({
+    required this.level,
+    required this.premiumDiscountPct,
+  });
+
+  factory PremiumDiscountAssessment.evaluate({
+    required double? premiumDiscountPct,
+    required EtfDataStatus sourceStatus,
+    required bool isStale,
+  }) {
+    if (premiumDiscountPct == null ||
+        sourceStatus == EtfDataStatus.error ||
+        sourceStatus == EtfDataStatus.mock) {
+      return PremiumDiscountAssessment(
+        level: PremiumDiscountLevel.unavailable,
+        premiumDiscountPct: premiumDiscountPct,
+      );
+    }
+
+    if (isStale || sourceStatus == EtfDataStatus.stale) {
+      return PremiumDiscountAssessment(
+        level: PremiumDiscountLevel.stale,
+        premiumDiscountPct: premiumDiscountPct,
+      );
+    }
+
+    final distance = premiumDiscountPct.abs();
+    if (distance <= 0.20) {
+      return PremiumDiscountAssessment(
+        level: PremiumDiscountLevel.normal,
+        premiumDiscountPct: premiumDiscountPct,
+      );
+    }
+    if (distance <= 0.50) {
+      return PremiumDiscountAssessment(
+        level: PremiumDiscountLevel.watch,
+        premiumDiscountPct: premiumDiscountPct,
+      );
+    }
+    if (distance <= 1.00) {
+      return PremiumDiscountAssessment(
+        level: PremiumDiscountLevel.elevated,
+        premiumDiscountPct: premiumDiscountPct,
+      );
+    }
+    return PremiumDiscountAssessment(
+      level: PremiumDiscountLevel.extreme,
+      premiumDiscountPct: premiumDiscountPct,
+    );
+  }
+
+  final PremiumDiscountLevel level;
+  final double? premiumDiscountPct;
+
+  bool get isPremium => (premiumDiscountPct ?? 0) > 0;
+  bool get isDiscount => (premiumDiscountPct ?? 0) < 0;
+
+  String get label {
+    switch (level) {
+      case PremiumDiscountLevel.unavailable:
+        return '即時資料不可用';
+      case PremiumDiscountLevel.stale:
+        return '資料可能過期';
+      case PremiumDiscountLevel.normal:
+        return '正常';
+      case PremiumDiscountLevel.watch:
+        return isDiscount ? '折價觀察' : '溢價觀察';
+      case PremiumDiscountLevel.elevated:
+        return isDiscount ? '折價偏深' : '溢價偏高';
+      case PremiumDiscountLevel.extreme:
+        return isDiscount ? '折價極端' : '溢價極端';
+    }
+  }
+
+  String get tone {
+    switch (level) {
+      case PremiumDiscountLevel.unavailable:
+      case PremiumDiscountLevel.stale:
+        return 'neutral';
+      case PremiumDiscountLevel.normal:
+        return 'normal';
+      case PremiumDiscountLevel.watch:
+        return 'watch';
+      case PremiumDiscountLevel.elevated:
+        return 'elevated';
+      case PremiumDiscountLevel.extreme:
+        return 'extreme';
+    }
+  }
+
+  String get description {
+    final premium = premiumDiscountPct;
+    if (level == PremiumDiscountLevel.unavailable || premium == null) {
+      return '即時淨值資料不可用，暫時無法判斷折溢價狀態。非買賣建議。';
+    }
+    if (level == PremiumDiscountLevel.stale) {
+      return '即時淨值資料可能過期，請以資料時間與官方來源為準。非買賣建議。';
+    }
+
+    final value = _signedPercentText(premium);
+    final relation = premium >= 0 ? '市價高於預估淨值' : '市價低於預估淨值';
+    if (level == PremiumDiscountLevel.normal) {
+      return '目前$relation $value，折溢價接近預估淨值。這是價格偏離提示，非買賣建議。';
+    }
+    return '目前$relation $value，屬於$label。這是價格偏離提示，非買賣建議。';
+  }
+}
+
 class LeveragedEtfProfile {
   const LeveragedEtfProfile({
     required this.symbol,
@@ -254,6 +372,7 @@ class EtfIntradayNav {
     required this.targetType,
     required this.userDelayMs,
     required this.sourceContract,
+    required this.isStale,
     required this.status,
     required this.lastFetchedAt,
   });
@@ -272,8 +391,17 @@ class EtfIntradayNav {
   final String targetType;
   final int userDelayMs;
   final String? sourceContract;
+  final bool isStale;
   final EtfDataStatus status;
   final DateTime lastFetchedAt;
+
+  PremiumDiscountAssessment get premiumDiscountAssessment {
+    return PremiumDiscountAssessment.evaluate(
+      premiumDiscountPct: estimatedPremiumDiscountPct,
+      sourceStatus: status,
+      isStale: isStale,
+    );
+  }
 }
 
 class FuturesQuote {
@@ -427,6 +555,11 @@ String _premiumDiscountLabel(double? premium) {
     return '偏低';
   }
   return '接近淨值';
+}
+
+String _signedPercentText(double value) {
+  final prefix = value > 0 ? '+' : '';
+  return '$prefix${value.toStringAsFixed(2)}%';
 }
 
 int _businessDaysBetween(DateTime start, DateTime end) {

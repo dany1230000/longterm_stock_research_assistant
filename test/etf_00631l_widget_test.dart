@@ -70,8 +70,57 @@ void main() {
   testWidgets('00631L lab labels unavailable intraday NAV', (tester) async {
     await _pumpLab(tester, _NoIntraday00631LRepository());
 
-    expect(find.text('intraday unavailable'), findsOneWidget);
+    await _scrollUntilTextVisible(tester, '折溢價狀態');
+    expect(find.text('sourceStatus unavailable'), findsOneWidget);
+    expect(find.text('即時資料不可用'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  testWidgets('00631L lab labels elevated premium without advice',
+      (tester) async {
+    await _pumpLab(
+      tester,
+      _PremiumFixture00631LRepository(premiumDiscountPct: 0.75),
+    );
+
+    await _scrollUntilTextVisible(tester, '折溢價狀態');
+    expect(find.text('+0.75%'), findsWidgets);
+    expect(find.text('溢價偏高'), findsOneWidget);
+    expect(find.textContaining('市價高於預估淨值 +0.75%'), findsOneWidget);
+    expect(find.textContaining('非買賣建議'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('00631L lab labels elevated discount without advice',
+      (tester) async {
+    await _pumpLab(
+      tester,
+      _PremiumFixture00631LRepository(premiumDiscountPct: -0.75),
+    );
+
+    await _scrollUntilTextVisible(tester, '折溢價狀態');
+    expect(find.text('-0.75%'), findsWidgets);
+    expect(find.text('折價偏深'), findsOneWidget);
+    expect(find.textContaining('市價低於預估淨值 -0.75%'), findsOneWidget);
+    expect(find.textContaining('非買賣建議'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('00631L lab labels stale premium discount data', (tester) async {
+    await _pumpLab(
+      tester,
+      _PremiumFixture00631LRepository(
+        premiumDiscountPct: 0.75,
+        isStale: true,
+        status: EtfDataStatus.cached,
+      ),
+    );
+
+    await _scrollUntilTextVisible(tester, '折溢價狀態');
+    expect(find.text('資料可能過期'), findsOneWidget);
+    expect(find.textContaining('即時淨值資料可能過期'), findsOneWidget);
+    expect(find.textContaining('非買賣建議'), findsWidgets);
+    _expectNoTradingActionText();
   });
 }
 
@@ -94,8 +143,8 @@ Future<void> _pumpLab(
 
 Future<void> _scrollUntilTextVisible(WidgetTester tester, String text) async {
   final listView = find.byType(ListView);
-  for (var i = 0; i < 12 && find.text(text).evaluate().isEmpty; i += 1) {
-    await tester.drag(listView, const Offset(0, -320));
+  for (var i = 0; i < 24 && find.text(text).evaluate().isEmpty; i += 1) {
+    await tester.drag(listView, const Offset(0, -360));
     await tester.pumpAndSettle();
   }
 }
@@ -131,5 +180,58 @@ class _NoIntraday00631LRepository extends Mock00631LRepository {
   @override
   Future<EtfIntradayNav?> fetchIntradayNav() async {
     return null;
+  }
+}
+
+class _PremiumFixture00631LRepository extends Mock00631LRepository {
+  _PremiumFixture00631LRepository({
+    required this.premiumDiscountPct,
+    this.isStale = false,
+    this.status = EtfDataStatus.proxy,
+  });
+
+  final double premiumDiscountPct;
+  final bool isStale;
+  final EtfDataStatus status;
+
+  @override
+  Future<EtfIntradayNav?> fetchIntradayNav() async {
+    final base = await super.fetchIntradayNav();
+    return EtfIntradayNav(
+      symbol: base!.symbol,
+      name: base.name,
+      outstandingUnits: base.outstandingUnits,
+      outstandingUnitsDelta: base.outstandingUnitsDelta,
+      marketPrice: base.marketPrice,
+      estimatedNav: base.estimatedNav,
+      estimatedPremiumDiscountPct: premiumDiscountPct,
+      previousBusinessDayNav: base.previousBusinessDayNav,
+      previousBusinessDayNavText: base.previousBusinessDayNavText,
+      dataDate: base.dataDate,
+      dataTime: base.dataTime,
+      targetType: base.targetType,
+      userDelayMs: base.userDelayMs,
+      sourceContract: base.sourceContract,
+      isStale: isStale,
+      status: status,
+      lastFetchedAt: base.lastFetchedAt,
+    );
+  }
+}
+
+void _expectNoTradingActionText() {
+  for (final forbidden in const [
+    '買進',
+    '賣出',
+    '加碼',
+    '減碼',
+    '進場',
+    '出場',
+    '套利',
+    '適合買',
+    '便宜可以買',
+    '太貴不要買',
+  ]) {
+    expect(find.textContaining(forbidden), findsNothing);
   }
 }

@@ -47,6 +47,13 @@ Fallback rules:
 
 Daily holdings are official daily snapshots. Intraday NAV is only market price, estimated NAV, premium/discount, and timestamps.
 
+Premium/discount status on the Flutter page uses normalized intraday NAV fields:
+
+- `premiumDiscountPct` is a percentage-point value such as `0.75` for `+0.75%`.
+- `sourceStatus` must be official/proxy/cached and not stale before the page presents a status judgment.
+- `mock`, `error`, and `unavailable` stay clearly labeled as unavailable/fallback states.
+- The status text is only a price-deviation hint and is not investment advice.
+
 Smoke script:
 
 ```powershell

@@ -47,6 +47,10 @@ Completion date: 2026-06-08
 - Buy/sell advice or investment recommendations.
 - Any attempt to present mock/fallback data as official.
 
+## After v1.0 Note
+
+The next small UI layer may show premium/discount status color and text on `/00631l-lab`. That status should remain a price-deviation hint based on intraday NAV `premiumDiscountPct`; stale, unavailable, error, or mock data should not be presented as an official judgment.
+
 ## Validation Results
 
 - `flutter analyze`: PASS.

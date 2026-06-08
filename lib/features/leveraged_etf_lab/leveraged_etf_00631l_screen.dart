@@ -50,6 +50,8 @@ class _LabContent extends StatelessWidget {
         const SizedBox(height: 16),
         _SummaryGrid(data: data),
         const SizedBox(height: 16),
+        _PremiumDiscountStatusSection(nav: data.intradayNav),
+        const SizedBox(height: 16),
         _ProfileSection(profile: data.profile),
         const SizedBox(height: 16),
         _AssetAllocationSection(snapshot: data.snapshot),
@@ -238,6 +240,98 @@ class _SummaryGrid extends StatelessWidget {
           children: cards,
         );
       },
+    );
+  }
+}
+
+class _PremiumDiscountStatusSection extends StatelessWidget {
+  const _PremiumDiscountStatusSection({required this.nav});
+
+  final EtfIntradayNav? nav;
+
+  @override
+  Widget build(BuildContext context) {
+    final assessment = nav?.premiumDiscountAssessment ??
+        PremiumDiscountAssessment.evaluate(
+          premiumDiscountPct: null,
+          sourceStatus: EtfDataStatus.error,
+          isStale: false,
+        );
+    final theme = Theme.of(context);
+    final color = _premiumDiscountColor(theme.colorScheme, assessment.level);
+    final background = Color.alphaBlend(
+      color.withValues(alpha: 0.10),
+      theme.colorScheme.surface,
+    );
+
+    return SectionCard(
+      title: '折溢價狀態',
+      subtitle: '依盤中預估淨值資料判讀價格偏離；這是狀態提示，非買賣建議。',
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withValues(alpha: 0.38)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                _premiumDiscountIcon(assessment.level),
+                color: color,
+                size: 22,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          formatSignedNullablePercent(
+                            assessment.premiumDiscountPct,
+                          ),
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            color: color,
+                          ),
+                        ),
+                        RiskChip(label: assessment.label),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      assessment.description,
+                      style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        RiskChip(
+                          label:
+                              'sourceStatus ${nav?.status.label ?? 'unavailable'}',
+                        ),
+                        RiskChip(
+                          label:
+                              'sourceContract ${nav?.sourceContract ?? 'unavailable'}',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -745,4 +839,40 @@ String _plainNumber(num? value) {
     return 'unavailable';
   }
   return formatNumber(value, decimals: 2);
+}
+
+Color _premiumDiscountColor(
+  ColorScheme colorScheme,
+  PremiumDiscountLevel level,
+) {
+  switch (level) {
+    case PremiumDiscountLevel.normal:
+      return colorScheme.primary;
+    case PremiumDiscountLevel.watch:
+      return colorScheme.secondary;
+    case PremiumDiscountLevel.elevated:
+      return colorScheme.tertiary;
+    case PremiumDiscountLevel.extreme:
+      return colorScheme.error;
+    case PremiumDiscountLevel.unavailable:
+    case PremiumDiscountLevel.stale:
+      return colorScheme.onSurfaceVariant;
+  }
+}
+
+IconData _premiumDiscountIcon(PremiumDiscountLevel level) {
+  switch (level) {
+    case PremiumDiscountLevel.normal:
+      return Icons.check_circle_outline;
+    case PremiumDiscountLevel.watch:
+      return Icons.visibility_outlined;
+    case PremiumDiscountLevel.elevated:
+      return Icons.priority_high_outlined;
+    case PremiumDiscountLevel.extreme:
+      return Icons.report_outlined;
+    case PremiumDiscountLevel.stale:
+      return Icons.schedule_outlined;
+    case PremiumDiscountLevel.unavailable:
+      return Icons.cloud_off_outlined;
+  }
 }

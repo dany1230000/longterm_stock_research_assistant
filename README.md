@@ -19,6 +19,7 @@ v1.0 live sources:
 - TWSE intraday NAV: live official through `https://mis.twse.com.tw/stock/data/all_etf.txt`, `sourceContract: twse_a_k_json`.
 - Yuanta INAV: verified official fallback, `sourceContract: yuanta_inav`.
 - TX quote: still mock/fallback.
+- Premium/discount status: shown as a price-deviation hint only, based on intraday NAV `premiumDiscountPct`, and not shown as official when data is stale or unavailable.
 
 Local backend env:
 

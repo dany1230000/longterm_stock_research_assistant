@@ -122,6 +122,7 @@ class Proxy00631LRepository extends Official00631LRepository {
       targetType: _string(payload['targetType']),
       userDelayMs: _int(payload['userDelayMs'], fallback: 15000),
       sourceContract: payload['sourceContract']?.toString(),
+      isStale: payload['isStale'] == true,
       status: _status(payload),
       lastFetchedAt: _dateTime(payload['fetchedAt']) ?? DateTime.now(),
     );
