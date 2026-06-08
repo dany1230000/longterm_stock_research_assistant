@@ -36,6 +36,7 @@ v1.0 live sources:
 - Daily cycle status v1.15: `scripts/00631l_daily_cycle.cmd` records the latest run result to local ignored state at `backend/data/00631l_daily_cycle_status.json`.
 - Holdings history polish v1.16: `/00631l-lab` adds a recent 7-row holdings summary plus day-over-day and first-to-latest change columns for key official holdings history metrics.
 - CSV export v1.17: history export includes exposure columns, source metadata, row counts, source history range, and `00631l_history_export_metadata.json`.
+- Release check v1.18: `scripts/00631l_release_check.cmd` runs env check, Flutter validation, backend tests, daily cycle, export, smoke, wording scan, and git diff check in one command.
 
 Local backend env:
 

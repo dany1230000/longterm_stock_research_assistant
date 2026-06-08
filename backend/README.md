@@ -191,6 +191,16 @@ backend/data/00631l_daily_cycle_status.json
 
 The file is local operational state and is ignored by git. `operations/status` reads it when present. If the file does not exist, the endpoint reports `dailyCycle.sourceStatus: unavailable` and `overallStatus: missing`.
 
+## v1.18 release check
+
+Run the full local release check:
+
+```cmd
+scripts\00631l_release_check.cmd
+```
+
+The wrapper runs env check, Flutter analyze/test/build, backend tests, daily cycle, export, live smoke, forbidden wording scan, and `git diff --check`. It returns exit code `1` only for failures. WARN is used for expected local/off-hours conditions such as missing local `.env` while fallback mode is still operational.
+
 ## v1.13 local startup checks
 
 Environment check:
