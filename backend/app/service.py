@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Callable
 
 from .cache import TimedMemoryCache
@@ -208,6 +211,9 @@ class Etf00631LService:
         now = utc_now_iso()
         holdings = self.holdings_history_summary(limit=1)
         intraday = self.intraday_nav_history_summary()
+        export_status = self._export_status()
+        daily_cycle_status = self._daily_cycle_status()
+        env_status = self._env_status()
         holdings_items = holdings.get("items") if isinstance(holdings.get("items"), list) else []
         latest_holding = holdings_items[0] if holdings_items else {}
         intraday_items = intraday.get("items") if isinstance(intraday.get("items"), list) else []
@@ -243,11 +249,18 @@ class Etf00631LService:
                 "intradaySourceMode": self._config.intraday_nav_source,
                 "twseIntradayNavConfigured": bool(self._config.twse_intraday_nav_url),
                 "yuantaIntradayNavConfigured": bool(self._config.yuanta_intraday_nav_url),
+                "envFileExists": env_status["envFileExists"],
+                "missingKeys": env_status["missingKeys"],
+                "optionalMissingKeys": env_status["optionalMissingKeys"],
+                "dataDirReady": env_status["dataDirReady"],
+                "exportDirReady": env_status["exportDirReady"],
                 "profileCacheSeconds": self._config.profile_cache_seconds,
                 "holdingsCacheSeconds": self._config.holdings_cache_seconds,
                 "intradayNavCacheSeconds": self._config.intraday_cache_seconds,
                 "holdingsHistoryPathConfigured": bool(self._config.holdings_history_path),
                 "intradayNavHistoryPathConfigured": bool(self._config.intraday_nav_history_path),
+                "historyExportDir": self._config.history_export_dir,
+                "dailyCycleStatusPath": self._config.daily_cycle_status_path,
             },
             "holdingsHistory": {
                 "sourceStatus": holdings.get("sourceStatus"),
@@ -268,6 +281,16 @@ class Etf00631LService:
                 "isStale": intraday.get("isStale"),
                 "errorMessage": intraday.get("errorMessage"),
             },
+            "export": export_status,
+            "dailyCycle": daily_cycle_status,
+            "statusSummary": {
+                "operations": source_status,
+                "holdingsHistory": holdings.get("sourceStatus"),
+                "intradayHistory": intraday.get("sourceStatus"),
+                "export": export_status["sourceStatus"],
+                "dailyCycle": daily_cycle_status["sourceStatus"],
+                "env": env_status["sourceStatus"],
+            },
             "collector": {
                 "oneShotCommand": "scripts\\00631l_collect_snapshot.cmd --samples 1",
                 "intradayCommand": (
@@ -275,6 +298,117 @@ class Etf00631LService:
                     "--skip-holdings --samples 20 --interval-seconds 15"
                 ),
             },
+        }
+
+    def _export_status(self) -> dict[str, Any]:
+        export_dir = Path(self._config.history_export_dir)
+        expected = [
+            export_dir / "00631l_holdings_history_summary.csv",
+            export_dir / "00631l_intraday_nav_history.csv",
+        ]
+        files = []
+        latest_path: Path | None = None
+        latest_mtime = 0.0
+        for path in expected:
+            exists = path.exists()
+            mtime = path.stat().st_mtime if exists else None
+            if mtime is not None and mtime >= latest_mtime:
+                latest_mtime = mtime
+                latest_path = path
+            files.append(
+                {
+                    "name": path.name,
+                    "path": str(path),
+                    "exists": exists,
+                    "updatedAt": _mtime_iso(mtime),
+                    "sizeBytes": path.stat().st_size if exists else 0,
+                }
+            )
+        available = any(file["exists"] for file in files)
+        return {
+            "sourceStatus": "cached" if available else "unavailable",
+            "sourceContract": "00631l_history_export_status",
+            "available": available,
+            "outputDir": str(export_dir),
+            "latestFile": str(latest_path) if latest_path else None,
+            "latestUpdatedAt": _mtime_iso(latest_mtime) if latest_path else None,
+            "files": files,
+            "errorMessage": None if available else "No local CSV export files found.",
+        }
+
+    def _daily_cycle_status(self) -> dict[str, Any]:
+        path = Path(self._config.daily_cycle_status_path)
+        if not path.exists():
+            return {
+                "sourceStatus": "unavailable",
+                "sourceContract": "00631l_daily_cycle_status",
+                "available": False,
+                "path": str(path),
+                "overallStatus": "missing",
+                "startedAt": None,
+                "finishedAt": None,
+                "warningCount": 0,
+                "failureCount": 0,
+                "errorMessage": "No local daily cycle status file found.",
+            }
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            return {
+                "sourceStatus": "error",
+                "sourceContract": "00631l_daily_cycle_status",
+                "available": False,
+                "path": str(path),
+                "overallStatus": "error",
+                "startedAt": None,
+                "finishedAt": None,
+                "warningCount": 0,
+                "failureCount": 1,
+                "errorMessage": f"Daily cycle status read failed: {error}",
+            }
+        warnings = payload.get("warnings") if isinstance(payload.get("warnings"), list) else []
+        failures = payload.get("failures") if isinstance(payload.get("failures"), list) else []
+        return {
+            "sourceStatus": "cached",
+            "sourceContract": "00631l_daily_cycle_status",
+            "available": True,
+            "path": str(path),
+            "overallStatus": str(payload.get("overallStatus") or "unknown"),
+            "startedAt": payload.get("startedAt"),
+            "finishedAt": payload.get("finishedAt"),
+            "warningCount": len(warnings),
+            "failureCount": len(failures),
+            "errorMessage": payload.get("errorMessage"),
+        }
+
+    def _env_status(self) -> dict[str, Any]:
+        backend_root = Path(__file__).resolve().parents[1]
+        env_path = backend_root / ".env"
+        data_dir_ready = _path_parent_ready(self._config.holdings_history_path) and _path_parent_ready(
+            self._config.intraday_nav_history_path
+        )
+        export_dir = Path(self._config.history_export_dir)
+        export_dir_ready = export_dir.exists() or export_dir.parent.exists()
+        missing_keys: list[str] = []
+        optional_missing_keys: list[str] = []
+        if not env_path.exists():
+            missing_keys.append("backend/.env")
+        if not self._config.twse_intraday_nav_url:
+            missing_keys.append("TWSE_00631L_INTRADAY_NAV_URL")
+        if not self._config.yuanta_intraday_nav_url:
+            optional_missing_keys.append("YUANTA_00631L_INTRADAY_NAV_URL")
+        if not data_dir_ready:
+            missing_keys.append("backend/data")
+        if not export_dir_ready:
+            missing_keys.append("backend/exports")
+        return {
+            "sourceStatus": "cached" if not missing_keys else "unavailable",
+            "sourceContract": "00631l_env_status",
+            "envFileExists": env_path.exists(),
+            "missingKeys": missing_keys,
+            "optionalMissingKeys": optional_missing_keys,
+            "dataDirReady": data_dir_ready,
+            "exportDirReady": export_dir_ready,
         }
 
     def _intraday_candidates(self) -> list[tuple[str, str, Callable[..., dict[str, Any]]]]:
@@ -288,6 +422,17 @@ class Etf00631LService:
         if mode in {"yuanta", "auto"} and self._config.yuanta_intraday_nav_url:
             candidates.append(("yuanta", self._config.yuanta_intraday_nav_url, parse_yuanta_intraday_nav))
         return candidates
+
+
+def _mtime_iso(mtime: float | None) -> str | None:
+    if mtime is None:
+        return None
+    return datetime.fromtimestamp(mtime, tz=timezone.utc).replace(microsecond=0).isoformat()
+
+
+def _path_parent_ready(path_text: str) -> bool:
+    path = Path(path_text)
+    return path.exists() or path.parent.exists()
 
 
 service = Etf00631LService()

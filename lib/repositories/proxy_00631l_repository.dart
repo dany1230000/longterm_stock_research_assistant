@@ -197,6 +197,8 @@ class Proxy00631LRepository extends Official00631LRepository {
     final config = _map(payload['config']);
     final holdings = _map(payload['holdingsHistory']);
     final intraday = _map(payload['intradayNavHistory']);
+    final export = _map(payload['export']);
+    final dailyCycle = _map(payload['dailyCycle']);
     final collector = _map(payload['collector']);
 
     return EtfOperationsStatus(
@@ -234,6 +236,22 @@ class Proxy00631LRepository extends Official00631LRepository {
         fallback:
             'scripts\\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15',
       ),
+      envFileExists: config['envFileExists'] == true,
+      missingEnvKeys: _stringList(config['missingKeys']),
+      optionalMissingEnvKeys: _stringList(config['optionalMissingKeys']),
+      dataDirReady: config['dataDirReady'] == true,
+      exportDirReady: config['exportDirReady'] == true,
+      exportAvailable: export['available'] == true,
+      latestExportPath: export['latestFile']?.toString(),
+      latestExportUpdatedAt: _wallClockDateTime(export['latestUpdatedAt']),
+      dailyCycleStatus: _string(
+        dailyCycle['overallStatus'],
+        fallback: 'missing',
+      ),
+      dailyCycleStartedAt: _wallClockDateTime(dailyCycle['startedAt']),
+      dailyCycleFinishedAt: _wallClockDateTime(dailyCycle['finishedAt']),
+      dailyCycleWarningCount: _int(dailyCycle['warningCount']),
+      dailyCycleFailureCount: _int(dailyCycle['failureCount']),
       errorMessage: payload['errorMessage']?.toString(),
     );
   }
@@ -301,6 +319,13 @@ List<Object?> _list(Object? value) {
     return value.cast<Object?>();
   }
   return const [];
+}
+
+List<String> _stringList(Object? value) {
+  return [
+    for (final item in _list(value))
+      if (item != null) item.toString(),
+  ];
 }
 
 String _rawStatus(Map<String, dynamic> payload) {

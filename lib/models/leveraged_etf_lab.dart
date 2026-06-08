@@ -879,6 +879,19 @@ class EtfOperationsStatus {
     required this.intradayHistoryDate,
     required this.collectorOneShotCommand,
     required this.collectorIntradayCommand,
+    this.envFileExists = false,
+    this.missingEnvKeys = const [],
+    this.optionalMissingEnvKeys = const [],
+    this.dataDirReady = false,
+    this.exportDirReady = false,
+    this.exportAvailable = false,
+    this.latestExportPath,
+    this.latestExportUpdatedAt,
+    this.dailyCycleStatus = 'missing',
+    this.dailyCycleStartedAt,
+    this.dailyCycleFinishedAt,
+    this.dailyCycleWarningCount = 0,
+    this.dailyCycleFailureCount = 0,
     this.errorMessage,
   });
 
@@ -910,6 +923,19 @@ class EtfOperationsStatus {
           'scripts\\00631l_collect_snapshot.cmd --samples 1',
       collectorIntradayCommand:
           'scripts\\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15',
+      envFileExists: false,
+      missingEnvKeys: const ['backend/.env', 'TWSE_00631L_INTRADAY_NAV_URL'],
+      optionalMissingEnvKeys: const ['YUANTA_00631L_INTRADAY_NAV_URL'],
+      dataDirReady: false,
+      exportDirReady: false,
+      exportAvailable: false,
+      latestExportPath: null,
+      latestExportUpdatedAt: null,
+      dailyCycleStatus: 'missing',
+      dailyCycleStartedAt: null,
+      dailyCycleFinishedAt: null,
+      dailyCycleWarningCount: 0,
+      dailyCycleFailureCount: 0,
       errorMessage: errorMessage,
     );
   }
@@ -933,10 +959,25 @@ class EtfOperationsStatus {
   final DateTime? intradayHistoryDate;
   final String collectorOneShotCommand;
   final String collectorIntradayCommand;
+  final bool envFileExists;
+  final List<String> missingEnvKeys;
+  final List<String> optionalMissingEnvKeys;
+  final bool dataDirReady;
+  final bool exportDirReady;
+  final bool exportAvailable;
+  final String? latestExportPath;
+  final DateTime? latestExportUpdatedAt;
+  final String dailyCycleStatus;
+  final DateTime? dailyCycleStartedAt;
+  final DateTime? dailyCycleFinishedAt;
+  final int dailyCycleWarningCount;
+  final int dailyCycleFailureCount;
   final String? errorMessage;
 
   bool get hasAnyHistory =>
       holdingsHistoryItemCount > 0 || intradaySampleCount > 0;
+
+  bool get envReady => missingEnvKeys.isEmpty && dataDirReady && exportDirReady;
 }
 
 class Etf00631LLabData {

@@ -77,6 +77,17 @@ void main() {
     expect(find.text('sourceStatus mock'), findsWidgets);
   });
 
+  testWidgets('00631L lab shows today data status summary', (tester) async {
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _scrollUntilTextVisible(tester, '今日資料狀態');
+    expect(find.text('今日資料狀態'), findsOneWidget);
+    expect(find.textContaining('operations mock'), findsOneWidget);
+    expect(find.text('daily cycle'), findsOneWidget);
+    expect(find.textContaining('尚未執行 daily cycle'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('00631L lab shows daily holdings history when available',
       (tester) async {
     await _pumpLab(tester, _HistoryFixture00631LRepository());

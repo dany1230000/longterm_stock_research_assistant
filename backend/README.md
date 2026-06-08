@@ -165,6 +165,20 @@ This endpoint reads local configuration and local JSONL history summaries. It do
 
 If there is no local history, the endpoint returns `sourceStatus: unavailable`; it does not return mock data as official operational state.
 
+## v1.14 data freshness summary
+
+`/api/etf/00631l/operations/status` also reports:
+
+- latest holdings history trade date
+- latest intraday NAV data time
+- holdings history and intraday sample counts
+- CSV export availability and latest export file time
+- local env readiness and missing required keys
+- latest daily cycle status file when present
+- a compact `statusSummary` object for frontend rendering
+
+This endpoint still reads only local state and configuration. It does not fetch live Yuanta or TWSE sources and does not mark missing local state as official data.
+
 ## v1.13 local startup checks
 
 Environment check:

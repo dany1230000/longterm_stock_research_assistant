@@ -53,6 +53,8 @@ class _LabContent extends StatelessWidget {
         const SizedBox(height: 16),
         _StatusSummarySection(summary: data.statusSummary),
         const SizedBox(height: 16),
+        _TodayDataStatusSection(status: data.operationsStatus),
+        const SizedBox(height: 16),
         _OperationsStatusSection(status: data.operationsStatus),
         const SizedBox(height: 16),
         _PremiumDiscountStatusSection(nav: data.intradayNav),
@@ -393,6 +395,131 @@ class _OperationsStatusSection extends StatelessWidget {
           if (status.errorMessage != null) ...[
             const SizedBox(height: 10),
             Text(status.errorMessage!),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _TodayDataStatusSection extends StatelessWidget {
+  const _TodayDataStatusSection({required this.status});
+
+  final EtfOperationsStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    return SectionCard(
+      title: '今日資料狀態',
+      subtitle:
+          '彙整 local history、intraday NAV、CSV export 與 daily cycle 狀態；僅描述資料狀態，非買賣建議。',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              RiskChip(label: 'operations ${status.sourceStatusLabel}'),
+              RiskChip(label: 'holdings ${status.holdingsHistoryStatus}'),
+              RiskChip(label: 'intraday ${status.intradayHistoryStatus}'),
+              RiskChip(
+                  label:
+                      'export ${status.exportAvailable ? 'ready' : 'empty'}'),
+              RiskChip(label: 'dailyCycle ${status.dailyCycleStatus}'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 860;
+              return GridView.count(
+                crossAxisCount: isWide ? 4 : 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: isWide ? 1.18 : 1.0,
+                children: [
+                  MetricTile(
+                    label: 'holdings 更新',
+                    value: status.latestHoldingTradeDate == null
+                        ? '尚無'
+                        : formatTaiwanDate(status.latestHoldingTradeDate!),
+                    caption: 'sourceStatus ${status.holdingsHistoryStatus}',
+                    icon: Icons.inventory_outlined,
+                  ),
+                  MetricTile(
+                    label: 'intraday NAV',
+                    value: status.latestIntradayDataTime == null
+                        ? '尚無'
+                        : formatTimeSeconds(status.latestIntradayDataTime!),
+                    caption: 'samples ${status.intradaySampleCount}',
+                    icon: Icons.schedule_outlined,
+                  ),
+                  MetricTile(
+                    label: 'history 筆數',
+                    value:
+                        '${status.holdingsHistoryItemCount} / ${status.intradaySampleCount}',
+                    caption: 'holdings / intraday',
+                    icon: Icons.storage_outlined,
+                  ),
+                  MetricTile(
+                    label: 'CSV export',
+                    value: status.exportAvailable ? 'ready' : '尚無',
+                    caption: status.latestExportUpdatedAt == null
+                        ? '尚未匯出'
+                        : formatTaiwanDateTimeSeconds(
+                            status.latestExportUpdatedAt!,
+                          ),
+                    icon: Icons.file_download_done_outlined,
+                  ),
+                  MetricTile(
+                    label: 'daily cycle',
+                    value: status.dailyCycleStatus,
+                    caption: status.dailyCycleFinishedAt == null
+                        ? '尚未執行 daily cycle'
+                        : formatTaiwanDateTimeSeconds(
+                            status.dailyCycleFinishedAt!,
+                          ),
+                    icon: Icons.task_alt_outlined,
+                  ),
+                  MetricTile(
+                    label: 'env',
+                    value: status.envReady ? 'ready' : 'missing',
+                    caption: status.missingEnvKeys.isEmpty
+                        ? 'required keys ready'
+                        : status.missingEnvKeys.join(', '),
+                    icon: Icons.settings_outlined,
+                  ),
+                  MetricTile(
+                    label: 'fallback',
+                    value: status.yuantaIntradayNavConfigured
+                        ? 'yuanta ready'
+                        : 'yuanta empty',
+                    caption: status.optionalMissingEnvKeys.isEmpty
+                        ? 'optional fallback configured'
+                        : status.optionalMissingEnvKeys.join(', '),
+                    icon: Icons.settings_backup_restore_outlined,
+                  ),
+                  MetricTile(
+                    label: '資料目錄',
+                    value: status.dataDirReady && status.exportDirReady
+                        ? 'ready'
+                        : 'check',
+                    caption: 'backend/data + backend/exports',
+                    icon: Icons.folder_outlined,
+                  ),
+                ],
+              );
+            },
+          ),
+          if (status.dailyCycleWarningCount > 0 ||
+              status.dailyCycleFailureCount > 0) ...[
+            const SizedBox(height: 10),
+            Text(
+              'daily cycle warnings ${status.dailyCycleWarningCount}, failures ${status.dailyCycleFailureCount}',
+            ),
           ],
         ],
       ),

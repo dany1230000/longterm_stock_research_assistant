@@ -229,11 +229,23 @@ Custodian Fee
             raise AssertionError(f"Unexpected fixture URL: {url}")
 
         with tempfile.TemporaryDirectory() as temp_dir:
+            export_dir = Path(temp_dir) / "exports"
+            export_dir.mkdir()
+            export_file = export_dir / "00631l_holdings_history_summary.csv"
+            export_file.write_text("tradeDate,navPerUnit\n2026-06-05,36.56\n", encoding="utf-8")
+            status_path = Path(temp_dir) / "00631l_daily_cycle_status.json"
+            status_path.write_text(
+                '{"overallStatus":"PASS","startedAt":"2026-06-08T10:00:00+00:00",'
+                '"finishedAt":"2026-06-08T10:05:00+00:00","warnings":[],"failures":[]}',
+                encoding="utf-8",
+            )
             main_module.service = Etf00631LService(
                 config=Settings(
                     yuanta_holdings_url="fixture://holdings",
                     twse_intraday_nav_url="fixture://twse/all_etf",
                     intraday_nav_source="twse",
+                    history_export_dir=str(export_dir),
+                    daily_cycle_status_path=str(status_path),
                 ),
                 fetcher=fake_fetcher,
                 cache=TimedMemoryCache(),
@@ -261,6 +273,12 @@ Custodian Fee
             self.assertEqual(payload["intradayNavHistory"]["sampleCount"], 1)
             self.assertEqual(payload["config"]["intradaySourceMode"], "twse")
             self.assertTrue(payload["config"]["twseIntradayNavConfigured"])
+            self.assertIn("missingKeys", payload["config"])
+            self.assertTrue(payload["export"]["available"])
+            self.assertEqual(payload["export"]["sourceStatus"], "cached")
+            self.assertEqual(payload["dailyCycle"]["overallStatus"], "PASS")
+            self.assertEqual(payload["dailyCycle"]["sourceStatus"], "cached")
+            self.assertEqual(payload["statusSummary"]["export"], "cached")
             self.assertIn("oneShotCommand", payload["collector"])
 
 

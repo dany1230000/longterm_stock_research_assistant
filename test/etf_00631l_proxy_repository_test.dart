@@ -132,6 +132,13 @@ void main() {
     expect(status.latestHoldingTradeDate, DateTime(2026, 6, 8));
     expect(status.intradaySampleCount, 12);
     expect(status.latestIntradayDataTime, DateTime(2026, 6, 8, 13, 31));
+    expect(status.envFileExists, isTrue);
+    expect(status.missingEnvKeys, isEmpty);
+    expect(status.exportAvailable, isTrue);
+    expect(
+        status.latestExportPath, contains('00631l_holdings_history_summary'));
+    expect(status.dailyCycleStatus, 'PASS');
+    expect(status.dailyCycleWarningCount, 1);
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
   });
 
@@ -365,11 +372,18 @@ Map<String, Object?> _operationsStatusPayload() {
       'intradaySourceMode': 'auto',
       'twseIntradayNavConfigured': true,
       'yuantaIntradayNavConfigured': true,
+      'envFileExists': true,
+      'missingKeys': [],
+      'optionalMissingKeys': [],
+      'dataDirReady': true,
+      'exportDirReady': true,
       'profileCacheSeconds': 86400,
       'holdingsCacheSeconds': 600,
       'intradayNavCacheSeconds': 15,
       'holdingsHistoryPathConfigured': true,
       'intradayNavHistoryPathConfigured': true,
+      'historyExportDir': 'backend/exports',
+      'dailyCycleStatusPath': 'backend/data/00631l_daily_cycle_status.json',
     },
     'holdingsHistory': {
       'sourceStatus': 'cached',
@@ -389,6 +403,36 @@ Map<String, Object?> _operationsStatusPayload() {
       'sourceUpdatedAt': '2026-06-08T13:31:00+08:00',
       'isStale': false,
       'errorMessage': null,
+    },
+    'export': {
+      'sourceStatus': 'cached',
+      'sourceContract': '00631l_history_export_status',
+      'available': true,
+      'outputDir': 'backend/exports',
+      'latestFile': 'backend/exports/00631l_holdings_history_summary.csv',
+      'latestUpdatedAt': '2026-06-08T13:35:00+08:00',
+      'files': [],
+      'errorMessage': null,
+    },
+    'dailyCycle': {
+      'sourceStatus': 'cached',
+      'sourceContract': '00631l_daily_cycle_status',
+      'available': true,
+      'path': 'backend/data/00631l_daily_cycle_status.json',
+      'overallStatus': 'PASS',
+      'startedAt': '2026-06-08T13:30:00+08:00',
+      'finishedAt': '2026-06-08T13:35:00+08:00',
+      'warningCount': 1,
+      'failureCount': 0,
+      'errorMessage': null,
+    },
+    'statusSummary': {
+      'operations': 'cached',
+      'holdingsHistory': 'cached',
+      'intradayHistory': 'cached',
+      'export': 'cached',
+      'dailyCycle': 'cached',
+      'env': 'cached',
     },
     'collector': {
       'oneShotCommand': 'scripts\\00631l_collect_snapshot.cmd --samples 1',
