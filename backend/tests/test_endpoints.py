@@ -1,0 +1,138 @@
+import unittest
+from pathlib import Path
+
+try:
+    from fastapi.testclient import TestClient
+    import backend.app.main as main_module
+    from backend.app.cache import TimedMemoryCache
+    from backend.app.config import Settings
+    from backend.app.service import Etf00631LService
+
+    HAS_FASTAPI = True
+except ModuleNotFoundError:
+    HAS_FASTAPI = False
+    TestClient = None
+    main_module = None
+
+
+FIXTURES = Path(__file__).parent / "fixtures"
+
+
+@unittest.skipUnless(HAS_FASTAPI, "FastAPI is not installed in this environment")
+class EndpointTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._original_service = main_module.service
+        self.client = TestClient(main_module.app)
+
+    def tearDown(self) -> None:
+        main_module.service = self._original_service
+
+    def test_health(self) -> None:
+        response = self.client.get("/health")
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["status"], "ok")
+        self.assertIn("serverTime", payload)
+
+    def test_intraday_nav_without_config_is_unavailable(self) -> None:
+        response = self.client.get("/api/etf/00631l/intraday-nav")
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["symbol"], "00631L")
+        self.assertIn(payload["sourceStatus"], {"unavailable", "error", "cached"})
+        self.assertIn("sourceContract", payload)
+
+    def test_intraday_nav_with_twse_fixture_returns_normalized_payload(self) -> None:
+        fixture = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(encoding="utf-8")
+
+        def fake_fetcher(url: str, timeout_seconds: float) -> str:
+            self.assertEqual(url, "fixture://twse/all_etf")
+            return fixture
+
+        main_module.service = Etf00631LService(
+            config=Settings(
+                twse_intraday_nav_url="fixture://twse/all_etf",
+                intraday_nav_source="twse",
+            ),
+            fetcher=fake_fetcher,
+            cache=TimedMemoryCache(),
+        )
+
+        response = self.client.get("/api/etf/00631l/intraday-nav")
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["symbol"], "00631L")
+        self.assertEqual(payload["code"], "00631L")
+        self.assertEqual(payload["sourceStatus"], "official")
+        self.assertEqual(payload["sourceContract"], "twse_a_k_json")
+        self.assertEqual(payload["marketPrice"], 33.8)
+        self.assertEqual(payload["estimatedNav"], 33.55)
+        self.assertEqual(payload["premiumDiscountPct"], 0.75)
+
+    def test_live_proxy_endpoints_return_consistent_metadata(self) -> None:
+        holdings_fixture = (FIXTURES / "00631l_yuanta_ratio_fixture.txt").read_text(encoding="utf-8")
+        intraday_fixture = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(encoding="utf-8")
+        profile_fixture = """
+Fund Name
+Yuanta Taiwan 50 Daily Bull 2X ETF
+Fund Simple Name
+Yuanta Taiwan 50 Bull 2X
+Benchmark Index
+Taiwan 50 Index
+Inception Date
+2014/10/23
+Listing Date
+2014/10/31
+Dividends
+NO
+Risk Level
+RR5
+Management Fee
+1.00%
+Custodian Fee
+0.04%
+"""
+
+        def fake_fetcher(url: str, timeout_seconds: float) -> str:
+            if url == "fixture://profile":
+                return profile_fixture
+            if url == "fixture://holdings":
+                return holdings_fixture
+            if url == "fixture://twse/all_etf":
+                return intraday_fixture
+            raise AssertionError(f"Unexpected fixture URL: {url}")
+
+        main_module.service = Etf00631LService(
+            config=Settings(
+                yuanta_profile_url="fixture://profile",
+                yuanta_holdings_url="fixture://holdings",
+                twse_intraday_nav_url="fixture://twse/all_etf",
+                intraday_nav_source="twse",
+            ),
+            fetcher=fake_fetcher,
+            cache=TimedMemoryCache(),
+        )
+
+        for path in (
+            "/api/etf/00631l/profile",
+            "/api/etf/00631l/holdings",
+            "/api/etf/00631l/intraday-nav",
+        ):
+            response = self.client.get(path)
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+            for key in (
+                "sourceStatus",
+                "sourceContract",
+                "sourceUrl",
+                "fetchedAt",
+                "dataTime",
+                "sourceUpdatedAt",
+                "isStale",
+                "errorMessage",
+            ):
+                self.assertIn(key, payload, msg=f"{path} missing {key}")
+
+
+if __name__ == "__main__":
+    unittest.main()

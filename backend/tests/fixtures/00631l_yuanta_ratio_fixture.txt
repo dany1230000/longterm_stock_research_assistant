@@ -1,0 +1,31 @@
+Fund Holding
+Trade Date:
+2026/06/05
+Fund Net Asset Value (NTD)
+NTD $189,796,511,953.00
+Net Asset Value Per Unit (NTD)
+NTD $36.56
+Outstanding Units (shares)
+5,190,848,000
+Fund Asset
+Stock
+NTD $71,056,425,000
+ETF
+NTD $0.00
+Bond
+NTD $0.00
+Futures
+NTD $306,587,054,000
+Asset Holdings
+Cash
+保證金 NTD $79,303,829,574
+現金
+NTD $26,950,925,242
+附買回債券 NTD $19,950,000,000
+應收利息 NTD $129,448,503
+應付申購預收款 NTD $-1,758,961,440
+Stock Holdings
+2330 台積電 30,045,000 37.44
+Futures Holdings
+TX 臺股期貨 33,895 161.53 202606
+Yuanta Group

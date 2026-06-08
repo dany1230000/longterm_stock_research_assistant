@@ -247,6 +247,11 @@ class _QuickActionsSection extends StatelessWidget {
               route: '/etfs',
             ),
             const _QuickAction(
+              icon: Icons.science_outlined,
+              label: '00631L 正二研究室',
+              route: '/00631l-lab',
+            ),
+            const _QuickAction(
               icon: Icons.account_balance_wallet_outlined,
               label: '查看投資組合',
               route: '/portfolio',
@@ -259,7 +264,7 @@ class _QuickActionsSection extends StatelessWidget {
           ];
 
           return GridView.count(
-            crossAxisCount: isWide ? 5 : 2,
+            crossAxisCount: isWide ? 6 : 2,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 10,

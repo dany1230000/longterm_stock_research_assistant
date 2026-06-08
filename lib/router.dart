@@ -6,6 +6,7 @@ import 'features/backtest/backtest_screen.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/etf_compare/etf_compare_screen.dart';
 import 'features/journal/journal_screen.dart';
+import 'features/leveraged_etf_lab/leveraged_etf_00631l_screen.dart';
 import 'features/portfolio_risk/portfolio_risk_screen.dart';
 import 'features/screener/screener_screen.dart';
 import 'features/settings/settings_screen.dart';
@@ -52,6 +53,10 @@ GoRouter createAppRouter({String initialLocation = '/dashboard'}) {
           GoRoute(
             path: '/etfs',
             builder: (context, state) => const EtfCompareScreen(),
+          ),
+          GoRoute(
+            path: '/00631l-lab',
+            builder: (context, state) => const LeveragedEtf00631LScreen(),
           ),
           GoRoute(
             path: '/alerts',

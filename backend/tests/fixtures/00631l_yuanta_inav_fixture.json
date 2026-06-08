@@ -1,0 +1,24 @@
+{
+  "ResultCode": 0,
+  "ResultMsg": "",
+  "Data": [
+    {
+      "ETF_ID": "00631L",
+      "YEST_NAV": 36.56,
+      "NOW_NAV": 33.55,
+      "NAV_FLUCT": -3.01,
+      "NAV_PCT": -8.23,
+      "YEST_PRICE": 36.67,
+      "NOW_PRICE": 33.8,
+      "PRICE_FLUCT": -2.87,
+      "PRICE_PCT": -7.83,
+      "UPDATE_T": "2026-06-08T13:31:00",
+      "NAV_DATE": "20260605",
+      "NAV": 36.56,
+      "iOS_UNIT": 5190848000.0,
+      "SHOW_INAV": true,
+      "INAV_TYPE": 0
+    }
+  ],
+  "ExecuteTime": "2026-06-08 06:37:31.443"
+}

@@ -4,20 +4,25 @@ import '../models/backtest_result.dart';
 import '../models/etf.dart';
 import '../models/etf_comparison.dart';
 import '../models/journal_entry.dart';
+import '../models/leveraged_etf_lab.dart';
 import '../models/portfolio_risk.dart';
 import '../models/screener_condition.dart';
 import '../models/screener_preset.dart';
 import '../models/stock.dart';
 import 'backtest_repository.dart';
+import 'cached_00631l_repository.dart';
 import 'etf_repository.dart';
 import 'in_memory_journal_repository.dart';
 import 'in_memory_screener_preset_repository.dart';
 import 'journal_repository.dart';
 import 'mock_backtest_repository.dart';
+import 'mock_00631l_repository.dart';
 import 'mock_etf_repository.dart';
 import 'mock_portfolio_repository.dart';
 import 'mock_stock_repository.dart';
+import 'official_00631l_repository.dart';
 import 'portfolio_repository.dart';
+import 'proxy_00631l_repository.dart';
 import 'stock_repository.dart';
 import 'screener_preset_repository.dart';
 
@@ -151,4 +156,26 @@ final portfolioRepositoryProvider = Provider<PortfolioRepository>((ref) {
 
 final portfolioRiskProvider = FutureProvider<PortfolioRisk>((ref) {
   return ref.watch(portfolioRepositoryProvider).fetchMockPortfolioRisk();
+});
+
+final official00631LRepositoryProvider =
+    Provider<Official00631LRepository>((ref) {
+  const useLiveProxy = bool.fromEnvironment('USE_00631L_LIVE_PROXY');
+  const proxyBaseUrl = String.fromEnvironment(
+    '00631L_PROXY_BASE_URL',
+    defaultValue: 'http://localhost:8000',
+  );
+
+  if (useLiveProxy) {
+    return Cached00631LRepository(
+      primary: Proxy00631LRepository(baseUri: Uri.parse(proxyBaseUrl)),
+      fallback: Mock00631LRepository(),
+    );
+  }
+
+  return Mock00631LRepository();
+});
+
+final etf00631LLabProvider = FutureProvider<Etf00631LLabData>((ref) {
+  return ref.watch(official00631LRepositoryProvider).fetchLabData();
 });

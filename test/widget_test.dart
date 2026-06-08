@@ -61,6 +61,7 @@ void main() {
       '/journal': '研究筆記',
       '/settings': '資料來源說明',
       '/etfs': 'ETF 比較',
+      '/00631l-lab': '00631L 正二研究室',
       '/portfolio': '投資組合',
       '/alerts': '提醒中心',
     };
