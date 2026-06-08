@@ -63,6 +63,10 @@ class Settings:
         "00631L_HOLDINGS_HISTORY_PATH",
         str(_BACKEND_ROOT / "data" / "00631l_holdings_history.jsonl"),
     )
+    intraday_nav_history_path: str = os.getenv(
+        "00631L_INTRADAY_NAV_HISTORY_PATH",
+        str(_BACKEND_ROOT / "data" / "00631l_intraday_nav_history.jsonl"),
+    )
 
 
 settings = Settings()

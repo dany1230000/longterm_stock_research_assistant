@@ -52,6 +52,8 @@ class _LabContent extends StatelessWidget {
         const SizedBox(height: 16),
         _PremiumDiscountStatusSection(nav: data.intradayNav),
         const SizedBox(height: 16),
+        _IntradayNavHistorySection(history: data.intradayNavHistory),
+        const SizedBox(height: 16),
         _ProfileSection(profile: data.profile),
         const SizedBox(height: 16),
         _AssetAllocationSection(snapshot: data.snapshot),
@@ -335,6 +337,125 @@ class _PremiumDiscountStatusSection extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _IntradayNavHistorySection extends StatelessWidget {
+  const _IntradayNavHistorySection({required this.history});
+
+  final EtfIntradayNavHistorySummary history;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!history.hasData) {
+      return SectionCard(
+        title: '盤中折溢價歷史',
+        subtitle:
+            'backend 只保存 official intraday NAV；mock 或 unavailable 不會被標示為 official。',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                RiskChip(label: 'sourceStatus ${history.sourceStatusLabel}'),
+                RiskChip(label: 'intradayHistory ${history.status.label}'),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Text('尚無盤中折溢價歷史'),
+            if (history.errorMessage != null) ...[
+              const SizedBox(height: 8),
+              Text(history.errorMessage!),
+            ],
+          ],
+        ),
+      );
+    }
+
+    return SectionCard(
+      title: '盤中折溢價歷史',
+      subtitle: '顯示今日 intraday NAV 保存紀錄的最高、最低與平均折溢價。這是資料觀察，不是交易訊號。',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              RiskChip(label: 'sourceStatus ${history.sourceStatusLabel}'),
+              RiskChip(label: 'intradayHistory ${history.status.label}'),
+              RiskChip(label: 'samples ${history.sampleCount}'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 720;
+              return GridView.count(
+                crossAxisCount: isWide ? 4 : 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: isWide ? 1.05 : 1.0,
+                children: [
+                  MetricTile(
+                    label: '最高溢價',
+                    value: formatSignedNullablePercent(
+                      history.highestPremiumDiscountPct,
+                    ),
+                    caption: 'intraday max',
+                    icon: Icons.north_east_outlined,
+                  ),
+                  MetricTile(
+                    label: '最低折價',
+                    value: formatSignedNullablePercent(
+                      history.lowestPremiumDiscountPct,
+                    ),
+                    caption: 'intraday min',
+                    icon: Icons.south_east_outlined,
+                  ),
+                  MetricTile(
+                    label: '平均折溢價',
+                    value: formatSignedNullablePercent(
+                      history.averagePremiumDiscountPct,
+                    ),
+                    caption: 'intraday average',
+                    icon: Icons.timeline_outlined,
+                  ),
+                  MetricTile(
+                    label: '最後紀錄',
+                    value: history.lastDataTime == null
+                        ? 'unavailable'
+                        : formatTimeSeconds(history.lastDataTime!),
+                    caption: history.date == null
+                        ? 'dataDate unavailable'
+                        : formatTaiwanDate(history.date!),
+                    icon: Icons.schedule_outlined,
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          _HorizontalTable(
+            columns: const ['時間', '市價', '預估淨值', '折溢價', 'sourceContract'],
+            rows: [
+              for (final point in history.points.take(12))
+                [
+                  formatTimeSeconds(point.dataTime),
+                  _price(point.marketPrice),
+                  _price(point.estimatedNav),
+                  formatSignedNullablePercent(point.premiumDiscountPct),
+                  point.sourceContract ?? 'unavailable',
+                ],
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -92,6 +92,28 @@ void main() {
     expect(history.points.first.outstandingUnits, 5200000000);
   });
 
+  test('proxy repository maps intraday NAV history summary payload', () async {
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/00631l/intraday-nav/history/summary':
+            jsonEncode(_intradayHistorySummaryPayload()),
+      }),
+    );
+
+    final history = await repository.fetchIntradayNavHistorySummary();
+
+    expect(history.status, EtfDataStatus.cached);
+    expect(history.sourceStatusLabel, 'cached');
+    expect(history.sampleCount, 3);
+    expect(history.highestPremiumDiscountPct, 0.75);
+    expect(history.lowestPremiumDiscountPct, -0.20);
+    expect(history.averagePremiumDiscountPct, closeTo(0.30, 0.001));
+    expect(history.lastDataTime, DateTime(2026, 6, 8, 13, 31));
+    expect(history.points, hasLength(2));
+    expect(history.points.first.premiumDiscountPct, 0.75);
+    expect(history.points.first.sourceContract, 'twse_a_k_json');
+  });
+
   test('cached repository falls back to mock when proxy is down', () async {
     final repository = Cached00631LRepository(
       primary: Proxy00631LRepository(client: _FailingProxyHttpClient()),
@@ -265,6 +287,44 @@ Map<String, Object?> _holdingsHistorySummaryPayload() {
     'fetchedAt': '2026-06-08T10:15:00+08:00',
     'sourceUpdatedAt': '2026-06-06T00:00:00+08:00',
     'dataTime': '2026-06-06T00:00:00+08:00',
+    'isStale': false,
+    'errorMessage': null,
+  };
+}
+
+Map<String, Object?> _intradayHistorySummaryPayload() {
+  return {
+    'items': [
+      {
+        'dataTime': '2026-06-08T13:31:00+08:00',
+        'marketPrice': 33.8,
+        'estimatedNav': 33.55,
+        'premiumDiscountPct': 0.75,
+        'sourceContract': 'twse_a_k_json',
+      },
+      {
+        'dataTime': '2026-06-08T09:01:00+08:00',
+        'marketPrice': 33.1,
+        'estimatedNav': 33.16,
+        'premiumDiscountPct': -0.20,
+        'sourceContract': 'twse_a_k_json',
+      },
+    ],
+    'sampleCount': 3,
+    'highestPremiumDiscountPct': 0.75,
+    'lowestPremiumDiscountPct': -0.20,
+    'averagePremiumDiscountPct': 0.30,
+    'firstDataTime': '2026-06-08T09:01:00+08:00',
+    'lastDataTime': '2026-06-08T13:31:00+08:00',
+    'latestMarketPrice': 33.8,
+    'latestEstimatedNav': 33.55,
+    'date': '2026-06-08',
+    'sourceStatus': 'cached',
+    'sourceContract': 'local_jsonl_intraday_nav_history_summary',
+    'sourceUrl': 'local://00631l-intraday-nav-history',
+    'fetchedAt': '2026-06-08T13:32:00+08:00',
+    'sourceUpdatedAt': '2026-06-08T13:31:00+08:00',
+    'dataTime': '2026-06-08T13:31:00+08:00',
     'isStale': false,
     'errorMessage': null,
   };

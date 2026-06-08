@@ -6,6 +6,10 @@ from .cache import TimedMemoryCache
 from .config import Settings, settings
 from .fetcher import FetchError, fetch_text
 from .holdings_history import HoldingsHistoryStore, empty_history_response
+from .intraday_nav_history import (
+    IntradayNavHistoryStore,
+    empty_intraday_history_response,
+)
 from .parsers import (
     empty_holdings_response,
     mark_cached,
@@ -29,12 +33,16 @@ class Etf00631LService:
         fetcher: FetchText = fetch_text,
         cache: TimedMemoryCache | None = None,
         history_store: HoldingsHistoryStore | None = None,
+        intraday_history_store: IntradayNavHistoryStore | None = None,
     ) -> None:
         self._config = config
         self._fetcher = fetcher
         self._cache = cache or TimedMemoryCache()
         self._history_store = history_store or HoldingsHistoryStore(
             self._config.holdings_history_path
+        )
+        self._intraday_history_store = intraday_history_store or IntradayNavHistoryStore(
+            self._config.intraday_nav_history_path
         )
 
     def profile(self) -> dict[str, Any]:
@@ -138,6 +146,11 @@ class Etf00631LService:
                 payload = parser(source, source_url=url, fetched_at=now)
                 if payload["sourceStatus"] not in {"error", "unavailable"}:
                     self._cache.set("intraday_nav", payload)
+                    if payload["sourceStatus"] == "official":
+                        try:
+                            self._intraday_history_store.save_official_nav(payload)
+                        except OSError:
+                            pass
                     return payload
                 errors.append(f"{source_name}: {payload.get('errorMessage')}")
             except (FetchError, OSError, RuntimeError, ValueError) as error:
@@ -154,6 +167,42 @@ class Etf00631LService:
             f"Live intraday NAV fetch failed and no cached data is available: {joined}",
             source_status="error",
         )
+
+    def intraday_nav_history(
+        self,
+        *,
+        date: str | None = None,
+        limit: int = 500,
+    ) -> dict[str, Any]:
+        now = utc_now_iso()
+        try:
+            return self._intraday_history_store.history_response(
+                date=date,
+                limit=limit,
+                fetched_at=now,
+            )
+        except (OSError, RuntimeError) as error:
+            return empty_intraday_history_response(
+                fetched_at=now,
+                error_message=f"Intraday NAV history read failed: {error}",
+            )
+
+    def intraday_nav_history_summary(
+        self,
+        *,
+        date: str | None = None,
+    ) -> dict[str, Any]:
+        now = utc_now_iso()
+        try:
+            return self._intraday_history_store.summary_response(
+                date=date,
+                fetched_at=now,
+            )
+        except (OSError, RuntimeError) as error:
+            return empty_intraday_history_response(
+                fetched_at=now,
+                error_message=f"Intraday NAV history summary read failed: {error}",
+            )
 
     def _intraday_candidates(self) -> list[tuple[str, str, Callable[..., dict[str, Any]]]]:
         mode = self._config.intraday_nav_source

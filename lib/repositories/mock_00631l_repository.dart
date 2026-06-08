@@ -62,12 +62,23 @@ class Mock00631LRepository extends Official00631LRepository {
   }
 
   @override
+  Future<EtfIntradayNavHistorySummary> fetchIntradayNavHistorySummary() async {
+    return EtfIntradayNavHistorySummary.empty(
+      lastFetchedAt: _clock(),
+      status: EtfDataStatus.mock,
+      sourceStatusLabel: 'mock',
+      errorMessage: 'Mock mode has no saved intraday NAV history.',
+    );
+  }
+
+  @override
   Future<Etf00631LLabData> fetchLabData() async {
     final profile = await fetchProfile();
     final snapshot = await fetchDailySnapshot();
     final intradayNav = await fetchIntradayNav();
     final futuresQuote = await fetchFuturesQuote();
     final history = await fetchHoldingsHistorySummary();
+    final intradayHistory = await fetchIntradayNavHistorySummary();
     final now = _clock();
 
     return Etf00631LLabData(
@@ -76,6 +87,7 @@ class Mock00631LRepository extends Official00631LRepository {
       intradayNav: intradayNav,
       futuresQuote: futuresQuote,
       holdingsHistory: history,
+      intradayNavHistory: intradayHistory,
       analysis: EtfAnalysisSummary.fromSnapshot(
         snapshot: snapshot,
         intradayNav: intradayNav,

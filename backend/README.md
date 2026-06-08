@@ -44,6 +44,7 @@ See `backend/.env.example` for the deployable template.
 - `00631L_HOLDINGS_CACHE_SECONDS`: default `600`.
 - `00631L_INTRADAY_NAV_CACHE_SECONDS`: default `15`.
 - `00631L_HOLDINGS_HISTORY_PATH`: local JSONL path for daily holdings history, default `backend/data/00631l_holdings_history.jsonl`.
+- `00631L_INTRADAY_NAV_HISTORY_PATH`: local JSONL path for intraday NAV history, default `backend/data/00631l_intraday_nav_history.jsonl`.
 
 `auto` tries TWSE first and then Yuanta. If neither URL is configured, intraday NAV returns `sourceStatus: unavailable` and does not return mock data as official data.
 
@@ -118,3 +119,18 @@ GET /api/etf/00631l/holdings/history/summary?limit=30
 The full history endpoint returns stored daily snapshots. The summary endpoint returns the trend fields used by the Flutter page: TX weight, TSMC weight, stock asset %, futures asset %, cash and margin %, NAV, fund net asset value, and outstanding units.
 
 If no history file exists yet, the endpoints return `sourceStatus: unavailable` with an empty `items` list. They do not return mock data as official history.
+
+## v1.4 intraday NAV history
+
+When `/api/etf/00631l/intraday-nav` successfully fetches an official TWSE or Yuanta intraday NAV sample, the backend saves it to local JSONL. Repeated samples with the same `sourceContract` and `dataTime` are skipped.
+
+Endpoints:
+
+```text
+GET /api/etf/00631l/intraday-nav/history?date=YYYY-MM-DD&limit=500
+GET /api/etf/00631l/intraday-nav/history/summary?date=YYYY-MM-DD
+```
+
+The summary endpoint returns the sample count, highest premium, lowest discount, average premium/discount, first data time, last data time, latest market price, and latest estimated NAV.
+
+If no intraday history exists yet, the endpoints return `sourceStatus: unavailable` with an empty `items` list. They do not fabricate official intraday history from mock data.

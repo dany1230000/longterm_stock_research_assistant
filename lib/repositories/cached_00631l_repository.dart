@@ -17,6 +17,7 @@ class Cached00631LRepository extends Official00631LRepository {
   EtfIntradayNav? _intradayNavCache;
   FuturesQuote? _futuresQuoteCache;
   EtfHoldingsHistory? _holdingsHistoryCache;
+  EtfIntradayNavHistorySummary? _intradayNavHistoryCache;
 
   @override
   Future<LeveragedEtfProfile> fetchProfile() async {
@@ -92,6 +93,21 @@ class Cached00631LRepository extends Official00631LRepository {
         return _cachedHistory(cached);
       }
       return _fallback.fetchHoldingsHistorySummary(limit: limit);
+    }
+  }
+
+  @override
+  Future<EtfIntradayNavHistorySummary> fetchIntradayNavHistorySummary() async {
+    try {
+      final history = await _primary.fetchIntradayNavHistorySummary();
+      _intradayNavHistoryCache = history;
+      return history;
+    } catch (_) {
+      final cached = _intradayNavHistoryCache;
+      if (cached != null) {
+        return _cachedIntradayHistory(cached);
+      }
+      return _fallback.fetchIntradayNavHistorySummary();
     }
   }
 }
@@ -173,6 +189,29 @@ FuturesQuote _cachedFuturesQuote(FuturesQuote quote) {
 EtfHoldingsHistory _cachedHistory(EtfHoldingsHistory history) {
   return EtfHoldingsHistory(
     points: history.points,
+    status: EtfDataStatus.cached,
+    sourceStatusLabel: 'cached',
+    sourceUrl: history.sourceUrl,
+    lastFetchedAt: history.lastFetchedAt,
+    isStale: history.isStale,
+    errorMessage: history.errorMessage,
+  );
+}
+
+EtfIntradayNavHistorySummary _cachedIntradayHistory(
+  EtfIntradayNavHistorySummary history,
+) {
+  return EtfIntradayNavHistorySummary(
+    points: history.points,
+    sampleCount: history.sampleCount,
+    highestPremiumDiscountPct: history.highestPremiumDiscountPct,
+    lowestPremiumDiscountPct: history.lowestPremiumDiscountPct,
+    averagePremiumDiscountPct: history.averagePremiumDiscountPct,
+    firstDataTime: history.firstDataTime,
+    lastDataTime: history.lastDataTime,
+    latestMarketPrice: history.latestMarketPrice,
+    latestEstimatedNav: history.latestEstimatedNav,
+    date: history.date,
     status: EtfDataStatus.cached,
     sourceStatusLabel: 'cached',
     sourceUrl: history.sourceUrl,

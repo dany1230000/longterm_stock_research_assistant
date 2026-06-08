@@ -103,6 +103,30 @@ void main() {
     expect(find.text('twse_a_k_json'), findsWidgets);
   });
 
+  testWidgets('00631L lab shows intraday premium discount history',
+      (tester) async {
+    await _pumpLab(tester, _IntradayHistoryFixture00631LRepository());
+
+    await _scrollUntilTextVisible(tester, '盤中折溢價歷史');
+    expect(find.text('盤中折溢價歷史'), findsOneWidget);
+    expect(find.text('最高溢價'), findsOneWidget);
+    expect(find.text('最低折價'), findsOneWidget);
+    expect(find.text('平均折溢價'), findsOneWidget);
+    expect(find.text('+0.75%'), findsWidgets);
+    expect(find.text('-0.20%'), findsWidgets);
+    expect(find.text('+0.30%'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('00631L lab shows empty intraday history state', (tester) async {
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _scrollUntilTextVisible(tester, '盤中折溢價歷史');
+    expect(find.text('盤中折溢價歷史'), findsOneWidget);
+    expect(find.text('尚無盤中折溢價歷史'), findsOneWidget);
+    expect(find.text('sourceStatus mock'), findsWidgets);
+  });
+
   testWidgets('00631L lab labels unavailable intraday NAV', (tester) async {
     await _pumpLab(tester, _NoIntraday00631LRepository());
 
@@ -182,6 +206,44 @@ Future<void> _scrollUntilTextVisible(WidgetTester tester, String text) async {
   for (var i = 0; i < 24 && find.text(text).evaluate().isEmpty; i += 1) {
     await tester.drag(listView, const Offset(0, -360));
     await tester.pumpAndSettle();
+  }
+}
+
+class _IntradayHistoryFixture00631LRepository extends Mock00631LRepository {
+  @override
+  Future<EtfIntradayNavHistorySummary> fetchIntradayNavHistorySummary() async {
+    return EtfIntradayNavHistorySummary(
+      points: [
+        EtfIntradayNavHistoryPoint(
+          dataTime: DateTime(2026, 6, 8, 13, 31),
+          marketPrice: 33.8,
+          estimatedNav: 33.55,
+          premiumDiscountPct: 0.75,
+          sourceContract: 'twse_a_k_json',
+        ),
+        EtfIntradayNavHistoryPoint(
+          dataTime: DateTime(2026, 6, 8, 9, 1),
+          marketPrice: 33.1,
+          estimatedNav: 33.16,
+          premiumDiscountPct: -0.20,
+          sourceContract: 'twse_a_k_json',
+        ),
+      ],
+      sampleCount: 3,
+      highestPremiumDiscountPct: 0.75,
+      lowestPremiumDiscountPct: -0.20,
+      averagePremiumDiscountPct: 0.30,
+      firstDataTime: DateTime(2026, 6, 8, 9, 1),
+      lastDataTime: DateTime(2026, 6, 8, 13, 31),
+      latestMarketPrice: 33.8,
+      latestEstimatedNav: 33.55,
+      date: DateTime(2026, 6, 8),
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'cached',
+      sourceUrl: 'local://00631l-intraday-nav-history',
+      lastFetchedAt: DateTime(2026, 6, 8, 13, 32),
+      isStale: false,
+    );
   }
 }
 

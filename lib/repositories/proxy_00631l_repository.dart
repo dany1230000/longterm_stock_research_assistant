@@ -157,6 +157,39 @@ class Proxy00631LRepository extends Official00631LRepository {
     );
   }
 
+  @override
+  Future<EtfIntradayNavHistorySummary> fetchIntradayNavHistorySummary() async {
+    final payload =
+        await _getJson('/api/etf/00631l/intraday-nav/history/summary');
+    final rawStatus = _rawStatus(payload);
+    final items = [
+      for (final item in _list(payload['items']))
+        _intradayHistoryPointFromPayload(_map(item)),
+    ];
+
+    return EtfIntradayNavHistorySummary(
+      points: items,
+      sampleCount: _int(payload['sampleCount']),
+      highestPremiumDiscountPct:
+          _nullableDouble(payload['highestPremiumDiscountPct']),
+      lowestPremiumDiscountPct:
+          _nullableDouble(payload['lowestPremiumDiscountPct']),
+      averagePremiumDiscountPct:
+          _nullableDouble(payload['averagePremiumDiscountPct']),
+      firstDataTime: _wallClockDateTime(payload['firstDataTime']),
+      lastDataTime: _wallClockDateTime(payload['lastDataTime']),
+      latestMarketPrice: _nullableDouble(payload['latestMarketPrice']),
+      latestEstimatedNav: _nullableDouble(payload['latestEstimatedNav']),
+      date: _nullableDate(payload['date']),
+      status: _status(payload),
+      sourceStatusLabel: rawStatus.isEmpty ? _status(payload).label : rawStatus,
+      sourceUrl: _string(payload['sourceUrl']),
+      lastFetchedAt: _dateTime(payload['fetchedAt']) ?? DateTime.now(),
+      isStale: payload['isStale'] == true,
+      errorMessage: payload['errorMessage']?.toString(),
+    );
+  }
+
   Future<Map<String, dynamic>> _getJson(String path) async {
     final body = await _client.getString(_resolve(path), timeout: timeout);
     final decoded = jsonDecode(body);
@@ -188,6 +221,20 @@ EtfHoldingsHistoryPoint _historyPointFromPayload(Map<String, dynamic> payload) {
     outstandingUnits: _int(payload['outstandingUnits']),
     status: _status(payload),
     sourceHash: _string(payload['sourceHash']),
+  );
+}
+
+EtfIntradayNavHistoryPoint _intradayHistoryPointFromPayload(
+  Map<String, dynamic> payload,
+) {
+  return EtfIntradayNavHistoryPoint(
+    dataTime: _wallClockDateTime(payload['dataTime']) ?? DateTime(1970),
+    marketPrice: _nullableDouble(payload['marketPrice']),
+    estimatedNav: _nullableDouble(payload['estimatedNav']),
+    premiumDiscountPct: _nullableDouble(
+      payload['premiumDiscountPct'] ?? payload['estimatedPremiumDiscountPct'],
+    ),
+    sourceContract: payload['sourceContract']?.toString(),
   );
 }
 

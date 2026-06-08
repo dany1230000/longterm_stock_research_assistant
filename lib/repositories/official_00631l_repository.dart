@@ -18,12 +18,20 @@ abstract class Official00631LRepository {
     );
   }
 
+  Future<EtfIntradayNavHistorySummary> fetchIntradayNavHistorySummary() async {
+    return EtfIntradayNavHistorySummary.empty(
+      sourceStatusLabel: 'unavailable',
+      status: EtfDataStatus.error,
+    );
+  }
+
   Future<Etf00631LLabData> fetchLabData() async {
     final profile = await fetchProfile();
     final snapshot = await fetchDailySnapshot();
     final intradayNav = await fetchIntradayNav();
     final futuresQuote = await fetchFuturesQuote();
     final history = await _fetchHistorySafely();
+    final intradayHistory = await _fetchIntradayHistorySafely();
     final now = DateTime.now();
 
     return Etf00631LLabData(
@@ -32,6 +40,7 @@ abstract class Official00631LRepository {
       intradayNav: intradayNav,
       futuresQuote: futuresQuote,
       holdingsHistory: history,
+      intradayNavHistory: intradayHistory,
       analysis: EtfAnalysisSummary.fromSnapshot(
         snapshot: snapshot,
         intradayNav: intradayNav,
@@ -46,6 +55,18 @@ abstract class Official00631LRepository {
       return await fetchHoldingsHistorySummary();
     } catch (error) {
       return EtfHoldingsHistory.empty(
+        sourceStatusLabel: 'error',
+        status: EtfDataStatus.error,
+        errorMessage: error.toString(),
+      );
+    }
+  }
+
+  Future<EtfIntradayNavHistorySummary> _fetchIntradayHistorySafely() async {
+    try {
+      return await fetchIntradayNavHistorySummary();
+    } catch (error) {
+      return EtfIntradayNavHistorySummary.empty(
         sourceStatusLabel: 'error',
         status: EtfDataStatus.error,
         errorMessage: error.toString(),

@@ -62,3 +62,16 @@ def holdings_history_summary(limit: int = Query(30, ge=1, le=365)) -> dict:
 @app.get("/api/etf/00631l/intraday-nav")
 def intraday_nav() -> dict:
     return service.intraday_nav()
+
+
+@app.get("/api/etf/00631l/intraday-nav/history")
+def intraday_nav_history(
+    date: str | None = None,
+    limit: int = Query(500, ge=1, le=2000),
+) -> dict:
+    return service.intraday_nav_history(date=date, limit=limit)
+
+
+@app.get("/api/etf/00631l/intraday-nav/history/summary")
+def intraday_nav_history_summary(date: str | None = None) -> dict:
+    return service.intraday_nav_history_summary(date=date)

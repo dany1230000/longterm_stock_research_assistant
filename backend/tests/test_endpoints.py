@@ -8,6 +8,7 @@ try:
     from backend.app.cache import TimedMemoryCache
     from backend.app.config import Settings
     from backend.app.holdings_history import HoldingsHistoryStore
+    from backend.app.intraday_nav_history import IntradayNavHistoryStore
     from backend.app.service import Etf00631LService
 
     HAS_FASTAPI = True
@@ -172,6 +173,49 @@ Custodian Fee
             self.assertEqual(summary["txWeightPct"], 161.53)
             self.assertEqual(summary["tsmcWeightPct"], 37.44)
             self.assertGreater(summary["cashAndMarginPct"], 0)
+
+    def test_intraday_nav_history_endpoints_return_saved_samples(self) -> None:
+        intraday_fixture = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(encoding="utf-8")
+
+        def fake_fetcher(url: str, timeout_seconds: float) -> str:
+            self.assertEqual(url, "fixture://twse/all_etf")
+            return intraday_fixture
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            main_module.service = Etf00631LService(
+                config=Settings(
+                    twse_intraday_nav_url="fixture://twse/all_etf",
+                    intraday_nav_source="twse",
+                ),
+                fetcher=fake_fetcher,
+                cache=TimedMemoryCache(),
+                intraday_history_store=IntradayNavHistoryStore(
+                    Path(temp_dir) / "intraday.jsonl"
+                ),
+            )
+
+            nav_response = self.client.get("/api/etf/00631l/intraday-nav")
+            self.assertEqual(nav_response.status_code, 200)
+            self.assertEqual(nav_response.json()["sourceStatus"], "official")
+
+            history_response = self.client.get(
+                "/api/etf/00631l/intraday-nav/history?date=2026-06-08"
+            )
+            self.assertEqual(history_response.status_code, 200)
+            history_payload = history_response.json()
+            self.assertEqual(history_payload["sourceStatus"], "cached")
+            self.assertEqual(len(history_payload["items"]), 1)
+            self.assertEqual(history_payload["items"][0]["sourceContract"], "twse_a_k_json")
+
+            summary_response = self.client.get(
+                "/api/etf/00631l/intraday-nav/history/summary?date=2026-06-08"
+            )
+            self.assertEqual(summary_response.status_code, 200)
+            summary_payload = summary_response.json()
+            self.assertEqual(summary_payload["sampleCount"], 1)
+            self.assertEqual(summary_payload["highestPremiumDiscountPct"], 0.75)
+            self.assertEqual(summary_payload["lowestPremiumDiscountPct"], 0.75)
+            self.assertEqual(summary_payload["averagePremiumDiscountPct"], 0.75)
 
 
 if __name__ == "__main__":

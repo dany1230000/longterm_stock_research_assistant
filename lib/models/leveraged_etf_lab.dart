@@ -615,6 +615,88 @@ class EtfIntradayNav {
   }
 }
 
+class EtfIntradayNavHistoryPoint {
+  const EtfIntradayNavHistoryPoint({
+    required this.dataTime,
+    required this.marketPrice,
+    required this.estimatedNav,
+    required this.premiumDiscountPct,
+    required this.sourceContract,
+  });
+
+  final DateTime dataTime;
+  final double? marketPrice;
+  final double? estimatedNav;
+  final double? premiumDiscountPct;
+  final String? sourceContract;
+}
+
+class EtfIntradayNavHistorySummary {
+  const EtfIntradayNavHistorySummary({
+    required this.points,
+    required this.sampleCount,
+    required this.highestPremiumDiscountPct,
+    required this.lowestPremiumDiscountPct,
+    required this.averagePremiumDiscountPct,
+    required this.firstDataTime,
+    required this.lastDataTime,
+    required this.latestMarketPrice,
+    required this.latestEstimatedNav,
+    required this.date,
+    required this.status,
+    required this.sourceStatusLabel,
+    required this.sourceUrl,
+    required this.lastFetchedAt,
+    required this.isStale,
+    this.errorMessage,
+  });
+
+  factory EtfIntradayNavHistorySummary.empty({
+    DateTime? lastFetchedAt,
+    EtfDataStatus status = EtfDataStatus.mock,
+    String sourceStatusLabel = 'mock',
+    String? errorMessage,
+  }) {
+    return EtfIntradayNavHistorySummary(
+      points: const [],
+      sampleCount: 0,
+      highestPremiumDiscountPct: null,
+      lowestPremiumDiscountPct: null,
+      averagePremiumDiscountPct: null,
+      firstDataTime: null,
+      lastDataTime: null,
+      latestMarketPrice: null,
+      latestEstimatedNav: null,
+      date: null,
+      status: status,
+      sourceStatusLabel: sourceStatusLabel,
+      sourceUrl: '',
+      lastFetchedAt: lastFetchedAt ?? DateTime.now(),
+      isStale: true,
+      errorMessage: errorMessage,
+    );
+  }
+
+  final List<EtfIntradayNavHistoryPoint> points;
+  final int sampleCount;
+  final double? highestPremiumDiscountPct;
+  final double? lowestPremiumDiscountPct;
+  final double? averagePremiumDiscountPct;
+  final DateTime? firstDataTime;
+  final DateTime? lastDataTime;
+  final double? latestMarketPrice;
+  final double? latestEstimatedNav;
+  final DateTime? date;
+  final EtfDataStatus status;
+  final String sourceStatusLabel;
+  final String sourceUrl;
+  final DateTime lastFetchedAt;
+  final bool isStale;
+  final String? errorMessage;
+
+  bool get hasData => sampleCount > 0 || points.isNotEmpty;
+}
+
 class FuturesQuote {
   const FuturesQuote({
     required this.symbol,
@@ -717,6 +799,7 @@ class Etf00631LLabData {
     required this.intradayNav,
     required this.futuresQuote,
     required this.holdingsHistory,
+    required this.intradayNavHistory,
     required this.analysis,
     required this.lastFetchedAt,
   });
@@ -726,6 +809,7 @@ class Etf00631LLabData {
   final EtfIntradayNav? intradayNav;
   final FuturesQuote futuresQuote;
   final EtfHoldingsHistory holdingsHistory;
+  final EtfIntradayNavHistorySummary intradayNavHistory;
   final EtfAnalysisSummary analysis;
   final DateTime lastFetchedAt;
 

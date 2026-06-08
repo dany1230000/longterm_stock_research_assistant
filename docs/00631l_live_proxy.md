@@ -282,3 +282,18 @@ The frontend computes holdings change notices from the history summary response.
 The app compares the latest two official history rows and flags data-state changes when TX weight, TSMC weight, cash/margin ratio, futures asset ratio, or combined stock/futures exposure crosses the configured thresholds. If there are fewer than two history rows, the app shows that history is still insufficient.
 
 These notices are not trading advice and must not be treated as trading instructions. They are intended to make daily official holdings changes easier to audit.
+
+## v1.4 intraday NAV history endpoints
+
+The backend stores official intraday NAV samples in local JSONL when `/api/etf/00631l/intraday-nav` succeeds. The default path is `backend/data/00631l_intraday_nav_history.jsonl`, configurable with `00631L_INTRADAY_NAV_HISTORY_PATH`.
+
+Endpoints:
+
+```text
+GET /api/etf/00631l/intraday-nav/history?date=YYYY-MM-DD&limit=500
+GET /api/etf/00631l/intraday-nav/history/summary?date=YYYY-MM-DD
+```
+
+The summary endpoint returns today's sample count, highest premium, lowest discount, average premium/discount, first and last data times, latest market price, and latest estimated NAV.
+
+The backend does not fabricate official intraday history from mock, cached, error, or unavailable responses.
