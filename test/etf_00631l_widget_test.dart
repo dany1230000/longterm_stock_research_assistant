@@ -121,9 +121,11 @@ void main() {
 
     await _scrollUntilTextVisible(tester, '盤中折溢價歷史');
     expect(find.text('盤中折溢價歷史'), findsOneWidget);
+    expect(find.text('折溢價走勢'), findsOneWidget);
     expect(find.text('最高溢價'), findsOneWidget);
     expect(find.text('最低折價'), findsOneWidget);
     expect(find.text('平均折溢價'), findsOneWidget);
+    expect(find.text('折溢價 %'), findsOneWidget);
     expect(find.text('+0.75%'), findsWidgets);
     expect(find.text('-0.20%'), findsWidgets);
     expect(find.text('+0.30%'), findsOneWidget);

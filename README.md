@@ -27,6 +27,7 @@ v1.0 live sources:
 - Daily workflow v1.6: `docs/00631l_v1_6_daily_runbook.md` documents backend startup, live proxy mode, smoke checks, and web build flow. `scripts/00631l_release_validate.ps1` runs the release validation sequence.
 - Daily collector v1.7: `backend/scripts/collect_00631l_snapshot.py` and `scripts/00631l_collect_snapshot.cmd` collect official holdings and intraday NAV samples into local JSONL history without requiring the Flutter page to be open.
 - Holdings trend v1.8: the daily holdings history section shows a simple trend chart for TX weight, TSMC weight, and cash/margin weight, while keeping the table as the source-of-truth detail view.
+- Intraday premium trend v1.9: the intraday premium/discount history section shows a simple premiumDiscountPct trend chart with a 0% reference line, using only stored official intraday NAV history.
 
 Local backend env:
 

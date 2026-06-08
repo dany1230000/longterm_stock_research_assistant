@@ -498,6 +498,8 @@ class _IntradayNavHistorySection extends StatelessWidget {
             },
           ),
           const SizedBox(height: 12),
+          _IntradayPremiumTrend(points: history.points),
+          const SizedBox(height: 12),
           _HorizontalTable(
             columns: const ['時間', '市價', '預估淨值', '折溢價', 'sourceContract'],
             rows: [
@@ -510,6 +512,145 @@ class _IntradayNavHistorySection extends StatelessWidget {
                   point.sourceContract ?? 'unavailable',
                 ],
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IntradayPremiumTrend extends StatelessWidget {
+  const _IntradayPremiumTrend({required this.points});
+
+  final List<EtfIntradayNavHistoryPoint> points;
+
+  @override
+  Widget build(BuildContext context) {
+    final ordered = points
+        .where((point) => point.premiumDiscountPct != null)
+        .take(120)
+        .toList()
+        .reversed
+        .toList();
+    if (ordered.length < 2) {
+      return _TrendFrame(
+        child: Text(
+          '需要至少 2 筆 official intraday NAV history，才會顯示折溢價走勢。',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      );
+    }
+
+    final colorScheme = Theme.of(context).colorScheme;
+    final spots = [
+      for (var index = 0; index < ordered.length; index += 1)
+        FlSpot(index.toDouble(), ordered[index].premiumDiscountPct!),
+    ];
+    final minY = _premiumTrendMinY(spots);
+    final maxY = _premiumTrendMaxY(spots);
+    final interval = _premiumTrendInterval(minY, maxY);
+    final labelInterval = (ordered.length / 4).ceilToDouble().clamp(1, 60);
+
+    return _TrendFrame(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('折溢價走勢', style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 4),
+          Text(
+            '依 official intraday NAV history 顯示 premiumDiscountPct 盤中變化。',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 200,
+            child: LineChart(
+              LineChartData(
+                minX: 0,
+                maxX: (ordered.length - 1).toDouble(),
+                minY: minY,
+                maxY: maxY,
+                clipData: const FlClipData.all(),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: interval,
+                ),
+                borderData: FlBorderData(
+                  show: true,
+                  border: Border.all(color: colorScheme.outlineVariant),
+                ),
+                extraLinesData: ExtraLinesData(
+                  horizontalLines: [
+                    HorizontalLine(
+                      y: 0,
+                      color: colorScheme.outline,
+                      strokeWidth: 1,
+                      dashArray: [4, 4],
+                    ),
+                  ],
+                ),
+                titlesData: FlTitlesData(
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 48,
+                      interval: interval,
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          '${value.toStringAsFixed(1)}%',
+                          style: Theme.of(context).textTheme.labelSmall,
+                        );
+                      },
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 34,
+                      interval: labelInterval.toDouble(),
+                      getTitlesWidget: (value, meta) {
+                        final index = value.round();
+                        if (index < 0 || index >= ordered.length) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Text(
+                            _hourMinuteLabel(ordered[index].dataTime),
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    color: colorScheme.primary,
+                    barWidth: 2.5,
+                    isCurved: false,
+                    dotData: FlDotData(show: spots.length <= 12),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: colorScheme.primary.withValues(alpha: 0.08),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          _LegendDot(
+            color: colorScheme.primary,
+            label: '折溢價 %',
           ),
         ],
       ),
@@ -1364,6 +1505,61 @@ String _monthDayLabel(DateTime date) {
   final month = date.month.toString().padLeft(2, '0');
   final day = date.day.toString().padLeft(2, '0');
   return '$month/$day';
+}
+
+double _premiumTrendMinY(List<FlSpot> spots) {
+  var minValue = 0.0;
+  var maxValue = 0.0;
+  for (final spot in spots) {
+    if (spot.y < minValue) {
+      minValue = spot.y;
+    }
+    if (spot.y > maxValue) {
+      maxValue = spot.y;
+    }
+  }
+  final padding = _premiumPadding(minValue, maxValue);
+  return minValue - padding;
+}
+
+double _premiumTrendMaxY(List<FlSpot> spots) {
+  var minValue = 0.0;
+  var maxValue = 0.0;
+  for (final spot in spots) {
+    if (spot.y < minValue) {
+      minValue = spot.y;
+    }
+    if (spot.y > maxValue) {
+      maxValue = spot.y;
+    }
+  }
+  final padding = _premiumPadding(minValue, maxValue);
+  return maxValue + padding;
+}
+
+double _premiumTrendInterval(double minY, double maxY) {
+  final range = maxY - minY;
+  if (range <= 1) {
+    return 0.25;
+  }
+  if (range <= 2) {
+    return 0.5;
+  }
+  return 1;
+}
+
+double _premiumPadding(double minValue, double maxValue) {
+  final range = maxValue - minValue;
+  if (range == 0) {
+    return 0.5;
+  }
+  return range * 0.2;
+}
+
+String _hourMinuteLabel(DateTime date) {
+  final hour = date.hour.toString().padLeft(2, '0');
+  final minute = date.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
 }
 
 class _ErrorLabState extends StatelessWidget {
