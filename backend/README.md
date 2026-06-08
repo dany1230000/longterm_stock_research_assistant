@@ -49,6 +49,12 @@ Local environment check:
 scripts\00631l_check_env.cmd
 ```
 
+Daily open helper:
+
+```cmd
+scripts\00631l_open_lab.cmd
+```
+
 Release checklist: `docs/00631l_release_checklist.md`.
 
 Daily usage guide: `docs/00631l_daily_usage.md`.
@@ -248,6 +254,14 @@ docs/00631l_daily_usage.md
 ```
 
 The guide covers first setup, backend startup, Flutter live proxy startup, daily cycle, operations/status review, holdings history, CSV export, smoke WARN review, backend-down recovery, `.env` setup, and source status definitions. It keeps the scope limited to data status and does not change backend behavior.
+
+## v1.26 open lab helper
+
+```cmd
+scripts\00631l_open_lab.cmd
+```
+
+The helper runs the local environment check, probes backend health, and prints the exact backend, daily cycle, Flutter live proxy, and direct `/#/00631l-lab` route commands. It does not hide backend or Flutter server processes in the background.
 
 ## v1.13 local startup checks
 

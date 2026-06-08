@@ -45,6 +45,16 @@ scripts\00631l_check_env.cmd
 
 若顯示 missing `.env`，先依上面的方式複製範本。若顯示 intraday URL 未設定，app 仍可用 mock/fallback 啟動，但盤中即時淨值來源會顯示 unavailable。
 
+## 最簡單日常入口
+
+在專案根目錄執行：
+
+```cmd
+scripts\00631l_open_lab.cmd
+```
+
+這個 helper 會先跑環境檢查，確認 backend 是否已在 `http://127.0.0.1:8000/health` 回應，並列出 backend、daily cycle、Flutter live proxy 與 `/#/00631l-lab` 的直接開啟方式。它不會把 server 藏在背景執行。
+
 ## 每天啟動 backend
 
 在專案根目錄執行：
@@ -283,6 +293,7 @@ TWSE/Yuanta intraday NAV 是盤中估算資料，只用於市價、預估淨值�
 
 ```cmd
 cd C:\dev\longterm_stock_research_assistant
+scripts\00631l_open_lab.cmd
 scripts\00631l_check_env.cmd
 scripts\00631l_start_backend.cmd
 ```

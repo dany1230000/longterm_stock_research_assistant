@@ -44,6 +44,7 @@ v1.0 live sources:
 - Web app metadata v1.23: Flutter web manifest and HTML metadata now present the app as `00631L 正二研究室` and start at `/#/00631l-lab` when installed.
 - Local data backup v1.24: `scripts/00631l_backup_data.cmd` writes local history/status/export metadata backups under ignored `backend/backups/`.
 - Data directory health v1.25: environment check and operations/status report local `backend/data`, `backend/exports`, and `backend/backups` readiness.
+- Open lab helper v1.26: `scripts/00631l_open_lab.cmd` runs the local environment check, reports backend reachability, and prints the backend, daily cycle, live frontend, and direct `/#/00631l-lab` route commands.
 
 Local backend env:
 
@@ -117,6 +118,12 @@ Back up local 00631L data:
 
 ```cmd
 scripts\00631l_backup_data.cmd
+```
+
+Open the 00631L lab daily helper:
+
+```cmd
+scripts\00631l_open_lab.cmd
 ```
 
 Run the daily cycle:
