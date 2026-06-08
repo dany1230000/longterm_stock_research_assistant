@@ -536,6 +536,8 @@ class _TodayDataStatusSection extends StatelessWidget {
               );
             },
           ),
+          const SizedBox(height: 12),
+          _OperationGuidanceList(lines: status.operationGuidanceLines),
           if (status.dailyCycleWarningCount > 0 ||
               status.dailyCycleFailureCount > 0) ...[
             const SizedBox(height: 10),
@@ -544,6 +546,55 @@ class _TodayDataStatusSection extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _OperationGuidanceList extends StatelessWidget {
+  const _OperationGuidanceList({required this.lines});
+
+  final List<String> lines;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color:
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.35)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '下一步操作提示',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            for (final line in lines)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(top: 2),
+                      child: Icon(Icons.chevron_right, size: 18),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text(line)),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

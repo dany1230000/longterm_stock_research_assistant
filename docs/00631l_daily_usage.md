@@ -264,6 +264,12 @@ backend\backups\
 
 `/00631l-lab` 的 operations/status 也會顯示 data、exports、backups 的簡短狀態。
 
+## 下一步操作提示
+
+`/00631l-lab` 的「今日資料狀態」會顯示「下一步操作提示」。提示只包含 app 操作，例如執行 daily cycle、參考 `.env.example`、檢查 TWSE URL 設定或交易時段、建立 CSV export、建立 local backup、檢查資料目錄。
+
+這些提示只描述本機流程與資料狀態，不是價格判斷或操作建議。
+
 ## official / cached / mock / fallback
 
 - `official`: backend 成功從官方來源抓取並解析。

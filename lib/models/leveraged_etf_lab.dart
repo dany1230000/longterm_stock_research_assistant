@@ -1136,6 +1136,43 @@ class EtfOperationsStatus {
 
   bool get dataDirectoriesReady =>
       dataDirReady && exportDirReady && backupDirReady;
+
+  List<String> get operationGuidanceLines {
+    final lines = <String>[];
+    if (dailyCycleStatus == 'missing' || dailyCycleFinishedAt == null) {
+      lines.add('尚未跑 daily cycle：請執行 scripts\\00631l_daily_cycle.cmd。');
+    }
+
+    if (missingEnvKeys.any((key) => key.contains('.env'))) {
+      lines.add('backend env 未設定：請參考 backend\\.env.example。');
+    } else if (missingEnvKeys.isNotEmpty) {
+      lines.add('backend env 有缺項：請檢查 ${missingEnvKeys.join(', ')}。');
+    }
+
+    final intradayUnavailable = intradayHistoryStatus == 'unavailable' ||
+        intradayHistoryStatus == 'error' ||
+        latestIntradayDataTime == null ||
+        !twseIntradayNavConfigured;
+    if (intradayUnavailable) {
+      lines.add('intraday NAV 目前不可用：請檢查 TWSE URL 設定或交易時段。');
+    }
+
+    if (!exportAvailable) {
+      lines.add('CSV export 不存在：可執行 scripts\\00631l_export_history.cmd。');
+    }
+    if (!backupAvailable) {
+      lines.add('local backup 不存在：可執行 scripts\\00631l_backup_data.cmd。');
+    }
+    if (!dataDirectoriesReady) {
+      lines.add(
+          'data、exports 或 backups 目錄需要檢查：請執行 scripts\\00631l_check_env.cmd。');
+    }
+
+    if (lines.isEmpty) {
+      lines.add('目前沒有需要處理的本機操作項目。');
+    }
+    return lines;
+  }
 }
 
 class Etf00631LLabData {

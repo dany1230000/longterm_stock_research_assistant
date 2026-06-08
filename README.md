@@ -46,6 +46,7 @@ v1.0 live sources:
 - Data directory health v1.25: environment check and operations/status report local `backend/data`, `backend/exports`, and `backend/backups` readiness.
 - Open lab helper v1.26: `scripts/00631l_open_lab.cmd` runs the local environment check, reports backend reachability, and prints the backend, daily cycle, live frontend, and direct `/#/00631l-lab` route commands.
 - Troubleshooting v1.27: `docs/00631l_troubleshooting.md` covers common local startup, backend, intraday NAV, smoke WARN, Flutter path, CSV export, and history data issues.
+- Operations guidance v1.28: `/00631l-lab` shows app operation next steps for daily cycle, `.env`, intraday NAV availability, CSV export, backup, and data directory checks.
 
 Local backend env:
 

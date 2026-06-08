@@ -41,6 +41,29 @@ void main() {
     expect(summary.label, '資料狀態正常');
     expect(summary.lines.last, contains('非買賣建議'));
   });
+
+  test('operations guidance describes app next steps', () {
+    final status = EtfOperationsStatus.empty(
+      lastFetchedAt: DateTime(2026, 6, 9, 10, 15),
+    );
+
+    expect(
+      status.operationGuidanceLines,
+      contains('尚未跑 daily cycle：請執行 scripts\\00631l_daily_cycle.cmd。'),
+    );
+    expect(
+      status.operationGuidanceLines,
+      contains('backend env 未設定：請參考 backend\\.env.example。'),
+    );
+    expect(
+      status.operationGuidanceLines,
+      contains('intraday NAV 目前不可用：請檢查 TWSE URL 設定或交易時段。'),
+    );
+    expect(
+      status.operationGuidanceLines,
+      contains('CSV export 不存在：可執行 scripts\\00631l_export_history.cmd。'),
+    );
+  });
 }
 
 EtfStatusSummary _summary({

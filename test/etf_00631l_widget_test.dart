@@ -108,6 +108,11 @@ void main() {
     expect(find.textContaining('operations mock'), findsOneWidget);
     expect(find.text('daily cycle'), findsOneWidget);
     expect(find.textContaining('尚未執行 daily cycle'), findsOneWidget);
+    expect(find.text('下一步操作提示'), findsOneWidget);
+    expect(
+        find.textContaining('scripts\\00631l_daily_cycle.cmd'), findsOneWidget);
+    expect(find.textContaining('backend\\.env.example'), findsOneWidget);
+    expect(find.textContaining('TWSE URL 設定或交易時段'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
