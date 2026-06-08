@@ -42,6 +42,7 @@ v1.0 live sources:
 - Entry experience v1.21: Dashboard now has a clear `00631L 正二研究室` entry and the live frontend startup script prints the direct `/#/00631l-lab` route.
 - Mobile layout v1.22: `/00631l-lab` uses compact one-column cards and horizontal tables on phone-width screens.
 - Web app metadata v1.23: Flutter web manifest and HTML metadata now present the app as `00631L 正二研究室` and start at `/#/00631l-lab` when installed.
+- Local data backup v1.24: `scripts/00631l_backup_data.cmd` writes local history/status/export metadata backups under ignored `backend/backups/`.
 
 Local backend env:
 
@@ -109,6 +110,12 @@ Export local history:
 
 ```cmd
 scripts\00631l_export_history.cmd
+```
+
+Back up local 00631L data:
+
+```cmd
+scripts\00631l_backup_data.cmd
 ```
 
 Run the daily cycle:

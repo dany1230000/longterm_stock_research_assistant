@@ -65,6 +65,7 @@ See `backend/.env.example` for the deployable template.
 - `00631L_INTRADAY_NAV_CACHE_SECONDS`: default `15`.
 - `00631L_HOLDINGS_HISTORY_PATH`: local JSONL path for daily holdings history, default `backend/data/00631l_holdings_history.jsonl`.
 - `00631L_INTRADAY_NAV_HISTORY_PATH`: local JSONL path for intraday NAV history, default `backend/data/00631l_intraday_nav_history.jsonl`.
+- `00631L_BACKUP_DIR`: local backup output directory, default `backend/backups`.
 
 `auto` tries TWSE first and then Yuanta. If neither URL is configured, intraday NAV returns `sourceStatus: unavailable` and does not return mock data as official data.
 
@@ -202,6 +203,29 @@ scripts\00631l_release_check.cmd
 ```
 
 The wrapper runs env check, Flutter analyze/test/build, backend tests, daily cycle, export, live smoke, forbidden wording scan, and `git diff --check`. It returns exit code `1` only for failures. WARN is used for expected local/off-hours conditions such as missing local `.env` while fallback mode is still operational.
+
+## v1.24 local data backup
+
+Create a local backup archive:
+
+```cmd
+scripts\00631l_backup_data.cmd
+```
+
+The archive is written under ignored local storage:
+
+```text
+backend/backups/
+```
+
+Included when present:
+
+- holdings history JSONL
+- intraday NAV history JSONL
+- latest daily cycle status JSON
+- CSV export metadata JSON
+
+Restore is a manual review flow in v1.24. Unzip to a temporary folder, compare file dates and contents, then copy selected files back to `backend/data/` or `backend/exports/` only after review.
 
 ## v1.19 daily usage guide
 

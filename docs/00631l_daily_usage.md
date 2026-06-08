@@ -224,6 +224,24 @@ YUANTA_00631L_INTRADAY_NAV_URL=
 
 Yuanta INAV fallback URL 若需要更新，請從 Yuanta INAV 頁面 network request 重新驗證，不要使用不明來源。
 
+## 備份本機資料
+
+手動備份：
+
+```cmd
+scripts\00631l_backup_data.cmd
+```
+
+輸出位置：
+
+```text
+backend\backups\
+```
+
+備份 zip 會包含目前存在的 holdings history、intraday NAV history、daily cycle status 與 export metadata。`backend\backups\` 是本機備份目錄，不要提交到 git。
+
+還原時請先解壓到臨時資料夾，比對檔案內容與日期，再手動複製需要的檔案回 `backend\data\` 或 `backend\exports\`。v1.24 不提供自動 restore script，避免誤覆蓋現有 history。
+
 ## official / cached / mock / fallback
 
 - `official`: backend 成功從官方來源抓取並解析。
