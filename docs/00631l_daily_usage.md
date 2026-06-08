@@ -135,6 +135,18 @@ Flutter 頁面 `/00631l-lab` 會顯示每日內容物歷史。主要欄位：
 
 若表格欄位較多，請左右滑動表格區塊；這不代表資料缺失。
 
+## 加到桌面或手機主畫面
+
+Flutter web build 會使用 `web/manifest.json`。manifest 目前以「00631L 正二研究室」作為 app 名稱，安裝後預設開啟 `/#/00631l-lab`。
+
+瀏覽器安裝方式依平台不同：
+
+- Chrome/Edge 桌面：開啟 web app 後使用瀏覽器選單的安裝 app 或建立捷徑。
+- Android Chrome：開啟 web app 後使用加入主畫面。
+- iOS Safari：使用分享選單加入主畫面。
+
+安裝到桌面或主畫面只處理前端入口。live data 仍需要 backend proxy 正常啟動。
+
 ## CSV 匯出
 
 手動匯出：

@@ -1,11 +1,11 @@
 {
-    "name": "longterm_stock_research_assistant",
-    "short_name": "longterm_stock_research_assistant",
-    "start_url": ".",
+    "name": "00631L 正二研究室",
+    "short_name": "00631L Lab",
+    "start_url": "./#/00631l-lab",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F8FAFC",
+    "theme_color": "#0F766E",
+    "description": "00631L 官方內容物、即時淨值、折溢價與日常資料狀態研究工具。",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
