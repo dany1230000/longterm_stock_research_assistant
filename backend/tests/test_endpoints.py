@@ -231,6 +231,10 @@ Custodian Fee
         with tempfile.TemporaryDirectory() as temp_dir:
             export_dir = Path(temp_dir) / "exports"
             export_dir.mkdir()
+            backup_dir = Path(temp_dir) / "backups"
+            backup_dir.mkdir()
+            backup_file = backup_dir / "00631l_local_data_backup_20260608_100000Z.zip"
+            backup_file.write_bytes(b"fixture backup")
             export_file = export_dir / "00631l_holdings_history_summary.csv"
             export_file.write_text("tradeDate,navPerUnit\n2026-06-05,36.56\n", encoding="utf-8")
             metadata_file = export_dir / "00631l_history_export_metadata.json"
@@ -253,6 +257,7 @@ Custodian Fee
                     intraday_nav_source="twse",
                     history_export_dir=str(export_dir),
                     daily_cycle_status_path=str(status_path),
+                    backup_dir=str(backup_dir),
                 ),
                 fetcher=fake_fetcher,
                 cache=TimedMemoryCache(),
@@ -290,6 +295,10 @@ Custodian Fee
             )
             self.assertEqual(payload["dailyCycle"]["overallStatus"], "PASS")
             self.assertEqual(payload["dailyCycle"]["sourceStatus"], "cached")
+            self.assertTrue(payload["backup"]["available"])
+            self.assertEqual(payload["backup"]["sourceStatus"], "cached")
+            self.assertTrue(payload["config"]["backupDirReady"])
+            self.assertEqual(payload["dataDirectoryHealth"]["backupDir"]["fileCount"], 1)
             self.assertEqual(payload["statusSummary"]["export"], "cached")
             self.assertIn("oneShotCommand", payload["collector"])
 

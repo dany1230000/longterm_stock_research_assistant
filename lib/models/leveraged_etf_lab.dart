@@ -1023,9 +1023,13 @@ class EtfOperationsStatus {
     this.optionalMissingEnvKeys = const [],
     this.dataDirReady = false,
     this.exportDirReady = false,
+    this.backupDirReady = false,
     this.exportAvailable = false,
     this.latestExportPath,
     this.latestExportUpdatedAt,
+    this.backupAvailable = false,
+    this.latestBackupPath,
+    this.latestBackupUpdatedAt,
     this.dailyCycleStatus = 'missing',
     this.dailyCycleStartedAt,
     this.dailyCycleFinishedAt,
@@ -1067,9 +1071,13 @@ class EtfOperationsStatus {
       optionalMissingEnvKeys: const ['YUANTA_00631L_INTRADAY_NAV_URL'],
       dataDirReady: false,
       exportDirReady: false,
+      backupDirReady: false,
       exportAvailable: false,
       latestExportPath: null,
       latestExportUpdatedAt: null,
+      backupAvailable: false,
+      latestBackupPath: null,
+      latestBackupUpdatedAt: null,
       dailyCycleStatus: 'missing',
       dailyCycleStartedAt: null,
       dailyCycleFinishedAt: null,
@@ -1103,9 +1111,13 @@ class EtfOperationsStatus {
   final List<String> optionalMissingEnvKeys;
   final bool dataDirReady;
   final bool exportDirReady;
+  final bool backupDirReady;
   final bool exportAvailable;
   final String? latestExportPath;
   final DateTime? latestExportUpdatedAt;
+  final bool backupAvailable;
+  final String? latestBackupPath;
+  final DateTime? latestBackupUpdatedAt;
   final String dailyCycleStatus;
   final DateTime? dailyCycleStartedAt;
   final DateTime? dailyCycleFinishedAt;
@@ -1116,7 +1128,14 @@ class EtfOperationsStatus {
   bool get hasAnyHistory =>
       holdingsHistoryItemCount > 0 || intradaySampleCount > 0;
 
-  bool get envReady => missingEnvKeys.isEmpty && dataDirReady && exportDirReady;
+  bool get envReady =>
+      missingEnvKeys.isEmpty &&
+      dataDirReady &&
+      exportDirReady &&
+      backupDirReady;
+
+  bool get dataDirectoriesReady =>
+      dataDirReady && exportDirReady && backupDirReady;
 }
 
 class Etf00631LLabData {

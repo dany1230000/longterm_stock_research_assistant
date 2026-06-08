@@ -135,8 +135,11 @@ void main() {
     expect(status.envFileExists, isTrue);
     expect(status.missingEnvKeys, isEmpty);
     expect(status.exportAvailable, isTrue);
+    expect(status.backupDirReady, isTrue);
+    expect(status.backupAvailable, isTrue);
     expect(
         status.latestExportPath, contains('00631l_holdings_history_summary'));
+    expect(status.latestBackupPath, contains('00631l_local_data_backup'));
     expect(status.dailyCycleStatus, 'PASS');
     expect(status.dailyCycleWarningCount, 1);
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
@@ -377,6 +380,7 @@ Map<String, Object?> _operationsStatusPayload() {
       'optionalMissingKeys': [],
       'dataDirReady': true,
       'exportDirReady': true,
+      'backupDirReady': true,
       'profileCacheSeconds': 86400,
       'holdingsCacheSeconds': 600,
       'intradayNavCacheSeconds': 15,
@@ -384,6 +388,7 @@ Map<String, Object?> _operationsStatusPayload() {
       'intradayNavHistoryPathConfigured': true,
       'historyExportDir': 'backend/exports',
       'dailyCycleStatusPath': 'backend/data/00631l_daily_cycle_status.json',
+      'backupDir': 'backend/backups',
     },
     'holdingsHistory': {
       'sourceStatus': 'cached',
@@ -414,6 +419,16 @@ Map<String, Object?> _operationsStatusPayload() {
       'files': [],
       'errorMessage': null,
     },
+    'backup': {
+      'sourceStatus': 'cached',
+      'sourceContract': '00631l_backup_status',
+      'available': true,
+      'backupDir': 'backend/backups',
+      'latestFile':
+          'backend/backups/00631l_local_data_backup_20260608_100000Z.zip',
+      'latestUpdatedAt': '2026-06-08T13:36:00+08:00',
+      'errorMessage': null,
+    },
     'dailyCycle': {
       'sourceStatus': 'cached',
       'sourceContract': '00631l_daily_cycle_status',
@@ -431,6 +446,7 @@ Map<String, Object?> _operationsStatusPayload() {
       'holdingsHistory': 'cached',
       'intradayHistory': 'cached',
       'export': 'cached',
+      'backup': 'cached',
       'dailyCycle': 'cached',
       'env': 'cached',
     },

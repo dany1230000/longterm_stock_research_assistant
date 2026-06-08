@@ -242,6 +242,18 @@ backend\backups\
 
 還原時請先解壓到臨時資料夾，比對檔案內容與日期，再手動複製需要的檔案回 `backend\data\` 或 `backend\exports\`。v1.24 不提供自動 restore script，避免誤覆蓋現有 history。
 
+## 資料目錄健康狀態
+
+`scripts\00631l_check_env.cmd` 會確認：
+
+- `backend\data`
+- `backend\exports`
+- `backend\backups`
+
+檢查內容包含目錄是否存在、是否可寫入、是否已有 holdings history、export metadata 與 backup zip。剛安裝還沒有 backup 或 history 時會顯示 WARN，不是 FAIL。
+
+`/00631l-lab` 的 operations/status 也會顯示 data、exports、backups 的簡短狀態。
+
 ## official / cached / mock / fallback
 
 - `official`: backend 成功從官方來源抓取並解析。

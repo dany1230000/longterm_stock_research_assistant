@@ -96,6 +96,8 @@ void main() {
     expect(find.text('daily collector'), findsOneWidget);
     expect(find.textContaining('00631l_collect_snapshot'), findsWidgets);
     expect(find.text('sourceStatus mock'), findsWidgets);
+    expect(find.textContaining('backup'), findsWidgets);
+    expect(find.textContaining('data + exports + backups'), findsOneWidget);
   });
 
   testWidgets('00631L lab shows today data status summary', (tester) async {
@@ -263,7 +265,7 @@ Future<void> _pumpLab(
 
 Future<void> _scrollUntilTextVisible(WidgetTester tester, String text) async {
   final listView = find.byType(ListView);
-  for (var i = 0; i < 24 && find.text(text).evaluate().isEmpty; i += 1) {
+  for (var i = 0; i < 36 && find.text(text).evaluate().isEmpty; i += 1) {
     await tester.drag(listView, const Offset(0, -360));
     await tester.pumpAndSettle();
   }

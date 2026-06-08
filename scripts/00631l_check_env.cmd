@@ -88,15 +88,49 @@ if exist backend\.env (
 
 echo.
 echo == Local data directories ==
-for %%D in (backend\data backend\exports) do (
+for %%D in (backend\data backend\exports backend\backups) do (
     if not exist %%D mkdir %%D
     if exist %%D (
         echo PASS %%D exists.
+        > "%%D\.00631l_write_test.tmp" echo write-test
+        if exist "%%D\.00631l_write_test.tmp" (
+            del "%%D\.00631l_write_test.tmp" >nul 2>nul
+            echo PASS %%D is writable.
+        ) else (
+            echo FAIL %%D is not writable.
+            set "FAIL=1"
+        )
     ) else (
         echo FAIL %%D could not be created.
         set "FAIL=1"
     )
 )
+
+echo.
+echo == Local data freshness ==
+if exist backend\data\00631l_holdings_history.jsonl (
+    echo PASS holdings history exists.
+) else (
+    echo WARN holdings history is not present yet. Run scripts\00631l_daily_cycle.cmd.
+    set "WARN=1"
+)
+
+if exist backend\exports\00631l_history_export_metadata.json (
+    echo PASS export metadata exists.
+) else (
+    echo WARN export metadata is not present yet. Run scripts\00631l_export_history.cmd.
+    set "WARN=1"
+)
+
+dir /b /a-d /o-d backend\backups\00631l_local_data_backup_*.zip > "%TEMP%\00631l_latest_backup.txt" 2>nul
+if errorlevel 1 (
+    echo WARN local backup archive is not present yet. Run scripts\00631l_backup_data.cmd.
+    set "WARN=1"
+) else (
+    set /p LATEST_BACKUP=<"%TEMP%\00631l_latest_backup.txt"
+    echo PASS latest backup !LATEST_BACKUP!
+)
+del "%TEMP%\00631l_latest_backup.txt" >nul 2>nul
 
 del "%TMP_FLUTTER%" >nul 2>nul
 del "%TMP_DART%" >nul 2>nul

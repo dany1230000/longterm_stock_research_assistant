@@ -227,6 +227,18 @@ Included when present:
 
 Restore is a manual review flow in v1.24. Unzip to a temporary folder, compare file dates and contents, then copy selected files back to `backend/data/` or `backend/exports/` only after review.
 
+## v1.25 data directory health
+
+`scripts\00631l_check_env.cmd` checks:
+
+- `backend/data`
+- `backend/exports`
+- `backend/backups`
+
+Each directory is created when missing and tested for local write access. Missing holdings history, export metadata, or backup archives are reported as WARN so a fresh install remains usable.
+
+`/api/etf/00631l/operations/status` also reports `dataDirectoryHealth`, `backup`, and `config.backupDirReady`. The Flutter page shows backup and directory readiness in the operations/status area.
+
 ## v1.19 daily usage guide
 
 Daily operation is documented in:

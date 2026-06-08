@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
@@ -212,8 +213,13 @@ class Etf00631LService:
         holdings = self.holdings_history_summary(limit=1)
         intraday = self.intraday_nav_history_summary()
         export_status = self._export_status()
+        backup_status = self._backup_status()
         daily_cycle_status = self._daily_cycle_status()
         env_status = self._env_status()
+        data_directory_health = self._data_directory_health(
+            backup_status=backup_status,
+            export_status=export_status,
+        )
         holdings_items = holdings.get("items") if isinstance(holdings.get("items"), list) else []
         latest_holding = holdings_items[0] if holdings_items else {}
         intraday_items = intraday.get("items") if isinstance(intraday.get("items"), list) else []
@@ -254,6 +260,7 @@ class Etf00631LService:
                 "optionalMissingKeys": env_status["optionalMissingKeys"],
                 "dataDirReady": env_status["dataDirReady"],
                 "exportDirReady": env_status["exportDirReady"],
+                "backupDirReady": env_status["backupDirReady"],
                 "profileCacheSeconds": self._config.profile_cache_seconds,
                 "holdingsCacheSeconds": self._config.holdings_cache_seconds,
                 "intradayNavCacheSeconds": self._config.intraday_cache_seconds,
@@ -261,7 +268,9 @@ class Etf00631LService:
                 "intradayNavHistoryPathConfigured": bool(self._config.intraday_nav_history_path),
                 "historyExportDir": self._config.history_export_dir,
                 "dailyCycleStatusPath": self._config.daily_cycle_status_path,
+                "backupDir": self._config.backup_dir,
             },
+            "dataDirectoryHealth": data_directory_health,
             "holdingsHistory": {
                 "sourceStatus": holdings.get("sourceStatus"),
                 "sourceContract": holdings.get("sourceContract"),
@@ -282,12 +291,14 @@ class Etf00631LService:
                 "errorMessage": intraday.get("errorMessage"),
             },
             "export": export_status,
+            "backup": backup_status,
             "dailyCycle": daily_cycle_status,
             "statusSummary": {
                 "operations": source_status,
                 "holdingsHistory": holdings.get("sourceStatus"),
                 "intradayHistory": intraday.get("sourceStatus"),
                 "export": export_status["sourceStatus"],
+                "backup": backup_status["sourceStatus"],
                 "dailyCycle": daily_cycle_status["sourceStatus"],
                 "env": env_status["sourceStatus"],
             },
@@ -299,6 +310,69 @@ class Etf00631LService:
                 ),
             },
         }
+
+    def _backup_status(self) -> dict[str, Any]:
+        backup_dir = Path(self._config.backup_dir)
+        latest_path: Path | None = None
+        latest_mtime = 0.0
+        if backup_dir.exists() and backup_dir.is_dir():
+            for path in backup_dir.glob("00631l_local_data_backup_*.zip"):
+                if not path.is_file():
+                    continue
+                mtime = path.stat().st_mtime
+                if mtime >= latest_mtime:
+                    latest_path = path
+                    latest_mtime = mtime
+        available = latest_path is not None
+        return {
+            "sourceStatus": "cached" if available else "unavailable",
+            "sourceContract": "00631l_backup_status",
+            "available": available,
+            "backupDir": str(backup_dir),
+            "latestFile": str(latest_path) if latest_path else None,
+            "latestUpdatedAt": _mtime_iso(latest_mtime) if latest_path else None,
+            "errorMessage": None if available else "No local backup archive found.",
+        }
+
+    def _data_directory_health(
+        self,
+        *,
+        backup_status: dict[str, Any],
+        export_status: dict[str, Any],
+    ) -> dict[str, Any]:
+        data_dir = Path(self._config.holdings_history_path).parent
+        export_dir = Path(self._config.history_export_dir)
+        backup_dir = Path(self._config.backup_dir)
+        data_files = [
+            Path(self._config.holdings_history_path),
+            Path(self._config.intraday_nav_history_path),
+            Path(self._config.daily_cycle_status_path),
+        ]
+        export_files = [
+            export_dir / "00631l_holdings_history_summary.csv",
+            export_dir / "00631l_intraday_nav_history.csv",
+            export_dir / "00631l_history_export_metadata.json",
+        ]
+        health = {
+            "sourceStatus": "cached",
+            "sourceContract": "00631l_data_directory_health",
+            "dataDir": _directory_health(data_dir, data_files),
+            "exportDir": _directory_health(export_dir, export_files),
+            "backupDir": _directory_health(
+                backup_dir,
+                [Path(backup_status["latestFile"])]
+                if backup_status.get("latestFile")
+                else [],
+            ),
+            "latestExportUpdatedAt": export_status.get("latestUpdatedAt"),
+            "latestBackupUpdatedAt": backup_status.get("latestUpdatedAt"),
+        }
+        directories = [health["dataDir"], health["exportDir"], health["backupDir"]]
+        if any(directory["sourceStatus"] == "error" for directory in directories):
+            health["sourceStatus"] = "error"
+        elif any(directory["sourceStatus"] == "unavailable" for directory in directories):
+            health["sourceStatus"] = "unavailable"
+        return health
 
     def _export_status(self) -> dict[str, Any]:
         export_dir = Path(self._config.history_export_dir)
@@ -395,6 +469,8 @@ class Etf00631LService:
         )
         export_dir = Path(self._config.history_export_dir)
         export_dir_ready = export_dir.exists() or export_dir.parent.exists()
+        backup_dir = Path(self._config.backup_dir)
+        backup_dir_ready = backup_dir.exists() or backup_dir.parent.exists()
         missing_keys: list[str] = []
         optional_missing_keys: list[str] = []
         if not env_path.exists():
@@ -407,6 +483,8 @@ class Etf00631LService:
             missing_keys.append("backend/data")
         if not export_dir_ready:
             missing_keys.append("backend/exports")
+        if not backup_dir_ready:
+            optional_missing_keys.append("backend/backups")
         return {
             "sourceStatus": "cached" if not missing_keys else "unavailable",
             "sourceContract": "00631l_env_status",
@@ -415,6 +493,7 @@ class Etf00631LService:
             "optionalMissingKeys": optional_missing_keys,
             "dataDirReady": data_dir_ready,
             "exportDirReady": export_dir_ready,
+            "backupDirReady": backup_dir_ready,
         }
 
     def _intraday_candidates(self) -> list[tuple[str, str, Callable[..., dict[str, Any]]]]:
@@ -439,6 +518,31 @@ def _mtime_iso(mtime: float | None) -> str | None:
 def _path_parent_ready(path_text: str) -> bool:
     path = Path(path_text)
     return path.exists() or path.parent.exists()
+
+
+def _directory_health(directory: Path, files: list[Path]) -> dict[str, Any]:
+    exists = directory.exists() and directory.is_dir()
+    writable = exists and os.access(directory, os.W_OK)
+    existing_files = [path for path in files if path.exists()]
+    latest_path: Path | None = None
+    latest_mtime = 0.0
+    for path in existing_files:
+        mtime = path.stat().st_mtime
+        if mtime >= latest_mtime:
+            latest_path = path
+            latest_mtime = mtime
+    source_status = "cached" if exists and writable else "error"
+    if exists and writable and not existing_files:
+        source_status = "unavailable"
+    return {
+        "sourceStatus": source_status,
+        "path": str(directory),
+        "exists": exists,
+        "writable": writable,
+        "fileCount": len(existing_files),
+        "latestFile": str(latest_path) if latest_path else None,
+        "latestUpdatedAt": _mtime_iso(latest_mtime) if latest_path else None,
+    }
 
 
 def _read_json_file(path: Path) -> dict[str, Any]:

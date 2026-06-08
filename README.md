@@ -43,6 +43,7 @@ v1.0 live sources:
 - Mobile layout v1.22: `/00631l-lab` uses compact one-column cards and horizontal tables on phone-width screens.
 - Web app metadata v1.23: Flutter web manifest and HTML metadata now present the app as `00631L 正二研究室` and start at `/#/00631l-lab` when installed.
 - Local data backup v1.24: `scripts/00631l_backup_data.cmd` writes local history/status/export metadata backups under ignored `backend/backups/`.
+- Data directory health v1.25: environment check and operations/status report local `backend/data`, `backend/exports`, and `backend/backups` readiness.
 
 Local backend env:
 

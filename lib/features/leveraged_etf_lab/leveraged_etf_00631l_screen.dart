@@ -380,6 +380,14 @@ class _OperationsStatusSection extends StatelessWidget {
                     caption: 'yuanta_inav fallback',
                     icon: Icons.settings_backup_restore_outlined,
                   ),
+                  MetricTile(
+                    label: 'backup dir',
+                    value: status.backupDirReady ? 'ready' : 'check',
+                    caption: status.backupAvailable
+                        ? 'latest backup saved'
+                        : 'no local backup yet',
+                    icon: Icons.backup_table_outlined,
+                  ),
                 ],
               );
             },
@@ -428,6 +436,9 @@ class _TodayDataStatusSection extends StatelessWidget {
               RiskChip(
                   label:
                       'export ${status.exportAvailable ? 'ready' : 'empty'}'),
+              RiskChip(
+                  label:
+                      'backup ${status.backupAvailable ? 'ready' : 'empty'}'),
               RiskChip(label: 'dailyCycle ${status.dailyCycleStatus}'),
             ],
           ),
@@ -478,6 +489,16 @@ class _TodayDataStatusSection extends StatelessWidget {
                     icon: Icons.file_download_done_outlined,
                   ),
                   MetricTile(
+                    label: 'backup',
+                    value: status.backupAvailable ? 'ready' : 'empty',
+                    caption: status.latestBackupUpdatedAt == null
+                        ? 'no local backup'
+                        : formatTaiwanDateTimeSeconds(
+                            status.latestBackupUpdatedAt!,
+                          ),
+                    icon: Icons.backup_outlined,
+                  ),
+                  MetricTile(
                     label: 'daily cycle',
                     value: status.dailyCycleStatus,
                     caption: status.dailyCycleFinishedAt == null
@@ -507,10 +528,8 @@ class _TodayDataStatusSection extends StatelessWidget {
                   ),
                   MetricTile(
                     label: '資料目錄',
-                    value: status.dataDirReady && status.exportDirReady
-                        ? 'ready'
-                        : 'check',
-                    caption: 'backend/data + backend/exports',
+                    value: status.dataDirectoriesReady ? 'ready' : 'check',
+                    caption: 'data + exports + backups',
                     icon: Icons.folder_outlined,
                   ),
                 ],

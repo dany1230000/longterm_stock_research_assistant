@@ -198,6 +198,7 @@ class Proxy00631LRepository extends Official00631LRepository {
     final holdings = _map(payload['holdingsHistory']);
     final intraday = _map(payload['intradayNavHistory']);
     final export = _map(payload['export']);
+    final backup = _map(payload['backup']);
     final dailyCycle = _map(payload['dailyCycle']);
     final collector = _map(payload['collector']);
 
@@ -241,9 +242,13 @@ class Proxy00631LRepository extends Official00631LRepository {
       optionalMissingEnvKeys: _stringList(config['optionalMissingKeys']),
       dataDirReady: config['dataDirReady'] == true,
       exportDirReady: config['exportDirReady'] == true,
+      backupDirReady: config['backupDirReady'] == true,
       exportAvailable: export['available'] == true,
       latestExportPath: export['latestFile']?.toString(),
       latestExportUpdatedAt: _wallClockDateTime(export['latestUpdatedAt']),
+      backupAvailable: backup['available'] == true,
+      latestBackupPath: backup['latestFile']?.toString(),
+      latestBackupUpdatedAt: _wallClockDateTime(backup['latestUpdatedAt']),
       dailyCycleStatus: _string(
         dailyCycle['overallStatus'],
         fallback: 'missing',
