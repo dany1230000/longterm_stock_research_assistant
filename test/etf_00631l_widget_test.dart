@@ -82,6 +82,18 @@ void main() {
     expect(find.text('sourceStatus mock'), findsOneWidget);
   });
 
+  testWidgets('00631L lab shows holdings change notices without advice',
+      (tester) async {
+    await _pumpLab(tester, _HistoryFixture00631LRepository());
+
+    await _scrollUntilTextVisible(tester, '內容物變化提醒');
+    expect(find.text('內容物變化提醒'), findsOneWidget);
+    expect(find.text('TX 權重變化較大'), findsOneWidget);
+    expect(find.text('台積電權重變化較大'), findsOneWidget);
+    expect(find.textContaining('非買賣建議'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('00631L lab shows intraday NAV values and source contract',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
@@ -192,6 +204,19 @@ class _HistoryFixture00631LRepository extends Mock00631LRepository {
           outstandingUnits: 5200000000,
           status: EtfDataStatus.proxy,
           sourceHash: 'fixture-2',
+        ),
+        EtfHoldingsHistoryPoint(
+          tradeDate: DateTime(2026, 6, 5),
+          txWeightPct: 154.20,
+          tsmcWeightPct: 34.10,
+          stockExposurePct: 37.20,
+          futuresExposurePct: 150.30,
+          cashAndMarginPct: 60.10,
+          navPerUnit: 36.56,
+          fundNetAssetValue: 189796511953,
+          outstandingUnits: 5190848000,
+          status: EtfDataStatus.proxy,
+          sourceHash: 'fixture-1',
         ),
       ],
       status: EtfDataStatus.cached,

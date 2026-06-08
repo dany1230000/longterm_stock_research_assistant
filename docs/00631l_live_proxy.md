@@ -274,3 +274,11 @@ GET /api/etf/00631l/holdings/history/summary?limit=30
 The history endpoint returns full stored snapshots. The summary endpoint is intended for the Flutter table and includes `tradeDate`, `txWeightPct`, `tsmcWeightPct`, `stockExposurePct`, `futuresExposurePct`, `cashAndMarginPct`, `navPerUnit`, `fundNetAssetValue`, and `outstandingUnits`.
 
 The backend does not synthesize official history from mock data. If no records exist, the response uses `sourceStatus: unavailable` and an empty `items` list.
+
+## v1.3 holdings change notices
+
+The frontend computes holdings change notices from the history summary response. The backend does not need a new endpoint for v1.3.
+
+The app compares the latest two official history rows and flags data-state changes when TX weight, TSMC weight, cash/margin ratio, futures asset ratio, or combined stock/futures exposure crosses the configured thresholds. If there are fewer than two history rows, the app shows that history is still insufficient.
+
+These notices are not trading advice and must not be treated as trading instructions. They are intended to make daily official holdings changes easier to audit.

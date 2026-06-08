@@ -423,6 +423,150 @@ class EtfHoldingsHistory {
   bool get hasData => points.isNotEmpty;
 }
 
+enum HoldingChangeNoticeLevel {
+  unavailable,
+  normal,
+  watch,
+  elevated,
+  stale,
+}
+
+class HoldingChangeNotice {
+  const HoldingChangeNotice({
+    required this.level,
+    required this.title,
+    required this.message,
+  });
+
+  final HoldingChangeNoticeLevel level;
+  final String title;
+  final String message;
+}
+
+class HoldingsChangeAssessment {
+  const HoldingsChangeAssessment({
+    required this.notices,
+    required this.statusLabel,
+  });
+
+  factory HoldingsChangeAssessment.evaluate({
+    required EtfHoldingsHistory history,
+    required EtfDailyHoldingSnapshot snapshot,
+    required DateTime now,
+  }) {
+    final notices = <HoldingChangeNotice>[];
+
+    if (snapshot.isStale(now)) {
+      notices.add(
+        const HoldingChangeNotice(
+          level: HoldingChangeNoticeLevel.stale,
+          title: '官方內容物可能過期',
+          message: '官方 holdings 超過 1 個交易日未更新，請以資料時間與官方來源為準。這是資料狀態提醒，非買賣建議。',
+        ),
+      );
+    }
+
+    final points = [...history.points]
+      ..sort((a, b) => b.tradeDate.compareTo(a.tradeDate));
+    if (points.length < 2) {
+      notices.add(
+        HoldingChangeNotice(
+          level: HoldingChangeNoticeLevel.unavailable,
+          title: history.hasData ? '歷史資料仍在累積' : '尚無足夠歷史紀錄',
+          message:
+              '需要至少 2 個官方 holdings 交易日，才會比較 TX、台積電、現金與保證金、曝險比例變化。這是資料狀態提醒，非買賣建議。',
+        ),
+      );
+      return HoldingsChangeAssessment(
+        notices: notices,
+        statusLabel: _holdingNoticeStatusLabel(notices),
+      );
+    }
+
+    final latest = points[0];
+    final previous = points[1];
+    final txDelta = latest.txWeightPct - previous.txWeightPct;
+    final tsmcDelta = latest.tsmcWeightPct - previous.tsmcWeightPct;
+    final cashDelta = latest.cashAndMarginPct - previous.cashAndMarginPct;
+    final futuresDelta =
+        latest.futuresExposurePct - previous.futuresExposurePct;
+    final totalExposure = latest.stockExposurePct + latest.futuresExposurePct;
+
+    if (txDelta.abs() >= 5.0) {
+      notices.add(
+        HoldingChangeNotice(
+          level: HoldingChangeNoticeLevel.elevated,
+          title: 'TX 權重變化較大',
+          message:
+              '最近兩筆 official holdings 的 TX 權重變化 ${_signedDeltaPercentText(txDelta)}，請搭配 tradeDate 與 sourceStatus 觀察。這是資料狀態提醒，非買賣建議。',
+        ),
+      );
+    }
+
+    if (tsmcDelta.abs() >= 2.0) {
+      notices.add(
+        HoldingChangeNotice(
+          level: HoldingChangeNoticeLevel.watch,
+          title: '台積電權重變化較大',
+          message:
+              '最近兩筆 official holdings 的台積電權重變化 ${_signedDeltaPercentText(tsmcDelta)}，代表每日內容物結構出現可觀察變化。這是資料狀態提醒，非買賣建議。',
+        ),
+      );
+    }
+
+    if (cashDelta >= 5.0) {
+      notices.add(
+        HoldingChangeNotice(
+          level: HoldingChangeNoticeLevel.watch,
+          title: '現金與保證金比例上升',
+          message:
+              '最近兩筆 official holdings 的現金與保證金比例增加 ${_signedDeltaPercentText(cashDelta)}，請確認是否與期貨保證金或申贖變化有關。這是資料狀態提醒，非買賣建議。',
+        ),
+      );
+    }
+
+    if (futuresDelta.abs() >= 10.0) {
+      notices.add(
+        HoldingChangeNotice(
+          level: HoldingChangeNoticeLevel.watch,
+          title: '期貨資產比例變化較大',
+          message:
+              '最近兩筆 official holdings 的期貨資產比例變化 ${_signedDeltaPercentText(futuresDelta)}，請搭配股票資產與現金保證金一起觀察。這是資料狀態提醒，非買賣建議。',
+        ),
+      );
+    }
+
+    if (totalExposure < 180.0 || totalExposure > 220.0) {
+      notices.add(
+        HoldingChangeNotice(
+          level: HoldingChangeNoticeLevel.elevated,
+          title: '合計曝險超出參考區間',
+          message:
+              '最近一筆 official holdings 的股票與期貨合計曝險約 ${totalExposure.toStringAsFixed(2)}%，不在 180%-220% 參考區間。這是資料狀態提醒，非買賣建議。',
+        ),
+      );
+    }
+
+    if (notices.isEmpty) {
+      notices.add(
+        const HoldingChangeNotice(
+          level: HoldingChangeNoticeLevel.normal,
+          title: '內容物結構無明顯變化',
+          message: '最近兩筆 official holdings 的主要權重變化未達提醒門檻。這是資料狀態提醒，非買賣建議。',
+        ),
+      );
+    }
+
+    return HoldingsChangeAssessment(
+      notices: notices,
+      statusLabel: _holdingNoticeStatusLabel(notices),
+    );
+  }
+
+  final List<HoldingChangeNotice> notices;
+  final String statusLabel;
+}
+
 class EtfIntradayNav {
   const EtfIntradayNav({
     required this.symbol,
@@ -585,6 +729,14 @@ class Etf00631LLabData {
   final EtfAnalysisSummary analysis;
   final DateTime lastFetchedAt;
 
+  HoldingsChangeAssessment get holdingsChangeAssessment {
+    return HoldingsChangeAssessment.evaluate(
+      history: holdingsHistory,
+      snapshot: snapshot,
+      now: lastFetchedAt,
+    );
+  }
+
   EtfDataStatus get status {
     if (snapshot.status == EtfDataStatus.error ||
         futuresQuote.status == EtfDataStatus.error) {
@@ -629,6 +781,29 @@ String _premiumDiscountLabel(double? premium) {
 String _signedPercentText(double value) {
   final prefix = value > 0 ? '+' : '';
   return '$prefix${value.toStringAsFixed(2)}%';
+}
+
+String _signedDeltaPercentText(double value) {
+  final prefix = value > 0 ? '+' : '';
+  return '$prefix${value.toStringAsFixed(2)} 個百分點';
+}
+
+String _holdingNoticeStatusLabel(List<HoldingChangeNotice> notices) {
+  if (notices.any((notice) => notice.level == HoldingChangeNoticeLevel.stale)) {
+    return 'stale';
+  }
+  if (notices
+      .any((notice) => notice.level == HoldingChangeNoticeLevel.elevated)) {
+    return 'elevated';
+  }
+  if (notices.any((notice) => notice.level == HoldingChangeNoticeLevel.watch)) {
+    return 'watch';
+  }
+  if (notices
+      .any((notice) => notice.level == HoldingChangeNoticeLevel.unavailable)) {
+    return 'unavailable';
+  }
+  return 'normal';
 }
 
 int _businessDaysBetween(DateTime start, DateTime end) {

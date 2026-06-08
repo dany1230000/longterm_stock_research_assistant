@@ -58,6 +58,8 @@ class _LabContent extends StatelessWidget {
         const SizedBox(height: 16),
         _HoldingsHistorySection(history: data.holdingsHistory),
         const SizedBox(height: 16),
+        _HoldingsChangeNoticeSection(data: data),
+        const SizedBox(height: 16),
         _IntradaySection(nav: data.intradayNav),
         const SizedBox(height: 16),
         _FuturesQuoteSection(quote: data.futuresQuote),
@@ -527,6 +529,94 @@ class _HoldingsHistorySection extends StatelessWidget {
   }
 }
 
+class _HoldingsChangeNoticeSection extends StatelessWidget {
+  const _HoldingsChangeNoticeSection({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final assessment = data.holdingsChangeAssessment;
+
+    return SectionCard(
+      title: '內容物變化提醒',
+      subtitle:
+          '依最近 official holdings history 比較 TX、台積電、現金保證金與曝險比例。這是資料狀態提醒，非買賣建議。',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              RiskChip(label: 'changeStatus ${assessment.statusLabel}'),
+              RiskChip(label: 'history ${data.holdingsHistory.status.label}'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          for (final notice in assessment.notices)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _HoldingChangeNoticeTile(notice: notice),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HoldingChangeNoticeTile extends StatelessWidget {
+  const _HoldingChangeNoticeTile({required this.notice});
+
+  final HoldingChangeNotice notice;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = _holdingNoticeColor(theme.colorScheme, notice.level);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Color.alphaBlend(
+          color.withValues(alpha: 0.08),
+          theme.colorScheme.surface,
+        ),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.30)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(_holdingNoticeIcon(notice.level), color: color, size: 20),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    notice.title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: color,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    notice.message,
+                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _IntradaySection extends StatelessWidget {
   const _IntradaySection({required this.nav});
 
@@ -957,5 +1047,37 @@ IconData _premiumDiscountIcon(PremiumDiscountLevel level) {
       return Icons.schedule_outlined;
     case PremiumDiscountLevel.unavailable:
       return Icons.cloud_off_outlined;
+  }
+}
+
+Color _holdingNoticeColor(
+  ColorScheme colorScheme,
+  HoldingChangeNoticeLevel level,
+) {
+  switch (level) {
+    case HoldingChangeNoticeLevel.normal:
+      return colorScheme.primary;
+    case HoldingChangeNoticeLevel.watch:
+      return colorScheme.secondary;
+    case HoldingChangeNoticeLevel.elevated:
+      return colorScheme.tertiary;
+    case HoldingChangeNoticeLevel.stale:
+    case HoldingChangeNoticeLevel.unavailable:
+      return colorScheme.onSurfaceVariant;
+  }
+}
+
+IconData _holdingNoticeIcon(HoldingChangeNoticeLevel level) {
+  switch (level) {
+    case HoldingChangeNoticeLevel.normal:
+      return Icons.check_circle_outline;
+    case HoldingChangeNoticeLevel.watch:
+      return Icons.manage_search_outlined;
+    case HoldingChangeNoticeLevel.elevated:
+      return Icons.priority_high_outlined;
+    case HoldingChangeNoticeLevel.stale:
+      return Icons.schedule_outlined;
+    case HoldingChangeNoticeLevel.unavailable:
+      return Icons.history_toggle_off_outlined;
   }
 }
