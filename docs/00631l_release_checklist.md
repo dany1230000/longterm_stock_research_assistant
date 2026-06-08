@@ -77,6 +77,12 @@ Daily smoke wrapper that loads `backend\.env`:
 .\scripts\00631l_daily_smoke.ps1
 ```
 
+Daily history collector:
+
+```cmd
+scripts\00631l_collect_snapshot.cmd --samples 1
+```
+
 If local PowerShell script execution is disabled:
 
 ```cmd

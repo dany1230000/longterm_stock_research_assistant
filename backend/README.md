@@ -135,6 +135,30 @@ The summary endpoint returns the sample count, highest premium, lowest discount,
 
 If no intraday history exists yet, the endpoints return `sourceStatus: unavailable` with an empty `items` list. They do not fabricate official intraday history from mock data.
 
+## v1.7 snapshot collector
+
+The collector uses the same backend service as the API endpoints. It fetches profile, holdings, and intraday NAV, then relies on the service to save successful official holdings and intraday NAV payloads into the configured local JSONL history stores.
+
+Manual one-shot collection:
+
+```cmd
+scripts\00631l_collect_snapshot.cmd --samples 1
+```
+
+Direct Python command:
+
+```powershell
+py backend\scripts\collect_00631l_snapshot.py --samples 1
+```
+
+Collect repeated intraday NAV samples:
+
+```cmd
+scripts\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15
+```
+
+The collector exits with code `1` only when a required source fails. Holdings are required because they are the daily official snapshot source. Intraday NAV unavailable/error is reported as `WARN` so off-hours or missing URL checks do not break local operation.
+
 ## v1.6 daily workflow
 
 Daily runbook:

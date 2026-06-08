@@ -25,6 +25,7 @@ v1.0 live sources:
 - Intraday premium/discount history v1.4: backend stores official intraday NAV samples locally and the app shows today's highest, lowest, and average premium/discount. This is not a trading signal.
 - Status summary v1.5: combines official holdings freshness, intraday NAV status, premium/discount state, holdings change notices, and intraday history into a non-advice data health summary.
 - Daily workflow v1.6: `docs/00631l_v1_6_daily_runbook.md` documents backend startup, live proxy mode, smoke checks, and web build flow. `scripts/00631l_release_validate.ps1` runs the release validation sequence.
+- Daily collector v1.7: `backend/scripts/collect_00631l_snapshot.py` and `scripts/00631l_collect_snapshot.cmd` collect official holdings and intraday NAV samples into local JSONL history without requiring the Flutter page to be open.
 
 Local backend env:
 
@@ -56,6 +57,18 @@ Holdings history is populated by calling the backend holdings endpoint after the
 ```powershell
 Invoke-RestMethod http://127.0.0.1:8000/api/etf/00631l/holdings
 Invoke-RestMethod http://127.0.0.1:8000/api/etf/00631l/holdings/history/summary?limit=30
+```
+
+Daily collector:
+
+```cmd
+scripts\00631l_collect_snapshot.cmd --samples 1
+```
+
+For intraday observation, run repeated samples with an interval at least as long as the configured intraday NAV cache seconds:
+
+```cmd
+scripts\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15
 ```
 
 The smoke script prints an `[overall]` block with `PASS`, `WARN`, or `FAIL`. A freshness warning after market close is a manual-review warning, not an automatic app test failure.

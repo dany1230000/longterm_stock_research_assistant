@@ -56,6 +56,32 @@ Expected result:
 
 Do not treat mock or fallback data as official.
 
+## Daily Collection
+
+Use the collector when the goal is to persist official snapshots into local JSONL history, not just inspect source freshness.
+
+One-shot collection:
+
+```cmd
+scripts\00631l_collect_snapshot.cmd --samples 1
+```
+
+Intraday premium/discount accumulation:
+
+```cmd
+scripts\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15
+```
+
+The collector stores only successful official holdings and intraday NAV payloads through the backend service. It does not mark mock, unavailable, or error data as official.
+
+Task Scheduler can call the same CMD wrapper from:
+
+```text
+C:\dev\longterm_stock_research_assistant
+```
+
+Use `--samples 1` for daily holdings collection. Use repeated intraday samples only during periods when intraday NAV is expected to update.
+
 ## Frontend Live Proxy
 
 ```powershell
