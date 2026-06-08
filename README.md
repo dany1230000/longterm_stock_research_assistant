@@ -30,6 +30,7 @@ v1.0 live sources:
 - Intraday premium trend v1.9: the intraday premium/discount history section shows a simple premiumDiscountPct trend chart with a 0% reference line, using only stored official intraday NAV history.
 - Operations status v1.10: backend exposes local collector/history readiness at `/api/etf/00631l/operations/status`, and the lab page shows whether holdings history, intraday samples, and intraday NAV URLs are configured.
 - History export v1.11: `scripts/00631l_export_history.cmd` exports local holdings and intraday JSONL history into CSV files under `backend/exports/` for backup or offline review.
+- Daily cycle v1.12: `scripts/00631l_daily_cycle.cmd` runs collect, export, and live smoke in one command.
 
 Local backend env:
 
@@ -79,6 +80,12 @@ Export local history:
 
 ```cmd
 scripts\00631l_export_history.cmd
+```
+
+Run the daily cycle:
+
+```cmd
+scripts\00631l_daily_cycle.cmd
 ```
 
 The smoke script prints an `[overall]` block with `PASS`, `WARN`, or `FAIL`. A freshness warning after market close is a manual-review warning, not an automatic app test failure.

@@ -60,6 +60,14 @@ Do not treat mock or fallback data as official.
 
 Use the collector when the goal is to persist official snapshots into local JSONL history, not just inspect source freshness.
 
+One-command daily cycle:
+
+```cmd
+scripts\00631l_daily_cycle.cmd
+```
+
+The daily cycle runs collection, CSV export, and live smoke in that order.
+
 One-shot collection:
 
 ```cmd

@@ -92,6 +92,12 @@ History export:
 scripts\00631l_export_history.cmd
 ```
 
+One-command daily cycle:
+
+```cmd
+scripts\00631l_daily_cycle.cmd
+```
+
 If local PowerShell script execution is disabled:
 
 ```cmd
