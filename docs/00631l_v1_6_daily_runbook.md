@@ -74,6 +74,16 @@ scripts\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 
 
 The collector stores only successful official holdings and intraday NAV payloads through the backend service. It does not mark mock, unavailable, or error data as official.
 
+## History Export
+
+Export local JSONL history to CSV:
+
+```cmd
+scripts\00631l_export_history.cmd
+```
+
+The default output folder is `backend\exports`, which is ignored by git. Use this for local backup or offline review.
+
 Task Scheduler can call the same CMD wrapper from:
 
 ```text

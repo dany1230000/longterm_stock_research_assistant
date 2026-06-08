@@ -1,0 +1,185 @@
+from __future__ import annotations
+
+import csv
+import json
+from pathlib import Path
+from typing import Any
+
+
+HOLDINGS_EXPORT_COLUMNS = [
+    "tradeDate",
+    "fundNetAssetValue",
+    "navPerUnit",
+    "outstandingUnits",
+    "stockAssetValue",
+    "futuresAssetValue",
+    "cash",
+    "margin",
+    "repo",
+    "receivable",
+    "payable",
+    "txWeightPct",
+    "tsmcWeightPct",
+    "sourceStatus",
+    "sourceUrl",
+    "fetchedAt",
+    "sourceHash",
+]
+
+INTRADAY_EXPORT_COLUMNS = [
+    "dataDate",
+    "dataTime",
+    "marketPrice",
+    "estimatedNav",
+    "premiumDiscountPct",
+    "sourceContract",
+    "sourceStatus",
+    "sourceUrl",
+    "fetchedAt",
+]
+
+
+def export_00631l_history(
+    *,
+    holdings_history_path: str | Path,
+    intraday_history_path: str | Path,
+    output_dir: str | Path,
+) -> dict[str, Any]:
+    output = Path(output_dir)
+    output.mkdir(parents=True, exist_ok=True)
+
+    holdings_records = _read_jsonl(Path(holdings_history_path))
+    intraday_records = _read_jsonl(Path(intraday_history_path))
+
+    holdings_rows = [_holdings_row(record) for record in holdings_records]
+    intraday_rows = [_intraday_row(record) for record in intraday_records]
+
+    holdings_output = output / "00631l_holdings_history_summary.csv"
+    intraday_output = output / "00631l_intraday_nav_history.csv"
+
+    _write_csv(holdings_output, HOLDINGS_EXPORT_COLUMNS, holdings_rows)
+    _write_csv(intraday_output, INTRADAY_EXPORT_COLUMNS, intraday_rows)
+
+    return {
+        "sourceStatus": "cached" if holdings_rows or intraday_rows else "unavailable",
+        "sourceContract": "00631l_history_csv_export",
+        "holdingsInputPath": str(holdings_history_path),
+        "intradayInputPath": str(intraday_history_path),
+        "outputDir": str(output),
+        "holdingsOutputPath": str(holdings_output),
+        "intradayOutputPath": str(intraday_output),
+        "holdingsRowCount": len(holdings_rows),
+        "intradayRowCount": len(intraday_rows),
+    }
+
+
+def _read_jsonl(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+
+    records: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            decoded = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(decoded, dict):
+            records.append(decoded)
+    return records
+
+
+def _write_csv(
+    path: Path,
+    fieldnames: list[str],
+    rows: list[dict[str, Any]],
+) -> None:
+    with path.open("w", encoding="utf-8-sig", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def _holdings_row(record: dict[str, Any]) -> dict[str, Any]:
+    asset_values = record.get("assetValues") if isinstance(record.get("assetValues"), dict) else {}
+    cash_breakdown = (
+        record.get("cashBreakdown")
+        if isinstance(record.get("cashBreakdown"), dict)
+        else _cash_breakdown(record.get("cashHoldings"))
+    )
+    return {
+        "tradeDate": record.get("tradeDate"),
+        "fundNetAssetValue": record.get("fundNetAssetValue"),
+        "navPerUnit": record.get("navPerUnit"),
+        "outstandingUnits": record.get("outstandingUnits"),
+        "stockAssetValue": asset_values.get("stock"),
+        "futuresAssetValue": asset_values.get("futures"),
+        "cash": cash_breakdown.get("cash"),
+        "margin": cash_breakdown.get("margin"),
+        "repo": cash_breakdown.get("repo"),
+        "receivable": cash_breakdown.get("receivable"),
+        "payable": cash_breakdown.get("payable"),
+        "txWeightPct": _holding_weight(record.get("futuresHoldings"), "TX"),
+        "tsmcWeightPct": _holding_weight(record.get("stockHoldings"), "2330"),
+        "sourceStatus": record.get("sourceStatus"),
+        "sourceUrl": record.get("sourceUrl"),
+        "fetchedAt": record.get("fetchedAt"),
+        "sourceHash": record.get("sourceHash"),
+    }
+
+
+def _intraday_row(record: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "dataDate": record.get("dataDate"),
+        "dataTime": record.get("dataTime"),
+        "marketPrice": record.get("marketPrice"),
+        "estimatedNav": record.get("estimatedNav"),
+        "premiumDiscountPct": record.get("premiumDiscountPct")
+        or record.get("estimatedPremiumDiscountPct"),
+        "sourceContract": record.get("sourceContract"),
+        "sourceStatus": record.get("sourceStatus"),
+        "sourceUrl": record.get("sourceUrl"),
+        "fetchedAt": record.get("fetchedAt"),
+    }
+
+
+def _cash_breakdown(lines_value: Any) -> dict[str, float]:
+    lines = lines_value if isinstance(lines_value, list) else []
+    amounts: list[float] = []
+    for line in lines:
+        if isinstance(line, dict):
+            amounts.append(_float(line.get("amount")))
+
+    margin = amounts[0] if len(amounts) > 0 else 0.0
+    cash = amounts[1] if len(amounts) > 1 else 0.0
+    repo = amounts[2] if len(amounts) > 2 else 0.0
+    tail = amounts[3:] if len(amounts) > 3 else []
+    return {
+        "cash": cash,
+        "margin": margin,
+        "repo": repo,
+        "receivable": sum(amount for amount in tail if amount > 0),
+        "payable": sum(amount for amount in tail if amount < 0),
+    }
+
+
+def _holding_weight(lines_value: Any, code: str) -> float:
+    lines = lines_value if isinstance(lines_value, list) else []
+    return sum(
+        _float(line.get("weightPct"))
+        for line in lines
+        if isinstance(line, dict) and str(line.get("code") or "") == code
+    )
+
+
+def _float(value: Any) -> float:
+    if isinstance(value, (int, float)):
+        return float(value)
+    if value is None:
+        return 0.0
+    try:
+        return float(str(value).replace(",", "").strip())
+    except ValueError:
+        return 0.0

@@ -29,6 +29,7 @@ v1.0 live sources:
 - Holdings trend v1.8: the daily holdings history section shows a simple trend chart for TX weight, TSMC weight, and cash/margin weight, while keeping the table as the source-of-truth detail view.
 - Intraday premium trend v1.9: the intraday premium/discount history section shows a simple premiumDiscountPct trend chart with a 0% reference line, using only stored official intraday NAV history.
 - Operations status v1.10: backend exposes local collector/history readiness at `/api/etf/00631l/operations/status`, and the lab page shows whether holdings history, intraday samples, and intraday NAV URLs are configured.
+- History export v1.11: `scripts/00631l_export_history.cmd` exports local holdings and intraday JSONL history into CSV files under `backend/exports/` for backup or offline review.
 
 Local backend env:
 
@@ -72,6 +73,12 @@ For intraday observation, run repeated samples with an interval at least as long
 
 ```cmd
 scripts\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15
+```
+
+Export local history:
+
+```cmd
+scripts\00631l_export_history.cmd
 ```
 
 The smoke script prints an `[overall]` block with `PASS`, `WARN`, or `FAIL`. A freshness warning after market close is a manual-review warning, not an automatic app test failure.

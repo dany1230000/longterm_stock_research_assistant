@@ -147,6 +147,27 @@ This endpoint reads local configuration and local JSONL history summaries. It do
 
 If there is no local history, the endpoint returns `sourceStatus: unavailable`; it does not return mock data as official operational state.
 
+## v1.11 CSV history export
+
+Export local JSONL history stores to CSV:
+
+```cmd
+scripts\00631l_export_history.cmd
+```
+
+Default output directory:
+
+```text
+backend/exports/
+```
+
+Generated files:
+
+- `00631l_holdings_history_summary.csv`
+- `00631l_intraday_nav_history.csv`
+
+`backend/exports/` is ignored by git. The exporter only reads local JSONL history; it does not fetch live sources and does not fabricate official history.
+
 ## v1.7 snapshot collector
 
 The collector uses the same backend service as the API endpoints. It fetches profile, holdings, and intraday NAV, then relies on the service to save successful official holdings and intraday NAV payloads into the configured local JSONL history stores.

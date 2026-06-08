@@ -86,6 +86,12 @@ Daily history collector:
 scripts\00631l_collect_snapshot.cmd --samples 1
 ```
 
+History export:
+
+```cmd
+scripts\00631l_export_history.cmd
+```
+
 If local PowerShell script execution is disabled:
 
 ```cmd
