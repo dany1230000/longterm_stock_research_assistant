@@ -15,6 +15,7 @@ def backup_00631l_data(
     export_dir: str | Path,
     backup_dir: str | Path,
     backed_up_at: datetime | None = None,
+    retention_count: int = 30,
 ) -> dict[str, Any]:
     timestamp = (backed_up_at or datetime.now(timezone.utc)).astimezone(
         timezone.utc
@@ -75,6 +76,8 @@ def backup_00631l_data(
             json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True),
         )
 
+    retention = max(1, retention_count)
+    pruned_files = _rotate_backups(backup_root, retention)
     source_status = "cached" if included else "unavailable"
     return {
         "sourceStatus": source_status,
@@ -82,6 +85,9 @@ def backup_00631l_data(
         "backupPath": str(output_path),
         "backupDir": str(backup_root),
         "backedUpAt": timestamp.isoformat(),
+        "retentionCount": retention,
+        "prunedCount": len(pruned_files),
+        "prunedFiles": pruned_files,
         "includedCount": len(included),
         "missingCount": len(missing),
         "includedFiles": included,
@@ -90,3 +96,20 @@ def backup_00631l_data(
         if included
         else "No local 00631L data files were found to back up.",
     }
+
+
+def _rotate_backups(backup_root: Path, retention_count: int) -> list[str]:
+    backups = sorted(
+        [
+            path
+            for path in backup_root.glob("00631l_local_data_backup_*.zip")
+            if path.is_file()
+        ],
+        key=lambda path: (path.stat().st_mtime, path.name),
+        reverse=True,
+    )
+    pruned: list[str] = []
+    for path in backups[retention_count:]:
+        pruned.append(str(path))
+        path.unlink()
+    return pruned

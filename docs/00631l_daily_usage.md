@@ -249,6 +249,11 @@ backend\backups\
 ```
 
 備份 zip 會包含目前存在的 holdings history、intraday NAV history、daily cycle status 與 export metadata。`backend\backups\` 是本機備份目錄，不要提交到 git。
+v1.35 起，backup 會自動保留最近 N 份 `00631l_local_data_backup_*.zip`，預設 30 份。可用 `--retention-count` 調整：
+
+```cmd
+scripts\00631l_backup_data.cmd --retention-count 30
+```
 
 還原時請先解壓到臨時資料夾，比對檔案內容與日期，再手動複製需要的檔案回 `backend\data\` 或 `backend\exports\`。v1.24 不提供自動 restore script，避免誤覆蓋現有 history。
 

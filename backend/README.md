@@ -72,6 +72,7 @@ See `backend/.env.example` for the deployable template.
 - `00631L_HOLDINGS_HISTORY_PATH`: local JSONL path for daily holdings history, default `backend/data/00631l_holdings_history.jsonl`.
 - `00631L_INTRADAY_NAV_HISTORY_PATH`: local JSONL path for intraday NAV history, default `backend/data/00631l_intraday_nav_history.jsonl`.
 - `00631L_BACKUP_DIR`: local backup output directory, default `backend/backups`.
+- `00631L_BACKUP_RETENTION_COUNT`: number of local backup archives to keep, default `30`.
 - `00631L_REPORT_DIR`: local daily Markdown report directory, default `backend/reports`.
 - `00631L_INTEGRITY_STATUS_PATH`: local data integrity check result, default `backend/data/00631l_integrity_status.json`.
 
@@ -234,6 +235,12 @@ Included when present:
 - CSV export metadata JSON
 
 Restore is a manual review flow in v1.24. Unzip to a temporary folder, compare file dates and contents, then copy selected files back to `backend/data/` or `backend/exports/` only after review.
+
+v1.35 adds rotation for files matching `00631l_local_data_backup_*.zip`. The default retention is 30 archives and can be changed with:
+
+```cmd
+scripts\00631l_backup_data.cmd --retention-count 30
+```
 
 ## v1.25 data directory health
 

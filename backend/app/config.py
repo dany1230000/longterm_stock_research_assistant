@@ -83,6 +83,7 @@ class Settings:
         "00631L_BACKUP_DIR",
         str(_BACKEND_ROOT / "backups"),
     )
+    backup_retention_count: int = _env_int("00631L_BACKUP_RETENTION_COUNT", 30)
     report_dir: str = os.getenv(
         "00631L_REPORT_DIR",
         str(_BACKEND_ROOT / "reports"),

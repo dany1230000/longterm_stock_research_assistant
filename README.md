@@ -53,6 +53,7 @@ v1.0 live sources:
 - Daily report v1.32: daily cycle now writes a local Markdown report under ignored `backend/reports/`; `scripts/00631l_generate_daily_report.cmd` can regenerate it manually.
 - Operations report UI v1.33: `/api/etf/00631l/operations/status` and `/00631l-lab` show latest daily report availability, overallStatus, generatedAt, and WARN/FAIL counts.
 - Data integrity v1.34: `scripts/00631l_check_integrity.cmd` checks local holdings/intraday JSONL for duplicate keys, missing required fields, weekday gaps, and abnormal source statuses.
+- Backup rotation v1.35: `scripts/00631l_backup_data.cmd` keeps the latest configured number of local backup archives, default 30.
 
 Local backend env:
 
@@ -188,6 +189,12 @@ Check local history integrity:
 
 ```cmd
 scripts\00631l_check_integrity.cmd
+```
+
+Backup with rotation:
+
+```cmd
+scripts\00631l_backup_data.cmd --retention-count 30
 ```
 
 Final v1.20 summary:
