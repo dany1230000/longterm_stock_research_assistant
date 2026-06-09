@@ -79,6 +79,10 @@ class Settings:
         "00631L_BACKUP_DIR",
         str(_BACKEND_ROOT / "backups"),
     )
+    report_dir: str = os.getenv(
+        "00631L_REPORT_DIR",
+        str(_BACKEND_ROOT / "reports"),
+    )
 
 
 settings = Settings()

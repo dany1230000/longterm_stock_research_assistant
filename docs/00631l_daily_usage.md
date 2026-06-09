@@ -324,6 +324,18 @@ scripts\00631l_release_check.cmd
 docs/00631l_scheduler_setup.md
 ```
 
+daily cycle 也會輸出本機 Markdown 日報：
+
+```text
+backend\reports\
+```
+
+需要手動重新產生日報時：
+
+```cmd
+scripts\00631l_generate_daily_report.cmd
+```
+
 常見問題可先看：
 
 ```text

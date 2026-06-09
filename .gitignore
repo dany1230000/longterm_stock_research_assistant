@@ -11,6 +11,7 @@ backend/.env
 backend/data/
 backend/exports/
 backend/backups/
+backend/reports/
 ios/Flutter/Generated.xcconfig
 ios/Flutter/flutter_export_environment.sh
 android/.gradle/

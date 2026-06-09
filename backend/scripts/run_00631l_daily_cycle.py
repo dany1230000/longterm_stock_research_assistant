@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from backend.app.config import settings  # noqa: E402
+from backend.app.daily_report import generate_00631l_daily_report  # noqa: E402
 
 
 def main() -> int:
@@ -36,18 +37,34 @@ def main() -> int:
         for step in steps
         if step["status"] == "WARN"
     ]
-    overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
     payload: dict[str, Any] = {
         "sourceContract": "00631l_daily_cycle_status",
         "startedAt": started_at,
         "finishedAt": _now_iso(),
-        "overallStatus": overall_status,
+        "overallStatus": "FAIL" if failures else "WARN" if warnings else "PASS",
         "collect": steps[0],
         "export": steps[1],
         "smoke": steps[2],
         "warnings": warnings,
         "failures": failures,
     }
+    report_step = _generate_report_step(payload)
+    payload["report"] = report_step
+    all_steps = [*steps, report_step]
+    failures = [
+        f"{step['name']} failed with exitCode {step['exitCode']}"
+        for step in all_steps
+        if step["status"] == "FAIL"
+    ]
+    warnings = [
+        f"{step['name']} returned WARN"
+        for step in all_steps
+        if step["status"] == "WARN"
+    ]
+    payload["finishedAt"] = _now_iso()
+    payload["overallStatus"] = "FAIL" if failures else "WARN" if warnings else "PASS"
+    payload["warnings"] = warnings
+    payload["failures"] = failures
     _write_status(payload)
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
     return 1 if failures else 0
@@ -73,6 +90,40 @@ def _run_step(name: str, command: list[str]) -> dict[str, Any]:
         "finishedAt": _now_iso(),
         "stdoutTail": _tail(stdout),
         "stderrTail": _tail(stderr),
+    }
+
+
+def _generate_report_step(daily_cycle_status: dict[str, Any]) -> dict[str, Any]:
+    started_at = _now_iso()
+    try:
+        payload = generate_00631l_daily_report(
+            holdings_history_path=settings.holdings_history_path,
+            intraday_history_path=settings.intraday_nav_history_path,
+            daily_cycle_status_path=settings.daily_cycle_status_path,
+            report_dir=settings.report_dir,
+            daily_cycle_status=daily_cycle_status,
+        )
+    except Exception as exc:  # pragma: no cover - defensive operational path
+        return {
+            "name": "report",
+            "command": "generate_00631l_daily_report",
+            "status": "FAIL",
+            "exitCode": 1,
+            "startedAt": started_at,
+            "finishedAt": _now_iso(),
+            "stdoutTail": "",
+            "stderrTail": str(exc),
+        }
+
+    return {
+        "name": "report",
+        "command": "generate_00631l_daily_report",
+        "status": "PASS",
+        "exitCode": 0,
+        "startedAt": started_at,
+        "finishedAt": _now_iso(),
+        "stdoutTail": json.dumps(payload, ensure_ascii=True, sort_keys=True),
+        "stderrTail": "",
     }
 
 

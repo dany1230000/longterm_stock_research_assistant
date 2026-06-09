@@ -72,6 +72,7 @@ See `backend/.env.example` for the deployable template.
 - `00631L_HOLDINGS_HISTORY_PATH`: local JSONL path for daily holdings history, default `backend/data/00631l_holdings_history.jsonl`.
 - `00631L_INTRADAY_NAV_HISTORY_PATH`: local JSONL path for intraday NAV history, default `backend/data/00631l_intraday_nav_history.jsonl`.
 - `00631L_BACKUP_DIR`: local backup output directory, default `backend/backups`.
+- `00631L_REPORT_DIR`: local daily Markdown report directory, default `backend/reports`.
 
 `auto` tries TWSE first and then Yuanta. If neither URL is configured, intraday NAV returns `sourceStatus: unavailable` and does not return mock data as official data.
 
@@ -262,6 +263,16 @@ scripts\00631l_open_lab.cmd
 ```
 
 The helper runs the local environment check, probes backend health, and prints the exact backend, daily cycle, Flutter live proxy, and direct `/#/00631l-lab` route commands. It does not hide backend or Flutter server processes in the background.
+
+## v1.32 daily report
+
+`scripts\00631l_daily_cycle.cmd` generates a local Markdown report after collect, export, and smoke complete. The report is written under ignored `backend\reports\`.
+
+Manual report generation:
+
+```cmd
+scripts\00631l_generate_daily_report.cmd
+```
 
 ## v1.13 local startup checks
 

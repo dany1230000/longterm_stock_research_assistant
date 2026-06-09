@@ -50,6 +50,7 @@ v1.0 live sources:
 - Deployment notes v1.29: `docs/00631l_deployment_notes.md` documents local mode, Flutter web build output, backend proxy needs, `.env`, data persistence, GitHub Pages limits, and home server/VPS considerations.
 - Daily experience release v1.30: `docs/00631l_v1_30_daily_experience_summary.md` summarizes direct entry, mobile layout, PWA metadata, backup, data health, helper scripts, troubleshooting, deployment notes, and operations guidance.
 - Scheduler prep v1.31: `scripts/00631l_daily_cycle_scheduled.cmd` and `docs/00631l_scheduler_setup.md` prepare Windows Task Scheduler usage for daily cycle runs.
+- Daily report v1.32: daily cycle now writes a local Markdown report under ignored `backend/reports/`; `scripts/00631l_generate_daily_report.cmd` can regenerate it manually.
 
 Local backend env:
 
@@ -173,6 +174,12 @@ Windows Task Scheduler setup:
 
 ```text
 docs/00631l_scheduler_setup.md
+```
+
+Generate the latest local daily report:
+
+```cmd
+scripts\00631l_generate_daily_report.cmd
 ```
 
 Final v1.20 summary:
