@@ -27,7 +27,6 @@ INTRADAY_REQUIRED_FIELDS = [
     "dataTime",
     "marketPrice",
     "estimatedNav",
-    "premiumDiscountPct",
     "sourceContract",
     "sourceStatus",
     "sourceUrl",

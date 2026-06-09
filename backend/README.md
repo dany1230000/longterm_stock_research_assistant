@@ -65,6 +65,8 @@ Maintenance index: `docs/00631l_maintenance_index.md`.
 
 Maintenance release summary: `docs/00631l_v1_40_maintenance_summary.md`.
 
+Deployment bootstrap: `scripts\00631l_bootstrap_deploy.cmd`.
+
 ## Environment variables
 
 See `backend/.env.example` for the deployable template.

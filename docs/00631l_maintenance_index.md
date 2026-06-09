@@ -11,6 +11,7 @@ This index reduces duplicate lookup paths for the semi-automated maintenance wor
 ## Maintenance Scripts
 
 - Environment check: `scripts\00631l_check_env.cmd`
+- Deployment bootstrap: `scripts\00631l_bootstrap_deploy.cmd`
 - Daily cycle: `scripts\00631l_daily_cycle.cmd`
 - Scheduled daily cycle wrapper: `scripts\00631l_daily_cycle_scheduled.cmd`
 - CSV export: `scripts\00631l_export_history.cmd`

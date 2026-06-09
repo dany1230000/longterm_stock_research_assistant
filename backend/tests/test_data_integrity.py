@@ -71,6 +71,24 @@ class DataIntegrityTests(unittest.TestCase):
             self.assertTrue(payload["warnings"])
             self.assertIn("2026-06-08", payload["holdings"]["duplicateTradeDates"])
 
+    def test_integrity_allows_null_intraday_premium_discount(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            holdings = root / "holdings.jsonl"
+            intraday = root / "intraday.jsonl"
+            holdings.write_text(json.dumps(_holding("2026-06-08")) + "\n", encoding="utf-8")
+            intraday_record = _intraday("2026-06-09T10:38:00+08:00")
+            intraday_record["premiumDiscountPct"] = None
+            intraday.write_text(json.dumps(intraday_record) + "\n", encoding="utf-8")
+
+            payload = check_00631l_data_integrity(
+                holdings_history_path=holdings,
+                intraday_history_path=intraday,
+            )
+
+            self.assertEqual(payload["overallStatus"], "PASS")
+            self.assertEqual(payload["intraday"]["missingRequiredFields"], [])
+
 
 def _holding(trade_date: str) -> dict[str, object]:
     return {

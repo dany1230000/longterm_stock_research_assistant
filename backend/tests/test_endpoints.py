@@ -39,6 +39,16 @@ class EndpointTests(unittest.TestCase):
         self.assertIn("serverTime", payload)
 
     def test_intraday_nav_without_config_is_unavailable(self) -> None:
+        main_module.service = Etf00631LService(
+            config=Settings(
+                twse_intraday_nav_url="",
+                yuanta_intraday_nav_url="",
+                intraday_nav_source="auto",
+            ),
+            fetcher=lambda url, timeout_seconds: "",
+            cache=TimedMemoryCache(),
+        )
+
         response = self.client.get("/api/etf/00631l/intraday-nav")
         self.assertEqual(response.status_code, 200)
         payload = response.json()

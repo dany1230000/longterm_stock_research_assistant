@@ -93,6 +93,7 @@ def _required_files_check() -> dict[str, Any]:
         "backend/app/data_integrity.py",
         "backend/app/data_backup.py",
         "backend/app/restore_dry_run.py",
+        "scripts/00631l_bootstrap_deploy.cmd",
         "scripts/00631l_daily_cycle_scheduled.cmd",
         "scripts/00631l_generate_daily_report.cmd",
         "scripts/00631l_check_integrity.cmd",
