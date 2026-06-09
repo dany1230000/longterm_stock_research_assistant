@@ -240,6 +240,12 @@ The policy is intentionally conservative:
 - Daily Markdown reports under `backend/reports/` are pruned by retention count.
 - CSV exports use fixed current filenames under `backend/exports/`, so they are reported but not archived by the retention helper.
 
+## v1.46 backup checksum
+
+`scripts\00631l_backup_data.cmd` writes SHA256 metadata for every included file in `backup_manifest.json` and reports the generated zip archive SHA256.
+
+`scripts\00631l_restore_dry_run.cmd` reads the latest backup, verifies archive entries against manifest SHA256 values, and reports `entriesVerified`. It still does not overwrite local data.
+
 The file is local operational state and is ignored by git. `operations/status` reads it when present. If the file does not exist, the endpoint reports `dailyCycle.sourceStatus: unavailable` and `overallStatus: missing`.
 
 ## v1.18 release check

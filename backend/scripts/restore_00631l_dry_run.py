@@ -34,6 +34,7 @@ def main() -> int:
         f"overallStatus={payload['overallStatus']} "
         f"sourceStatus={payload['sourceStatus']} "
         f"entriesChecked={payload['entriesChecked']} "
+        f"entriesVerified={payload['checksum']['entriesVerified']} "
         f"warnings={payload['warningCount']} "
         f"failures={payload['failureCount']} "
         f"backup={payload['backupPath']}"

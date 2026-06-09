@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -62,6 +63,7 @@ def backup_00631l_data(
                         "archiveName": archive_name,
                         "sourcePath": str(source_path),
                         "sizeBytes": source_path.stat().st_size,
+                        "sha256": _sha256_file(source_path),
                     }
                 )
             else:
@@ -78,11 +80,13 @@ def backup_00631l_data(
 
     retention = max(1, retention_count)
     pruned_files = _rotate_backups(backup_root, retention)
+    backup_sha256 = _sha256_file(output_path)
     source_status = "cached" if included else "unavailable"
     return {
         "sourceStatus": source_status,
         "sourceContract": "00631l_local_data_backup",
         "backupPath": str(output_path),
+        "backupSha256": backup_sha256,
         "backupDir": str(backup_root),
         "backedUpAt": timestamp.isoformat(),
         "retentionCount": retention,
@@ -113,3 +117,11 @@ def _rotate_backups(backup_root: Path, retention_count: int) -> list[str]:
         pruned.append(str(path))
         path.unlink()
     return pruned
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()

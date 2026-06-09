@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -43,8 +44,12 @@ def restore_00631l_dry_run(
     entries_checked = 0
     archive_entry_count = 0
     manifest_summary: dict[str, Any] | None = None
+    entries_with_sha256 = 0
+    entries_verified = 0
+    backup_sha256: str | None = None
 
     try:
+        backup_sha256 = _sha256_file(selected_backup)
         with ZipFile(selected_backup) as archive:
             names = set(archive.namelist())
             archive_entry_count = len(names)
@@ -81,8 +86,22 @@ def restore_00631l_dry_run(
                         if archive_name not in names:
                             failures.append(f"Backup archive is missing included entry: {archive_name}")
                             continue
-                        archive.read(archive_name)
+                        data = archive.read(archive_name)
                         entries_checked += 1
+                        expected_sha256 = item.get("sha256")
+                        if expected_sha256:
+                            entries_with_sha256 += 1
+                            actual_sha256 = _sha256_bytes(data)
+                            if actual_sha256 == expected_sha256:
+                                entries_verified += 1
+                            else:
+                                failures.append(
+                                    f"Checksum mismatch for backup entry: {archive_name}"
+                                )
+                        else:
+                            warnings.append(
+                                f"Backup entry has no checksum in manifest: {archive_name}"
+                            )
     except (OSError, BadZipFile, UnicodeDecodeError, json.JSONDecodeError) as error:
         failures.append(f"Restore dry-run failed to read backup archive: {error}")
 
@@ -100,6 +119,11 @@ def restore_00631l_dry_run(
         entries_checked=entries_checked,
         archive_entry_count=archive_entry_count,
         manifest_summary=manifest_summary,
+        checksum_summary={
+            "backupSha256": backup_sha256,
+            "entriesWithSha256": entries_with_sha256,
+            "entriesVerified": entries_verified,
+        },
     )
     _write_output(output_path, payload)
     return payload
@@ -137,6 +161,7 @@ def _payload(
     entries_checked: int = 0,
     archive_entry_count: int = 0,
     manifest_summary: dict[str, Any] | None = None,
+    checksum_summary: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
         "sourceStatus": source_status,
@@ -148,6 +173,12 @@ def _payload(
         "archiveEntryCount": archive_entry_count,
         "entriesChecked": entries_checked,
         "manifest": manifest_summary,
+        "checksum": checksum_summary
+        or {
+            "backupSha256": None,
+            "entriesWithSha256": 0,
+            "entriesVerified": 0,
+        },
         "warnings": warnings,
         "failures": failures,
         "warningCount": len(warnings),
@@ -165,3 +196,15 @@ def _write_output(output_path: str | Path | None, payload: dict[str, Any]) -> No
         json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True),
         encoding="utf-8",
     )
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()

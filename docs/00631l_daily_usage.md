@@ -281,6 +281,8 @@ v1.36 提供 restore dry-run，只讀取備份 zip 並檢查 manifest 與檔案�
 scripts\00631l_restore_dry_run.cmd
 ```
 
+v1.46 起，backup manifest 會記錄每個檔案的 SHA256，restore dry-run 會驗證 archive entry 是否符合 checksum，並在 summary 顯示 `entriesVerified`。
+
 若 dry-run 顯示 PASS，代表備份檔結構可讀；若顯示 WARN，通常是目前沒有備份或備份內記錄了部分來源檔缺少；若顯示 FAIL，請先查看 `errorMessage`。真正需要還原時，仍請先解壓到臨時資料夾，比對檔案內容與日期，再手動複製需要的檔案回 `backend\data\` 或 `backend\exports\`，避免覆蓋較新的 history。
 
 ## 資料目錄健康狀態

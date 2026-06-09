@@ -44,6 +44,7 @@ class DataBackupTests(unittest.TestCase):
             self.assertEqual(payload["sourceStatus"], "cached")
             self.assertEqual(payload["includedCount"], 4)
             self.assertEqual(payload["prunedCount"], 0)
+            self.assertRegex(payload["backupSha256"], r"^[0-9a-f]{64}$")
             backup_path = Path(payload["backupPath"])
             self.assertTrue(backup_path.exists())
 
@@ -58,6 +59,8 @@ class DataBackupTests(unittest.TestCase):
                 )
                 self.assertEqual(manifest["sourceContract"], "00631l_local_data_backup")
                 self.assertEqual(len(manifest["includedFiles"]), 4)
+                for item in manifest["includedFiles"]:
+                    self.assertRegex(item["sha256"], r"^[0-9a-f]{64}$")
 
             after = {
                 path: path.read_text(encoding="utf-8")

@@ -31,6 +31,7 @@ This index reduces duplicate lookup paths for the semi-automated maintenance wor
 - Backend disconnected state: `docs\00631l_v1_43_release_summary.md`
 - Daily report UI: `docs\00631l_v1_44_release_summary.md`
 - Retention policy: `docs\00631l_v1_45_release_summary.md`
+- Backup checksum: `docs\00631l_v1_46_release_summary.md`
 
 ## Script Output Convention
 

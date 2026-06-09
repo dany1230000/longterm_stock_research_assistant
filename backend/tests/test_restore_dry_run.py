@@ -1,4 +1,5 @@
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -45,6 +46,9 @@ class RestoreDryRunTests(unittest.TestCase):
             self.assertEqual(payload["overallStatus"], "PASS")
             self.assertEqual(payload["sourceStatus"], "cached")
             self.assertEqual(payload["entriesChecked"], 4)
+            self.assertRegex(payload["checksum"]["backupSha256"], r"^[0-9a-f]{64}$")
+            self.assertEqual(payload["checksum"]["entriesWithSha256"], 4)
+            self.assertEqual(payload["checksum"]["entriesVerified"], 4)
             self.assertEqual(payload["failureCount"], 0)
             self.assertTrue(output.exists())
             self.assertEqual(holdings.read_text(encoding="utf-8"), before)
@@ -76,6 +80,42 @@ class RestoreDryRunTests(unittest.TestCase):
             self.assertEqual(payload["overallStatus"], "FAIL")
             self.assertEqual(payload["sourceStatus"], "error")
             self.assertIn("backup_manifest.json is missing.", payload["failures"])
+
+    def test_restore_dry_run_fails_when_entry_checksum_mismatches(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            backup_dir = Path(temp_dir) / "backups"
+            backup_dir.mkdir()
+            backup_path = backup_dir / "00631l_local_data_backup_20260608_100000Z.zip"
+            archive_name = "backend/data/00631l_holdings_history.jsonl"
+            manifest = {
+                "sourceContract": "00631l_local_data_backup",
+                "backedUpAt": "2026-06-08T10:00:00+00:00",
+                "includedFiles": [
+                    {
+                        "archiveName": archive_name,
+                        "sourcePath": "holdings.jsonl",
+                        "sizeBytes": 3,
+                        "sha256": hashlib.sha256(b"old").hexdigest(),
+                    }
+                ],
+                "missingFiles": [],
+            }
+            with ZipFile(backup_path, "w") as archive:
+                archive.writestr(archive_name, b"new")
+                archive.writestr("backup_manifest.json", json.dumps(manifest))
+
+            payload = restore_00631l_dry_run(
+                backup_dir=backup_dir,
+                backup_path=backup_path,
+            )
+
+            self.assertEqual(payload["overallStatus"], "FAIL")
+            self.assertEqual(payload["checksum"]["entriesWithSha256"], 1)
+            self.assertEqual(payload["checksum"]["entriesVerified"], 0)
+            self.assertIn(
+                f"Checksum mismatch for backup entry: {archive_name}",
+                payload["failures"],
+            )
 
 
 if __name__ == "__main__":

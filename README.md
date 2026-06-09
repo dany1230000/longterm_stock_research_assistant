@@ -64,6 +64,7 @@ v1.0 live sources:
 - Backend disconnected state v1.43: live proxy fallback now keeps `/00631l-lab` readable while explicitly showing `backend disconnected` and mock/fallback status.
 - Daily report UI v1.44: `/00631l-lab` now shows the latest local daily report status, generated time, WARN/FAIL counts, and report path.
 - Retention policy v1.45: `scripts\00631l_apply_retention.cmd` prunes old daily report Markdown files, reports fixed CSV export retention state, and keeps JSONL history as the long-term local record.
+- Backup checksum v1.46: local backup manifests include SHA256 per included file, and restore dry-run verifies archive entries before any manual restore workflow.
 
 Local backend env:
 
