@@ -18,6 +18,16 @@ Direct lab route:
 
 The app shell remains the long-term stock research assistant, and `00631L 正二研究室` is the dedicated 00631L route inside it.
 
+Mobile LAN helper:
+
+```cmd
+scripts\00631l_lan_info.cmd
+scripts\00631l_start_backend_lan.cmd
+scripts\00631l_start_frontend_lan.cmd
+```
+
+Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
+
 ## 00631L lab v1.0 completed
 
 Release status: completed on 2026-06-08. Release summary: `docs/00631l_v1_release_summary.md`. Release checklist: `docs/00631l_release_checklist.md`.
@@ -89,6 +99,7 @@ v1.0 live sources:
 - Documentation index v1.48: `docs\00631l_docs_index.md` is the main entry point for daily use, troubleshooting, maintenance, deployment, and release-summary routing.
 - Stability patch v1.49: backend tests verify that local paths in `docs\00631l_docs_index.md` exist, and release check requires the docs index.
 - Deployment stability release v1.50: `docs\00631l_v1_50_deployment_stability_summary.md` summarizes the stable deployment and data reliability checkpoint.
+- Mobile + AI v2.1: `docs\00631l_mobile_usage.md` explains LAN phone usage, and `docs\00631l_ai_analysis.md` explains rule-based AI analysis. holdings/ratio remains a daily official snapshot; intraday NAV is the 15–30 second live/cached source; TX live remains mock/fallback.
 
 Local backend env:
 

@@ -82,6 +82,11 @@ class Mock00631LRepository extends Official00631LRepository {
   }
 
   @override
+  Future<EtfAiAnalysisSummary> fetchAiAnalysisSummary() async {
+    return EtfAiAnalysisSummary.mockFallback(now: _clock());
+  }
+
+  @override
   Future<Etf00631LLabData> fetchLabData() async {
     final profile = await fetchProfile();
     final snapshot = await fetchDailySnapshot();
@@ -90,6 +95,7 @@ class Mock00631LRepository extends Official00631LRepository {
     final history = await fetchHoldingsHistorySummary();
     final intradayHistory = await fetchIntradayNavHistorySummary();
     final operationsStatus = await fetchOperationsStatus();
+    final aiAnalysis = await fetchAiAnalysisSummary();
     final now = _clock();
 
     return Etf00631LLabData(
@@ -105,6 +111,7 @@ class Mock00631LRepository extends Official00631LRepository {
         intradayNav: intradayNav,
         now: now,
       ),
+      aiAnalysis: aiAnalysis,
       lastFetchedAt: now,
     );
   }

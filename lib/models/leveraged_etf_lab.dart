@@ -1567,6 +1567,87 @@ class EtfOperationsStatus {
   }
 }
 
+class EtfAiAnalysisSummary {
+  const EtfAiAnalysisSummary({
+    required this.source,
+    required this.sourceStatusLabel,
+    required this.generatedAt,
+    required this.dataTime,
+    required this.readinessLevel,
+    required this.bullets,
+    required this.actionItems,
+    required this.sourceStatuses,
+    required this.disclaimer,
+    this.errorMessage,
+  });
+
+  factory EtfAiAnalysisSummary.mockFallback({DateTime? now}) {
+    final resolvedNow = now ?? DateTime.now();
+    return EtfAiAnalysisSummary(
+      source: 'rule_based',
+      sourceStatusLabel: 'mock',
+      generatedAt: resolvedNow,
+      dataTime: null,
+      readinessLevel: 'action_needed',
+      bullets: const [
+        '目前使用 mock/fallback 資料，無法代表 official live source。',
+        '請啟動 backend live proxy 後重新整理，以取得 official holdings 與 intraday NAV。',
+        '此摘要只描述資料狀態與偏離程度。',
+      ],
+      actionItems: const [
+        '請執行 scripts\\00631l_start_backend.cmd。',
+        '請用 live proxy 模式開啟 /#/00631l-lab。',
+      ],
+      sourceStatuses: const {
+        'analysis': 'mock',
+        'operations': 'mock',
+        'holdingsHistory': 'mock',
+        'intradayNavHistory': 'mock',
+      },
+      disclaimer: '非買賣建議',
+    );
+  }
+
+  final String source;
+  final String sourceStatusLabel;
+  final DateTime generatedAt;
+  final DateTime? dataTime;
+  final String readinessLevel;
+  final List<String> bullets;
+  final List<String> actionItems;
+  final Map<String, String> sourceStatuses;
+  final String disclaimer;
+  final String? errorMessage;
+
+  String get readinessLabel {
+    switch (readinessLevel) {
+      case 'ready':
+        return '可日常使用';
+      case 'attention':
+        return '需要觀察';
+      case 'action_needed':
+        return '需要處理';
+      default:
+        return '資料不足';
+    }
+  }
+
+  EtfAiAnalysisSummary asCached() {
+    return EtfAiAnalysisSummary(
+      source: source,
+      sourceStatusLabel: 'cached',
+      generatedAt: generatedAt,
+      dataTime: dataTime,
+      readinessLevel: readinessLevel,
+      bullets: bullets,
+      actionItems: actionItems,
+      sourceStatuses: sourceStatuses,
+      disclaimer: disclaimer,
+      errorMessage: errorMessage,
+    );
+  }
+}
+
 class Etf00631LLabData {
   const Etf00631LLabData({
     required this.profile,
@@ -1577,6 +1658,7 @@ class Etf00631LLabData {
     required this.intradayNavHistory,
     required this.operationsStatus,
     required this.analysis,
+    required this.aiAnalysis,
     required this.lastFetchedAt,
   });
 
@@ -1588,6 +1670,7 @@ class Etf00631LLabData {
   final EtfIntradayNavHistorySummary intradayNavHistory;
   final EtfOperationsStatus operationsStatus;
   final EtfAnalysisSummary analysis;
+  final EtfAiAnalysisSummary aiAnalysis;
   final DateTime lastFetchedAt;
 
   HoldingsChangeAssessment get holdingsChangeAssessment {

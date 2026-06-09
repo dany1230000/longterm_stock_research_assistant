@@ -271,6 +271,29 @@ class Proxy00631LRepository extends Official00631LRepository {
     );
   }
 
+  @override
+  Future<EtfAiAnalysisSummary> fetchAiAnalysisSummary() async {
+    final payload = await _getJson('/api/etf/00631l/analysis/summary');
+    final statuses = _map(payload['sourceStatuses']);
+    return EtfAiAnalysisSummary(
+      source: _string(payload['source'], fallback: 'rule_based'),
+      sourceStatusLabel:
+          _rawStatus(payload).isEmpty ? 'cached' : _rawStatus(payload),
+      generatedAt: _dateTime(payload['generatedAt']) ?? DateTime.now(),
+      dataTime: _wallClockDateTime(payload['dataTime']),
+      readinessLevel:
+          _string(payload['readinessLevel'], fallback: 'unavailable'),
+      bullets: _stringList(payload['bullets']),
+      actionItems: _stringList(payload['actionItems']),
+      sourceStatuses: {
+        for (final entry in statuses.entries)
+          entry.key.toString(): entry.value?.toString() ?? '',
+      },
+      disclaimer: _string(payload['disclaimer'], fallback: '非買賣建議'),
+      errorMessage: payload['errorMessage']?.toString(),
+    );
+  }
+
   Future<Map<String, dynamic>> _getJson(String path) async {
     final body = await _client.getString(_resolve(path), timeout: timeout);
     final decoded = jsonDecode(body);

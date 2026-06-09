@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,11 +12,36 @@ import '../../shared/widgets/metric_tile.dart';
 import '../../shared/widgets/risk_chip.dart';
 import '../../shared/widgets/section_card.dart';
 
-class LeveragedEtf00631LScreen extends ConsumerWidget {
+class LeveragedEtf00631LScreen extends ConsumerStatefulWidget {
   const LeveragedEtf00631LScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LeveragedEtf00631LScreen> createState() =>
+      _LeveragedEtf00631LScreenState();
+}
+
+class _LeveragedEtf00631LScreenState
+    extends ConsumerState<LeveragedEtf00631LScreen> {
+  Timer? _refreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) {
+        ref.invalidate(etf00631LLabProvider);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final labValue = ref.watch(etf00631LLabProvider);
 
     return SafeArea(
@@ -52,6 +79,8 @@ class _LabContent extends StatelessWidget {
         _SummaryGrid(data: data),
         const SizedBox(height: 16),
         _StatusSummarySection(summary: data.statusSummary),
+        const SizedBox(height: 16),
+        _AiAnalysisSummarySection(summary: data.aiAnalysis),
         const SizedBox(height: 16),
         _TodayDataStatusSection(status: data.operationsStatus),
         const SizedBox(height: 16),
@@ -311,6 +340,128 @@ class _StatusSummarySection extends StatelessWidget {
   }
 }
 
+class _AiAnalysisSummarySection extends StatelessWidget {
+  const _AiAnalysisSummarySection({required this.summary});
+
+  final EtfAiAnalysisSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = _aiAnalysisColor(theme.colorScheme, summary.readinessLevel);
+    return SectionCard(
+      title: 'AI 分析摘要',
+      subtitle: '目前使用 rule-based analysis，只解釋資料狀態、內容物變化、折溢價偏離與資料風險。',
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Color.alphaBlend(
+            color.withValues(alpha: 0.08),
+            theme.colorScheme.surface,
+          ),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withValues(alpha: 0.30)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Icon(_aiAnalysisIcon(summary.readinessLevel), color: color),
+                  RiskChip(label: 'source ${summary.source}'),
+                  RiskChip(label: 'sourceStatus ${summary.sourceStatusLabel}'),
+                  RiskChip(label: summary.readinessLabel),
+                  RiskChip(label: summary.disclaimer),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'generated ${formatTaiwanDateTimeSeconds(summary.generatedAt)}'
+                '${summary.dataTime == null ? '' : '；dataTime ${formatTaiwanDateTimeSeconds(summary.dataTime!)}'}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '摘要',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              for (final bullet in summary.bullets)
+                _BulletLine(text: bullet, icon: Icons.insights_outlined),
+              const SizedBox(height: 10),
+              Text(
+                '需要的程式操作',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              for (final action in summary.actionItems)
+                _BulletLine(text: action, icon: Icons.task_alt_outlined),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final entry in summary.sourceStatuses.entries)
+                    RiskChip(label: '${entry.key} ${entry.value}'),
+                ],
+              ),
+              if (summary.errorMessage != null) ...[
+                const SizedBox(height: 10),
+                Text(summary.errorMessage!),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BulletLine extends StatelessWidget {
+  const _BulletLine({required this.text, required this.icon});
+
+  final String text;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 7),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Icon(
+              icon,
+              size: 17,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(width: 7),
+          Expanded(
+            child: Text(
+              text,
+              style: theme.textTheme.bodyMedium?.copyWith(height: 1.45),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _OperationsStatusSection extends StatelessWidget {
   const _OperationsStatusSection({required this.status});
 
@@ -427,6 +578,8 @@ class _TodayDataStatusSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _DailyReadinessPanel(summary: status.dailyReadinessSummary),
+          const SizedBox(height: 12),
+          const _DataUpdateFrequencyPanel(),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
@@ -736,6 +889,97 @@ class _DailyReadinessCheckTile extends StatelessWidget {
                   ],
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DataUpdateFrequencyPanel extends StatelessWidget {
+  const _DataUpdateFrequencyPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    const items = [
+      (
+        title: 'official holdings / ratio',
+        status: '每日快照',
+        body: '元大 official ratio 是每日揭露資料，不是盤中即時內容物。'
+      ),
+      (
+        title: 'intraday NAV / 折溢價',
+        status: '約 15–30 秒',
+        body: 'TWSE all_etf.txt 提供盤中市價、預估淨值與折溢價；需 backend 可連線且 env 設定正確。'
+      ),
+      (
+        title: 'TX live quote',
+        status: '尚未接入',
+        body: 'TX live 本輪未接；目前只保留 mock/fallback 顯示，不會標示為 official。'
+      ),
+    ];
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.35)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '資料更新頻率',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isCompact = constraints.maxWidth < 640;
+                return Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    for (final item in items)
+                      SizedBox(
+                        width: isCompact
+                            ? constraints.maxWidth
+                            : (constraints.maxWidth - 20) / 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 6,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Text(
+                                  item.title,
+                                  style: theme.textTheme.labelLarge?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                RiskChip(label: item.status),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              item.body,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                height: 1.35,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -2495,6 +2739,32 @@ IconData _premiumDiscountIcon(PremiumDiscountLevel level) {
       return Icons.schedule_outlined;
     case PremiumDiscountLevel.unavailable:
       return Icons.cloud_off_outlined;
+  }
+}
+
+Color _aiAnalysisColor(ColorScheme colorScheme, String readinessLevel) {
+  switch (readinessLevel) {
+    case 'ready':
+      return colorScheme.primary;
+    case 'attention':
+      return colorScheme.tertiary;
+    case 'action_needed':
+      return colorScheme.error;
+    default:
+      return colorScheme.onSurfaceVariant;
+  }
+}
+
+IconData _aiAnalysisIcon(String readinessLevel) {
+  switch (readinessLevel) {
+    case 'ready':
+      return Icons.check_circle_outline;
+    case 'attention':
+      return Icons.manage_search_outlined;
+    case 'action_needed':
+      return Icons.error_outline;
+    default:
+      return Icons.psychology_alt_outlined;
   }
 }
 

@@ -34,6 +34,9 @@ void main() {
     expect(find.textContaining('twse_a_k_json'), findsWidgets);
     expect(find.textContaining('mock'), findsWidgets);
 
+    await _scrollUntilTextVisible(tester, 'AI 分析摘要');
+    expect(find.text('AI 分析摘要'), findsOneWidget);
+
     await _scrollUntilTextVisible(tester, 'daily collector');
     expect(find.text('daily collector'), findsOneWidget);
 
@@ -109,8 +112,12 @@ void main() {
     await _scrollUntilTextVisible(tester, '今日資料狀態');
     expect(find.text('今日資料狀態'), findsOneWidget);
     expect(find.text('每日可用狀態'), findsOneWidget);
+    expect(find.text('資料更新頻率'), findsOneWidget);
+    expect(find.text('每日快照'), findsOneWidget);
+    expect(find.text('約 15–30 秒'), findsOneWidget);
+    expect(find.text('尚未接入'), findsOneWidget);
     expect(find.text('需要處理'), findsWidgets);
-    expect(find.textContaining('operations mock'), findsOneWidget);
+    expect(find.textContaining('operations mock'), findsWidgets);
     expect(find.text('daily cycle'), findsWidgets);
     expect(find.text('daily report'), findsWidgets);
     expect(find.textContaining('report'), findsWidgets);
@@ -120,6 +127,21 @@ void main() {
         find.textContaining('scripts\\00631l_daily_cycle.cmd'), findsWidgets);
     expect(find.textContaining('backend\\.env.example'), findsWidgets);
     expect(find.textContaining('TWSE URL 設定或交易時段'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('00631L lab shows rule-based AI analysis summary',
+      (tester) async {
+    await _pumpLab(tester, _AiAnalysisFixture00631LRepository());
+
+    await _scrollUntilTextVisible(tester, 'AI 分析摘要');
+    expect(find.text('AI 分析摘要'), findsOneWidget);
+    expect(find.text('source rule_based'), findsOneWidget);
+    expect(find.text('sourceStatus cached'), findsWidgets);
+    expect(find.text('非買賣建議'), findsWidgets);
+    expect(find.textContaining('official holdings 為每日快照'), findsOneWidget);
+    expect(find.textContaining('請先執行 scripts\\00631l_daily_cycle.cmd'),
+        findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -439,6 +461,33 @@ class _ReportFixture00631LRepository extends Mock00631LRepository {
       dailyCycleFinishedAt: DateTime(2026, 6, 9, 10, 6),
       dailyCycleWarningCount: 1,
       dailyCycleFailureCount: 0,
+    );
+  }
+}
+
+class _AiAnalysisFixture00631LRepository extends Mock00631LRepository {
+  @override
+  Future<EtfAiAnalysisSummary> fetchAiAnalysisSummary() async {
+    return EtfAiAnalysisSummary(
+      source: 'rule_based',
+      sourceStatusLabel: 'cached',
+      generatedAt: DateTime(2026, 6, 9, 10, 6),
+      dataTime: DateTime(2026, 6, 9, 10, 5, 30),
+      readinessLevel: 'attention',
+      bullets: const [
+        '今日資料狀態為需要觀察；此摘要只描述資料狀態與偏離程度。',
+        'official holdings 為每日快照，最近日期 2026-06-09，sourceStatus cached。',
+        'intraday NAV 為盤中估算資料，最近資料時間 2026-06-09T10:05:30+08:00，sourceStatus cached。',
+      ],
+      actionItems: const [
+        '請先執行 scripts\\00631l_daily_cycle.cmd。',
+      ],
+      sourceStatuses: const {
+        'operations': 'cached',
+        'holdingsHistory': 'cached',
+        'intradayNavHistory': 'cached',
+      },
+      disclaimer: '非買賣建議',
     );
   }
 }

@@ -19,6 +19,7 @@ class Cached00631LRepository extends Official00631LRepository {
   EtfHoldingsHistory? _holdingsHistoryCache;
   EtfIntradayNavHistorySummary? _intradayNavHistoryCache;
   EtfOperationsStatus? _operationsStatusCache;
+  EtfAiAnalysisSummary? _aiAnalysisCache;
 
   @override
   Future<LeveragedEtfProfile> fetchProfile() async {
@@ -125,6 +126,21 @@ class Cached00631LRepository extends Official00631LRepository {
       }
       final fallback = await _fallback.fetchOperationsStatus();
       return _backendDisconnectedOperationsStatus(fallback, error);
+    }
+  }
+
+  @override
+  Future<EtfAiAnalysisSummary> fetchAiAnalysisSummary() async {
+    try {
+      final analysis = await _primary.fetchAiAnalysisSummary();
+      _aiAnalysisCache = analysis;
+      return analysis;
+    } catch (_) {
+      final cached = _aiAnalysisCache;
+      if (cached != null) {
+        return cached.asCached();
+      }
+      return _fallback.fetchAiAnalysisSummary();
     }
   }
 }

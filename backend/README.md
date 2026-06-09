@@ -194,6 +194,14 @@ Endpoint:
 GET /api/etf/00631l/operations/status
 ```
 
+AI analysis summary:
+
+```text
+GET /api/etf/00631l/analysis/summary
+```
+
+The analysis endpoint uses `source: rule_based` by default. It reads local operations/history/report/export/backup/integrity state and returns bullets, actionItems, sourceStatuses, and `disclaimer: 非買賣建議`. External LLM support is only a disabled placeholder and requires a future explicit release before any `.env` key is used.
+
 This endpoint reads local configuration and local JSONL history summaries. It does not fetch Yuanta or TWSE live sources. It reports intraday source mode, whether TWSE/Yuanta intraday URLs are configured, latest holdings history trade date, intraday NAV sample count, latest intraday data time, and collector commands.
 
 If there is no local history, the endpoint returns `sourceStatus: unavailable`; it does not return mock data as official operational state.

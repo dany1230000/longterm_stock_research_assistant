@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from .analysis import AnalysisProvider, RuleBasedAnalysisProvider
 from .cache import TimedMemoryCache
 from .config import Settings, settings
 from .fetcher import FetchError, fetch_text
@@ -39,6 +40,7 @@ class Etf00631LService:
         cache: TimedMemoryCache | None = None,
         history_store: HoldingsHistoryStore | None = None,
         intraday_history_store: IntradayNavHistoryStore | None = None,
+        analysis_provider: AnalysisProvider | None = None,
     ) -> None:
         self._config = config
         self._fetcher = fetcher
@@ -49,6 +51,7 @@ class Etf00631LService:
         self._intraday_history_store = intraday_history_store or IntradayNavHistoryStore(
             self._config.intraday_nav_history_path
         )
+        self._analysis_provider = analysis_provider or RuleBasedAnalysisProvider()
 
     def health_status(self, *, server_time: str | None = None) -> dict[str, Any]:
         now = server_time or utc_now_iso()
@@ -79,6 +82,7 @@ class Etf00631LService:
                 "holdings": "/api/etf/00631l/holdings",
                 "intradayNav": "/api/etf/00631l/intraday-nav",
                 "operationsStatus": "/api/etf/00631l/operations/status",
+                "analysisSummary": "/api/etf/00631l/analysis/summary",
             },
         }
 
@@ -306,6 +310,9 @@ class Etf00631LService:
                 "reportDir": self._config.report_dir,
             },
             "dataDirectoryHealth": data_directory_health,
+            "dataUpdateFrequencies": _data_update_frequencies(
+                intraday_cache_seconds=self._config.intraday_cache_seconds,
+            ),
             "holdingsHistory": {
                 "sourceStatus": holdings.get("sourceStatus"),
                 "sourceContract": holdings.get("sourceContract"),
@@ -348,6 +355,52 @@ class Etf00631LService:
                 ),
             },
         }
+
+    def analysis_summary(self) -> dict[str, Any]:
+        now = utc_now_iso()
+        try:
+            operations = self.operations_status()
+            holdings = self.holdings_history_summary(limit=30)
+            intraday = self.intraday_nav_history_summary()
+            integrity = _read_json_file(Path(self._config.integrity_status_path))
+            payload = self._analysis_provider.summarize(
+                {
+                    "operations": operations,
+                    "holdingsHistory": holdings,
+                    "intradayNavHistory": intraday,
+                    "integrity": integrity,
+                }
+            )
+            payload.setdefault("sourceStatus", "cached")
+            payload.setdefault("sourceContract", "00631l_rule_based_analysis_summary")
+            payload.setdefault("generatedAt", now)
+            payload.setdefault("disclaimer", "非買賣建議")
+            return payload
+        except (OSError, RuntimeError, ValueError) as error:
+            return {
+                "source": "rule_based",
+                "sourceStatus": "error",
+                "sourceContract": "00631l_rule_based_analysis_summary",
+                "generatedAt": now,
+                "dataTime": None,
+                "readinessLevel": "action_needed",
+                "bullets": ["資料不足，暫時無法產生完整 AI 分析摘要。"],
+                "actionItems": [
+                    "請執行 scripts\\00631l_check_env.cmd 與 scripts\\00631l_daily_cycle.cmd 後再重新整理。"
+                ],
+                "sourceStatuses": {
+                    "operations": "error",
+                    "holdingsHistory": "unavailable",
+                    "intradayNavHistory": "unavailable",
+                    "dailyCycle": "unavailable",
+                    "report": "unavailable",
+                    "export": "unavailable",
+                    "backup": "unavailable",
+                    "integrity": "unavailable",
+                },
+                "disclaimer": "非買賣建議",
+                "errorMessage": f"Rule-based analysis failed: {error}",
+            }
 
     def _backup_status(self) -> dict[str, Any]:
         backup_dir = Path(self._config.backup_dir)
@@ -581,6 +634,32 @@ def _directory_health(directory: Path, files: list[Path]) -> dict[str, Any]:
         "latestFile": str(latest_path) if latest_path else None,
         "latestUpdatedAt": _mtime_iso(latest_mtime) if latest_path else None,
     }
+
+
+def _data_update_frequencies(*, intraday_cache_seconds: int) -> list[dict[str, Any]]:
+    return [
+        {
+            "key": "holdings_ratio",
+            "label": "official holdings / ratio",
+            "frequency": "official_daily_snapshot",
+            "description": "元大 official ratio 是每日揭露資料，不是盤中即時內容物。",
+            "sourceStatus": "official_or_cached",
+        },
+        {
+            "key": "intraday_nav",
+            "label": "intraday NAV / premium discount",
+            "frequency": f"approx_{max(15, min(30, intraday_cache_seconds))}_seconds_when_backend_ready",
+            "description": "TWSE all_etf.txt 可提供盤中市價、預估淨值與折溢價；需 backend 可連線且 env 設定正確。",
+            "sourceStatus": "official_cached_stale_or_unavailable",
+        },
+        {
+            "key": "tx_live",
+            "label": "TX live quote",
+            "frequency": "not_connected",
+            "description": "TX live 尚未接入；目前只保留 mock/fallback 顯示，不會標示為 official。",
+            "sourceStatus": "mock_fallback",
+        },
+    ]
 
 
 def _read_json_file(path: Path) -> dict[str, Any]:

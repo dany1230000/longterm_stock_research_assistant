@@ -42,6 +42,22 @@ class EndpointTests(unittest.TestCase):
         self.assertIn("liveSourceConfigured", payload)
         self.assertIn("localState", payload)
         self.assertIn("operationsStatus", payload["endpoints"])
+        self.assertIn("analysisSummary", payload["endpoints"])
+
+    def test_cors_allows_private_lan_origin_for_mobile_mode(self) -> None:
+        response = self.client.options(
+            "/health",
+            headers={
+                "Origin": "http://192.168.0.19:8080",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.headers.get("access-control-allow-origin"),
+            "http://192.168.0.19:8080",
+        )
 
     def test_intraday_nav_without_config_is_unavailable(self) -> None:
         main_module.service = Etf00631LService(
@@ -341,11 +357,33 @@ Custodian Fee
             self.assertEqual(payload["report"]["warningCount"], 2)
             self.assertTrue(payload["config"]["backupDirReady"])
             self.assertEqual(payload["dataDirectoryHealth"]["backupDir"]["fileCount"], 1)
+            self.assertEqual(
+                payload["dataUpdateFrequencies"][0]["frequency"],
+                "official_daily_snapshot",
+            )
+            self.assertEqual(
+                payload["dataUpdateFrequencies"][1]["label"],
+                "intraday NAV / premium discount",
+            )
+            self.assertEqual(
+                payload["dataUpdateFrequencies"][2]["frequency"],
+                "not_connected",
+            )
             self.assertEqual(payload["statusSummary"]["export"], "cached")
             self.assertEqual(payload["statusSummary"]["report"], "cached")
             self.assertEqual(payload["backendHealth"]["sourceContract"], "00631l_backend_health")
             self.assertIn("localState", payload["backendHealth"])
             self.assertIn("oneShotCommand", payload["collector"])
+
+            analysis_response = self.client.get("/api/etf/00631l/analysis/summary")
+            self.assertEqual(analysis_response.status_code, 200)
+            analysis = analysis_response.json()
+            self.assertEqual(analysis["source"], "rule_based")
+            self.assertEqual(analysis["sourceContract"], "00631l_rule_based_analysis_summary")
+            self.assertEqual(analysis["disclaimer"], "非買賣建議")
+            self.assertIn(analysis["readinessLevel"], {"ready", "attention", "action_needed"})
+            self.assertGreaterEqual(len(analysis["bullets"]), 3)
+            self.assertIn("holdingsHistory", analysis["sourceStatuses"])
 
     def test_operations_status_reports_missing_daily_cycle_status(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

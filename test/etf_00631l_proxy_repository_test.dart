@@ -149,6 +149,28 @@ void main() {
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
   });
 
+  test('proxy repository maps AI analysis summary payload', () async {
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/00631l/analysis/summary':
+            jsonEncode(_aiAnalysisSummaryPayload()),
+      }),
+    );
+
+    final summary = await repository.fetchAiAnalysisSummary();
+
+    expect(summary.source, 'rule_based');
+    expect(summary.sourceStatusLabel, 'cached');
+    expect(summary.generatedAt, DateTime.parse('2026-06-08T13:40:00+08:00'));
+    expect(summary.dataTime, DateTime(2026, 6, 8, 13, 31));
+    expect(summary.readinessLevel, 'attention');
+    expect(summary.readinessLabel, '需要觀察');
+    expect(summary.bullets, hasLength(3));
+    expect(summary.actionItems.single, contains('00631l_daily_cycle'));
+    expect(summary.sourceStatuses['intradayNavHistory'], 'cached');
+    expect(summary.disclaimer, '非買賣建議');
+  });
+
   test('cached repository falls back to mock when proxy is down', () async {
     final repository = Cached00631LRepository(
       primary: Proxy00631LRepository(client: _FailingProxyHttpClient()),
@@ -162,9 +184,11 @@ void main() {
     expect(data.intradayNav?.status, EtfDataStatus.mock);
     expect(data.futuresQuote.status, EtfDataStatus.mock);
     expect(data.operationsStatus.backendDisconnected, isTrue);
-    expect(data.operationsStatus.backendConnectionLabel,
-        'backend disconnected');
+    expect(
+        data.operationsStatus.backendConnectionLabel, 'backend disconnected');
     expect(data.operationsStatus.errorMessage, contains('backend down'));
+    expect(data.aiAnalysis.source, 'rule_based');
+    expect(data.aiAnalysis.sourceStatusLabel, 'mock');
   });
 }
 
@@ -477,5 +501,32 @@ Map<String, Object?> _operationsStatusPayload() {
       'intradayCommand':
           'scripts\\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15',
     },
+  };
+}
+
+Map<String, Object?> _aiAnalysisSummaryPayload() {
+  return {
+    'source': 'rule_based',
+    'sourceStatus': 'cached',
+    'sourceContract': '00631l_rule_based_analysis_summary',
+    'generatedAt': '2026-06-08T13:40:00+08:00',
+    'dataTime': '2026-06-08T13:31:00+08:00',
+    'readinessLevel': 'attention',
+    'bullets': [
+      '今日資料狀態為需要觀察；此摘要只描述資料狀態與偏離程度。',
+      'official holdings 為每日快照，最近日期 2026-06-08，sourceStatus cached。',
+      'intraday NAV 為盤中估算資料，最近資料時間 2026-06-08T13:31:00+08:00，sourceStatus cached。',
+    ],
+    'actionItems': [
+      '請先執行 scripts\\00631l_daily_cycle.cmd。',
+    ],
+    'sourceStatuses': {
+      'operations': 'cached',
+      'holdingsHistory': 'cached',
+      'intradayNavHistory': 'cached',
+      'report': 'cached',
+    },
+    'disclaimer': '非買賣建議',
+    'errorMessage': null,
   };
 }

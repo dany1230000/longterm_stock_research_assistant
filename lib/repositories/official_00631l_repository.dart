@@ -32,6 +32,10 @@ abstract class Official00631LRepository {
     );
   }
 
+  Future<EtfAiAnalysisSummary> fetchAiAnalysisSummary() async {
+    return EtfAiAnalysisSummary.mockFallback();
+  }
+
   Future<Etf00631LLabData> fetchLabData() async {
     final profile = await fetchProfile();
     final snapshot = await fetchDailySnapshot();
@@ -40,6 +44,7 @@ abstract class Official00631LRepository {
     final history = await _fetchHistorySafely();
     final intradayHistory = await _fetchIntradayHistorySafely();
     final operationsStatus = await _fetchOperationsStatusSafely();
+    final aiAnalysis = await _fetchAiAnalysisSafely();
     final now = DateTime.now();
 
     return Etf00631LLabData(
@@ -55,6 +60,7 @@ abstract class Official00631LRepository {
         intradayNav: intradayNav,
         now: now,
       ),
+      aiAnalysis: aiAnalysis,
       lastFetchedAt: now,
     );
   }
@@ -92,6 +98,14 @@ abstract class Official00631LRepository {
         status: EtfDataStatus.error,
         errorMessage: error.toString(),
       );
+    }
+  }
+
+  Future<EtfAiAnalysisSummary> _fetchAiAnalysisSafely() async {
+    try {
+      return await fetchAiAnalysisSummary();
+    } catch (_) {
+      return EtfAiAnalysisSummary.mockFallback().asCached();
     }
   }
 }

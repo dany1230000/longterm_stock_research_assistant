@@ -55,6 +55,16 @@ scripts\00631l_open_lab.cmd
 
 這個 helper 會先跑環境檢查，確認 backend 是否已在 `http://127.0.0.1:8000/health` 回應，並列出 backend、daily cycle、Flutter live proxy 與 `/#/00631l-lab` 的直接開啟方式。它不會把 server 藏在背景執行。
 
+手機同 Wi-Fi 使用請看：
+
+```cmd
+scripts\00631l_lan_info.cmd
+scripts\00631l_start_backend_lan.cmd
+scripts\00631l_start_frontend_lan.cmd
+```
+
+完整說明：`docs\00631l_mobile_usage.md`。
+
 ## 每天啟動 backend
 
 在專案根目錄執行：
@@ -132,6 +142,26 @@ http://127.0.0.1:8000/api/etf/00631l/operations/status
 - `需要處理`：backend 斷線、required env 缺少、TWSE URL 未設定、資料來源 error/unavailable，或 daily cycle/report 出現 failure。
 
 下方每一列都只給程式操作提示，例如啟動 backend、執行 daily cycle、產生日報、匯出 CSV、建立 backup、或檢查 `.env`。這些提示不是投資建議。
+
+## AI 分析摘要怎麼看
+
+`/#/00631l-lab` 會顯示 `AI 分析摘要`。目前來源是 `rule_based`，不會呼叫外部 LLM，也不需要 API key。
+
+它只整理：
+
+- 今日資料狀態。
+- official holdings 主要變化。
+- intraday NAV 與折溢價狀態。
+- data integrity、report、export、backup 狀態。
+- 需要執行的程式操作。
+
+它不提供投資操作建議。完整說明：`docs\00631l_ai_analysis.md`。
+
+## 資料更新頻率
+
+- official holdings / ratio：元大每日揭露資料，是每日快照，不是盤中即時內容物。
+- intraday NAV / 折溢價：TWSE `all_etf.txt` 可準即時更新，約 15–30 秒；需要 backend 可連線且 `.env` 設定正確。
+- TX live：目前尚未接入，只保留 mock/fallback 顯示，不會標示為 official。
 
 ## holdings history 怎麼看
 

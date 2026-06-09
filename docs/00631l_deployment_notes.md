@@ -47,6 +47,28 @@ build\web
 
 `build\` 是產物，不要提交到 git。
 
+Flutter web build 是靜態前端。若只把 `build\web` 放到 GitHub Pages 或其他靜態服務，live data 仍需要可連線的 backend proxy。沒有 backend 時，頁面只能顯示 mock、stale、unavailable 或 cached 狀態，不能把這些狀態標示為 official。
+
+frontend live proxy mode 需設定 backend URL：
+
+```cmd
+flutter run -d chrome --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_PROXY_BASE_URL=http://127.0.0.1:8000
+```
+
+手機 LAN 模式請用：
+
+```cmd
+scripts\00631l_lan_info.cmd
+scripts\00631l_start_backend_lan.cmd
+scripts\00631l_start_frontend_lan.cmd
+```
+
+手機 URL 會是：
+
+```text
+http://<LAN-IP>:8080/#/00631l-lab
+```
+
 ## 3. backend proxy 需求
 
 live data 需要 backend proxy，原因是：

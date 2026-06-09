@@ -24,7 +24,14 @@ app.add_middleware(
         "http://127.0.0.1:8080",
         "http://127.0.0.1:5173",
     ],
-    allow_origin_regex=r"^http://(localhost|127\.0\.0\.1):\d+$",
+    allow_origin_regex=(
+        r"^http://("
+        r"localhost|127\.0\.0\.1|"
+        r"10\.\d{1,3}\.\d{1,3}\.\d{1,3}|"
+        r"192\.168\.\d{1,3}\.\d{1,3}|"
+        r"172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}"
+        r"):\d+$"
+    ),
     allow_credentials=False,
     allow_methods=["GET"],
     allow_headers=["*"],
@@ -79,3 +86,8 @@ def intraday_nav_history_summary(date: str | None = None) -> dict:
 @app.get("/api/etf/00631l/operations/status")
 def operations_status() -> dict:
     return service.operations_status()
+
+
+@app.get("/api/etf/00631l/analysis/summary")
+def analysis_summary() -> dict:
+    return service.analysis_summary()

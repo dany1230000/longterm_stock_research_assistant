@@ -6,6 +6,8 @@ This is the main entry point for 00631L lab documentation.
 
 - Final daily-use summary: `docs\00631l_v2_0_final_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
+- Mobile usage: `docs\00631l_mobile_usage.md`
+- AI analysis: `docs\00631l_ai_analysis.md`
 - Troubleshooting: `docs\00631l_troubleshooting.md`
 - Maintenance index: `docs\00631l_maintenance_index.md`
 - Deployment notes: `docs\00631l_deployment_notes.md`
@@ -15,6 +17,9 @@ This is the main entry point for 00631L lab documentation.
 - Open lab helper: `scripts\00631l_open_lab.cmd`
 - Backend startup: `scripts\00631l_start_backend.cmd`
 - Frontend live proxy: `scripts\00631l_start_frontend_live.cmd`
+- LAN info: `scripts\00631l_lan_info.cmd`
+- Backend LAN startup: `scripts\00631l_start_backend_lan.cmd`
+- Frontend LAN startup: `scripts\00631l_start_frontend_lan.cmd`
 - Daily cycle: `scripts\00631l_daily_cycle.cmd`
 - Release check: `scripts\00631l_release_check.cmd`
 
@@ -22,6 +27,7 @@ This is the main entry point for 00631L lab documentation.
 
 - Daily report guide: `docs\00631l_daily_report_guide.md`
 - Holdings and intraday source notes: `docs\00631l_lab.md`
+- AI analysis notes: `docs\00631l_ai_analysis.md`
 - Live proxy details: `docs\00631l_live_proxy.md`
 - CSV export: `scripts\00631l_export_history.cmd`
 - Retention policy: `scripts\00631l_apply_retention.cmd --dry-run --report-retention-count 30`
@@ -45,6 +51,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Maintenance release: `docs\00631l_v1_40_maintenance_summary.md`
 - Deployment stability release: `docs\00631l_v1_50_deployment_stability_summary.md`
 - Formal daily-use completion: `docs\00631l_v2_0_final_summary.md`
+- Mobile + AI release: `docs\00631l_v2_1_mobile_ai_summary.md`
 
 ## Scope Boundary
 

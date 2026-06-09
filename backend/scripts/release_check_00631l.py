@@ -10,6 +10,8 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 FORBIDDEN_TERMS = [
     "\u8cb7\u9032",
@@ -28,6 +30,7 @@ FORBIDDEN_TERMS = [
 def main() -> int:
     steps = [
         _required_files_check(),
+        _analysis_endpoint_check(),
         _run_command("deploy_precheck", ["cmd", "/c", "scripts\\00631l_deploy_precheck.cmd"]),
         _run_command("env_check", ["cmd", "/c", "scripts\\00631l_check_env.cmd"]),
         _run_command("flutter_analyze", ["cmd", "/c", "flutter", "analyze"]),
@@ -102,7 +105,10 @@ def _required_files_check() -> dict[str, Any]:
     required_files = [
         "docs/00631l_scheduler_setup.md",
         "docs/00631l_docs_index.md",
+        "docs/00631l_mobile_usage.md",
+        "docs/00631l_ai_analysis.md",
         "docs/00631l_daily_report_guide.md",
+        "backend/app/analysis.py",
         "backend/app/data_integrity.py",
         "backend/app/data_backup.py",
         "backend/app/restore_dry_run.py",
@@ -111,6 +117,9 @@ def _required_files_check() -> dict[str, Any]:
         "scripts/00631l_bootstrap_deploy.cmd",
         "scripts/00631l_deploy_precheck.cmd",
         "scripts/00631l_daily_cycle_scheduled.cmd",
+        "scripts/00631l_lan_info.cmd",
+        "scripts/00631l_start_backend_lan.cmd",
+        "scripts/00631l_start_frontend_lan.cmd",
         "scripts/00631l_generate_daily_report.cmd",
         "scripts/00631l_check_integrity.cmd",
         "scripts/00631l_apply_retention.cmd",
@@ -128,6 +137,46 @@ def _required_files_check() -> dict[str, Any]:
         "stdoutTail": "",
         "stderrTail": "",
     }
+
+
+def _analysis_endpoint_check() -> dict[str, Any]:
+    try:
+        from fastapi.testclient import TestClient
+        from backend.app.main import app
+
+        response = TestClient(app).get("/api/etf/00631l/analysis/summary")
+        payload = response.json()
+        failures = []
+        if response.status_code != 200:
+            failures.append(f"status_code={response.status_code}")
+        if payload.get("source") != "rule_based":
+            failures.append("source is not rule_based")
+        if payload.get("disclaimer") != "\u975e\u8cb7\u8ce3\u5efa\u8b70":
+            failures.append("missing non-advice disclaimer")
+        if not isinstance(payload.get("bullets"), list):
+            failures.append("bullets missing")
+        if not isinstance(payload.get("actionItems"), list):
+            failures.append("actionItems missing")
+        status = "FAIL" if failures else "PASS"
+        return {
+            "name": "analysis_endpoint",
+            "command": "internal TestClient GET /api/etf/00631l/analysis/summary",
+            "status": status,
+            "message": "; ".join(failures) if failures else "ok",
+            "exitCode": 1 if failures else 0,
+            "stdoutTail": json.dumps(payload, ensure_ascii=True)[-3000:],
+            "stderrTail": "",
+        }
+    except Exception as error:  # pragma: no cover - defensive release check guard
+        return {
+            "name": "analysis_endpoint",
+            "command": "internal TestClient GET /api/etf/00631l/analysis/summary",
+            "status": "FAIL",
+            "message": str(error),
+            "exitCode": 1,
+            "stdoutTail": "",
+            "stderrTail": str(error),
+        }
 
 
 def _run_command(name: str, command: list[str]) -> dict[str, Any]:
