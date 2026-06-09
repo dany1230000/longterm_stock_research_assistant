@@ -336,6 +336,8 @@ backend\reports\
 scripts\00631l_generate_daily_report.cmd
 ```
 
+`/00631l-lab` 的「今日資料狀態」會顯示最近日報是否存在、日報 `overallStatus`、生成時間與 WARN/FAIL 數量。
+
 常見問題可先看：
 
 ```text

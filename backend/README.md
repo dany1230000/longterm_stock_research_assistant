@@ -274,6 +274,8 @@ Manual report generation:
 scripts\00631l_generate_daily_report.cmd
 ```
 
+`/api/etf/00631l/operations/status` reports latest daily report metadata under the `report` key.
+
 ## v1.13 local startup checks
 
 Environment check:

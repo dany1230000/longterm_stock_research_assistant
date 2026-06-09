@@ -439,6 +439,9 @@ class _TodayDataStatusSection extends StatelessWidget {
               RiskChip(
                   label:
                       'backup ${status.backupAvailable ? 'ready' : 'empty'}'),
+              RiskChip(
+                  label:
+                      'report ${status.reportAvailable ? 'ready' : 'empty'}'),
               RiskChip(label: 'dailyCycle ${status.dailyCycleStatus}'),
             ],
           ),
@@ -499,6 +502,18 @@ class _TodayDataStatusSection extends StatelessWidget {
                     icon: Icons.backup_outlined,
                   ),
                   MetricTile(
+                    label: 'daily report',
+                    value: status.reportAvailable
+                        ? status.reportOverallStatus
+                        : 'missing',
+                    caption: status.latestReportGeneratedAt == null
+                        ? '尚無日報'
+                        : formatTaiwanDateTimeSeconds(
+                            status.latestReportGeneratedAt!,
+                          ),
+                    icon: Icons.description_outlined,
+                  ),
+                  MetricTile(
                     label: 'daily cycle',
                     value: status.dailyCycleStatus,
                     caption: status.dailyCycleFinishedAt == null
@@ -539,10 +554,12 @@ class _TodayDataStatusSection extends StatelessWidget {
           const SizedBox(height: 12),
           _OperationGuidanceList(lines: status.operationGuidanceLines),
           if (status.dailyCycleWarningCount > 0 ||
-              status.dailyCycleFailureCount > 0) ...[
+              status.dailyCycleFailureCount > 0 ||
+              status.reportWarningCount > 0 ||
+              status.reportFailureCount > 0) ...[
             const SizedBox(height: 10),
             Text(
-              'daily cycle warnings ${status.dailyCycleWarningCount}, failures ${status.dailyCycleFailureCount}',
+              'daily cycle warnings ${status.dailyCycleWarningCount}, failures ${status.dailyCycleFailureCount}; report warnings ${status.reportWarningCount}, failures ${status.reportFailureCount}',
             ),
           ],
         ],

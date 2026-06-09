@@ -199,6 +199,7 @@ class Proxy00631LRepository extends Official00631LRepository {
     final intraday = _map(payload['intradayNavHistory']);
     final export = _map(payload['export']);
     final backup = _map(payload['backup']);
+    final report = _map(payload['report']);
     final dailyCycle = _map(payload['dailyCycle']);
     final collector = _map(payload['collector']);
 
@@ -249,6 +250,15 @@ class Proxy00631LRepository extends Official00631LRepository {
       backupAvailable: backup['available'] == true,
       latestBackupPath: backup['latestFile']?.toString(),
       latestBackupUpdatedAt: _wallClockDateTime(backup['latestUpdatedAt']),
+      reportAvailable: report['sourceStatus'] == 'cached',
+      latestReportPath: report['reportPath']?.toString(),
+      latestReportGeneratedAt: _wallClockDateTime(report['generatedAt']),
+      reportOverallStatus: _string(
+        report['overallStatus'],
+        fallback: 'missing',
+      ),
+      reportWarningCount: _int(report['warningCount']),
+      reportFailureCount: _int(report['failureCount']),
       dailyCycleStatus: _string(
         dailyCycle['overallStatus'],
         fallback: 'missing',

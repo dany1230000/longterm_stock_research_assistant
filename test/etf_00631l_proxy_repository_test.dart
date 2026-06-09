@@ -137,9 +137,13 @@ void main() {
     expect(status.exportAvailable, isTrue);
     expect(status.backupDirReady, isTrue);
     expect(status.backupAvailable, isTrue);
+    expect(status.reportAvailable, isTrue);
     expect(
         status.latestExportPath, contains('00631l_holdings_history_summary'));
     expect(status.latestBackupPath, contains('00631l_local_data_backup'));
+    expect(status.latestReportPath, contains('00631l_daily_report'));
+    expect(status.reportOverallStatus, 'WARN');
+    expect(status.reportWarningCount, 2);
     expect(status.dailyCycleStatus, 'PASS');
     expect(status.dailyCycleWarningCount, 1);
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
@@ -429,6 +433,19 @@ Map<String, Object?> _operationsStatusPayload() {
       'latestUpdatedAt': '2026-06-08T13:36:00+08:00',
       'errorMessage': null,
     },
+    'report': {
+      'sourceStatus': 'cached',
+      'sourceContract': '00631l_daily_markdown_report',
+      'generatedAt': '2026-06-08T13:37:00+08:00',
+      'reportPath': 'backend/reports/00631l_daily_report_20260608T053700Z.md',
+      'overallStatus': 'WARN',
+      'warningCount': 2,
+      'failureCount': 0,
+      'warnings': ['collect returned WARN', 'smoke returned WARN'],
+      'failures': [],
+      'isStale': false,
+      'errorMessage': null,
+    },
     'dailyCycle': {
       'sourceStatus': 'cached',
       'sourceContract': '00631l_daily_cycle_status',
@@ -447,6 +464,7 @@ Map<String, Object?> _operationsStatusPayload() {
       'intradayHistory': 'cached',
       'export': 'cached',
       'backup': 'cached',
+      'report': 'cached',
       'dailyCycle': 'cached',
       'env': 'cached',
     },

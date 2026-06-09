@@ -9,6 +9,7 @@ from typing import Any, Callable
 from .cache import TimedMemoryCache
 from .config import Settings, settings
 from .fetcher import FetchError, fetch_text
+from .daily_report import report_status
 from .holdings_history import HoldingsHistoryStore, empty_history_response
 from .intraday_nav_history import (
     IntradayNavHistoryStore,
@@ -214,6 +215,7 @@ class Etf00631LService:
         intraday = self.intraday_nav_history_summary()
         export_status = self._export_status()
         backup_status = self._backup_status()
+        report = report_status(self._config.report_dir)
         daily_cycle_status = self._daily_cycle_status()
         env_status = self._env_status()
         data_directory_health = self._data_directory_health(
@@ -269,6 +271,7 @@ class Etf00631LService:
                 "historyExportDir": self._config.history_export_dir,
                 "dailyCycleStatusPath": self._config.daily_cycle_status_path,
                 "backupDir": self._config.backup_dir,
+                "reportDir": self._config.report_dir,
             },
             "dataDirectoryHealth": data_directory_health,
             "holdingsHistory": {
@@ -292,6 +295,7 @@ class Etf00631LService:
             },
             "export": export_status,
             "backup": backup_status,
+            "report": report,
             "dailyCycle": daily_cycle_status,
             "statusSummary": {
                 "operations": source_status,
@@ -299,6 +303,7 @@ class Etf00631LService:
                 "intradayHistory": intraday.get("sourceStatus"),
                 "export": export_status["sourceStatus"],
                 "backup": backup_status["sourceStatus"],
+                "report": report["sourceStatus"],
                 "dailyCycle": daily_cycle_status["sourceStatus"],
                 "env": env_status["sourceStatus"],
             },

@@ -107,6 +107,8 @@ void main() {
     expect(find.text('今日資料狀態'), findsOneWidget);
     expect(find.textContaining('operations mock'), findsOneWidget);
     expect(find.text('daily cycle'), findsOneWidget);
+    expect(find.text('daily report'), findsOneWidget);
+    expect(find.textContaining('report'), findsWidgets);
     expect(find.textContaining('尚未執行 daily cycle'), findsOneWidget);
     expect(find.text('下一步操作提示'), findsOneWidget);
     expect(

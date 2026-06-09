@@ -51,6 +51,7 @@ v1.0 live sources:
 - Daily experience release v1.30: `docs/00631l_v1_30_daily_experience_summary.md` summarizes direct entry, mobile layout, PWA metadata, backup, data health, helper scripts, troubleshooting, deployment notes, and operations guidance.
 - Scheduler prep v1.31: `scripts/00631l_daily_cycle_scheduled.cmd` and `docs/00631l_scheduler_setup.md` prepare Windows Task Scheduler usage for daily cycle runs.
 - Daily report v1.32: daily cycle now writes a local Markdown report under ignored `backend/reports/`; `scripts/00631l_generate_daily_report.cmd` can regenerate it manually.
+- Operations report UI v1.33: `/api/etf/00631l/operations/status` and `/00631l-lab` show latest daily report availability, overallStatus, generatedAt, and WARN/FAIL counts.
 
 Local backend env:
 

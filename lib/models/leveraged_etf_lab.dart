@@ -1030,6 +1030,12 @@ class EtfOperationsStatus {
     this.backupAvailable = false,
     this.latestBackupPath,
     this.latestBackupUpdatedAt,
+    this.reportAvailable = false,
+    this.latestReportPath,
+    this.latestReportGeneratedAt,
+    this.reportOverallStatus = 'missing',
+    this.reportWarningCount = 0,
+    this.reportFailureCount = 0,
     this.dailyCycleStatus = 'missing',
     this.dailyCycleStartedAt,
     this.dailyCycleFinishedAt,
@@ -1078,6 +1084,12 @@ class EtfOperationsStatus {
       backupAvailable: false,
       latestBackupPath: null,
       latestBackupUpdatedAt: null,
+      reportAvailable: false,
+      latestReportPath: null,
+      latestReportGeneratedAt: null,
+      reportOverallStatus: 'missing',
+      reportWarningCount: 0,
+      reportFailureCount: 0,
       dailyCycleStatus: 'missing',
       dailyCycleStartedAt: null,
       dailyCycleFinishedAt: null,
@@ -1118,6 +1130,12 @@ class EtfOperationsStatus {
   final bool backupAvailable;
   final String? latestBackupPath;
   final DateTime? latestBackupUpdatedAt;
+  final bool reportAvailable;
+  final String? latestReportPath;
+  final DateTime? latestReportGeneratedAt;
+  final String reportOverallStatus;
+  final int reportWarningCount;
+  final int reportFailureCount;
   final String dailyCycleStatus;
   final DateTime? dailyCycleStartedAt;
   final DateTime? dailyCycleFinishedAt;
@@ -1162,6 +1180,10 @@ class EtfOperationsStatus {
     }
     if (!backupAvailable) {
       lines.add('local backup 不存在：可執行 scripts\\00631l_backup_data.cmd。');
+    }
+    if (!reportAvailable) {
+      lines.add(
+          'daily report 不存在：可執行 scripts\\00631l_generate_daily_report.cmd。');
     }
     if (!dataDirectoriesReady) {
       lines.add(

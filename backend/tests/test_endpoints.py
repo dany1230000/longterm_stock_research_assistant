@@ -1,4 +1,5 @@
 import unittest
+import json
 from pathlib import Path
 import tempfile
 
@@ -235,6 +236,28 @@ Custodian Fee
             backup_dir.mkdir()
             backup_file = backup_dir / "00631l_local_data_backup_20260608_100000Z.zip"
             backup_file.write_bytes(b"fixture backup")
+            report_dir = Path(temp_dir) / "reports"
+            report_dir.mkdir()
+            report_file = report_dir / "00631l_daily_report_20260608T100600Z.md"
+            report_file.write_text("# 00631L daily report\n", encoding="utf-8")
+            (report_dir / "00631l_daily_report_latest.json").write_text(
+                json.dumps(
+                    {
+                        "sourceStatus": "cached",
+                        "sourceContract": "00631l_daily_markdown_report",
+                        "generatedAt": "2026-06-08T10:06:00+00:00",
+                        "reportPath": str(report_file),
+                        "overallStatus": "WARN",
+                        "warningCount": 2,
+                        "failureCount": 0,
+                        "warnings": ["collect returned WARN", "smoke returned WARN"],
+                        "failures": [],
+                        "isStale": False,
+                        "errorMessage": None,
+                    }
+                ),
+                encoding="utf-8",
+            )
             export_file = export_dir / "00631l_holdings_history_summary.csv"
             export_file.write_text("tradeDate,navPerUnit\n2026-06-05,36.56\n", encoding="utf-8")
             metadata_file = export_dir / "00631l_history_export_metadata.json"
@@ -258,6 +281,7 @@ Custodian Fee
                     history_export_dir=str(export_dir),
                     daily_cycle_status_path=str(status_path),
                     backup_dir=str(backup_dir),
+                    report_dir=str(report_dir),
                 ),
                 fetcher=fake_fetcher,
                 cache=TimedMemoryCache(),
@@ -297,9 +321,13 @@ Custodian Fee
             self.assertEqual(payload["dailyCycle"]["sourceStatus"], "cached")
             self.assertTrue(payload["backup"]["available"])
             self.assertEqual(payload["backup"]["sourceStatus"], "cached")
+            self.assertEqual(payload["report"]["sourceStatus"], "cached")
+            self.assertEqual(payload["report"]["overallStatus"], "WARN")
+            self.assertEqual(payload["report"]["warningCount"], 2)
             self.assertTrue(payload["config"]["backupDirReady"])
             self.assertEqual(payload["dataDirectoryHealth"]["backupDir"]["fileCount"], 1)
             self.assertEqual(payload["statusSummary"]["export"], "cached")
+            self.assertEqual(payload["statusSummary"]["report"], "cached")
             self.assertIn("oneShotCommand", payload["collector"])
 
     def test_operations_status_reports_missing_daily_cycle_status(self) -> None:
@@ -312,6 +340,7 @@ Custodian Fee
                     ),
                     holdings_history_path=str(Path(temp_dir) / "history.jsonl"),
                     intraday_nav_history_path=str(Path(temp_dir) / "intraday.jsonl"),
+                    report_dir=str(Path(temp_dir) / "reports"),
                 ),
                 cache=TimedMemoryCache(),
                 history_store=HoldingsHistoryStore(Path(temp_dir) / "history.jsonl"),
@@ -327,6 +356,7 @@ Custodian Fee
             self.assertEqual(payload["dailyCycle"]["overallStatus"], "missing")
             self.assertEqual(payload["dailyCycle"]["sourceStatus"], "unavailable")
             self.assertFalse(payload["export"]["available"])
+            self.assertEqual(payload["report"]["sourceStatus"], "unavailable")
             self.assertEqual(payload["statusSummary"]["dailyCycle"], "unavailable")
 
 
