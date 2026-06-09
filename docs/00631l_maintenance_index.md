@@ -2,6 +2,8 @@
 
 This index reduces duplicate lookup paths for the semi-automated maintenance workflow.
 
+For the full documentation map, start at `docs\00631l_docs_index.md`.
+
 ## Daily Operation
 
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -34,6 +36,7 @@ This index reduces duplicate lookup paths for the semi-automated maintenance wor
 - Retention policy: `docs\00631l_v1_45_release_summary.md`
 - Backup checksum: `docs\00631l_v1_46_release_summary.md`
 - Deployment precheck release check: `docs\00631l_v1_47_release_summary.md`
+- Documentation index: `docs\00631l_docs_index.md`
 
 ## Script Output Convention
 

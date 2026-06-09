@@ -4,6 +4,8 @@
 
 Release status: completed on 2026-06-08. Release summary: `docs/00631l_v1_release_summary.md`. Release checklist: `docs/00631l_release_checklist.md`.
 
+Main 00631L documentation entry: `docs/00631l_docs_index.md`.
+
 The 00631L lab remains a single-product MVP. It does not connect TX live, does not expand to all leveraged ETFs, and does not provide buy/sell advice.
 
 Default mode is mock/fallback. Live proxy mode requires:
@@ -66,6 +68,7 @@ v1.0 live sources:
 - Retention policy v1.45: `scripts\00631l_apply_retention.cmd` prunes old daily report Markdown files, reports fixed CSV export retention state, and keeps JSONL history as the long-term local record.
 - Backup checksum v1.46: local backup manifests include SHA256 per included file, and restore dry-run verifies archive entries before any manual restore workflow.
 - Release check v1.47: `scripts\00631l_release_check.cmd` now includes deployment precheck and retention dry-run coverage.
+- Documentation index v1.48: `docs\00631l_docs_index.md` is the main entry point for daily use, troubleshooting, maintenance, deployment, and release-summary routing.
 
 Local backend env:
 
