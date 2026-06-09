@@ -59,6 +59,8 @@ Release checklist: `docs/00631l_release_checklist.md`.
 
 Daily usage guide: `docs/00631l_daily_usage.md`.
 
+Daily report guide: `docs/00631l_daily_report_guide.md`.
+
 ## Environment variables
 
 See `backend/.env.example` for the deployable template.

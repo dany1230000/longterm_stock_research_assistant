@@ -349,6 +349,14 @@ scripts\00631l_generate_daily_report.cmd
 
 `/00631l-lab` 的「今日資料狀態」會顯示最近日報是否存在、日報 `overallStatus`、生成時間與 WARN/FAIL 數量。
 
+日報閱讀說明：
+
+```text
+docs\00631l_daily_report_guide.md
+```
+
+日報的 WARN 代表需要人工查看資料時間、source status 或本機設定，不代表資料一定錯誤。FAIL 則代表至少一個必要檢查沒有完成，請先看 `failures`、`errorMessage` 與失敗步驟，再依 troubleshooting 文件排查。
+
 資料完整性檢查：
 
 ```cmd

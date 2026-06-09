@@ -55,6 +55,7 @@ v1.0 live sources:
 - Data integrity v1.34: `scripts/00631l_check_integrity.cmd` checks local holdings/intraday JSONL for duplicate keys, missing required fields, weekday gaps, and abnormal source statuses.
 - Backup rotation v1.35: `scripts/00631l_backup_data.cmd` keeps the latest configured number of local backup archives, default 30.
 - Restore dry-run v1.36: `scripts/00631l_restore_dry_run.cmd` verifies the latest local backup archive can be read without overwriting any data.
+- Daily report guide v1.37: `docs/00631l_daily_report_guide.md` explains how to read Markdown reports, WARN states, FAIL states, source status, and local report files.
 
 Local backend env:
 
@@ -154,6 +155,12 @@ Daily usage guide:
 
 ```text
 docs/00631l_daily_usage.md
+```
+
+Daily report guide:
+
+```text
+docs/00631l_daily_report_guide.md
 ```
 
 Troubleshooting guide:
