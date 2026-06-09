@@ -37,6 +37,7 @@ For the full documentation map, start at `docs\00631l_docs_index.md`.
 - Backup checksum: `docs\00631l_v1_46_release_summary.md`
 - Deployment precheck release check: `docs\00631l_v1_47_release_summary.md`
 - Documentation index: `docs\00631l_docs_index.md`
+- Stability patch: `docs\00631l_v1_49_release_summary.md`
 
 ## Script Output Convention
 

@@ -101,6 +101,7 @@ def main() -> int:
 def _required_files_check() -> dict[str, Any]:
     required_files = [
         "docs/00631l_scheduler_setup.md",
+        "docs/00631l_docs_index.md",
         "docs/00631l_daily_report_guide.md",
         "backend/app/data_integrity.py",
         "backend/app/data_backup.py",
