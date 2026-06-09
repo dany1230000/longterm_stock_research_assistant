@@ -77,6 +77,12 @@ def main() -> int:
         "steps": steps,
     }
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
+    print(
+        "[summary] "
+        f"overallStatus={overall_status} "
+        f"warnings={len(warnings)} "
+        f"failures={len(failures)}"
+    )
     return 1 if failures else 0
 
 
@@ -213,7 +219,11 @@ def _iter_text_files(roots: list[Path]) -> list[Path]:
 
 
 def _has_overall(text: str, status: str) -> bool:
-    return f'"overallStatus": "{status}"' in text or f"overallStatus {status}" in text
+    return (
+        f'"overallStatus": "{status}"' in text
+        or f"overallStatus {status}" in text
+        or f"overallStatus={status}" in text
+    )
 
 
 def _decode(data: bytes) -> str:

@@ -137,12 +137,12 @@ del "%TMP_DART%" >nul 2>nul
 
 echo.
 if "%FAIL%"=="1" (
-    echo overallStatus FAIL
+    echo [summary] overallStatus=FAIL
     exit /b 1
 )
 if "%WARN%"=="1" (
-    echo overallStatus WARN
+    echo [summary] overallStatus=WARN
     exit /b 0
 )
-echo overallStatus PASS
+echo [summary] overallStatus=PASS
 exit /b 0

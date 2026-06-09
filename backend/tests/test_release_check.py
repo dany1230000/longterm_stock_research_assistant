@@ -2,7 +2,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from backend.scripts.release_check_00631l import _iter_text_files, _required_files_check
+from backend.scripts.release_check_00631l import (
+    _has_overall,
+    _iter_text_files,
+    _required_files_check,
+)
 
 
 class ReleaseCheckTests(unittest.TestCase):
@@ -31,6 +35,12 @@ class ReleaseCheckTests(unittest.TestCase):
             self.assertIn("tracked.md", names)
             self.assertNotIn("local_report.md", names)
             self.assertNotIn("local_note.md", names)
+
+    def test_overall_status_detection_accepts_summary_format(self) -> None:
+        self.assertTrue(_has_overall("[summary] overallStatus=WARN", "WARN"))
+        self.assertTrue(_has_overall("overallStatus WARN", "WARN"))
+        self.assertTrue(_has_overall('{"overallStatus": "PASS"}', "PASS"))
+        self.assertFalse(_has_overall("[summary] overallStatus=PASS", "FAIL"))
 
 
 if __name__ == "__main__":

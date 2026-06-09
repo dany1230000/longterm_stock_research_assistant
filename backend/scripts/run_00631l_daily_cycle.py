@@ -69,6 +69,12 @@ def main() -> int:
     payload["failures"] = failures
     _write_status(payload)
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
+    print(
+        "[summary] "
+        f"overallStatus={payload['overallStatus']} "
+        f"warnings={len(warnings)} "
+        f"failures={len(failures)}"
+    )
     return 1 if failures else 0
 
 

@@ -57,6 +57,7 @@ v1.0 live sources:
 - Restore dry-run v1.36: `scripts/00631l_restore_dry_run.cmd` verifies the latest local backup archive can be read without overwriting any data.
 - Daily report guide v1.37: `docs/00631l_daily_report_guide.md` explains how to read Markdown reports, WARN states, FAIL states, source status, and local report files.
 - Release check v1.38: `scripts\00631l_release_check.cmd` now also checks scheduler artifacts, report generation, integrity, backup rotation, and restore dry-run.
+- Maintenance stability v1.39: `docs/00631l_maintenance_index.md` consolidates maintenance docs and key scripts now use a compact `[summary] overallStatus=...` line.
 
 Local backend env:
 
@@ -162,6 +163,12 @@ Daily report guide:
 
 ```text
 docs/00631l_daily_report_guide.md
+```
+
+Maintenance index:
+
+```text
+docs/00631l_maintenance_index.md
 ```
 
 Troubleshooting guide:

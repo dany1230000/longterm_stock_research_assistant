@@ -61,6 +61,8 @@ Daily usage guide: `docs/00631l_daily_usage.md`.
 
 Daily report guide: `docs/00631l_daily_report_guide.md`.
 
+Maintenance index: `docs/00631l_maintenance_index.md`.
+
 ## Environment variables
 
 See `backend/.env.example` for the deployable template.

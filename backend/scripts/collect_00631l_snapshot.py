@@ -52,6 +52,12 @@ def main() -> int:
         interval_seconds=max(0.0, args.interval_seconds),
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+    print(
+        "[summary] "
+        f"overallStatus={payload['overallStatus']} "
+        f"warnings={len(payload.get('warnings') or [])} "
+        f"failures={len(payload.get('failures') or [])}"
+    )
     return 1 if payload["overallStatus"] == "FAIL" else 0
 
 
