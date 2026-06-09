@@ -27,6 +27,7 @@ FORBIDDEN_TERMS = [
 
 def main() -> int:
     steps = [
+        _required_files_check(),
         _run_command("env_check", ["cmd", "/c", "scripts\\00631l_check_env.cmd"]),
         _run_command("flutter_analyze", ["cmd", "/c", "flutter", "analyze"]),
         _run_command("flutter_test", ["cmd", "/c", "flutter", "test"]),
@@ -37,6 +38,13 @@ def main() -> int:
         ),
         _run_command("daily_cycle", ["cmd", "/c", "scripts\\00631l_daily_cycle.cmd"]),
         _run_command("export", ["cmd", "/c", "scripts\\00631l_export_history.cmd"]),
+        _run_command("report", ["cmd", "/c", "scripts\\00631l_generate_daily_report.cmd"]),
+        _run_command("integrity", ["cmd", "/c", "scripts\\00631l_check_integrity.cmd"]),
+        _run_command(
+            "backup_rotation",
+            ["cmd", "/c", "scripts\\00631l_backup_data.cmd", "--retention-count", "30"],
+        ),
+        _run_command("restore_dry_run", ["cmd", "/c", "scripts\\00631l_restore_dry_run.cmd"]),
         _run_command("smoke", ["py", "backend\\scripts\\smoke_00631l_live.py"]),
         _forbidden_wording_scan(),
         _run_command("git_diff_check", ["git", "diff", "--check"]),
@@ -70,6 +78,32 @@ def main() -> int:
     }
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
     return 1 if failures else 0
+
+
+def _required_files_check() -> dict[str, Any]:
+    required_files = [
+        "docs/00631l_scheduler_setup.md",
+        "docs/00631l_daily_report_guide.md",
+        "backend/app/data_integrity.py",
+        "backend/app/data_backup.py",
+        "backend/app/restore_dry_run.py",
+        "scripts/00631l_daily_cycle_scheduled.cmd",
+        "scripts/00631l_generate_daily_report.cmd",
+        "scripts/00631l_check_integrity.cmd",
+        "scripts/00631l_backup_data.cmd",
+        "scripts/00631l_restore_dry_run.cmd",
+    ]
+    missing = [path for path in required_files if not (ROOT / path).exists()]
+    return {
+        "name": "maintenance_artifacts",
+        "command": "internal required maintenance artifact check",
+        "status": "FAIL" if missing else "PASS",
+        "message": f"missing {len(missing)} required files" if missing else "ok",
+        "exitCode": 1 if missing else 0,
+        "missingFiles": missing,
+        "stdoutTail": "",
+        "stderrTail": "",
+    }
 
 
 def _run_command(name: str, command: list[str]) -> dict[str, Any]:
@@ -151,8 +185,10 @@ def _iter_text_files(roots: list[Path]) -> list[Path]:
         ".git",
         ".idea",
         "build",
+        "backups",
         "data",
         "exports",
+        "reports",
         "__pycache__",
     }
     allowed_suffixes = {".dart", ".py", ".md", ".cmd", ".ps1", ".txt", ".json", ".yaml", ".yml"}
@@ -165,7 +201,10 @@ def _iter_text_files(roots: list[Path]) -> list[Path]:
         for path in root.rglob("*"):
             if not path.is_file():
                 continue
-            relative_parts = set(path.relative_to(ROOT).parts)
+            try:
+                relative_parts = set(path.relative_to(ROOT).parts)
+            except ValueError:
+                relative_parts = set(path.parts)
             if relative_parts & ignored_parts:
                 continue
             if path.suffix.lower() in allowed_suffixes:

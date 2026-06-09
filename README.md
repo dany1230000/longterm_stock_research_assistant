@@ -56,6 +56,7 @@ v1.0 live sources:
 - Backup rotation v1.35: `scripts/00631l_backup_data.cmd` keeps the latest configured number of local backup archives, default 30.
 - Restore dry-run v1.36: `scripts/00631l_restore_dry_run.cmd` verifies the latest local backup archive can be read without overwriting any data.
 - Daily report guide v1.37: `docs/00631l_daily_report_guide.md` explains how to read Markdown reports, WARN states, FAIL states, source status, and local report files.
+- Release check v1.38: `scripts\00631l_release_check.cmd` now also checks scheduler artifacts, report generation, integrity, backup rotation, and restore dry-run.
 
 Local backend env:
 

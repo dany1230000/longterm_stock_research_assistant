@@ -214,7 +214,7 @@ Run the full local release check:
 scripts\00631l_release_check.cmd
 ```
 
-The wrapper runs env check, Flutter analyze/test/build, backend tests, daily cycle, export, live smoke, forbidden wording scan, and `git diff --check`. It returns exit code `1` only for failures. WARN is used for expected local/off-hours conditions such as missing local `.env` while fallback mode is still operational.
+The wrapper runs env check, Flutter analyze/test/build, backend tests, daily cycle, export, report generation, data integrity, backup rotation, restore dry-run, live smoke, forbidden wording scan, and `git diff --check`. It also checks required maintenance docs/scripts such as scheduler setup and restore dry-run. It returns exit code `1` only for failures. WARN is used for expected local/off-hours conditions such as missing local `.env` while fallback mode is still operational.
 
 ## v1.24 local data backup
 
