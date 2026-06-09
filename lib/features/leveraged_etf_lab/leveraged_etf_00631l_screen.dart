@@ -12,6 +12,12 @@ import '../../shared/widgets/metric_tile.dart';
 import '../../shared/widgets/risk_chip.dart';
 import '../../shared/widgets/section_card.dart';
 
+const _use00631LLiveProxy = bool.fromEnvironment('USE_00631L_LIVE_PROXY');
+const _proxyBaseUrl00631l = String.fromEnvironment(
+  '00631L_PROXY_BASE_URL',
+  defaultValue: 'http://localhost:8000',
+);
+
 class LeveragedEtf00631LScreen extends ConsumerStatefulWidget {
   const LeveragedEtf00631LScreen({super.key});
 
@@ -487,6 +493,8 @@ class _OperationsStatusSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
+          _BackendRuntimePanel(status: status),
+          const SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 720;
@@ -558,6 +566,68 @@ class _OperationsStatusSection extends StatelessWidget {
             Text(status.errorMessage!),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _BackendRuntimePanel extends StatelessWidget {
+  const _BackendRuntimePanel({required this.status});
+
+  final EtfOperationsStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final origins = status.allowedOrigins.isEmpty
+        ? 'local/LAN fallback'
+        : status.allowedOrigins.join(', ');
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color:
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                const RiskChip(
+                  label: _use00631LLiveProxy
+                      ? 'frontend live proxy on'
+                      : 'frontend mock mode',
+                ),
+                RiskChip(label: status.backendConnectionLabel),
+                RiskChip(label: status.dataPersistenceLabel),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const _InfoRow(
+              label: 'frontend API base',
+              value: _proxyBaseUrl00631l,
+            ),
+            _InfoRow(
+              label: 'backend public URL',
+              value: status.publicApiBaseUrl.isEmpty
+                  ? 'not configured'
+                  : status.publicApiBaseUrl,
+            ),
+            _InfoRow(label: 'allowed origins', value: origins),
+            _InfoRow(
+              label: 'data persistence',
+              value:
+                  '${status.dataPersistenceMode}; ${status.dataPersistenceCaption}',
+            ),
+            if (status.dataRoot.isNotEmpty)
+              _InfoRow(label: 'data path', value: status.dataRoot),
+          ],
+        ),
       ),
     );
   }

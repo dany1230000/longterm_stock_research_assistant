@@ -201,6 +201,9 @@ class Proxy00631LRepository extends Official00631LRepository {
     final backup = _map(payload['backup']);
     final report = _map(payload['report']);
     final dailyCycle = _map(payload['dailyCycle']);
+    final backendHealth = _map(payload['backendHealth']);
+    final dataDirectoryHealth = _map(payload['dataDirectoryHealth']);
+    final persistence = _map(dataDirectoryHealth['persistence']);
     final collector = _map(payload['collector']);
 
     return EtfOperationsStatus(
@@ -216,6 +219,26 @@ class Proxy00631LRepository extends Official00631LRepository {
       twseIntradayNavConfigured: config['twseIntradayNavConfigured'] == true,
       yuantaIntradayNavConfigured:
           config['yuantaIntradayNavConfigured'] == true,
+      publicApiBaseUrl: _string(
+        config['publicApiBaseUrl'] ?? backendHealth['publicApiBaseUrl'],
+      ),
+      allowedOrigins: _stringList(
+        config['allowedOrigins'] ?? backendHealth['allowedOrigins'],
+      ),
+      dataRoot: _string(
+        config['dataDir'] ??
+            dataDirectoryHealth['dataRoot'] ??
+            persistence['path'],
+      ),
+      dataPersistenceMode: _string(
+        config['dataPersistenceMode'] ?? persistence['mode'],
+        fallback: 'local',
+      ),
+      dataPersistenceWarning:
+          (config['dataPersistenceWarning'] ?? persistence['warning'])
+              ?.toString(),
+      dataPathWritable: persistence['writable'] == true,
+      dataPathPersistent: persistence['isPersistent'] == true,
       holdingsHistoryStatus: _string(
         holdings['sourceStatus'],
         fallback: 'unavailable',

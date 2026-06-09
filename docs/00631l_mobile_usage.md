@@ -1,6 +1,6 @@
 # 00631L 手機使用方式
 
-本文件說明如何用手機在同一個 Wi-Fi 開啟 `00631L 正二研究室`。
+本文件說明如何用手機開啟 `00631L 正二研究室`。目前支援 LAN 模式；公開部署後，手機可用公開網址開啟。
 
 ## 先確認資料更新頻率
 
@@ -54,6 +54,30 @@ http://<LAN-IP>:8080/#/00631l-lab
 - Windows 防火牆允許 Python 與 Flutter web-server 在目前網路存取。
 
 不要關閉整個安全性設定；只針對本機開發工具做可回復的允許。
+
+## 公開網址 / PWA 模式
+
+若要讓手機在任何地方開啟，需要：
+
+- Flutter Web 前端部署到公開網址。
+- FastAPI backend 部署到公開 server。
+- frontend build 時指定公開 backend：
+
+```cmd
+set PUBLIC_BACKEND_URL=https://your-backend.example.com
+scripts\00631l_build_web_public.cmd
+```
+
+手機開：
+
+```text
+https://your-frontend.example.com/#/00631l-lab
+```
+
+也可以用手機瀏覽器加到主畫面。PWA 只是前端入口；live data 仍需要 backend 可連線。詳細步驟見：
+
+- `docs\00631l_public_deployment.md`
+- `docs\00631l_pwa_usage.md`
 
 ## 手機畫面怎麼看
 

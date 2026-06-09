@@ -65,6 +65,18 @@ scripts\00631l_start_frontend_lan.cmd
 
 完整說明：`docs\00631l_mobile_usage.md`。
 
+公開網址 / PWA 使用請看：
+
+```cmd
+scripts\00631l_check_public_config.cmd
+scripts\00631l_build_web_public.cmd
+```
+
+完整說明：
+
+- `docs\00631l_public_deployment.md`
+- `docs\00631l_pwa_usage.md`
+
 ## 每天啟動 backend
 
 在專案根目錄執行：

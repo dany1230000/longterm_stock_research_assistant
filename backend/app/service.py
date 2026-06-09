@@ -63,6 +63,8 @@ class Etf00631LService:
             "appVersion": "1.42",
             "sourceContract": "00631l_backend_health",
             "scope": "00631L only",
+            "publicApiBaseUrl": self._config.public_api_base_url,
+            "allowedOrigins": list(self._config.allowed_origins),
             "liveSourceConfigured": {
                 "twseIntradayNav": bool(self._config.twse_intraday_nav_url),
                 "yuantaIntradayNav": bool(self._config.yuanta_intraday_nav_url),
@@ -74,6 +76,9 @@ class Etf00631LService:
                 "dataDirReady": env_status["dataDirReady"],
                 "exportDirReady": env_status["exportDirReady"],
                 "backupDirReady": env_status["backupDirReady"],
+                "dataDir": self._config.data_dir,
+                "dataPersistenceMode": self._config.data_persistence_mode,
+                "dataPersistenceWarning": env_status["dataPersistenceWarning"],
                 "missingKeys": env_status["missingKeys"],
                 "optionalMissingKeys": env_status["optionalMissingKeys"],
             },
@@ -290,12 +295,17 @@ class Etf00631LService:
             "isStale": source_status != "cached",
             "errorMessage": "; ".join(str(error) for error in errors) if errors else None,
             "config": {
+                "publicApiBaseUrl": self._config.public_api_base_url,
+                "allowedOrigins": list(self._config.allowed_origins),
+                "dataDir": self._config.data_dir,
+                "dataPersistenceMode": self._config.data_persistence_mode,
                 "intradaySourceMode": self._config.intraday_nav_source,
                 "twseIntradayNavConfigured": bool(self._config.twse_intraday_nav_url),
                 "yuantaIntradayNavConfigured": bool(self._config.yuanta_intraday_nav_url),
                 "envFileExists": env_status["envFileExists"],
                 "missingKeys": env_status["missingKeys"],
                 "optionalMissingKeys": env_status["optionalMissingKeys"],
+                "dataPersistenceWarning": env_status["dataPersistenceWarning"],
                 "dataDirReady": env_status["dataDirReady"],
                 "exportDirReady": env_status["exportDirReady"],
                 "backupDirReady": env_status["backupDirReady"],
@@ -431,9 +441,14 @@ class Etf00631LService:
         backup_status: dict[str, Any],
         export_status: dict[str, Any],
     ) -> dict[str, Any]:
+        data_root = Path(self._config.data_dir)
         data_dir = Path(self._config.holdings_history_path).parent
         export_dir = Path(self._config.history_export_dir)
         backup_dir = Path(self._config.backup_dir)
+        persistence = _persistence_health(
+            data_root,
+            mode=self._config.data_persistence_mode,
+        )
         data_files = [
             Path(self._config.holdings_history_path),
             Path(self._config.intraday_nav_history_path),
@@ -447,6 +462,8 @@ class Etf00631LService:
         health = {
             "sourceStatus": "cached",
             "sourceContract": "00631l_data_directory_health",
+            "dataRoot": str(data_root),
+            "persistence": persistence,
             "dataDir": _directory_health(data_dir, data_files),
             "exportDir": _directory_health(export_dir, export_files),
             "backupDir": _directory_health(
@@ -459,8 +476,12 @@ class Etf00631LService:
             "latestBackupUpdatedAt": backup_status.get("latestUpdatedAt"),
         }
         directories = [health["dataDir"], health["exportDir"], health["backupDir"]]
-        if any(directory["sourceStatus"] == "error" for directory in directories):
+        if persistence["sourceStatus"] == "error" or any(
+            directory["sourceStatus"] == "error" for directory in directories
+        ):
             health["sourceStatus"] = "error"
+        elif persistence["sourceStatus"] == "stale":
+            health["sourceStatus"] = "stale"
         elif any(directory["sourceStatus"] == "unavailable" for directory in directories):
             health["sourceStatus"] = "unavailable"
         return health
@@ -555,6 +576,10 @@ class Etf00631LService:
     def _env_status(self) -> dict[str, Any]:
         backend_root = Path(__file__).resolve().parents[1]
         env_path = backend_root / ".env"
+        persistence = _persistence_health(
+            Path(self._config.data_dir),
+            mode=self._config.data_persistence_mode,
+        )
         data_dir_ready = _path_parent_ready(self._config.holdings_history_path) and _path_parent_ready(
             self._config.intraday_nav_history_path
         )
@@ -585,6 +610,7 @@ class Etf00631LService:
             "dataDirReady": data_dir_ready,
             "exportDirReady": export_dir_ready,
             "backupDirReady": backup_dir_ready,
+            "dataPersistenceWarning": persistence["warning"],
         }
 
     def _intraday_candidates(self) -> list[tuple[str, str, Callable[..., dict[str, Any]]]]:
@@ -634,6 +660,52 @@ def _directory_health(directory: Path, files: list[Path]) -> dict[str, Any]:
         "latestFile": str(latest_path) if latest_path else None,
         "latestUpdatedAt": _mtime_iso(latest_mtime) if latest_path else None,
     }
+
+
+def _persistence_health(directory: Path, *, mode: str) -> dict[str, Any]:
+    normalized_mode = mode if mode in {"local", "persistent", "transient"} else "local"
+    exists = directory.exists() and directory.is_dir()
+    writable = _ensure_directory_writable(directory)
+    is_persistent = normalized_mode == "persistent"
+    warning = None
+    if not writable:
+        warning = "Data directory is not writable; history/report/export persistence may fail."
+    elif normalized_mode == "transient":
+        warning = (
+            "Data persistence mode is transient; mount a persistent volume for "
+            "public deployment."
+        )
+    elif normalized_mode == "local":
+        warning = (
+            "Data persistence mode is local; public deployment should set "
+            "00631L_DATA_PERSISTENCE_MODE=persistent and mount a volume."
+        )
+    return {
+        "sourceStatus": "error" if not writable else "cached" if is_persistent else "stale",
+        "path": str(directory),
+        "exists": exists,
+        "writable": writable,
+        "mode": normalized_mode,
+        "isPersistent": is_persistent,
+        "isTransient": normalized_mode == "transient",
+        "warning": warning,
+    }
+
+
+def _ensure_directory_writable(directory: Path) -> bool:
+    probe = directory / ".00631l_write_probe.tmp"
+    try:
+        directory.mkdir(parents=True, exist_ok=True)
+        probe.write_text("write-test", encoding="utf-8")
+        probe.unlink()
+        return True
+    except OSError:
+        try:
+            if probe.exists():
+                probe.unlink()
+        except OSError:
+            pass
+        return False
 
 
 def _data_update_frequencies(*, intraday_cache_seconds: int) -> list[dict[str, Any]]:

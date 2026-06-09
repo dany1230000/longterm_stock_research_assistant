@@ -2,7 +2,7 @@
 
 ## 00631L lab status
 
-00631L lab v2.0 is the formal daily-use completion release. Start from `docs/00631l_docs_index.md` or the final summary `docs/00631l_v2_0_final_summary.md`.
+00631L lab v2.2 is public deployment ready. Start from `docs/00631l_docs_index.md`, `docs/00631l_public_deployment.md`, or `docs/00631l_pwa_usage.md`.
 
 Daily helper:
 
@@ -24,6 +24,14 @@ Mobile LAN helper:
 scripts\00631l_lan_info.cmd
 scripts\00631l_start_backend_lan.cmd
 scripts\00631l_start_frontend_lan.cmd
+```
+
+Public deployment helpers:
+
+```cmd
+scripts\00631l_check_public_config.cmd
+set PUBLIC_BACKEND_URL=https://your-backend.example.com
+scripts\00631l_build_web_public.cmd
 ```
 
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
@@ -100,6 +108,7 @@ v1.0 live sources:
 - Stability patch v1.49: backend tests verify that local paths in `docs\00631l_docs_index.md` exist, and release check requires the docs index.
 - Deployment stability release v1.50: `docs\00631l_v1_50_deployment_stability_summary.md` summarizes the stable deployment and data reliability checkpoint.
 - Mobile + AI v2.1: `docs\00631l_mobile_usage.md` explains LAN phone usage, and `docs\00631l_ai_analysis.md` explains rule-based AI analysis. holdings/ratio remains a daily official snapshot; intraday NAV is the 15–30 second live/cached source; TX live remains mock/fallback.
+- Public deploy-ready v2.2: `backend\Dockerfile`, `scripts\00631l_check_public_config.cmd`, `scripts\00631l_build_web_public.cmd`, `docs\00631l_public_deployment.md`, and `docs\00631l_pwa_usage.md` prepare the lab for a public Flutter Web frontend plus public FastAPI backend. Local LAN mode remains available.
 
 Local backend env:
 

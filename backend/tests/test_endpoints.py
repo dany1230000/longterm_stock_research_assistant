@@ -59,6 +59,29 @@ class EndpointTests(unittest.TestCase):
             "http://192.168.0.19:8080",
         )
 
+    def test_cors_allows_configured_public_origin(self) -> None:
+        client = TestClient(
+            main_module.create_app(
+                app_config=Settings(
+                    allowed_origins=("https://00631l.example.com",),
+                )
+            )
+        )
+
+        response = client.options(
+            "/health",
+            headers={
+                "Origin": "https://00631l.example.com",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.headers.get("access-control-allow-origin"),
+            "https://00631l.example.com",
+        )
+
     def test_intraday_nav_without_config_is_unavailable(self) -> None:
         main_module.service = Etf00631LService(
             config=Settings(
@@ -384,6 +407,45 @@ Custodian Fee
             self.assertIn(analysis["readinessLevel"], {"ready", "attention", "action_needed"})
             self.assertGreaterEqual(len(analysis["bullets"]), 3)
             self.assertIn("holdingsHistory", analysis["sourceStatuses"])
+
+    def test_operations_status_reports_public_deployment_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            data_dir = Path(temp_dir) / "data"
+            main_module.service = Etf00631LService(
+                config=Settings(
+                    public_api_base_url="https://api.example.com",
+                    allowed_origins=("https://00631l.example.com",),
+                    data_dir=str(data_dir),
+                    data_persistence_mode="transient",
+                    history_export_dir=str(Path(temp_dir) / "exports"),
+                    backup_dir=str(Path(temp_dir) / "backups"),
+                    report_dir=str(Path(temp_dir) / "reports"),
+                    holdings_history_path=str(data_dir / "history.jsonl"),
+                    intraday_nav_history_path=str(data_dir / "intraday.jsonl"),
+                    daily_cycle_status_path=str(data_dir / "daily_cycle.json"),
+                    integrity_status_path=str(data_dir / "integrity.json"),
+                    restore_dry_run_status_path=str(data_dir / "restore.json"),
+                ),
+                cache=TimedMemoryCache(),
+                history_store=HoldingsHistoryStore(data_dir / "history.jsonl"),
+                intraday_history_store=IntradayNavHistoryStore(
+                    data_dir / "intraday.jsonl"
+                ),
+            )
+
+            response = self.client.get("/api/etf/00631l/operations/status")
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+            self.assertEqual(payload["config"]["publicApiBaseUrl"], "https://api.example.com")
+            self.assertEqual(payload["config"]["allowedOrigins"], ["https://00631l.example.com"])
+            self.assertEqual(payload["config"]["dataPersistenceMode"], "transient")
+            self.assertEqual(payload["dataDirectoryHealth"]["dataRoot"], str(data_dir))
+            self.assertEqual(payload["dataDirectoryHealth"]["persistence"]["mode"], "transient")
+            self.assertTrue(payload["dataDirectoryHealth"]["persistence"]["writable"])
+            self.assertFalse(payload["dataDirectoryHealth"]["persistence"]["isPersistent"])
+            self.assertIn("persistent volume", payload["dataDirectoryHealth"]["persistence"]["warning"])
+            self.assertEqual(payload["backendHealth"]["publicApiBaseUrl"], "https://api.example.com")
+            self.assertEqual(payload["backendHealth"]["allowedOrigins"], ["https://00631l.example.com"])
 
     def test_operations_status_reports_missing_daily_cycle_status(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

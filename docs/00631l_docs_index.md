@@ -7,7 +7,10 @@ This is the main entry point for 00631L lab documentation.
 - Final daily-use summary: `docs\00631l_v2_0_final_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
 - Mobile usage: `docs\00631l_mobile_usage.md`
+- Public deployment: `docs\00631l_public_deployment.md`
+- PWA usage: `docs\00631l_pwa_usage.md`
 - AI analysis: `docs\00631l_ai_analysis.md`
+- Future App Store path: `docs\00631l_app_store_path.md`
 - Troubleshooting: `docs\00631l_troubleshooting.md`
 - Maintenance index: `docs\00631l_maintenance_index.md`
 - Deployment notes: `docs\00631l_deployment_notes.md`
@@ -22,6 +25,8 @@ This is the main entry point for 00631L lab documentation.
 - Frontend LAN startup: `scripts\00631l_start_frontend_lan.cmd`
 - Daily cycle: `scripts\00631l_daily_cycle.cmd`
 - Release check: `scripts\00631l_release_check.cmd`
+- Public config check: `scripts\00631l_check_public_config.cmd`
+- Public web build: `scripts\00631l_build_web_public.cmd`
 
 ## Data And Reports
 
@@ -38,8 +43,13 @@ This is the main entry point for 00631L lab documentation.
 
 - Backend README: `backend\README.md`
 - Env template: `backend\.env.example`
+- Backend Dockerfile: `backend\Dockerfile`
+- Public deployment guide: `docs\00631l_public_deployment.md`
+- PWA usage guide: `docs\00631l_pwa_usage.md`
+- App Store path: `docs\00631l_app_store_path.md`
 - Deployment bootstrap: `scripts\00631l_bootstrap_deploy.cmd`
 - Deployment precheck: `scripts\00631l_deploy_precheck.cmd`
+- Public config check: `scripts\00631l_check_public_config.cmd`
 - Scheduler setup: `docs\00631l_scheduler_setup.md`
 
 ## Release Summaries
@@ -52,6 +62,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Deployment stability release: `docs\00631l_v1_50_deployment_stability_summary.md`
 - Formal daily-use completion: `docs\00631l_v2_0_final_summary.md`
 - Mobile + AI release: `docs\00631l_v2_1_mobile_ai_summary.md`
+- Public deploy-ready release: `docs\00631l_v2_2_public_deploy_ready_summary.md`
 
 ## Scope Boundary
 

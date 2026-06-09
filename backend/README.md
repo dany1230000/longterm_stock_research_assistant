@@ -39,6 +39,19 @@ Equivalent command:
 py -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
+Production-like command:
+
+```powershell
+py -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+```
+
+Docker:
+
+```cmd
+docker build -f backend\Dockerfile -t 00631l-lab-backend .
+docker run --rm -p 8000:8000 --env-file backend\.env -v 00631l-data:/data 00631l-lab-backend
+```
+
 Frontend live proxy mode:
 
 ```powershell
@@ -81,6 +94,10 @@ Main documentation map: `docs\00631l_docs_index.md`.
 
 See `backend/.env.example` for the deployable template.
 
+- `PUBLIC_API_BASE_URL`: public backend URL shown in health/status metadata.
+- `ALLOWED_ORIGINS`: comma-separated frontend origins allowed by CORS.
+- `00631L_DATA_DIR`: base data directory for JSONL/status data.
+- `00631L_DATA_PERSISTENCE_MODE`: `local`, `persistent`, or `transient`; public deployments should use `persistent`.
 - `TWSE_00631L_INTRADAY_NAV_URL`: verified TWSE feed, currently `https://mis.twse.com.tw/stock/data/all_etf.txt`.
 - `YUANTA_00631L_INTRADAY_NAV_URL`: verified Yuanta INAV fallback URL from the Yuanta INAV page network request.
 - `00631L_INTRADAY_NAV_SOURCE`: `twse`, `yuanta`, or `auto`.

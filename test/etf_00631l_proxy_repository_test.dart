@@ -147,6 +147,13 @@ void main() {
     expect(status.dailyCycleStatus, 'PASS');
     expect(status.dailyCycleWarningCount, 1);
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
+    expect(status.publicApiBaseUrl, 'https://api.example.com');
+    expect(status.allowedOrigins, ['https://00631l.example.com']);
+    expect(status.dataRoot, '/data');
+    expect(status.dataPersistenceMode, 'persistent');
+    expect(status.dataPathWritable, isTrue);
+    expect(status.dataPathPersistent, isTrue);
+    expect(status.dataPersistenceLabel, 'persistent data ready');
   });
 
   test('proxy repository maps AI analysis summary payload', () async {
@@ -404,6 +411,10 @@ Map<String, Object?> _operationsStatusPayload() {
     'isStale': false,
     'errorMessage': null,
     'config': {
+      'publicApiBaseUrl': 'https://api.example.com',
+      'allowedOrigins': ['https://00631l.example.com'],
+      'dataDir': '/data',
+      'dataPersistenceMode': 'persistent',
       'intradaySourceMode': 'auto',
       'twseIntradayNavConfigured': true,
       'yuantaIntradayNavConfigured': true,
@@ -421,6 +432,21 @@ Map<String, Object?> _operationsStatusPayload() {
       'historyExportDir': 'backend/exports',
       'dailyCycleStatusPath': 'backend/data/00631l_daily_cycle_status.json',
       'backupDir': 'backend/backups',
+    },
+    'dataDirectoryHealth': {
+      'sourceStatus': 'cached',
+      'sourceContract': '00631l_data_directory_health',
+      'dataRoot': '/data',
+      'persistence': {
+        'sourceStatus': 'cached',
+        'path': '/data',
+        'exists': true,
+        'writable': true,
+        'mode': 'persistent',
+        'isPersistent': true,
+        'isTransient': false,
+        'warning': null,
+      },
     },
     'holdingsHistory': {
       'sourceStatus': 'cached',
@@ -500,6 +526,11 @@ Map<String, Object?> _operationsStatusPayload() {
       'oneShotCommand': 'scripts\\00631l_collect_snapshot.cmd --samples 1',
       'intradayCommand':
           'scripts\\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15',
+    },
+    'backendHealth': {
+      'sourceContract': '00631l_backend_health',
+      'publicApiBaseUrl': 'https://api.example.com',
+      'allowedOrigins': ['https://00631l.example.com'],
     },
   };
 }

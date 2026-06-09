@@ -1101,6 +1101,13 @@ class EtfOperationsStatus {
     required this.intradaySourceMode,
     required this.twseIntradayNavConfigured,
     required this.yuantaIntradayNavConfigured,
+    this.publicApiBaseUrl = '',
+    this.allowedOrigins = const [],
+    this.dataRoot = '',
+    this.dataPersistenceMode = 'local',
+    this.dataPersistenceWarning,
+    this.dataPathWritable = false,
+    this.dataPathPersistent = false,
     required this.holdingsHistoryStatus,
     required this.holdingsHistoryItemCount,
     required this.latestHoldingTradeDate,
@@ -1153,6 +1160,13 @@ class EtfOperationsStatus {
       intradaySourceMode: 'auto',
       twseIntradayNavConfigured: false,
       yuantaIntradayNavConfigured: false,
+      publicApiBaseUrl: '',
+      allowedOrigins: const [],
+      dataRoot: '',
+      dataPersistenceMode: 'local',
+      dataPersistenceWarning: 'backend disconnected; persistence unknown.',
+      dataPathWritable: false,
+      dataPathPersistent: false,
       holdingsHistoryStatus: sourceStatusLabel,
       holdingsHistoryItemCount: 0,
       latestHoldingTradeDate: null,
@@ -1201,6 +1215,13 @@ class EtfOperationsStatus {
   final String intradaySourceMode;
   final bool twseIntradayNavConfigured;
   final bool yuantaIntradayNavConfigured;
+  final String publicApiBaseUrl;
+  final List<String> allowedOrigins;
+  final String dataRoot;
+  final String dataPersistenceMode;
+  final String? dataPersistenceWarning;
+  final bool dataPathWritable;
+  final bool dataPathPersistent;
   final String holdingsHistoryStatus;
   final int holdingsHistoryItemCount;
   final DateTime? latestHoldingTradeDate;
@@ -1246,6 +1267,35 @@ class EtfOperationsStatus {
 
   bool get dataDirectoriesReady =>
       dataDirReady && exportDirReady && backupDirReady;
+
+  String get dataPersistenceLabel {
+    if (sourceStatusLabel == 'mock' || backendDisconnected) {
+      return 'persistence unknown';
+    }
+    if (!dataPathWritable) {
+      return 'data path not writable';
+    }
+    if (dataPathPersistent) {
+      return 'persistent data ready';
+    }
+    if (dataPersistenceMode == 'transient') {
+      return 'transient data mode';
+    }
+    return 'local data mode';
+  }
+
+  String get dataPersistenceCaption {
+    if (sourceStatusLabel == 'mock' || backendDisconnected) {
+      return 'backend operations/status is required to verify persistence';
+    }
+    if (dataPersistenceWarning != null && dataPersistenceWarning!.isNotEmpty) {
+      return dataPersistenceWarning!;
+    }
+    if (dataPathPersistent) {
+      return 'public deployment data path is configured as persistent';
+    }
+    return 'public deployment should use a persistent volume';
+  }
 
   bool get backendDisconnected {
     final message = errorMessage?.toLowerCase() ?? '';
@@ -1513,6 +1563,16 @@ class EtfOperationsStatus {
             : '執行 scripts\\00631l_check_env.cmd 檢查本機目錄與設定。',
       );
     }
+    if (!dataPathPersistent) {
+      return EtfDailyReadinessCheck(
+        label: 'data persistence',
+        statusLabel: dataPersistenceLabel,
+        detail: dataPersistenceCaption,
+        level: EtfDailyReadinessLevel.attention,
+        action:
+            '公開部署時請設定 persistent volume 與 00631L_DATA_PERSISTENCE_MODE=persistent。',
+      );
+    }
     return const EtfDailyReadinessCheck(
       label: 'local state',
       statusLabel: 'ready',
@@ -1558,6 +1618,10 @@ class EtfOperationsStatus {
     if (!dataDirectoriesReady) {
       lines.add(
           'data、exports 或 backups 目錄需要檢查：請執行 scripts\\00631l_check_env.cmd。');
+    }
+    if (dataPathWritable && !dataPathPersistent) {
+      lines.add(
+          '公開部署資料未標示 persistent：請掛載 persistent volume，並設定 00631L_DATA_PERSISTENCE_MODE=persistent。');
     }
 
     if (lines.isEmpty) {

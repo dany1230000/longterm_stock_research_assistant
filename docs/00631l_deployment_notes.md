@@ -55,6 +55,13 @@ frontend live proxy mode 需設定 backend URL：
 flutter run -d chrome --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_PROXY_BASE_URL=http://127.0.0.1:8000
 ```
 
+公開前端 build 使用：
+
+```cmd
+set PUBLIC_BACKEND_URL=https://your-backend.example.com
+scripts\00631l_build_web_public.cmd
+```
+
 手機 LAN 模式請用：
 
 ```cmd
@@ -89,6 +96,19 @@ scripts\00631l_start_backend.cmd
 py -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
+公開 server 可使用 production-like 指令：
+
+```cmd
+py -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+```
+
+Docker 範例：
+
+```cmd
+docker build -f backend\Dockerfile -t 00631l-lab-backend .
+docker run --rm -p 8000:8000 --env-file backend\.env -v 00631l-data:/data 00631l-lab-backend
+```
+
 ## 4. `.env` 設定
 
 從範本建立：
@@ -100,8 +120,12 @@ copy backend\.env.example backend\.env
 至少確認：
 
 ```text
+PUBLIC_API_BASE_URL=https://your-backend.example.com
+ALLOWED_ORIGINS=https://your-frontend.example.com
 TWSE_00631L_INTRADAY_NAV_URL=https://mis.twse.com.tw/stock/data/all_etf.txt
 00631L_INTRADAY_NAV_SOURCE=auto
+00631L_DATA_DIR=/data
+00631L_DATA_PERSISTENCE_MODE=persistent
 00631L_PROFILE_CACHE_SECONDS=86400
 00631L_HOLDINGS_CACHE_SECONDS=600
 00631L_INTRADAY_NAV_CACHE_SECONDS=15
@@ -173,6 +197,8 @@ GitHub Pages 可以放 Flutter web 靜態前端，但不能執行 FastAPI backen
 - daily cycle 是否手動執行或另由作業系統排程執行
 
 若沒有 HTTPS 或固定網域，瀏覽器可能限制部分存取情境。先以本機模式確認資料鏈正常，再考慮固定部署。
+
+更多公開部署細節見 `docs\00631l_public_deployment.md`。PWA 使用方式見 `docs\00631l_pwa_usage.md`。未來 Android / iOS 路線見 `docs\00631l_app_store_path.md`。
 
 ## 9. 明確未包含
 

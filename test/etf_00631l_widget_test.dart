@@ -106,6 +106,23 @@ void main() {
     expect(find.textContaining('data + exports + backups'), findsOneWidget);
   });
 
+  testWidgets('00631L lab shows public API and persistence status',
+      (tester) async {
+    await _pumpLab(tester, _ReadyOperations00631LRepository());
+
+    await _scrollUntilTextVisible(tester, 'frontend API base');
+    expect(find.text('frontend API base'), findsOneWidget);
+    expect(find.textContaining('http://localhost:8000'), findsOneWidget);
+    await _scrollUntilTextVisible(tester, 'https://api.example.com');
+    expect(find.text('backend public URL'), findsOneWidget);
+    expect(find.text('https://api.example.com'), findsOneWidget);
+    expect(find.text('allowed origins'), findsOneWidget);
+    expect(find.textContaining('https://00631l.example.com'), findsOneWidget);
+    expect(find.text('data persistence'), findsOneWidget);
+    expect(find.textContaining('persistent data ready'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('00631L lab shows today data status summary', (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 
@@ -428,6 +445,12 @@ class _ReportFixture00631LRepository extends Mock00631LRepository {
       intradaySourceMode: base.intradaySourceMode,
       twseIntradayNavConfigured: true,
       yuantaIntradayNavConfigured: true,
+      publicApiBaseUrl: 'https://api.example.com',
+      allowedOrigins: const ['https://00631l.example.com'],
+      dataRoot: '/data',
+      dataPersistenceMode: 'persistent',
+      dataPathWritable: true,
+      dataPathPersistent: true,
       holdingsHistoryStatus: 'cached',
       holdingsHistoryItemCount: 2,
       latestHoldingTradeDate: DateTime(2026, 6, 8),
@@ -507,6 +530,12 @@ class _ReadyOperations00631LRepository extends Mock00631LRepository {
       intradaySourceMode: base.intradaySourceMode,
       twseIntradayNavConfigured: true,
       yuantaIntradayNavConfigured: true,
+      publicApiBaseUrl: 'https://api.example.com',
+      allowedOrigins: const ['https://00631l.example.com'],
+      dataRoot: '/data',
+      dataPersistenceMode: 'persistent',
+      dataPathWritable: true,
+      dataPathPersistent: true,
       holdingsHistoryStatus: 'cached',
       holdingsHistoryItemCount: 8,
       latestHoldingTradeDate: DateTime(2026, 6, 9),

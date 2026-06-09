@@ -1,18 +1,16 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import Any
 
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from .config import Settings, settings
 from .service import service
 
 
-app = FastAPI(title="00631L live proxy", version="1.0.0")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+LOCAL_ALLOWED_ORIGINS = [
         "http://localhost:3000",
         "http://localhost:5000",
         "http://localhost:8000",
@@ -23,71 +21,96 @@ app.add_middleware(
         "http://127.0.0.1:8000",
         "http://127.0.0.1:8080",
         "http://127.0.0.1:5173",
-    ],
-    allow_origin_regex=(
-        r"^http://("
-        r"localhost|127\.0\.0\.1|"
-        r"10\.\d{1,3}\.\d{1,3}\.\d{1,3}|"
-        r"192\.168\.\d{1,3}\.\d{1,3}|"
-        r"172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}"
-        r"):\d+$"
-    ),
-    allow_credentials=False,
-    allow_methods=["GET"],
-    allow_headers=["*"],
+]
+
+LOCAL_LAN_ALLOW_ORIGIN_REGEX = (
+    r"^http://("
+    r"localhost|127\.0\.0\.1|"
+    r"10\.\d{1,3}\.\d{1,3}\.\d{1,3}|"
+    r"192\.168\.\d{1,3}\.\d{1,3}|"
+    r"172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}"
+    r"):\d+$"
 )
 
 
-@app.get("/health")
-def health() -> dict:
-    return service.health_status(
-        server_time=datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+def create_app(
+    *,
+    app_config: Settings = settings,
+    app_service: Any | None = None,
+) -> FastAPI:
+    fastapi_app = FastAPI(title="00631L live proxy", version="1.0.0")
+    resolved_service = app_service
+
+    fastapi_app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_allowed_origins(app_config),
+        allow_origin_regex=_allow_origin_regex(app_config),
+        allow_credentials=False,
+        allow_methods=["GET"],
+        allow_headers=["*"],
     )
 
+    def current_service() -> Any:
+        return resolved_service or service
 
-@app.get("/api/etf/00631l/profile")
-def profile() -> dict:
-    return service.profile()
+    @fastapi_app.get("/health")
+    def health() -> dict:
+        return current_service().health_status(
+            server_time=datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+        )
+
+    @fastapi_app.get("/api/etf/00631l/profile")
+    def profile() -> dict:
+        return current_service().profile()
+
+    @fastapi_app.get("/api/etf/00631l/holdings")
+    def holdings() -> dict:
+        return current_service().holdings()
+
+    @fastapi_app.get("/api/etf/00631l/holdings/history")
+    def holdings_history(limit: int = Query(30, ge=1, le=365)) -> dict:
+        return current_service().holdings_history(limit=limit)
+
+    @fastapi_app.get("/api/etf/00631l/holdings/history/summary")
+    def holdings_history_summary(limit: int = Query(30, ge=1, le=365)) -> dict:
+        return current_service().holdings_history_summary(limit=limit)
+
+    @fastapi_app.get("/api/etf/00631l/intraday-nav")
+    def intraday_nav() -> dict:
+        return current_service().intraday_nav()
+
+    @fastapi_app.get("/api/etf/00631l/intraday-nav/history")
+    def intraday_nav_history(
+        date: str | None = None,
+        limit: int = Query(500, ge=1, le=2000),
+    ) -> dict:
+        return current_service().intraday_nav_history(date=date, limit=limit)
+
+    @fastapi_app.get("/api/etf/00631l/intraday-nav/history/summary")
+    def intraday_nav_history_summary(date: str | None = None) -> dict:
+        return current_service().intraday_nav_history_summary(date=date)
+
+    @fastapi_app.get("/api/etf/00631l/operations/status")
+    def operations_status() -> dict:
+        return current_service().operations_status()
+
+    @fastapi_app.get("/api/etf/00631l/analysis/summary")
+    def analysis_summary() -> dict:
+        return current_service().analysis_summary()
+
+    return fastapi_app
 
 
-@app.get("/api/etf/00631l/holdings")
-def holdings() -> dict:
-    return service.holdings()
+def _allowed_origins(app_config: Settings) -> list[str]:
+    if app_config.allowed_origins:
+        return list(app_config.allowed_origins)
+    return LOCAL_ALLOWED_ORIGINS
 
 
-@app.get("/api/etf/00631l/holdings/history")
-def holdings_history(limit: int = Query(30, ge=1, le=365)) -> dict:
-    return service.holdings_history(limit=limit)
+def _allow_origin_regex(app_config: Settings) -> str | None:
+    if app_config.allowed_origins:
+        return None
+    return LOCAL_LAN_ALLOW_ORIGIN_REGEX
 
 
-@app.get("/api/etf/00631l/holdings/history/summary")
-def holdings_history_summary(limit: int = Query(30, ge=1, le=365)) -> dict:
-    return service.holdings_history_summary(limit=limit)
-
-
-@app.get("/api/etf/00631l/intraday-nav")
-def intraday_nav() -> dict:
-    return service.intraday_nav()
-
-
-@app.get("/api/etf/00631l/intraday-nav/history")
-def intraday_nav_history(
-    date: str | None = None,
-    limit: int = Query(500, ge=1, le=2000),
-) -> dict:
-    return service.intraday_nav_history(date=date, limit=limit)
-
-
-@app.get("/api/etf/00631l/intraday-nav/history/summary")
-def intraday_nav_history_summary(date: str | None = None) -> dict:
-    return service.intraday_nav_history_summary(date=date)
-
-
-@app.get("/api/etf/00631l/operations/status")
-def operations_status() -> dict:
-    return service.operations_status()
-
-
-@app.get("/api/etf/00631l/analysis/summary")
-def analysis_summary() -> dict:
-    return service.analysis_summary()
+app = create_app()

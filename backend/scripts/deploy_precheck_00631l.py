@@ -34,9 +34,12 @@ def run_deploy_precheck(root: Path = ROOT) -> dict[str, Any]:
     )
     for path in [
         "backend/.env.example",
+        "backend/Dockerfile",
         "backend/requirements.txt",
         "web/index.html",
         "web/manifest.json",
+        "scripts/00631l_check_public_config.cmd",
+        "scripts/00631l_build_web_public.cmd",
         "scripts/00631l_start_backend.cmd",
         "scripts/00631l_start_frontend_live.cmd",
         "scripts/00631l_open_lab.cmd",
@@ -46,6 +49,9 @@ def run_deploy_precheck(root: Path = ROOT) -> dict[str, Any]:
         "scripts/00631l_restore_dry_run.cmd",
         "docs/00631l_daily_usage.md",
         "docs/00631l_deployment_notes.md",
+        "docs/00631l_public_deployment.md",
+        "docs/00631l_pwa_usage.md",
+        "docs/00631l_app_store_path.md",
         "docs/00631l_troubleshooting.md",
         "docs/00631l_maintenance_index.md",
     ]:

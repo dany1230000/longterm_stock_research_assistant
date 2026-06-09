@@ -1,7 +1,13 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
+from backend.scripts.check_public_config_00631l import (
+    _allowed_origins_check,
+    _data_persistence_check,
+    _public_api_url_check,
+)
 from backend.scripts.deploy_precheck_00631l import run_deploy_precheck
 from backend.scripts.release_check_00631l import (
     _has_overall,
@@ -66,9 +72,12 @@ class ReleaseCheckTests(unittest.TestCase):
                 (root / directory).mkdir(parents=True, exist_ok=True)
             for file_name in [
                 "backend/.env.example",
+                "backend/Dockerfile",
                 "backend/requirements.txt",
                 "web/index.html",
                 "web/manifest.json",
+                "scripts/00631l_check_public_config.cmd",
+                "scripts/00631l_build_web_public.cmd",
                 "scripts/00631l_start_backend.cmd",
                 "scripts/00631l_start_frontend_live.cmd",
                 "scripts/00631l_open_lab.cmd",
@@ -78,6 +87,9 @@ class ReleaseCheckTests(unittest.TestCase):
                 "scripts/00631l_restore_dry_run.cmd",
                 "docs/00631l_daily_usage.md",
                 "docs/00631l_deployment_notes.md",
+                "docs/00631l_public_deployment.md",
+                "docs/00631l_pwa_usage.md",
+                "docs/00631l_app_store_path.md",
                 "docs/00631l_troubleshooting.md",
                 "docs/00631l_maintenance_index.md",
             ]:
@@ -87,6 +99,34 @@ class ReleaseCheckTests(unittest.TestCase):
 
             self.assertNotEqual(payload["overallStatus"], "FAIL")
             self.assertEqual(payload["failureCount"], 0)
+
+    def test_public_config_accepts_explicit_public_values(self) -> None:
+        env = {
+            "PUBLIC_API_BASE_URL": "https://api.example.com",
+            "ALLOWED_ORIGINS": "https://00631l.example.com,https://www.example.com",
+            "00631L_DATA_PERSISTENCE_MODE": "persistent",
+            "00631L_DATA_DIR": "/data",
+        }
+
+        self.assertEqual(_public_api_url_check(env)["status"], "PASS")
+        self.assertEqual(_allowed_origins_check(env)["status"], "PASS")
+        self.assertEqual(_data_persistence_check(env)["status"], "PASS")
+
+    def test_public_config_warns_without_public_values(self) -> None:
+        with patch.dict(
+            "os.environ",
+            {
+                "PUBLIC_API_BASE_URL": "",
+                "ALLOWED_ORIGINS": "",
+                "00631L_DATA_PERSISTENCE_MODE": "",
+            },
+        ):
+            self.assertEqual(_public_api_url_check({})["status"], "WARN")
+            self.assertEqual(_allowed_origins_check({})["status"], "WARN")
+            self.assertEqual(_data_persistence_check({})["status"], "WARN")
+
+    def test_public_config_rejects_wildcard_origin(self) -> None:
+        self.assertEqual(_allowed_origins_check({"ALLOWED_ORIGINS": "*"})["status"], "FAIL")
 
 
 if __name__ == "__main__":
