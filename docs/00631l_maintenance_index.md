@@ -16,6 +16,7 @@ This index reduces duplicate lookup paths for the semi-automated maintenance wor
 - Scheduled daily cycle wrapper: `scripts\00631l_daily_cycle_scheduled.cmd`
 - CSV export: `scripts\00631l_export_history.cmd`
 - Daily report generation: `scripts\00631l_generate_daily_report.cmd`
+- Retention policy: `scripts\00631l_apply_retention.cmd --report-retention-count 30`
 - Data integrity check: `scripts\00631l_check_integrity.cmd`
 - Local backup with rotation: `scripts\00631l_backup_data.cmd --retention-count 30`
 - Restore dry-run: `scripts\00631l_restore_dry_run.cmd`
@@ -29,6 +30,7 @@ This index reduces duplicate lookup paths for the semi-automated maintenance wor
 - Maintenance release summary: `docs\00631l_v1_40_maintenance_summary.md`
 - Backend disconnected state: `docs\00631l_v1_43_release_summary.md`
 - Daily report UI: `docs\00631l_v1_44_release_summary.md`
+- Retention policy: `docs\00631l_v1_45_release_summary.md`
 
 ## Script Output Convention
 

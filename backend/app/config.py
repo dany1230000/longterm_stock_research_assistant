@@ -92,6 +92,8 @@ class Settings:
         "00631L_REPORT_DIR",
         str(_BACKEND_ROOT / "reports"),
     )
+    report_retention_count: int = _env_int("00631L_REPORT_RETENTION_COUNT", 30)
+    export_retention_count: int = _env_int("00631L_EXPORT_RETENTION_COUNT", 30)
 
 
 settings = Settings()

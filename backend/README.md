@@ -90,6 +90,8 @@ See `backend/.env.example` for the deployable template.
 - `00631L_BACKUP_DIR`: local backup output directory, default `backend/backups`.
 - `00631L_BACKUP_RETENTION_COUNT`: number of local backup archives to keep, default `30`.
 - `00631L_REPORT_DIR`: local daily Markdown report directory, default `backend/reports`.
+- `00631L_REPORT_RETENTION_COUNT`: number of daily Markdown report files to keep, default `30`.
+- `00631L_EXPORT_RETENTION_COUNT`: policy count for fixed CSV export outputs, default `30`.
 - `00631L_INTEGRITY_STATUS_PATH`: local data integrity check result, default `backend/data/00631l_integrity_status.json`.
 - `00631L_RESTORE_DRY_RUN_STATUS_PATH`: latest restore dry-run result, default `backend/data/00631l_restore_dry_run_status.json`.
 
@@ -217,6 +219,26 @@ The runner executes collect, export, and live smoke, then writes the latest resu
 ```text
 backend/data/00631l_daily_cycle_status.json
 ```
+
+## v1.45 retention policy
+
+Apply local retention:
+
+```cmd
+scripts\00631l_apply_retention.cmd --report-retention-count 30
+```
+
+Dry-run without deleting report files:
+
+```cmd
+scripts\00631l_apply_retention.cmd --dry-run --report-retention-count 30
+```
+
+The policy is intentionally conservative:
+
+- Holdings and intraday JSONL history are retained as the long-term local record.
+- Daily Markdown reports under `backend/reports/` are pruned by retention count.
+- CSV exports use fixed current filenames under `backend/exports/`, so they are reported but not archived by the retention helper.
 
 The file is local operational state and is ignored by git. `operations/status` reads it when present. If the file does not exist, the endpoint reports `dailyCycle.sourceStatus: unavailable` and `overallStatus: missing`.
 

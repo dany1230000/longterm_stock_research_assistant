@@ -255,6 +255,26 @@ v1.35 起，backup 會自動保留最近 N 份 `00631l_local_data_backup_*.zip`�
 scripts\00631l_backup_data.cmd --retention-count 30
 ```
 
+## local retention
+
+保留策略檢查與清理：
+
+```cmd
+scripts\00631l_apply_retention.cmd --report-retention-count 30
+```
+
+只檢查、不刪除 report：
+
+```cmd
+scripts\00631l_apply_retention.cmd --dry-run --report-retention-count 30
+```
+
+保留規則：
+
+- holdings 與 intraday JSONL history 是長期本機紀錄，預設完整保留。
+- daily Markdown report 會依 `00631L_REPORT_RETENTION_COUNT` 保留最近 N 份。
+- CSV export 使用固定目前檔名，retention helper 只回報狀態，不建立額外 archive。
+
 v1.36 提供 restore dry-run，只讀取備份 zip 並檢查 manifest 與檔案項目是否可讀，不會覆蓋任何本機資料：
 
 ```cmd
