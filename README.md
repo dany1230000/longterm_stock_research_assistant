@@ -70,6 +70,7 @@ v1.0 live sources:
 - Release check v1.47: `scripts\00631l_release_check.cmd` now includes deployment precheck and retention dry-run coverage.
 - Documentation index v1.48: `docs\00631l_docs_index.md` is the main entry point for daily use, troubleshooting, maintenance, deployment, and release-summary routing.
 - Stability patch v1.49: backend tests verify that local paths in `docs\00631l_docs_index.md` exist, and release check requires the docs index.
+- Deployment stability release v1.50: `docs\00631l_v1_50_deployment_stability_summary.md` summarizes the stable deployment and data reliability checkpoint.
 
 Local backend env:
 

@@ -42,7 +42,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Daily-use release: `docs\00631l_v1_20_final_summary.md`
 - Daily experience release: `docs\00631l_v1_30_daily_experience_summary.md`
 - Maintenance release: `docs\00631l_v1_40_maintenance_summary.md`
-- Current stability line: `docs\00631l_v1_47_release_summary.md`
+- Deployment stability release: `docs\00631l_v1_50_deployment_stability_summary.md`
 
 ## Scope Boundary
 
