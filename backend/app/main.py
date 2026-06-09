@@ -32,11 +32,10 @@ app.add_middleware(
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {
-        "status": "ok",
-        "serverTime": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
-    }
+def health() -> dict:
+    return service.health_status(
+        server_time=datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+    )
 
 
 @app.get("/api/etf/00631l/profile")

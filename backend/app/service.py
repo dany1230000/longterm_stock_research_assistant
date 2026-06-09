@@ -50,6 +50,38 @@ class Etf00631LService:
             self._config.intraday_nav_history_path
         )
 
+    def health_status(self, *, server_time: str | None = None) -> dict[str, Any]:
+        now = server_time or utc_now_iso()
+        env_status = self._env_status()
+        return {
+            "status": "ok",
+            "serverTime": now,
+            "appName": "00631L lab backend",
+            "appVersion": "1.42",
+            "sourceContract": "00631l_backend_health",
+            "scope": "00631L only",
+            "liveSourceConfigured": {
+                "twseIntradayNav": bool(self._config.twse_intraday_nav_url),
+                "yuantaIntradayNav": bool(self._config.yuanta_intraday_nav_url),
+                "yuantaProfile": bool(self._config.yuanta_profile_url),
+                "yuantaHoldings": bool(self._config.yuanta_holdings_url),
+            },
+            "localState": {
+                "envFileExists": env_status["envFileExists"],
+                "dataDirReady": env_status["dataDirReady"],
+                "exportDirReady": env_status["exportDirReady"],
+                "backupDirReady": env_status["backupDirReady"],
+                "missingKeys": env_status["missingKeys"],
+                "optionalMissingKeys": env_status["optionalMissingKeys"],
+            },
+            "endpoints": {
+                "profile": "/api/etf/00631l/profile",
+                "holdings": "/api/etf/00631l/holdings",
+                "intradayNav": "/api/etf/00631l/intraday-nav",
+                "operationsStatus": "/api/etf/00631l/operations/status",
+            },
+        }
+
     def profile(self) -> dict[str, Any]:
         now = utc_now_iso()
         cached = self._cache.get("profile", self._config.profile_cache_seconds)
@@ -297,6 +329,7 @@ class Etf00631LService:
             "backup": backup_status,
             "report": report,
             "dailyCycle": daily_cycle_status,
+            "backendHealth": self.health_status(server_time=now),
             "statusSummary": {
                 "operations": source_status,
                 "holdingsHistory": holdings.get("sourceStatus"),

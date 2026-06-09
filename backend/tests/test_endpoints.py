@@ -37,6 +37,11 @@ class EndpointTests(unittest.TestCase):
         payload = response.json()
         self.assertEqual(payload["status"], "ok")
         self.assertIn("serverTime", payload)
+        self.assertEqual(payload["sourceContract"], "00631l_backend_health")
+        self.assertEqual(payload["scope"], "00631L only")
+        self.assertIn("liveSourceConfigured", payload)
+        self.assertIn("localState", payload)
+        self.assertIn("operationsStatus", payload["endpoints"])
 
     def test_intraday_nav_without_config_is_unavailable(self) -> None:
         main_module.service = Etf00631LService(
@@ -338,6 +343,8 @@ Custodian Fee
             self.assertEqual(payload["dataDirectoryHealth"]["backupDir"]["fileCount"], 1)
             self.assertEqual(payload["statusSummary"]["export"], "cached")
             self.assertEqual(payload["statusSummary"]["report"], "cached")
+            self.assertEqual(payload["backendHealth"]["sourceContract"], "00631l_backend_health")
+            self.assertIn("localState", payload["backendHealth"])
             self.assertIn("oneShotCommand", payload["collector"])
 
     def test_operations_status_reports_missing_daily_cycle_status(self) -> None:

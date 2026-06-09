@@ -2,6 +2,14 @@
 
 Minimal FastAPI proxy for the 00631L lab.
 
+Health endpoint:
+
+```text
+GET /health
+```
+
+The response includes backend version, 00631L-only scope, live-source configuration flags, local-state readiness, and key endpoint paths. It does not fetch live Yuanta or TWSE data.
+
 ## v1.0 local setup
 
 Create a local env file:
