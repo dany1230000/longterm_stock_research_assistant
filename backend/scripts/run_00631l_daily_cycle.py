@@ -26,6 +26,7 @@ def main() -> int:
         ),
         _run_step("export", ["cmd", "/c", "scripts\\00631l_export_history.cmd"]),
         _run_step("smoke", ["cmd", "/c", "scripts\\00631l_daily_smoke.cmd"]),
+        _run_step("integrity", ["cmd", "/c", "scripts\\00631l_check_integrity.cmd"]),
     ]
     failures = [
         f"{step['name']} failed with exitCode {step['exitCode']}"
@@ -45,6 +46,7 @@ def main() -> int:
         "collect": steps[0],
         "export": steps[1],
         "smoke": steps[2],
+        "integrity": steps[3],
         "warnings": warnings,
         "failures": failures,
     }

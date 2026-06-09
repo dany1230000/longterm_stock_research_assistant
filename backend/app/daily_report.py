@@ -152,6 +152,7 @@ def _markdown_report(
         f"- collectStatus: {_step_status(cycle_status, 'collect')}",
         f"- exportStatus: {_step_status(cycle_status, 'export')}",
         f"- smokeStatus: {_step_status(cycle_status, 'smoke')}",
+        f"- integrityStatus: {_step_status(cycle_status, 'integrity')}",
         "",
         "## Warnings",
         "",

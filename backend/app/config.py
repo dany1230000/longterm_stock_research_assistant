@@ -75,6 +75,10 @@ class Settings:
         "00631L_DAILY_CYCLE_STATUS_PATH",
         str(_BACKEND_ROOT / "data" / "00631l_daily_cycle_status.json"),
     )
+    integrity_status_path: str = os.getenv(
+        "00631L_INTEGRITY_STATUS_PATH",
+        str(_BACKEND_ROOT / "data" / "00631l_integrity_status.json"),
+    )
     backup_dir: str = os.getenv(
         "00631L_BACKUP_DIR",
         str(_BACKEND_ROOT / "backups"),

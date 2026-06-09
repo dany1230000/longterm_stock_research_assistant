@@ -52,6 +52,7 @@ v1.0 live sources:
 - Scheduler prep v1.31: `scripts/00631l_daily_cycle_scheduled.cmd` and `docs/00631l_scheduler_setup.md` prepare Windows Task Scheduler usage for daily cycle runs.
 - Daily report v1.32: daily cycle now writes a local Markdown report under ignored `backend/reports/`; `scripts/00631l_generate_daily_report.cmd` can regenerate it manually.
 - Operations report UI v1.33: `/api/etf/00631l/operations/status` and `/00631l-lab` show latest daily report availability, overallStatus, generatedAt, and WARN/FAIL counts.
+- Data integrity v1.34: `scripts/00631l_check_integrity.cmd` checks local holdings/intraday JSONL for duplicate keys, missing required fields, weekday gaps, and abnormal source statuses.
 
 Local backend env:
 
@@ -181,6 +182,12 @@ Generate the latest local daily report:
 
 ```cmd
 scripts\00631l_generate_daily_report.cmd
+```
+
+Check local history integrity:
+
+```cmd
+scripts\00631l_check_integrity.cmd
 ```
 
 Final v1.20 summary:

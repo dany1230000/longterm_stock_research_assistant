@@ -338,6 +338,20 @@ scripts\00631l_generate_daily_report.cmd
 
 `/00631l-lab` 的「今日資料狀態」會顯示最近日報是否存在、日報 `overallStatus`、生成時間與 WARN/FAIL 數量。
 
+資料完整性檢查：
+
+```cmd
+scripts\00631l_check_integrity.cmd
+```
+
+檢查結果會寫到：
+
+```text
+backend\data\00631l_integrity_status.json
+```
+
+duplicate key 與必要欄位缺值是 FAIL；日期缺口與 sourceStatus 異常是 WARN。
+
 常見問題可先看：
 
 ```text

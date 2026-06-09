@@ -73,6 +73,7 @@ See `backend/.env.example` for the deployable template.
 - `00631L_INTRADAY_NAV_HISTORY_PATH`: local JSONL path for intraday NAV history, default `backend/data/00631l_intraday_nav_history.jsonl`.
 - `00631L_BACKUP_DIR`: local backup output directory, default `backend/backups`.
 - `00631L_REPORT_DIR`: local daily Markdown report directory, default `backend/reports`.
+- `00631L_INTEGRITY_STATUS_PATH`: local data integrity check result, default `backend/data/00631l_integrity_status.json`.
 
 `auto` tries TWSE first and then Yuanta. If neither URL is configured, intraday NAV returns `sourceStatus: unavailable` and does not return mock data as official data.
 
@@ -275,6 +276,20 @@ scripts\00631l_generate_daily_report.cmd
 ```
 
 `/api/etf/00631l/operations/status` reports latest daily report metadata under the `report` key.
+
+## v1.34 data integrity check
+
+```cmd
+scripts\00631l_check_integrity.cmd
+```
+
+The checker reads local holdings and intraday JSONL history, then writes:
+
+```text
+backend\data\00631l_integrity_status.json
+```
+
+Duplicate keys and missing required fields are FAIL. Weekday gaps and abnormal source statuses are WARN.
 
 ## v1.13 local startup checks
 
