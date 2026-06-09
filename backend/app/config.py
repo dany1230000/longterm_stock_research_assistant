@@ -79,6 +79,10 @@ class Settings:
         "00631L_INTEGRITY_STATUS_PATH",
         str(_BACKEND_ROOT / "data" / "00631l_integrity_status.json"),
     )
+    restore_dry_run_status_path: str = os.getenv(
+        "00631L_RESTORE_DRY_RUN_STATUS_PATH",
+        str(_BACKEND_ROOT / "data" / "00631l_restore_dry_run_status.json"),
+    )
     backup_dir: str = os.getenv(
         "00631L_BACKUP_DIR",
         str(_BACKEND_ROOT / "backups"),

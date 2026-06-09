@@ -75,6 +75,7 @@ See `backend/.env.example` for the deployable template.
 - `00631L_BACKUP_RETENTION_COUNT`: number of local backup archives to keep, default `30`.
 - `00631L_REPORT_DIR`: local daily Markdown report directory, default `backend/reports`.
 - `00631L_INTEGRITY_STATUS_PATH`: local data integrity check result, default `backend/data/00631l_integrity_status.json`.
+- `00631L_RESTORE_DRY_RUN_STATUS_PATH`: latest restore dry-run result, default `backend/data/00631l_restore_dry_run_status.json`.
 
 `auto` tries TWSE first and then Yuanta. If neither URL is configured, intraday NAV returns `sourceStatus: unavailable` and does not return mock data as official data.
 
@@ -240,6 +241,22 @@ v1.35 adds rotation for files matching `00631l_local_data_backup_*.zip`. The def
 
 ```cmd
 scripts\00631l_backup_data.cmd --retention-count 30
+```
+
+## v1.36 restore dry-run
+
+Validate the latest local backup archive without restoring it:
+
+```cmd
+scripts\00631l_restore_dry_run.cmd
+```
+
+The dry-run reads `backup_manifest.json`, checks that every included archive entry is present and readable, then writes a local status file under ignored `backend/data/`. It never copies files back into `backend/data/` or `backend/exports/`.
+
+You can point it at a specific archive:
+
+```cmd
+scripts\00631l_restore_dry_run.cmd --backup-path backend\backups\00631l_local_data_backup_YYYYMMDD_HHMMSSZ.zip
 ```
 
 ## v1.25 data directory health

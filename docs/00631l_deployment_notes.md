@@ -105,7 +105,7 @@ backend\backups\
 - CSV export
 - local backup zip
 
-若搬到新機器，先備份再搬移。v1.24 只提供 backup script，restore 需手動比對後複製，避免覆蓋現有 history。
+若搬到新機器，先備份再搬移。v1.36 提供 restore dry-run，可先檢查備份 zip 與 manifest 是否可讀；實際還原仍需解壓到臨時資料夾，比對後再手動複製需要的檔案，避免覆蓋現有 history。
 
 ## 6. exports/backups 忽略規則
 
@@ -121,6 +121,12 @@ scripts\00631l_export_history.cmd
 
 ```cmd
 scripts\00631l_backup_data.cmd
+```
+
+檢查最近備份是否可讀：
+
+```cmd
+scripts\00631l_restore_dry_run.cmd
 ```
 
 ## 7. GitHub Pages 限制

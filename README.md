@@ -54,6 +54,7 @@ v1.0 live sources:
 - Operations report UI v1.33: `/api/etf/00631l/operations/status` and `/00631l-lab` show latest daily report availability, overallStatus, generatedAt, and WARN/FAIL counts.
 - Data integrity v1.34: `scripts/00631l_check_integrity.cmd` checks local holdings/intraday JSONL for duplicate keys, missing required fields, weekday gaps, and abnormal source statuses.
 - Backup rotation v1.35: `scripts/00631l_backup_data.cmd` keeps the latest configured number of local backup archives, default 30.
+- Restore dry-run v1.36: `scripts/00631l_restore_dry_run.cmd` verifies the latest local backup archive can be read without overwriting any data.
 
 Local backend env:
 
@@ -195,6 +196,12 @@ Backup with rotation:
 
 ```cmd
 scripts\00631l_backup_data.cmd --retention-count 30
+```
+
+Restore dry-run:
+
+```cmd
+scripts\00631l_restore_dry_run.cmd
 ```
 
 Final v1.20 summary:
