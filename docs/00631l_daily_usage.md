@@ -318,6 +318,12 @@ scripts\00631l_start_frontend_live.cmd
 scripts\00631l_release_check.cmd
 ```
 
+若要用 Windows Task Scheduler 半自動執行 daily cycle，請先看：
+
+```text
+docs/00631l_scheduler_setup.md
+```
+
 常見問題可先看：
 
 ```text

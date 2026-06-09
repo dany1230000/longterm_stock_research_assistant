@@ -49,6 +49,7 @@ v1.0 live sources:
 - Operations guidance v1.28: `/00631l-lab` shows app operation next steps for daily cycle, `.env`, intraday NAV availability, CSV export, backup, and data directory checks.
 - Deployment notes v1.29: `docs/00631l_deployment_notes.md` documents local mode, Flutter web build output, backend proxy needs, `.env`, data persistence, GitHub Pages limits, and home server/VPS considerations.
 - Daily experience release v1.30: `docs/00631l_v1_30_daily_experience_summary.md` summarizes direct entry, mobile layout, PWA metadata, backup, data health, helper scripts, troubleshooting, deployment notes, and operations guidance.
+- Scheduler prep v1.31: `scripts/00631l_daily_cycle_scheduled.cmd` and `docs/00631l_scheduler_setup.md` prepare Windows Task Scheduler usage for daily cycle runs.
 
 Local backend env:
 
@@ -166,6 +167,12 @@ Daily experience release summary:
 
 ```text
 docs/00631l_v1_30_daily_experience_summary.md
+```
+
+Windows Task Scheduler setup:
+
+```text
+docs/00631l_scheduler_setup.md
 ```
 
 Final v1.20 summary:
