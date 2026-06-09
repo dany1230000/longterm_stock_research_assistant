@@ -58,6 +58,7 @@ v1.0 live sources:
 - Daily report guide v1.37: `docs/00631l_daily_report_guide.md` explains how to read Markdown reports, WARN states, FAIL states, source status, and local report files.
 - Release check v1.38: `scripts\00631l_release_check.cmd` now also checks scheduler artifacts, report generation, integrity, backup rotation, and restore dry-run.
 - Maintenance stability v1.39: `docs/00631l_maintenance_index.md` consolidates maintenance docs and key scripts now use a compact `[summary] overallStatus=...` line.
+- Maintenance release v1.40: `docs/00631l_v1_40_maintenance_summary.md` summarizes the semi-automated daily maintenance release line.
 
 Local backend env:
 
@@ -169,6 +170,12 @@ Maintenance index:
 
 ```text
 docs/00631l_maintenance_index.md
+```
+
+Maintenance release summary:
+
+```text
+docs/00631l_v1_40_maintenance_summary.md
 ```
 
 Troubleshooting guide:
