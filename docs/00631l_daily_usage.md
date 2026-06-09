@@ -123,6 +123,16 @@ http://127.0.0.1:8000/api/etf/00631l/operations/status
 - `dailyCycle`: 最近一次 daily cycle 結果。
 - `statusSummary`: app 顯示今日資料狀態用的摘要。
 
+## app 上的每日可用狀態
+
+`/#/00631l-lab` 的「今日資料狀態」會先顯示「每日可用狀態」。它把日常使用需要確認的項目整理成三種結果：
+
+- `可日常使用`：backend、official holdings、intraday NAV、daily cycle、daily report、CSV export、backup 與 local state 都有可用資料。
+- `需要觀察`：資料鏈可使用，但有 WARN、尚未匯出、尚未備份、日報尚未建立，或某些資料時間需要確認。
+- `需要處理`：backend 斷線、required env 缺少、TWSE URL 未設定、資料來源 error/unavailable，或 daily cycle/report 出現 failure。
+
+下方每一列都只給程式操作提示，例如啟動 backend、執行 daily cycle、產生日報、匯出 CSV、建立 backup、或檢查 `.env`。這些提示不是投資建議。
+
 ## holdings history 怎麼看
 
 Flutter 頁面 `/00631l-lab` 會顯示每日內容物歷史。主要欄位：

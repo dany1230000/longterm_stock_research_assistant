@@ -108,15 +108,17 @@ void main() {
 
     await _scrollUntilTextVisible(tester, '今日資料狀態');
     expect(find.text('今日資料狀態'), findsOneWidget);
+    expect(find.text('每日可用狀態'), findsOneWidget);
+    expect(find.text('需要處理'), findsWidgets);
     expect(find.textContaining('operations mock'), findsOneWidget);
-    expect(find.text('daily cycle'), findsOneWidget);
-    expect(find.text('daily report'), findsOneWidget);
+    expect(find.text('daily cycle'), findsWidgets);
+    expect(find.text('daily report'), findsWidgets);
     expect(find.textContaining('report'), findsWidgets);
-    expect(find.textContaining('尚未執行 daily cycle'), findsOneWidget);
+    expect(find.textContaining('尚未執行 daily cycle'), findsWidgets);
     expect(find.text('下一步操作提示'), findsOneWidget);
     expect(
-        find.textContaining('scripts\\00631l_daily_cycle.cmd'), findsOneWidget);
-    expect(find.textContaining('backend\\.env.example'), findsOneWidget);
+        find.textContaining('scripts\\00631l_daily_cycle.cmd'), findsWidgets);
+    expect(find.textContaining('backend\\.env.example'), findsWidgets);
     expect(find.textContaining('TWSE URL 設定或交易時段'), findsOneWidget);
     _expectNoTradingActionText();
   });
@@ -124,13 +126,27 @@ void main() {
   testWidgets('00631L lab shows latest daily report details', (tester) async {
     await _pumpLab(tester, _ReportFixture00631LRepository());
 
-    await _scrollUntilTextVisible(tester, 'latest daily report');
-    expect(find.text('latest daily report'), findsOneWidget);
+    await _scrollUntilTextVisible(tester, '最新日報摘要');
+    expect(find.text('最新日報摘要'), findsOneWidget);
     expect(find.textContaining('status WARN'), findsOneWidget);
     expect(find.text('report WARN'), findsWidgets);
     expect(find.text('warnings 2'), findsOneWidget);
     expect(find.text('failures 0'), findsOneWidget);
     expect(find.textContaining('00631l_daily_report_20260609'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('00631L lab summarizes daily readiness for usable local state',
+      (tester) async {
+    await _pumpLab(tester, _ReadyOperations00631LRepository());
+
+    await _scrollUntilTextVisible(tester, '每日可用狀態');
+    expect(find.text('每日可用狀態'), findsOneWidget);
+    expect(find.text('可日常使用'), findsOneWidget);
+    expect(find.textContaining('資料鏈與本機流程目前可日常使用'), findsOneWidget);
+    expect(find.text('backend 連線'), findsOneWidget);
+    expect(find.text('official holdings'), findsOneWidget);
+    expect(find.text('local state'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -422,6 +438,58 @@ class _ReportFixture00631LRepository extends Mock00631LRepository {
       dailyCycleStartedAt: DateTime(2026, 6, 9, 10),
       dailyCycleFinishedAt: DateTime(2026, 6, 9, 10, 6),
       dailyCycleWarningCount: 1,
+      dailyCycleFailureCount: 0,
+    );
+  }
+}
+
+class _ReadyOperations00631LRepository extends Mock00631LRepository {
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    final base = await super.fetchOperationsStatus();
+    return EtfOperationsStatus(
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'cached',
+      sourceContract: base.sourceContract,
+      sourceUrl: base.sourceUrl,
+      lastFetchedAt: DateTime(2026, 6, 9, 10, 6),
+      sourceUpdatedAt: DateTime(2026, 6, 9, 10, 6),
+      isStale: false,
+      intradaySourceMode: base.intradaySourceMode,
+      twseIntradayNavConfigured: true,
+      yuantaIntradayNavConfigured: true,
+      holdingsHistoryStatus: 'cached',
+      holdingsHistoryItemCount: 8,
+      latestHoldingTradeDate: DateTime(2026, 6, 9),
+      intradayHistoryStatus: 'cached',
+      intradaySampleCount: 16,
+      latestIntradayDataTime: DateTime(2026, 6, 9, 10, 5, 30),
+      intradayHistoryDate: DateTime(2026, 6, 9),
+      collectorOneShotCommand: base.collectorOneShotCommand,
+      collectorIntradayCommand: base.collectorIntradayCommand,
+      envFileExists: true,
+      missingEnvKeys: const [],
+      optionalMissingEnvKeys: const [],
+      dataDirReady: true,
+      exportDirReady: true,
+      backupDirReady: true,
+      exportAvailable: true,
+      latestExportPath: 'backend/exports/00631l_holdings_history_summary.csv',
+      latestExportUpdatedAt: DateTime(2026, 6, 9, 10, 4),
+      backupAvailable: true,
+      latestBackupPath: 'backend/backups/00631l_local_data_backup.zip',
+      latestBackupUpdatedAt: DateTime(2026, 6, 9, 10, 5),
+      reportAvailable: true,
+      latestReportPath:
+          'backend/reports/00631l_daily_report_20260609T100600Z.md',
+      latestReportGeneratedAt: DateTime(2026, 6, 9, 10, 6),
+      reportOverallStatus: 'PASS',
+      reportWarningCount: 0,
+      reportFailureCount: 0,
+      dailyCycleStatus: 'PASS',
+      dailyCycleStartedAt: DateTime(2026, 6, 9, 10),
+      dailyCycleFinishedAt: DateTime(2026, 6, 9, 10, 6),
+      dailyCycleWarningCount: 0,
       dailyCycleFailureCount: 0,
     );
   }

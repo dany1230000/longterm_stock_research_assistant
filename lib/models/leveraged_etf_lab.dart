@@ -997,6 +997,98 @@ class EtfStatusSummary {
   final List<String> lines;
 }
 
+enum EtfDailyReadinessLevel {
+  ready,
+  attention,
+  actionNeeded,
+}
+
+class EtfDailyReadinessCheck {
+  const EtfDailyReadinessCheck({
+    required this.label,
+    required this.statusLabel,
+    required this.detail,
+    required this.level,
+    this.action,
+  });
+
+  final String label;
+  final String statusLabel;
+  final String detail;
+  final EtfDailyReadinessLevel level;
+  final String? action;
+
+  bool get isReady => level == EtfDailyReadinessLevel.ready;
+}
+
+class EtfDailyReadinessSummary {
+  const EtfDailyReadinessSummary({
+    required this.level,
+    required this.label,
+    required this.headline,
+    required this.checks,
+  });
+
+  final EtfDailyReadinessLevel level;
+  final String label;
+  final String headline;
+  final List<EtfDailyReadinessCheck> checks;
+
+  int get readyCount => checks
+      .where((check) => check.level == EtfDailyReadinessLevel.ready)
+      .length;
+
+  int get attentionCount => checks
+      .where((check) => check.level == EtfDailyReadinessLevel.attention)
+      .length;
+
+  int get actionNeededCount => checks
+      .where((check) => check.level == EtfDailyReadinessLevel.actionNeeded)
+      .length;
+}
+
+String _dailyReadinessLabel(EtfDailyReadinessLevel level) {
+  switch (level) {
+    case EtfDailyReadinessLevel.ready:
+      return '可日常使用';
+    case EtfDailyReadinessLevel.attention:
+      return '需要觀察';
+    case EtfDailyReadinessLevel.actionNeeded:
+      return '需要處理';
+  }
+}
+
+String _dailyReadinessHeadline(EtfDailyReadinessLevel level) {
+  switch (level) {
+    case EtfDailyReadinessLevel.ready:
+      return '資料鏈與本機流程目前可日常使用。';
+    case EtfDailyReadinessLevel.attention:
+      return '資料鏈可使用，但有項目需要確認。';
+    case EtfDailyReadinessLevel.actionNeeded:
+      return '有項目需要先處理，請依下方程式操作檢查。';
+  }
+}
+
+String _dailyReadinessDateText(DateTime? value) {
+  if (value == null) {
+    return 'unknown';
+  }
+  final month = value.month.toString().padLeft(2, '0');
+  final day = value.day.toString().padLeft(2, '0');
+  return '${value.year}/$month/$day';
+}
+
+String _dailyReadinessDateTimeText(DateTime? value) {
+  if (value == null) {
+    return 'unknown';
+  }
+  final date = _dailyReadinessDateText(value);
+  final hour = value.hour.toString().padLeft(2, '0');
+  final minute = value.minute.toString().padLeft(2, '0');
+  final second = value.second.toString().padLeft(2, '0');
+  return '$date $hour:$minute:$second';
+}
+
 class EtfOperationsStatus {
   const EtfOperationsStatus({
     required this.status,
@@ -1189,6 +1281,244 @@ class EtfOperationsStatus {
       return errorMessage ?? 'operations status unavailable';
     }
     return 'operations/status response received';
+  }
+
+  EtfDailyReadinessSummary get dailyReadinessSummary {
+    final checks = <EtfDailyReadinessCheck>[
+      _backendReadinessCheck(),
+      _holdingsReadinessCheck(),
+      _intradayReadinessCheck(),
+      _dailyCycleReadinessCheck(),
+      _reportReadinessCheck(),
+      _exportReadinessCheck(),
+      _backupReadinessCheck(),
+      _localStateReadinessCheck(),
+    ];
+
+    final hasAction = checks.any(
+      (check) => check.level == EtfDailyReadinessLevel.actionNeeded,
+    );
+    final hasAttention = checks.any(
+      (check) => check.level == EtfDailyReadinessLevel.attention,
+    );
+    final level = hasAction
+        ? EtfDailyReadinessLevel.actionNeeded
+        : (hasAttention
+            ? EtfDailyReadinessLevel.attention
+            : EtfDailyReadinessLevel.ready);
+
+    return EtfDailyReadinessSummary(
+      level: level,
+      label: _dailyReadinessLabel(level),
+      headline: _dailyReadinessHeadline(level),
+      checks: checks,
+    );
+  }
+
+  EtfDailyReadinessCheck _backendReadinessCheck() {
+    if (backendDisconnected ||
+        sourceStatusLabel == 'error' ||
+        sourceStatusLabel == 'unavailable') {
+      return EtfDailyReadinessCheck(
+        label: 'backend 連線',
+        statusLabel: backendConnectionLabel,
+        detail: backendConnectionCaption,
+        level: EtfDailyReadinessLevel.actionNeeded,
+        action: '執行 scripts\\00631l_start_backend.cmd，重新開啟 /#/00631l-lab。',
+      );
+    }
+    if (sourceStatusLabel == 'mock') {
+      return EtfDailyReadinessCheck(
+        label: 'backend 連線',
+        statusLabel: backendConnectionLabel,
+        detail: '目前是 mock/fallback 模式，畫面可讀但不是 live proxy。',
+        level: EtfDailyReadinessLevel.attention,
+        action: '需要 live 資料時，請用 live proxy 啟動 frontend。',
+      );
+    }
+    return EtfDailyReadinessCheck(
+      label: 'backend 連線',
+      statusLabel: backendConnectionLabel,
+      detail: 'operations/status 已回應。',
+      level: EtfDailyReadinessLevel.ready,
+    );
+  }
+
+  EtfDailyReadinessCheck _holdingsReadinessCheck() {
+    final hasHoldings =
+        holdingsHistoryItemCount > 0 && latestHoldingTradeDate != null;
+    final abnormal = holdingsHistoryStatus == 'error' ||
+        holdingsHistoryStatus == 'unavailable' ||
+        holdingsHistoryStatus == 'mock';
+    if (!hasHoldings || abnormal) {
+      return EtfDailyReadinessCheck(
+        label: 'official holdings',
+        statusLabel: holdingsHistoryStatus,
+        detail: hasHoldings
+            ? 'latest ${_dailyReadinessDateText(latestHoldingTradeDate)}；sourceStatus $holdingsHistoryStatus。'
+            : '尚無 official holdings history。',
+        level: abnormal
+            ? EtfDailyReadinessLevel.actionNeeded
+            : EtfDailyReadinessLevel.attention,
+        action:
+            '執行 scripts\\00631l_daily_cycle.cmd 累積 official holdings history。',
+      );
+    }
+    return EtfDailyReadinessCheck(
+      label: 'official holdings',
+      statusLabel: holdingsHistoryStatus,
+      detail:
+          '$holdingsHistoryItemCount 筆，latest ${_dailyReadinessDateText(latestHoldingTradeDate)}。',
+      level: holdingsHistoryStatus == 'stale'
+          ? EtfDailyReadinessLevel.attention
+          : EtfDailyReadinessLevel.ready,
+      action: holdingsHistoryStatus == 'stale'
+          ? '請執行 daily cycle 並確認 Yuanta ratio 來源。'
+          : null,
+    );
+  }
+
+  EtfDailyReadinessCheck _intradayReadinessCheck() {
+    final hasIntraday =
+        intradaySampleCount > 0 && latestIntradayDataTime != null;
+    final abnormal = intradayHistoryStatus == 'error' ||
+        intradayHistoryStatus == 'unavailable' ||
+        !twseIntradayNavConfigured;
+    if (!hasIntraday || abnormal) {
+      return EtfDailyReadinessCheck(
+        label: 'intraday NAV',
+        statusLabel: intradayHistoryStatus,
+        detail: hasIntraday
+            ? 'latest ${_dailyReadinessDateTimeText(latestIntradayDataTime)}；TWSE URL ${twseIntradayNavConfigured ? 'configured' : 'missing'}。'
+            : '尚無 intraday NAV history。',
+        level: abnormal
+            ? EtfDailyReadinessLevel.actionNeeded
+            : EtfDailyReadinessLevel.attention,
+        action: '檢查 TWSE URL 設定與交易時段，必要時執行 daily cycle。',
+      );
+    }
+    return EtfDailyReadinessCheck(
+      label: 'intraday NAV',
+      statusLabel: intradayHistoryStatus,
+      detail:
+          '$intradaySampleCount 筆，latest ${_dailyReadinessDateTimeText(latestIntradayDataTime)}。',
+      level: intradayHistoryStatus == 'stale'
+          ? EtfDailyReadinessLevel.attention
+          : EtfDailyReadinessLevel.ready,
+      action: intradayHistoryStatus == 'stale'
+          ? '請以資料時間為準，必要時重新執行 daily cycle。'
+          : null,
+    );
+  }
+
+  EtfDailyReadinessCheck _dailyCycleReadinessCheck() {
+    if (dailyCycleStatus == 'PASS' && dailyCycleFinishedAt != null) {
+      return EtfDailyReadinessCheck(
+        label: 'daily cycle',
+        statusLabel: dailyCycleStatus,
+        detail:
+            'finished ${_dailyReadinessDateTimeText(dailyCycleFinishedAt)}；warnings $dailyCycleWarningCount，failures $dailyCycleFailureCount。',
+        level: dailyCycleWarningCount > 0
+            ? EtfDailyReadinessLevel.attention
+            : EtfDailyReadinessLevel.ready,
+        action: dailyCycleWarningCount > 0
+            ? '查看 daily report 與 smoke WARN 說明。'
+            : null,
+      );
+    }
+    return EtfDailyReadinessCheck(
+      label: 'daily cycle',
+      statusLabel: dailyCycleStatus,
+      detail: dailyCycleFinishedAt == null
+          ? '尚未執行 daily cycle。'
+          : 'finished ${_dailyReadinessDateTimeText(dailyCycleFinishedAt)}；failures $dailyCycleFailureCount。',
+      level: dailyCycleFailureCount > 0 || dailyCycleStatus == 'FAIL'
+          ? EtfDailyReadinessLevel.actionNeeded
+          : EtfDailyReadinessLevel.attention,
+      action: '執行 scripts\\00631l_daily_cycle.cmd，完成後查看今日資料狀態。',
+    );
+  }
+
+  EtfDailyReadinessCheck _reportReadinessCheck() {
+    if (!reportAvailable) {
+      return const EtfDailyReadinessCheck(
+        label: 'daily report',
+        statusLabel: 'missing',
+        detail: '尚無最新日報。',
+        level: EtfDailyReadinessLevel.attention,
+        action: '執行 scripts\\00631l_generate_daily_report.cmd 或 daily cycle。',
+      );
+    }
+    return EtfDailyReadinessCheck(
+      label: 'daily report',
+      statusLabel: reportOverallStatus,
+      detail:
+          'generated ${_dailyReadinessDateTimeText(latestReportGeneratedAt)}；warnings $reportWarningCount，failures $reportFailureCount。',
+      level: reportFailureCount > 0 || reportOverallStatus == 'FAIL'
+          ? EtfDailyReadinessLevel.actionNeeded
+          : (reportWarningCount > 0
+              ? EtfDailyReadinessLevel.attention
+              : EtfDailyReadinessLevel.ready),
+      action: reportFailureCount > 0 || reportWarningCount > 0
+          ? '查看最新 daily report 的 WARN/FAIL 區塊。'
+          : null,
+    );
+  }
+
+  EtfDailyReadinessCheck _exportReadinessCheck() {
+    if (!exportAvailable) {
+      return const EtfDailyReadinessCheck(
+        label: 'CSV export',
+        statusLabel: 'missing',
+        detail: '尚無 CSV export。',
+        level: EtfDailyReadinessLevel.attention,
+        action: '執行 scripts\\00631l_export_history.cmd。',
+      );
+    }
+    return EtfDailyReadinessCheck(
+      label: 'CSV export',
+      statusLabel: 'ready',
+      detail: 'updated ${_dailyReadinessDateTimeText(latestExportUpdatedAt)}。',
+      level: EtfDailyReadinessLevel.ready,
+    );
+  }
+
+  EtfDailyReadinessCheck _backupReadinessCheck() {
+    if (!backupAvailable) {
+      return const EtfDailyReadinessCheck(
+        label: 'local backup',
+        statusLabel: 'missing',
+        detail: '尚無 local backup。',
+        level: EtfDailyReadinessLevel.attention,
+        action: '執行 scripts\\00631l_backup_data.cmd。',
+      );
+    }
+    return EtfDailyReadinessCheck(
+      label: 'local backup',
+      statusLabel: 'ready',
+      detail: 'updated ${_dailyReadinessDateTimeText(latestBackupUpdatedAt)}。',
+      level: EtfDailyReadinessLevel.ready,
+    );
+  }
+
+  EtfDailyReadinessCheck _localStateReadinessCheck() {
+    if (!envReady) {
+      return EtfDailyReadinessCheck(
+        label: 'local state',
+        statusLabel: 'check',
+        detail: 'env 或 data/export/backup 目錄需要確認。',
+        level: EtfDailyReadinessLevel.actionNeeded,
+        action: missingEnvKeys.any((key) => key.contains('.env'))
+            ? '從 backend\\.env.example 建立 backend\\.env，並執行 scripts\\00631l_check_env.cmd。'
+            : '執行 scripts\\00631l_check_env.cmd 檢查本機目錄與設定。',
+      );
+    }
+    return const EtfDailyReadinessCheck(
+      label: 'local state',
+      statusLabel: 'ready',
+      detail: 'required env keys 與 data/export/backup 目錄可用。',
+      level: EtfDailyReadinessLevel.ready,
+    );
   }
 
   List<String> get operationGuidanceLines {

@@ -1,5 +1,23 @@
 # LongTerm Stock Research Assistant
 
+## 00631L lab status
+
+00631L lab v2.0 is the formal daily-use completion release. Start from `docs/00631l_docs_index.md` or the final summary `docs/00631l_v2_0_final_summary.md`.
+
+Daily helper:
+
+```cmd
+scripts\00631l_open_lab.cmd
+```
+
+Direct lab route:
+
+```text
+/#/00631l-lab
+```
+
+The app shell remains the long-term stock research assistant, and `00631L 正二研究室` is the dedicated 00631L route inside it.
+
 ## 00631L lab v1.0 completed
 
 Release status: completed on 2026-06-08. Release summary: `docs/00631l_v1_release_summary.md`. Release checklist: `docs/00631l_release_checklist.md`.

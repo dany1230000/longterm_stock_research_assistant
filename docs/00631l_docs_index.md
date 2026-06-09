@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Final daily-use summary: `docs\00631l_v2_0_final_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
 - Troubleshooting: `docs\00631l_troubleshooting.md`
 - Maintenance index: `docs\00631l_maintenance_index.md`
@@ -43,6 +44,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Daily experience release: `docs\00631l_v1_30_daily_experience_summary.md`
 - Maintenance release: `docs\00631l_v1_40_maintenance_summary.md`
 - Deployment stability release: `docs\00631l_v1_50_deployment_stability_summary.md`
+- Formal daily-use completion: `docs\00631l_v2_0_final_summary.md`
 
 ## Scope Boundary
 

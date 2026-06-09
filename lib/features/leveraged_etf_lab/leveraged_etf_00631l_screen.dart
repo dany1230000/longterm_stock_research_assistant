@@ -426,6 +426,8 @@ class _TodayDataStatusSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _DailyReadinessPanel(summary: status.dailyReadinessSummary),
+          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -577,6 +579,171 @@ class _TodayDataStatusSection extends StatelessWidget {
   }
 }
 
+class _DailyReadinessPanel extends StatelessWidget {
+  const _DailyReadinessPanel({required this.summary});
+
+  final EtfDailyReadinessSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = _dailyReadinessColor(theme.colorScheme, summary.level);
+    final background = Color.alphaBlend(
+      color.withValues(alpha: 0.09),
+      theme.colorScheme.surface,
+    );
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.34)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  _dailyReadinessIcon(summary.level),
+                  color: color,
+                  size: 22,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            '每日可用狀態',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: color,
+                            ),
+                          ),
+                          RiskChip(label: summary.label),
+                          RiskChip(label: 'ready ${summary.readyCount}'),
+                          RiskChip(label: 'check ${summary.attentionCount}'),
+                          RiskChip(
+                            label: 'action ${summary.actionNeededCount}',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        summary.headline,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          height: 1.45,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isCompact = constraints.maxWidth < 560;
+                return Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    for (final check in summary.checks)
+                      SizedBox(
+                        width: isCompact
+                            ? constraints.maxWidth
+                            : (constraints.maxWidth - 10) / 2,
+                        child: _DailyReadinessCheckTile(check: check),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DailyReadinessCheckTile extends StatelessWidget {
+  const _DailyReadinessCheckTile({required this.check});
+
+  final EtfDailyReadinessCheck check;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = _dailyReadinessColor(theme.colorScheme, check.level);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.34)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              _dailyReadinessIcon(check.level),
+              color: color,
+              size: 18,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        check.label,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      RiskChip(label: check.statusLabel),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    check.detail,
+                    style: theme.textTheme.bodySmall?.copyWith(height: 1.35),
+                  ),
+                  if (check.action != null) ...[
+                    const SizedBox(height: 5),
+                    Text(
+                      check.action!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _LatestDailyReportPanel extends StatelessWidget {
   const _LatestDailyReportPanel({required this.status});
 
@@ -611,9 +778,7 @@ class _LatestDailyReportPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        status.reportAvailable
-                            ? 'latest daily report'
-                            : 'latest daily report missing',
+                        status.reportAvailable ? '最新日報摘要' : '最新日報尚未建立',
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
@@ -622,7 +787,7 @@ class _LatestDailyReportPanel extends StatelessWidget {
                       Text(
                         status.reportAvailable
                             ? 'status ${status.reportOverallStatus}; generated ${generatedAt == null ? 'unknown' : formatTaiwanDateTimeSeconds(generatedAt)}'
-                            : 'run scripts\\00631l_generate_daily_report.cmd after local data is collected',
+                            : '累積 local data 後可執行 scripts\\00631l_generate_daily_report.cmd。',
                       ),
                     ],
                   ),
@@ -2330,6 +2495,31 @@ IconData _premiumDiscountIcon(PremiumDiscountLevel level) {
       return Icons.schedule_outlined;
     case PremiumDiscountLevel.unavailable:
       return Icons.cloud_off_outlined;
+  }
+}
+
+Color _dailyReadinessColor(
+  ColorScheme colorScheme,
+  EtfDailyReadinessLevel level,
+) {
+  switch (level) {
+    case EtfDailyReadinessLevel.ready:
+      return colorScheme.primary;
+    case EtfDailyReadinessLevel.attention:
+      return colorScheme.tertiary;
+    case EtfDailyReadinessLevel.actionNeeded:
+      return colorScheme.error;
+  }
+}
+
+IconData _dailyReadinessIcon(EtfDailyReadinessLevel level) {
+  switch (level) {
+    case EtfDailyReadinessLevel.ready:
+      return Icons.check_circle_outline;
+    case EtfDailyReadinessLevel.attention:
+      return Icons.manage_search_outlined;
+    case EtfDailyReadinessLevel.actionNeeded:
+      return Icons.error_outline;
   }
 }
 

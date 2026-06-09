@@ -64,6 +64,47 @@ void main() {
       contains('CSV export 不存在：可執行 scripts\\00631l_export_history.cmd。'),
     );
   });
+
+  test('daily readiness summary reports ready daily tool state', () {
+    final summary = _operationsStatus().dailyReadinessSummary;
+
+    expect(summary.level, EtfDailyReadinessLevel.ready);
+    expect(summary.label, '可日常使用');
+    expect(summary.actionNeededCount, 0);
+    expect(summary.checks.every((check) => check.isReady), isTrue);
+  });
+
+  test('daily readiness summary reports action items for missing local state',
+      () {
+    final summary = EtfOperationsStatus.empty(
+      lastFetchedAt: DateTime(2026, 6, 9, 10, 15),
+    ).dailyReadinessSummary;
+
+    expect(summary.level, EtfDailyReadinessLevel.actionNeeded);
+    expect(summary.label, '需要處理');
+    expect(summary.actionNeededCount, greaterThan(0));
+    expect(
+      summary.checks.any((check) =>
+          check.action?.contains(
+            'backend\\.env.example',
+          ) ??
+          false),
+      isTrue,
+    );
+  });
+
+  test('daily readiness summary treats WARN reports as attention only', () {
+    final summary = _operationsStatus(
+      reportOverallStatus: 'WARN',
+      reportWarningCount: 2,
+      dailyCycleWarningCount: 1,
+    ).dailyReadinessSummary;
+
+    expect(summary.level, EtfDailyReadinessLevel.attention);
+    expect(summary.label, '需要觀察');
+    expect(summary.actionNeededCount, 0);
+    expect(summary.attentionCount, greaterThan(0));
+  });
 }
 
 EtfStatusSummary _summary({
@@ -184,5 +225,59 @@ EtfIntradayNav _intradayNav({required double premiumDiscountPct}) {
     isStale: false,
     status: EtfDataStatus.proxy,
     lastFetchedAt: DateTime(2026, 6, 9, 13, 30),
+  );
+}
+
+EtfOperationsStatus _operationsStatus({
+  String reportOverallStatus = 'PASS',
+  int reportWarningCount = 0,
+  int reportFailureCount = 0,
+  int dailyCycleWarningCount = 0,
+  int dailyCycleFailureCount = 0,
+}) {
+  return EtfOperationsStatus(
+    status: EtfDataStatus.cached,
+    sourceStatusLabel: 'cached',
+    sourceContract: '00631l_operations_status',
+    sourceUrl: 'local://operations',
+    lastFetchedAt: DateTime(2026, 6, 9, 10, 15),
+    sourceUpdatedAt: DateTime(2026, 6, 9, 10, 15),
+    isStale: false,
+    intradaySourceMode: 'auto',
+    twseIntradayNavConfigured: true,
+    yuantaIntradayNavConfigured: true,
+    holdingsHistoryStatus: 'cached',
+    holdingsHistoryItemCount: 5,
+    latestHoldingTradeDate: DateTime(2026, 6, 9),
+    intradayHistoryStatus: 'cached',
+    intradaySampleCount: 12,
+    latestIntradayDataTime: DateTime(2026, 6, 9, 10, 12, 30),
+    intradayHistoryDate: DateTime(2026, 6, 9),
+    collectorOneShotCommand: 'scripts\\00631l_collect_snapshot.cmd --samples 1',
+    collectorIntradayCommand:
+        'scripts\\00631l_collect_snapshot.cmd --skip-profile --skip-holdings --samples 20 --interval-seconds 15',
+    envFileExists: true,
+    missingEnvKeys: const [],
+    optionalMissingEnvKeys: const [],
+    dataDirReady: true,
+    exportDirReady: true,
+    backupDirReady: true,
+    exportAvailable: true,
+    latestExportPath: 'backend/exports/00631l_holdings_history_summary.csv',
+    latestExportUpdatedAt: DateTime(2026, 6, 9, 10, 10),
+    backupAvailable: true,
+    latestBackupPath: 'backend/backups/00631l_local_data_backup.zip',
+    latestBackupUpdatedAt: DateTime(2026, 6, 9, 10, 11),
+    reportAvailable: true,
+    latestReportPath: 'backend/reports/00631l_daily_report_20260609.md',
+    latestReportGeneratedAt: DateTime(2026, 6, 9, 10, 12),
+    reportOverallStatus: reportOverallStatus,
+    reportWarningCount: reportWarningCount,
+    reportFailureCount: reportFailureCount,
+    dailyCycleStatus: dailyCycleFailureCount > 0 ? 'FAIL' : 'PASS',
+    dailyCycleStartedAt: DateTime(2026, 6, 9, 10),
+    dailyCycleFinishedAt: DateTime(2026, 6, 9, 10, 13),
+    dailyCycleWarningCount: dailyCycleWarningCount,
+    dailyCycleFailureCount: dailyCycleFailureCount,
   );
 }
