@@ -121,6 +121,19 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('00631L lab shows latest daily report details', (tester) async {
+    await _pumpLab(tester, _ReportFixture00631LRepository());
+
+    await _scrollUntilTextVisible(tester, 'latest daily report');
+    expect(find.text('latest daily report'), findsOneWidget);
+    expect(find.textContaining('status WARN'), findsOneWidget);
+    expect(find.text('report WARN'), findsWidgets);
+    expect(find.text('warnings 2'), findsOneWidget);
+    expect(find.text('failures 0'), findsOneWidget);
+    expect(find.textContaining('00631l_daily_report_20260609'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('00631L lab shows daily holdings history when available',
       (tester) async {
     await _pumpLab(tester, _HistoryFixture00631LRepository());
@@ -358,6 +371,58 @@ class _HistoryFixture00631LRepository extends Mock00631LRepository {
       sourceUrl: 'local://00631l-holdings-history',
       lastFetchedAt: DateTime(2026, 6, 8, 10, 15),
       isStale: false,
+    );
+  }
+}
+
+class _ReportFixture00631LRepository extends Mock00631LRepository {
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    final base = await super.fetchOperationsStatus();
+    return EtfOperationsStatus(
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'cached',
+      sourceContract: base.sourceContract,
+      sourceUrl: base.sourceUrl,
+      lastFetchedAt: DateTime(2026, 6, 9, 10, 6),
+      sourceUpdatedAt: DateTime(2026, 6, 9, 10, 6),
+      isStale: false,
+      intradaySourceMode: base.intradaySourceMode,
+      twseIntradayNavConfigured: true,
+      yuantaIntradayNavConfigured: true,
+      holdingsHistoryStatus: 'cached',
+      holdingsHistoryItemCount: 2,
+      latestHoldingTradeDate: DateTime(2026, 6, 8),
+      intradayHistoryStatus: 'cached',
+      intradaySampleCount: 6,
+      latestIntradayDataTime: DateTime(2026, 6, 9, 10, 5, 30),
+      intradayHistoryDate: DateTime(2026, 6, 9),
+      collectorOneShotCommand: base.collectorOneShotCommand,
+      collectorIntradayCommand: base.collectorIntradayCommand,
+      envFileExists: true,
+      missingEnvKeys: const [],
+      optionalMissingEnvKeys: const [],
+      dataDirReady: true,
+      exportDirReady: true,
+      backupDirReady: true,
+      exportAvailable: true,
+      latestExportPath: 'backend/exports/00631l_holdings_history_summary.csv',
+      latestExportUpdatedAt: DateTime(2026, 6, 9, 10, 4),
+      backupAvailable: true,
+      latestBackupPath: 'backend/backups/00631l_local_data_backup.zip',
+      latestBackupUpdatedAt: DateTime(2026, 6, 9, 10, 5),
+      reportAvailable: true,
+      latestReportPath:
+          'backend/reports/00631l_daily_report_20260609T100600Z.md',
+      latestReportGeneratedAt: DateTime(2026, 6, 9, 10, 6),
+      reportOverallStatus: 'WARN',
+      reportWarningCount: 2,
+      reportFailureCount: 0,
+      dailyCycleStatus: 'PASS',
+      dailyCycleStartedAt: DateTime(2026, 6, 9, 10),
+      dailyCycleFinishedAt: DateTime(2026, 6, 9, 10, 6),
+      dailyCycleWarningCount: 1,
+      dailyCycleFailureCount: 0,
     );
   }
 }

@@ -559,6 +559,8 @@ class _TodayDataStatusSection extends StatelessWidget {
             },
           ),
           const SizedBox(height: 12),
+          _LatestDailyReportPanel(status: status),
+          const SizedBox(height: 12),
           _OperationGuidanceList(lines: status.operationGuidanceLines),
           if (status.dailyCycleWarningCount > 0 ||
               status.dailyCycleFailureCount > 0 ||
@@ -570,6 +572,86 @@ class _TodayDataStatusSection extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _LatestDailyReportPanel extends StatelessWidget {
+  const _LatestDailyReportPanel({required this.status});
+
+  final EtfOperationsStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final generatedAt = status.latestReportGeneratedAt;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.35)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.description_outlined,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        status.reportAvailable
+                            ? 'latest daily report'
+                            : 'latest daily report missing',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        status.reportAvailable
+                            ? 'status ${status.reportOverallStatus}; generated ${generatedAt == null ? 'unknown' : formatTaiwanDateTimeSeconds(generatedAt)}'
+                            : 'run scripts\\00631l_generate_daily_report.cmd after local data is collected',
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (status.reportAvailable) ...[
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  RiskChip(label: 'report ${status.reportOverallStatus}'),
+                  RiskChip(label: 'warnings ${status.reportWarningCount}'),
+                  RiskChip(label: 'failures ${status.reportFailureCount}'),
+                ],
+              ),
+              if (status.latestReportPath != null) ...[
+                const SizedBox(height: 10),
+                SelectableText(
+                  status.latestReportPath!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontFamily: 'monospace',
+                  ),
+                ),
+              ],
+            ],
+          ],
+        ),
       ),
     );
   }
