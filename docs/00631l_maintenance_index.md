@@ -12,6 +12,7 @@ This index reduces duplicate lookup paths for the semi-automated maintenance wor
 
 - Environment check: `scripts\00631l_check_env.cmd`
 - Deployment bootstrap: `scripts\00631l_bootstrap_deploy.cmd`
+- Deployment precheck: `scripts\00631l_deploy_precheck.cmd`
 - Daily cycle: `scripts\00631l_daily_cycle.cmd`
 - Scheduled daily cycle wrapper: `scripts\00631l_daily_cycle_scheduled.cmd`
 - CSV export: `scripts\00631l_export_history.cmd`
@@ -32,6 +33,7 @@ This index reduces duplicate lookup paths for the semi-automated maintenance wor
 - Daily report UI: `docs\00631l_v1_44_release_summary.md`
 - Retention policy: `docs\00631l_v1_45_release_summary.md`
 - Backup checksum: `docs\00631l_v1_46_release_summary.md`
+- Deployment precheck release check: `docs\00631l_v1_47_release_summary.md`
 
 ## Script Output Convention
 

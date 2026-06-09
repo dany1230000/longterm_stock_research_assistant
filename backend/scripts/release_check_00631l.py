@@ -28,6 +28,7 @@ FORBIDDEN_TERMS = [
 def main() -> int:
     steps = [
         _required_files_check(),
+        _run_command("deploy_precheck", ["cmd", "/c", "scripts\\00631l_deploy_precheck.cmd"]),
         _run_command("env_check", ["cmd", "/c", "scripts\\00631l_check_env.cmd"]),
         _run_command("flutter_analyze", ["cmd", "/c", "flutter", "analyze"]),
         _run_command("flutter_test", ["cmd", "/c", "flutter", "test"]),
@@ -40,6 +41,17 @@ def main() -> int:
         _run_command("export", ["cmd", "/c", "scripts\\00631l_export_history.cmd"]),
         _run_command("report", ["cmd", "/c", "scripts\\00631l_generate_daily_report.cmd"]),
         _run_command("integrity", ["cmd", "/c", "scripts\\00631l_check_integrity.cmd"]),
+        _run_command(
+            "retention_dry_run",
+            [
+                "cmd",
+                "/c",
+                "scripts\\00631l_apply_retention.cmd",
+                "--dry-run",
+                "--report-retention-count",
+                "30",
+            ],
+        ),
         _run_command(
             "backup_rotation",
             ["cmd", "/c", "scripts\\00631l_backup_data.cmd", "--retention-count", "30"],
@@ -93,10 +105,14 @@ def _required_files_check() -> dict[str, Any]:
         "backend/app/data_integrity.py",
         "backend/app/data_backup.py",
         "backend/app/restore_dry_run.py",
+        "backend/app/retention_policy.py",
+        "backend/scripts/deploy_precheck_00631l.py",
         "scripts/00631l_bootstrap_deploy.cmd",
+        "scripts/00631l_deploy_precheck.cmd",
         "scripts/00631l_daily_cycle_scheduled.cmd",
         "scripts/00631l_generate_daily_report.cmd",
         "scripts/00631l_check_integrity.cmd",
+        "scripts/00631l_apply_retention.cmd",
         "scripts/00631l_backup_data.cmd",
         "scripts/00631l_restore_dry_run.cmd",
     ]

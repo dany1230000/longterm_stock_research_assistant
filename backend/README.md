@@ -246,6 +246,16 @@ The policy is intentionally conservative:
 
 `scripts\00631l_restore_dry_run.cmd` reads the latest backup, verifies archive entries against manifest SHA256 values, and reports `entriesVerified`. It still does not overwrite local data.
 
+## v1.47 deployment precheck
+
+Run a lightweight deployment readiness check:
+
+```cmd
+scripts\00631l_deploy_precheck.cmd
+```
+
+The release check now runs deployment precheck and retention dry-run before finishing. Deployment precheck validates local scripts, web metadata, backend env templates, and local data directories. Missing optional local `.env` is WARN, not FAIL.
+
 The file is local operational state and is ignored by git. `operations/status` reads it when present. If the file does not exist, the endpoint reports `dailyCycle.sourceStatus: unavailable` and `overallStatus: missing`.
 
 ## v1.18 release check
