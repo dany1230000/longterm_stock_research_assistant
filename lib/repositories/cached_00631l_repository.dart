@@ -118,12 +118,13 @@ class Cached00631LRepository extends Official00631LRepository {
       final status = await _primary.fetchOperationsStatus();
       _operationsStatusCache = status;
       return status;
-    } catch (_) {
+    } catch (error) {
       final cached = _operationsStatusCache;
       if (cached != null) {
         return _cachedOperationsStatus(cached);
       }
-      return _fallback.fetchOperationsStatus();
+      final fallback = await _fallback.fetchOperationsStatus();
+      return _backendDisconnectedOperationsStatus(fallback, error);
     }
   }
 }
@@ -282,5 +283,57 @@ EtfOperationsStatus _cachedOperationsStatus(EtfOperationsStatus status) {
     dailyCycleWarningCount: status.dailyCycleWarningCount,
     dailyCycleFailureCount: status.dailyCycleFailureCount,
     errorMessage: status.errorMessage,
+  );
+}
+
+EtfOperationsStatus _backendDisconnectedOperationsStatus(
+  EtfOperationsStatus status,
+  Object error,
+) {
+  return EtfOperationsStatus(
+    status: EtfDataStatus.error,
+    sourceStatusLabel: 'error',
+    sourceContract: status.sourceContract,
+    sourceUrl: status.sourceUrl,
+    lastFetchedAt: DateTime.now(),
+    sourceUpdatedAt: status.sourceUpdatedAt,
+    isStale: true,
+    intradaySourceMode: status.intradaySourceMode,
+    twseIntradayNavConfigured: status.twseIntradayNavConfigured,
+    yuantaIntradayNavConfigured: status.yuantaIntradayNavConfigured,
+    holdingsHistoryStatus: status.holdingsHistoryStatus,
+    holdingsHistoryItemCount: status.holdingsHistoryItemCount,
+    latestHoldingTradeDate: status.latestHoldingTradeDate,
+    intradayHistoryStatus: status.intradayHistoryStatus,
+    intradaySampleCount: status.intradaySampleCount,
+    latestIntradayDataTime: status.latestIntradayDataTime,
+    intradayHistoryDate: status.intradayHistoryDate,
+    collectorOneShotCommand: status.collectorOneShotCommand,
+    collectorIntradayCommand: status.collectorIntradayCommand,
+    envFileExists: status.envFileExists,
+    missingEnvKeys: status.missingEnvKeys,
+    optionalMissingEnvKeys: status.optionalMissingEnvKeys,
+    dataDirReady: status.dataDirReady,
+    exportDirReady: status.exportDirReady,
+    backupDirReady: status.backupDirReady,
+    exportAvailable: status.exportAvailable,
+    latestExportPath: status.latestExportPath,
+    latestExportUpdatedAt: status.latestExportUpdatedAt,
+    backupAvailable: status.backupAvailable,
+    latestBackupPath: status.latestBackupPath,
+    latestBackupUpdatedAt: status.latestBackupUpdatedAt,
+    reportAvailable: status.reportAvailable,
+    latestReportPath: status.latestReportPath,
+    latestReportGeneratedAt: status.latestReportGeneratedAt,
+    reportOverallStatus: status.reportOverallStatus,
+    reportWarningCount: status.reportWarningCount,
+    reportFailureCount: status.reportFailureCount,
+    dailyCycleStatus: status.dailyCycleStatus,
+    dailyCycleStartedAt: status.dailyCycleStartedAt,
+    dailyCycleFinishedAt: status.dailyCycleFinishedAt,
+    dailyCycleWarningCount: status.dailyCycleWarningCount,
+    dailyCycleFailureCount: status.dailyCycleFailureCount,
+    errorMessage:
+        'backend disconnected; showing mock/fallback operations status. $error',
   );
 }

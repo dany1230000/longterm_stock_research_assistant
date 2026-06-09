@@ -430,6 +430,7 @@ class _TodayDataStatusSection extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
+              RiskChip(label: status.backendConnectionLabel),
               RiskChip(label: 'operations ${status.sourceStatusLabel}'),
               RiskChip(label: 'holdings ${status.holdingsHistoryStatus}'),
               RiskChip(label: 'intraday ${status.intradayHistoryStatus}'),
@@ -458,6 +459,12 @@ class _TodayDataStatusSection extends StatelessWidget {
                 crossAxisSpacing: 10,
                 childAspectRatio: isCompact ? 2.45 : (isWide ? 1.18 : 1.0),
                 children: [
+                  MetricTile(
+                    label: 'backend',
+                    value: status.backendConnectionLabel,
+                    caption: status.backendConnectionCaption,
+                    icon: Icons.cloud_sync_outlined,
+                  ),
                   MetricTile(
                     label: 'holdings 更新',
                     value: status.latestHoldingTradeDate == null

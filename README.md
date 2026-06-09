@@ -61,6 +61,7 @@ v1.0 live sources:
 - Maintenance release v1.40: `docs/00631l_v1_40_maintenance_summary.md` summarizes the semi-automated daily maintenance release line.
 - Deployment bootstrap v1.41: `scripts\00631l_bootstrap_deploy.cmd` prepares dependencies, `.env`, local directories, and environment checks before deployment or first use.
 - Backend health v1.42: `/health` and operations/status now expose deployment-friendly backend health, source configuration, and local-state readiness metadata.
+- Backend disconnected state v1.43: live proxy fallback now keeps `/00631l-lab` readable while explicitly showing `backend disconnected` and mock/fallback status.
 
 Local backend env:
 

@@ -61,6 +61,9 @@ void main() {
     );
 
     expect(find.textContaining('mock'), findsWidgets);
+    await _scrollUntilTextVisible(tester, 'backend disconnected');
+    expect(find.textContaining('backend disconnected'), findsWidgets);
+    expect(find.textContaining('fallback remains visible'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
@@ -383,6 +386,11 @@ class _Error00631LRepository extends Official00631LRepository {
   @override
   Future<Etf00631LLabData> fetchLabData() {
     throw const RepositoryFetchException('fixture failure');
+  }
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() {
+    throw const RepositoryFetchException('backend fixture failure');
   }
 }
 

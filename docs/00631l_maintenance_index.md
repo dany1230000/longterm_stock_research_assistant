@@ -27,6 +27,7 @@ This index reduces duplicate lookup paths for the semi-automated maintenance wor
 - Deployment notes: `docs\00631l_deployment_notes.md`
 - Release checklist: `docs\00631l_release_checklist.md`
 - Maintenance release summary: `docs\00631l_v1_40_maintenance_summary.md`
+- Backend disconnected state: `docs\00631l_v1_43_release_summary.md`
 
 ## Script Output Convention
 

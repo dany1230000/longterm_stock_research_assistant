@@ -161,6 +161,10 @@ void main() {
     expect(data.snapshot.status, EtfDataStatus.mock);
     expect(data.intradayNav?.status, EtfDataStatus.mock);
     expect(data.futuresQuote.status, EtfDataStatus.mock);
+    expect(data.operationsStatus.backendDisconnected, isTrue);
+    expect(data.operationsStatus.backendConnectionLabel,
+        'backend disconnected');
+    expect(data.operationsStatus.errorMessage, contains('backend down'));
   });
 }
 

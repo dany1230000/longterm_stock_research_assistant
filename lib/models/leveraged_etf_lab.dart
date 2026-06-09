@@ -1155,8 +1155,48 @@ class EtfOperationsStatus {
   bool get dataDirectoriesReady =>
       dataDirReady && exportDirReady && backupDirReady;
 
+  bool get backendDisconnected {
+    final message = errorMessage?.toLowerCase() ?? '';
+    return status == EtfDataStatus.error &&
+        sourceStatusLabel == 'error' &&
+        message.contains('backend');
+  }
+
+  String get backendConnectionLabel {
+    if (backendDisconnected) {
+      return 'backend disconnected';
+    }
+    if (sourceStatusLabel == 'mock') {
+      return 'mock fallback';
+    }
+    if (sourceStatusLabel == 'unavailable') {
+      return 'backend unavailable';
+    }
+    if (sourceStatusLabel == 'error') {
+      return 'backend error';
+    }
+    return 'backend reachable';
+  }
+
+  String get backendConnectionCaption {
+    if (backendDisconnected) {
+      return 'start scripts\\00631l_start_backend.cmd; fallback remains visible';
+    }
+    if (sourceStatusLabel == 'mock') {
+      return 'live proxy disabled or using safe fallback';
+    }
+    if (sourceStatusLabel == 'unavailable' || sourceStatusLabel == 'error') {
+      return errorMessage ?? 'operations status unavailable';
+    }
+    return 'operations/status response received';
+  }
+
   List<String> get operationGuidanceLines {
     final lines = <String>[];
+    if (backendDisconnected) {
+      lines.add(
+          'backend disconnected: run scripts\\00631l_start_backend.cmd, then open /#/00631l-lab. mock/fallback remains visible.');
+    }
     if (dailyCycleStatus == 'missing' || dailyCycleFinishedAt == null) {
       lines.add('尚未跑 daily cycle：請執行 scripts\\00631l_daily_cycle.cmd。');
     }
