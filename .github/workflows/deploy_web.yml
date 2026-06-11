@@ -21,7 +21,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      PUBLIC_BACKEND_URL: ${{ secrets.PUBLIC_BACKEND_URL }}
+      PUBLIC_BACKEND_URL: ${{ secrets.PUBLIC_BACKEND_URL || 'https://longterm-stock-research-assistant.onrender.com' }}
 
     steps:
       - name: Checkout repository

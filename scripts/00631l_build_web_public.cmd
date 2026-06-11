@@ -9,10 +9,9 @@ if "%PUBLIC_BACKEND_URL_EFFECTIVE%"=="" (
 )
 
 if "%PUBLIC_BACKEND_URL_EFFECTIVE%"=="" (
-  set "PUBLIC_BACKEND_URL_EFFECTIVE=https://your-backend.example.com"
-  echo [WARN] PUBLIC_BACKEND_URL is not set.
-  echo [WARN] Building with placeholder backend URL: https://your-backend.example.com
-  echo [WARN] Rebuild with PUBLIC_BACKEND_URL=https://your-backend.example.com before publishing.
+  set "PUBLIC_BACKEND_URL_EFFECTIVE=https://longterm-stock-research-assistant.onrender.com"
+  echo PUBLIC_BACKEND_URL is not set.
+  echo Building with the default Render backend URL: https://longterm-stock-research-assistant.onrender.com
 )
 
 echo Building 00631L public Flutter web app.

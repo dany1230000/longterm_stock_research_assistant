@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 
 
 ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_PUBLIC_BACKEND_URL = "https://longterm-stock-research-assistant.onrender.com"
+DEFAULT_PUBLIC_FRONTEND_ORIGIN = "https://dany1230000.github.io"
 
 
 def main() -> int:
@@ -39,6 +41,7 @@ def run_public_config_check(root: Path = ROOT) -> dict[str, Any]:
         _required_file_check(root, "docs/00631l_v3_1_static_public_summary.md"),
         _required_file_check(root, "docs/00631l_live_backend_deployment.md"),
         _required_file_check(root, "docs/00631l_v3_3_live_public_summary.md"),
+        _required_file_check(root, "docs/00631l_v3_4_live_backend_summary.md"),
         _required_file_check(root, "deploy/docker-compose.yml"),
         _required_file_check(root, "deploy/Caddyfile"),
         _required_file_check(root, "deploy/nginx.example.conf"),
@@ -65,7 +68,11 @@ def run_public_config_check(root: Path = ROOT) -> dict[str, Any]:
 
 
 def _backend_url_check(env: dict[str, str]) -> dict[str, Any]:
-    url = os.getenv("00631L_PUBLIC_BACKEND_URL") or os.getenv("PUBLIC_BACKEND_URL") or ""
+    url = (
+        os.getenv("00631L_PUBLIC_BACKEND_URL")
+        or os.getenv("PUBLIC_BACKEND_URL")
+        or DEFAULT_PUBLIC_BACKEND_URL
+    )
     if not url:
         return _check(
             "frontend_backend_url",
@@ -76,7 +83,7 @@ def _backend_url_check(env: dict[str, str]) -> dict[str, Any]:
 
 
 def _public_api_url_check(env: dict[str, str]) -> dict[str, Any]:
-    url = env.get("PUBLIC_API_BASE_URL") or os.getenv("PUBLIC_API_BASE_URL") or ""
+    url = env.get("PUBLIC_API_BASE_URL") or os.getenv("PUBLIC_API_BASE_URL") or DEFAULT_PUBLIC_BACKEND_URL
     if not url:
         return _check(
             "public_api_base_url",
@@ -87,7 +94,7 @@ def _public_api_url_check(env: dict[str, str]) -> dict[str, Any]:
 
 
 def _allowed_origins_check(env: dict[str, str]) -> dict[str, Any]:
-    raw = env.get("ALLOWED_ORIGINS") or os.getenv("ALLOWED_ORIGINS") or ""
+    raw = env.get("ALLOWED_ORIGINS") or os.getenv("ALLOWED_ORIGINS") or DEFAULT_PUBLIC_FRONTEND_ORIGIN
     if not raw:
         return _check(
             "allowed_origins",

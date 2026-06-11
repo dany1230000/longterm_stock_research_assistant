@@ -1,5 +1,17 @@
 # 00631L live backend deployment
 
+Current Render backend:
+
+```text
+https://longterm-stock-research-assistant.onrender.com
+```
+
+Current frontend origin:
+
+```text
+https://dany1230000.github.io
+```
+
 這份文件說明如何把 FastAPI backend 部署成公開 API，讓 GitHub Pages / PWA 可以取得 live 資料。
 
 ## 最短路線

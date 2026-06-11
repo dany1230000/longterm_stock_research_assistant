@@ -132,6 +132,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v3_2_standalone_pwa_summary.md",
         "docs/00631l_live_backend_deployment.md",
         "docs/00631l_v3_3_live_public_summary.md",
+        "docs/00631l_v3_4_live_backend_summary.md",
         "docs/00631l_daily_report_guide.md",
         "deploy/docker-compose.yml",
         "deploy/Caddyfile",

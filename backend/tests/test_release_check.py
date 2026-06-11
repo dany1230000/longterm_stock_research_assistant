@@ -121,7 +121,7 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertEqual(_allowed_origins_check(env)["status"], "PASS")
         self.assertEqual(_data_persistence_check(env)["status"], "PASS")
 
-    def test_public_config_warns_without_public_values(self) -> None:
+    def test_public_config_uses_render_defaults_without_public_values(self) -> None:
         with patch.dict(
             "os.environ",
             {
@@ -130,8 +130,8 @@ class ReleaseCheckTests(unittest.TestCase):
                 "00631L_DATA_PERSISTENCE_MODE": "",
             },
         ):
-            self.assertEqual(_public_api_url_check({})["status"], "WARN")
-            self.assertEqual(_allowed_origins_check({})["status"], "WARN")
+            self.assertEqual(_public_api_url_check({})["status"], "PASS")
+            self.assertEqual(_allowed_origins_check({})["status"], "PASS")
             self.assertEqual(_data_persistence_check({})["status"], "WARN")
 
     def test_public_config_rejects_wildcard_origin(self) -> None:

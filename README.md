@@ -62,6 +62,14 @@ v3.3 live-public ready status:
 - Public frontend builds can enable both live proxy and static fallback through `scripts\00631l_build_web_public.cmd`.
 - Live intraday NAV requires the public backend; static mode is not live intraday data.
 
+v3.4 live backend URL:
+
+```text
+https://longterm-stock-research-assistant.onrender.com
+```
+
+GitHub Pages builds now use this backend URL by default and keep static history fallback.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

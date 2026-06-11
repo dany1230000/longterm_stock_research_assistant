@@ -70,7 +70,7 @@ class Etf00631LService:
             "status": "ok",
             "serverTime": now,
             "appName": "00631L lab backend",
-            "appVersion": "3.3-live-public-ready",
+            "appVersion": "3.4-live-backend",
             "sourceContract": "00631l_backend_health",
             "scope": "00631L only",
             "publicApiBaseUrl": self._config.public_api_base_url,

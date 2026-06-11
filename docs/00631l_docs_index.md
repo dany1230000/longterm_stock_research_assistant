@@ -6,6 +6,7 @@ This is the main entry point for 00631L lab documentation.
 
 - Standalone PWA v3.2 summary: `docs\00631l_v3_2_standalone_pwa_summary.md`
 - Live-public ready v3.3 summary: `docs\00631l_v3_3_live_public_summary.md`
+- Live backend v3.4 summary: `docs\00631l_v3_4_live_backend_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -83,6 +84,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Static-public release: `docs\00631l_v3_1_static_public_summary.md`
 - Standalone PWA release: `docs\00631l_v3_2_standalone_pwa_summary.md`
 - Live-public ready release: `docs\00631l_v3_3_live_public_summary.md`
+- Live backend release: `docs\00631l_v3_4_live_backend_summary.md`
 
 ## Scope Boundary
 

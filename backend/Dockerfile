@@ -2,6 +2,10 @@ FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV PUBLIC_API_BASE_URL=https://longterm-stock-research-assistant.onrender.com
+ENV ALLOWED_ORIGINS=https://dany1230000.github.io
+ENV TWSE_00631L_INTRADAY_NAV_URL=https://mis.twse.com.tw/stock/data/all_etf.txt
+ENV 00631L_INTRADAY_NAV_SOURCE=auto
 ENV 00631L_DATA_DIR=/data/00631l
 ENV 00631L_DATA_PERSISTENCE_MODE=persistent
 ENV 00631L_HOLDINGS_HISTORY_PATH=/data/00631l/00631l_holdings_history.jsonl

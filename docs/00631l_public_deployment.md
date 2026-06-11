@@ -4,6 +4,26 @@
 
 v3.3 支援公開 backend + GitHub Pages frontend 的正式路線。
 
+## v3.4 Render backend
+
+Current public backend:
+
+```text
+https://longterm-stock-research-assistant.onrender.com
+```
+
+GitHub Pages builds use this URL by default. If a repository secret `PUBLIC_BACKEND_URL` is set, the secret value overrides the default.
+
+Render backend defaults are now in `backend\Dockerfile`:
+
+```env
+PUBLIC_API_BASE_URL=https://longterm-stock-research-assistant.onrender.com
+ALLOWED_ORIGINS=https://dany1230000.github.io
+TWSE_00631L_INTRADAY_NAV_URL=https://mis.twse.com.tw/stock/data/all_etf.txt
+00631L_DATA_DIR=/data/00631l
+00631L_DATA_PERSISTENCE_MODE=persistent
+```
+
 公開手機入口仍是：
 
 ```text
