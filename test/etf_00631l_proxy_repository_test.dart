@@ -272,7 +272,8 @@ void main() {
 
     expect(data.profile.status, EtfDataStatus.mock);
     expect(data.operationsStatus.sourceStatusLabel, 'error');
-    expect(data.operationsStatus.backendConnectionLabel, 'backend disconnected');
+    expect(
+        data.operationsStatus.backendConnectionLabel, 'backend disconnected');
     expect(data.operationsStatus.priceHistoryRows, 3);
     expect(data.priceHistory.sourceStatusLabel, 'static_official');
     expect(data.aiAnalysis.sourceStatusLabel, 'static_official');
