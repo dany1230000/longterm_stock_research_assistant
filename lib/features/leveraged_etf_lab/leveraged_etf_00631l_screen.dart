@@ -249,6 +249,10 @@ class _QuoteHeader extends StatelessWidget {
                 'history ${data.priceHistory.sourceStatusLabel}',
                 'frontend $_frontendDataMode',
                 if (_use00631LStaticData) 'static $_staticDataBaseUrl00631l',
+                if (_use00631LStaticData)
+                  'rows ${data.operationsStatus.priceHistoryRows}',
+                if (_use00631LStaticData)
+                  'generated ${_dateTimeOrDash(data.operationsStatus.latestExportUpdatedAt ?? data.priceHistory.lastFetchedAt)}',
                 'backend ${data.operationsStatus.backendConnectionLabel}',
                 if (nav?.sourceContract != null) nav!.sourceContract!,
               ],
@@ -299,6 +303,33 @@ String get _frontendDataMode {
   return 'mock_default';
 }
 
+String _frontendModeDetail(Etf00631LLabData data) {
+  if (_use00631LStaticData) {
+    final status = data.operationsStatus;
+    return '公開靜態資料模式，rowCount ${status.priceHistoryRows}，coverage '
+        '${_dateOrDash(status.priceHistoryCoverageStart)} - '
+        '${_dateOrDash(status.priceHistoryCoverageEnd)}，generated '
+        '${_dateTimeOrDash(status.latestExportUpdatedAt ?? data.priceHistory.lastFetchedAt)}。';
+  }
+  if (_use00631LLiveProxy) {
+    final status = data.operationsStatus;
+    return 'live proxy 模式，API ${status.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : status.publicApiBaseUrl}。';
+  }
+  return 'mock_default 模式，畫面可測試但不會把 fallback 標示為 official。';
+}
+
+String _frontendModeAction(Etf00631LLabData data) {
+  if (_use00631LStaticData) {
+    return data.operationsStatus.priceHistoryRows < 2
+        ? '請執行 scripts\\00631l_export_static_data.cmd --update 產生 static JSON。'
+        : '歷史與回測可讀；live intraday NAV 仍需要 backend。';
+  }
+  if (_use00631LLiveProxy) {
+    return '請確認 backend /health 與 operations/status。';
+  }
+  return '需要公開手機使用時，請使用 GitHub Pages static-public build。';
+}
+
 class _ThemeToggleButton extends StatelessWidget {
   const _ThemeToggleButton();
 
@@ -331,19 +362,23 @@ class _SectionPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        for (final section in _LabSection.values)
-          ChoiceChip(
+    return SizedBox(
+      height: 46,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: _LabSection.values.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final section = _LabSection.values[index];
+          return ChoiceChip(
             key: ValueKey('00631l-section-${section.name}'),
             selected: section == selected,
             avatar: Icon(section.icon, size: 18),
             label: Text(section.label),
             onSelected: (_) => onChanged(section),
-          ),
-      ],
+          );
+        },
+      ),
     );
   }
 }
@@ -389,6 +424,12 @@ class _OverviewSection extends StatelessWidget {
                 status: 'mock/fallback',
                 detail: '尚未接 TX live，現階段只保留模型與 fallback 顯示。',
                 action: '本版不需要任何 TX live 設定。',
+              ),
+              _StatusItem(
+                label: 'frontend mode',
+                status: _frontendDataMode,
+                detail: _frontendModeDetail(data),
+                action: _frontendModeAction(data),
               ),
             ],
           ),
@@ -1148,7 +1189,7 @@ class _SystemStatusSection extends StatelessWidget {
                 label: 'historical price',
                 status: status.priceHistoryStatus,
                 detail:
-                    'rows ${status.priceHistoryRows}，coverage ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}。',
+                    'rows ${status.priceHistoryRows}，coverage ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}，generated ${_dateTimeOrDash(status.latestExportUpdatedAt)}。',
                 action: status.priceHistoryRows < 2
                     ? '請執行 scripts\\00631l_update_price_history.cmd；GitHub Pages 請執行 scripts\\00631l_export_static_data.cmd --update。'
                     : '歷史價格可供回測。',
@@ -1840,6 +1881,12 @@ String _price(num? value) {
 
 String _dateOrDash(DateTime? date) {
   return date == null ? 'unavailable' : formatTaiwanDate(date);
+}
+
+String _dateTimeOrDash(DateTime? dateTime) {
+  return dateTime == null
+      ? 'unavailable'
+      : formatTaiwanDateTimeSeconds(dateTime);
 }
 
 String _monthDay(DateTime date) {

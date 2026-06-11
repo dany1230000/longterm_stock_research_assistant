@@ -13,10 +13,22 @@ import 'features/settings/settings_screen.dart';
 import 'features/stock_detail/stock_detail_screen.dart';
 import 'shared/widgets/app_shell.dart';
 
-GoRouter createAppRouter({String initialLocation = '/dashboard'}) {
+GoRouter createAppRouter({String initialLocation = '/'}) {
   return GoRouter(
     initialLocation: initialLocation,
     routes: [
+      GoRoute(
+        path: '/',
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: Scaffold(body: LeveragedEtf00631LScreen()),
+        ),
+      ),
+      GoRoute(
+        path: '/00631l-lab',
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: Scaffold(body: LeveragedEtf00631LScreen()),
+        ),
+      ),
       ShellRoute(
         builder: (context, state, child) => AppShell(child: child),
         routes: [
@@ -53,10 +65,6 @@ GoRouter createAppRouter({String initialLocation = '/dashboard'}) {
           GoRoute(
             path: '/etfs',
             builder: (context, state) => const EtfCompareScreen(),
-          ),
-          GoRoute(
-            path: '/00631l-lab',
-            builder: (context, state) => const LeveragedEtf00631LScreen(),
           ),
           GoRoute(
             path: '/alerts',

@@ -1,8 +1,22 @@
-# LongTerm Stock Research Assistant
+# 00631L 正二研究室
 
 ## 00631L lab status
 
-00631L lab v3.1 supports static-public GitHub Pages mode for mobile access to 00631L history and backtest without deploying a live backend first. Start from `docs/00631l_docs_index.md` or `docs/00631l_v3_1_static_public_summary.md`.
+00631L lab v3.2 is a standalone 00631L PWA. The public root URL opens the 00631L app directly, without first showing the old general research dashboard.
+
+Public root URL:
+
+```text
+https://dany1230000.github.io/longterm_stock_research_assistant/
+```
+
+Compatibility route:
+
+```text
+https://dany1230000.github.io/longterm_stock_research_assistant/#/00631l-lab
+```
+
+Start from `docs/00631l_docs_index.md` or `docs/00631l_v3_2_standalone_pwa_summary.md`.
 
 Daily helper:
 
@@ -10,13 +24,13 @@ Daily helper:
 scripts\00631l_open_lab.cmd
 ```
 
-Direct lab route:
+Local direct route:
 
 ```text
-/#/00631l-lab
+/
 ```
 
-The app shell remains the long-term stock research assistant, and `00631L 正二研究室` is the dedicated 00631L route inside it.
+The old general research screens remain available as internal routes for development, but the product experience is now 00631L-only.
 
 Mobile LAN helper:
 
@@ -133,6 +147,8 @@ v1.0 live sources:
 - Deployment stability release v1.50: `docs\00631l_v1_50_deployment_stability_summary.md` summarizes the stable deployment and data reliability checkpoint.
 - Mobile + AI v2.1: `docs\00631l_mobile_usage.md` explains LAN phone usage, and `docs\00631l_ai_analysis.md` explains rule-based AI analysis. holdings/ratio remains a daily official snapshot; intraday NAV is the 15–30 second live/cached source; TX live remains mock/fallback.
 - Public deploy-ready v2.2: `backend\Dockerfile`, `scripts\00631l_check_public_config.cmd`, `scripts\00631l_build_web_public.cmd`, `docs\00631l_public_deployment.md`, and `docs\00631l_pwa_usage.md` prepare the lab for a public Flutter Web frontend plus public FastAPI backend. Local LAN mode remains available.
+- Static-public v3.1: GitHub Pages can serve generated 00631L price history and backtest data without a live backend.
+- Standalone PWA v3.2: the public root URL opens `00631L 正二研究室` directly; `/#/00631l-lab` remains compatible.
 
 Local backend env:
 

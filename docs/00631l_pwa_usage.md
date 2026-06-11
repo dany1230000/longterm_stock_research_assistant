@@ -5,10 +5,12 @@
 On a public deployment, open:
 
 ```text
-https://your-frontend.example.com/#/00631l-lab
+https://your-frontend.example.com/
 ```
 
 Then use the browser menu to add the app to the phone home screen.
+
+v3.2 standalone PWA note: the root URL opens `00631L 正二研究室` directly. The compatibility route `/#/00631l-lab` remains valid for old bookmarks.
 
 Important:
 
@@ -25,11 +27,12 @@ Important:
 2. 進入：
 
 ```text
-https://your-frontend.example.com/#/00631l-lab
+https://your-frontend.example.com/
 ```
 
-3. 確認頁面上的 backend 狀態不是 `backend disconnected`。
-4. 確認資料標籤是 official、proxy、cached、stale、mock、unavailable 或 error。
+3. 第一眼應看到 `00631L 正二研究室`。
+4. 確認頁面上的 backend 狀態不是 `backend disconnected`。
+5. 確認資料標籤是 official、proxy、cached、stale、mock、unavailable 或 error。
 
 ## 加到主畫面
 

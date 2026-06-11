@@ -12,7 +12,7 @@ Minimum public setup:
 4. Set `ALLOWED_ORIGINS` to the frontend public origin.
 5. Build Flutter Web with `USE_00631L_LIVE_PROXY=true` and `00631L_PROXY_BASE_URL=https://your-backend.example.com`.
 6. Host `build\web` on static hosting.
-7. Open `https://your-frontend.example.com/#/00631l-lab` on mobile.
+7. Open `https://your-frontend.example.com/` on mobile.
 
 Without a public backend, the PWA can still load, but live data sections will show mock, stale, unavailable, or error states instead of official live data.
 
@@ -44,6 +44,12 @@ GitHub Actions:
 - If TWSE price history cannot be fetched and no usable cache exists, the build fails rather than deploying empty history.
 
 Public static URL after Pages deployment:
+
+```text
+https://dany1230000.github.io/longterm_stock_research_assistant/
+```
+
+The old hash route remains compatible:
 
 ```text
 https://dany1230000.github.io/longterm_stock_research_assistant/#/00631l-lab
@@ -114,8 +120,10 @@ scripts\00631l_build_web_public.cmd
 完成後部署 `build\web` 到靜態 hosting。手機開：
 
 ```text
-https://your-frontend.example.com/#/00631l-lab
+https://your-frontend.example.com/
 ```
+
+若舊書籤仍使用 `/#/00631l-lab`，也會進入同一個 00631L app。
 
 ## Persistent data
 

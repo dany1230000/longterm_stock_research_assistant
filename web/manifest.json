@@ -1,11 +1,12 @@
 {
     "name": "00631L 正二研究室",
-    "short_name": "00631L Lab",
-    "start_url": "./#/00631l-lab",
+    "short_name": "00631L",
+    "start_url": "./",
+    "scope": "./",
     "display": "standalone",
     "background_color": "#F8FAFC",
     "theme_color": "#0F766E",
-    "description": "00631L 官方內容物、即時淨值、折溢價與日常資料狀態研究工具。",
+    "description": "00631L 正二研究室：官方內容物、歷史資料、回測、折溢價與資料狀態 PWA。",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

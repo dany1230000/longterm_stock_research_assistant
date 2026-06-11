@@ -30,6 +30,7 @@ FORBIDDEN_TERMS = [
 def main() -> int:
     steps = [
         _required_files_check(),
+        _pwa_metadata_check(),
         _analysis_endpoint_check(),
         _run_command("public_config", ["cmd", "/c", "scripts\\00631l_check_public_config.cmd"]),
         _run_command("deploy_precheck", ["cmd", "/c", "scripts\\00631l_deploy_precheck.cmd"]),
@@ -125,6 +126,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_data_sources_freshness.md",
         "docs/00631l_v3_0_app_ready_summary.md",
         "docs/00631l_v3_1_static_public_summary.md",
+        "docs/00631l_v3_2_standalone_pwa_summary.md",
         "docs/00631l_daily_report_guide.md",
         "backend/Dockerfile",
         "backend/app/analysis.py",
@@ -163,6 +165,44 @@ def _required_files_check() -> dict[str, Any]:
         "exitCode": 1 if missing else 0,
         "missingFiles": missing,
         "stdoutTail": "",
+        "stderrTail": "",
+    }
+
+
+def _pwa_metadata_check() -> dict[str, Any]:
+    failures = []
+    try:
+        manifest = json.loads((ROOT / "web" / "manifest.json").read_text(encoding="utf-8"))
+        index = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
+    except Exception as error:
+        return {
+            "name": "pwa_metadata",
+            "command": "internal web manifest/index metadata check",
+            "status": "FAIL",
+            "message": str(error),
+            "exitCode": 1,
+            "stdoutTail": "",
+            "stderrTail": str(error),
+        }
+    if manifest.get("name") != "00631L 正二研究室":
+        failures.append("manifest name is not 00631L dedicated")
+    if manifest.get("short_name") != "00631L":
+        failures.append("manifest short_name is not 00631L")
+    if manifest.get("start_url") != "./":
+        failures.append("manifest start_url does not open root")
+    if manifest.get("scope") != "./":
+        failures.append("manifest scope is not root")
+    if "00631L 正二研究室" not in index:
+        failures.append("index title/app metadata missing 00631L")
+    if "LongTerm Stock Research Assistant" in index:
+        failures.append("index still exposes generic app title")
+    return {
+        "name": "pwa_metadata",
+        "command": "internal web manifest/index metadata check",
+        "status": "FAIL" if failures else "PASS",
+        "message": "; ".join(failures) if failures else "ok",
+        "exitCode": 1 if failures else 0,
+        "stdoutTail": json.dumps(manifest, ensure_ascii=True)[-3000:],
         "stderrTail": "",
     }
 

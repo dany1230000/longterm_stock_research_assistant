@@ -5,31 +5,21 @@ import 'package:longterm_stock_research_assistant/app.dart';
 import 'package:longterm_stock_research_assistant/router.dart';
 
 void main() {
-  testWidgets('shows dashboard and switches primary tabs', (tester) async {
+  testWidgets('root opens standalone 00631L app', (tester) async {
     await tester.pumpWidget(
       const ProviderScope(child: LongTermStockResearchApp()),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('中長線股票研究助理'), findsOneWidget);
-
-    await tester.tap(find.text('條件篩選'));
-    await tester.pumpAndSettle();
-    expect(find.text('條件篩選'), findsWidgets);
-
-    await tester.tap(find.text('策略研究'));
-    await tester.pumpAndSettle();
-    expect(find.text('策略研究'), findsWidgets);
-    expect(find.text('回測結果僅代表歷史統計，不保證未來績效。'), findsOneWidget);
-
-    await tester.tap(find.text('投資組合'));
-    await tester.pumpAndSettle();
-    expect(find.text('投資組合'), findsWidgets);
-    expect(find.text('持股總覽'), findsOneWidget);
-
-    await tester.tap(find.text('設定'));
-    await tester.pumpAndSettle();
-    expect(find.text('資料來源說明'), findsOneWidget);
+    expect(find.text('00631L 正二研究室'), findsOneWidget);
+    expect(find.text('總覽'), findsWidgets);
+    expect(find.text('歷史'), findsWidgets);
+    expect(find.text('回測'), findsWidgets);
+    expect(find.text('持倉'), findsWidgets);
+    expect(find.text('AI 分析'), findsWidgets);
+    expect(find.text('系統狀態'), findsWidgets);
+    expect(find.text('研究工作台'), findsNothing);
+    expect(find.text('中長線股票研究助理'), findsNothing);
   });
 
   testWidgets('opens stock detail route', (tester) async {
@@ -54,6 +44,7 @@ void main() {
 
   testWidgets('primary and secondary routes render', (tester) async {
     final routes = <String, String>{
+      '/': '00631L 正二研究室',
       '/dashboard': '中長線股票研究助理',
       '/stocks/2330': '股票基本資訊',
       '/screener': '條件設定',
@@ -79,12 +70,18 @@ void main() {
     }
   });
 
-  testWidgets('dashboard has dedicated 00631L lab entry', (tester) async {
+  testWidgets('legacy lab route and internal dashboard entry remain reachable',
+      (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(child: LongTermStockResearchApp()),
+      ProviderScope(
+        child: MaterialApp.router(
+          routerConfig: createAppRouter(initialLocation: '/dashboard'),
+        ),
+      ),
     );
     await tester.pumpAndSettle();
 
+    expect(find.text('中長線股票研究助理'), findsOneWidget);
     expect(find.text('00631L 正二研究室'), findsOneWidget);
     expect(find.textContaining('00631L 專用研究室'), findsOneWidget);
     expect(find.textContaining('/00631l-lab'), findsOneWidget);
