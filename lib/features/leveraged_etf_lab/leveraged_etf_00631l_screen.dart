@@ -118,7 +118,7 @@ class _LabContent extends StatelessWidget {
                       horizontalPadding,
                       10,
                       horizontalPadding,
-                      isCompact ? 18 : 24,
+                      isCompact ? 88 : 96,
                     ),
                     children: [
                       Align(
@@ -129,19 +129,10 @@ class _LabContent extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _MarketTopBar(
-                                selectedSection: selectedSection,
-                                onSectionChanged: onSectionChanged,
                                 onRefresh: onRefresh,
                               ),
                               const SizedBox(height: 12),
                               _MarketSentimentStrip(data: data),
-                              const SizedBox(height: 12),
-                              _SectionPicker(
-                                selected: selectedSection,
-                                onChanged: onSectionChanged,
-                              ),
-                              const SizedBox(height: 12),
-                              _QuoteHeader(data: data, onRefresh: onRefresh),
                               const SizedBox(height: 12),
                               _sectionWidget(data),
                             ],
@@ -151,11 +142,10 @@ class _LabContent extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (isCompact)
-                  _MarketBottomNav(
-                    selected: selectedSection,
-                    onChanged: onSectionChanged,
-                  ),
+                _MarketBottomNav(
+                  selected: selectedSection,
+                  onChanged: onSectionChanged,
+                ),
               ],
             ),
           );
@@ -167,7 +157,7 @@ class _LabContent extends StatelessWidget {
   Widget _sectionWidget(Etf00631LLabData data) {
     switch (selectedSection) {
       case _LabSection.overview:
-        return _OverviewSection(data: data);
+        return _OverviewSection(data: data, onRefresh: onRefresh);
       case _LabSection.holdings:
         return _HoldingsSection(data: data);
       case _LabSection.history:
@@ -186,92 +176,76 @@ class _LabContent extends StatelessWidget {
 
 class _MarketTopBar extends StatelessWidget {
   const _MarketTopBar({
-    required this.selectedSection,
-    required this.onSectionChanged,
     required this.onRefresh,
   });
 
-  final _LabSection selectedSection;
-  final ValueChanged<_LabSection> onSectionChanged;
   final VoidCallback onRefresh;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    const highlight = _marketRed;
-    final primarySections = [
-      _LabSection.overview,
-      _LabSection.holdings,
-      _LabSection.history,
-    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             const _MarketIndexPill(),
-            const SizedBox(width: 14),
+            const SizedBox(width: 10),
             Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (final section in primarySections)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 18),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(8),
-                          onTap: () => onSectionChanged(section),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  section.label,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    color: selectedSection == section
-                                        ? highlight
-                                        : _marketMutedText,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 0,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 160),
-                                  height: 3,
-                                  width: selectedSection == section ? 34 : 0,
-                                  decoration: BoxDecoration(
-                                    color: highlight,
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '00631L 正二研究室',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '公開 PWA | $_frontendDataMode',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: _marketMutedText,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
             ),
             IconButton(
               tooltip: '重新整理',
               onPressed: onRefresh,
               color: _marketText,
-              icon: const Icon(Icons.search_outlined),
+              icon: const Icon(Icons.refresh),
             ),
             const _ThemeToggleButton(compact: true),
           ],
         ),
         const SizedBox(height: 8),
-        Text(
-          '篩選：00631L 專用 | $_frontendDataMode',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: _marketMutedText,
-            fontWeight: FontWeight.w700,
-          ),
+        Row(
+          children: [
+            const Icon(
+              Icons.info_outline,
+              size: 16,
+              color: _marketMutedText,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                '導覽固定在底部；目前只追蹤 00631L。',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: _marketMutedText,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -928,84 +902,6 @@ class _ThemeToggleButton extends StatelessWidget {
   }
 }
 
-class _SectionPicker extends StatelessWidget {
-  const _SectionPicker({
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final _LabSection selected;
-  final ValueChanged<_LabSection> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: Colors.transparent,
-        border: Border(
-          bottom: BorderSide(color: _marketBorder),
-        ),
-      ),
-      child: SizedBox(
-        height: 58,
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 7),
-          scrollDirection: Axis.horizontal,
-          itemCount: _LabSection.values.length,
-          separatorBuilder: (context, index) => const SizedBox(width: 10),
-          itemBuilder: (context, index) {
-            final section = _LabSection.values[index];
-            final isSelected = section == selected;
-            return InkWell(
-              key: ValueKey('00631l-section-${section.name}'),
-              borderRadius: BorderRadius.circular(8),
-              onTap: () => onChanged(section),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 160),
-                curve: Curves.easeOut,
-                constraints: const BoxConstraints(minWidth: 86),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected ? _marketBlue : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: isSelected
-                        ? _marketBlue.withValues(alpha: 0.65)
-                        : Colors.transparent,
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      section.icon,
-                      size: 18,
-                      color: isSelected ? Colors.black : _marketMutedText,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      section.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: isSelected ? Colors.black : _marketMutedText,
-                        fontWeight:
-                            isSelected ? FontWeight.w900 : FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
 class _MarketBottomNav extends StatelessWidget {
   const _MarketBottomNav({
     required this.selected,
@@ -1036,6 +932,7 @@ class _MarketBottomNav extends StatelessWidget {
               final isSelected = section == selected;
               final color = isSelected ? _marketBlue : _marketMutedText;
               return InkWell(
+                key: ValueKey('00631l-section-${section.name}'),
                 borderRadius: BorderRadius.circular(10),
                 onTap: () => onChanged(section),
                 child: SizedBox(
@@ -1069,9 +966,13 @@ class _MarketBottomNav extends StatelessWidget {
 }
 
 class _OverviewSection extends StatelessWidget {
-  const _OverviewSection({required this.data});
+  const _OverviewSection({
+    required this.data,
+    required this.onRefresh,
+  });
 
   final Etf00631LLabData data;
+  final VoidCallback onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -1083,6 +984,8 @@ class _OverviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _QuoteHeader(data: data, onRefresh: onRefresh),
+        const SizedBox(height: 12),
         _MarketFocusBoard(data: data),
         const SizedBox(height: 12),
         _SectionBlock(
@@ -1205,7 +1108,7 @@ class _MarketFocusBoard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: const Row(
               children: [
-                SizedBox(width: 52, child: Text('類型')),
+                SizedBox(width: 58, child: Text('類型')),
                 Expanded(flex: 3, child: Text('資料名稱')),
                 Expanded(flex: 2, child: Text('狀態')),
                 Expanded(flex: 3, child: Text('重點')),
@@ -1306,44 +1209,55 @@ class _MarketFocusRow extends StatelessWidget {
         child: Row(
           children: [
             SizedBox(
-              width: 52,
-              child: Text(
-                marker,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: markerColor,
-                  fontWeight: FontWeight.w900,
+              width: 58,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: markerColor.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: markerColor.withValues(alpha: 0.48),
+                    ),
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+                    child: Text(
+                      marker,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: markerColor,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
             Expanded(
               flex: 3,
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _MiniCandlestick(color: markerColor),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: _marketText,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        Text(
-                          code,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: _marketMutedText,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
+                  Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  Text(
+                    code,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: _marketMutedText,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
@@ -1384,53 +1298,6 @@ class _MarketFocusRow extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _MiniCandlestick extends StatelessWidget {
-  const _MiniCandlestick({required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 20,
-      height: 42,
-      child: CustomPaint(
-        painter: _MiniCandlestickPainter(color),
-      ),
-    );
-  }
-}
-
-class _MiniCandlestickPainter extends CustomPainter {
-  const _MiniCandlestickPainter(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1.6
-      ..strokeCap = StrokeCap.round;
-    final centerX = size.width / 2;
-    canvas.drawLine(
-      Offset(centerX, 3),
-      Offset(centerX, size.height - 3),
-      paint,
-    );
-    final body = RRect.fromRectAndRadius(
-      Rect.fromLTWH(centerX - 5, size.height * 0.30, 10, size.height * 0.42),
-      const Radius.circular(2),
-    );
-    canvas.drawRRect(body, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _MiniCandlestickPainter oldDelegate) {
-    return oldDelegate.color != color;
   }
 }
 

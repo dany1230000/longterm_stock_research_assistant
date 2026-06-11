@@ -99,6 +99,13 @@ v3.8 market app UI:
 - This is a visual/product polish release only; it does not add TX live, new ETF scope, notifications, or investment guidance.
 - Summary: `docs\00631l_v3_8_market_app_ui_summary.md`.
 
+v3.9 mobile information architecture:
+
+- Bottom navigation is now the single primary section switcher; the duplicate top tab row was removed.
+- The large quote hero appears only on the overview page. Other sections open directly into holdings, history, backtest, position, AI, or system content.
+- Market-focus rows use clear DAY/LIVE/HIS/AI/SYS data badges instead of decorative icons.
+- Summary: `docs\00631l_v3_9_mobile_information_architecture_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

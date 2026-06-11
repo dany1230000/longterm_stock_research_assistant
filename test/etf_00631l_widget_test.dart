@@ -13,7 +13,7 @@ void main() {
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 
-    expect(find.text('00631L 正二研究室'), findsOneWidget);
+    expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(find.text('市價'), findsOneWidget);
     expect(find.text('預估淨值'), findsOneWidget);
     expect(find.text('折溢價'), findsOneWidget);
@@ -26,6 +26,22 @@ void main() {
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI 分析'), findsWidgets);
     expect(find.text('系統狀態'), findsWidgets);
+    for (final section in const [
+      'overview',
+      'holdings',
+      'history',
+      'backtest',
+      'position',
+      'ai',
+      'system',
+    ]) {
+      expect(find.byKey(ValueKey('00631l-section-$section')), findsOneWidget);
+    }
+    expect(find.text('DAY'), findsOneWidget);
+    expect(find.text('LIVE'), findsOneWidget);
+    expect(find.text('HIS'), findsOneWidget);
+    expect(find.text('AI'), findsOneWidget);
+    expect(find.text('SYS'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -39,8 +55,8 @@ void main() {
 
     await _pumpLab(tester, Mock00631LRepository());
 
-    expect(find.text('00631L 正二研究室'), findsOneWidget);
-    expect(find.textContaining('frontend mock_default'), findsOneWidget);
+    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('mock_default'), findsWidgets);
     expect(find.text('市場資料'), findsOneWidget);
     expect(find.text('00631L ▼'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -55,6 +71,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('價格 / 淨值歷史'), findsOneWidget);
+    expect(find.text('市價'), findsNothing);
     expect(find.text('歷史資料完整度'), findsWidgets);
     expect(find.text('累積報酬'), findsWidgets);
     expect(find.text('52 週區間'), findsWidgets);
@@ -83,6 +100,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('歷史回測'), findsWidgets);
+    expect(find.text('市價'), findsNothing);
     expect(find.text('一次投入'), findsOneWidget);
     expect(find.text('定期定額'), findsOneWidget);
     expect(find.text('期末市值'), findsOneWidget);
@@ -99,6 +117,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('持倉追蹤'), findsOneWidget);
+    expect(find.text('市價'), findsNothing);
     expect(find.text('保存本機資料'), findsOneWidget);
     expect(find.text('匯出 JSON'), findsOneWidget);
     expect(find.text('清除本機資料'), findsOneWidget);
@@ -134,10 +153,12 @@ void main() {
       ),
     );
 
-    expect(find.text('00631L 正二研究室'), findsOneWidget);
+    expect(find.text('00631L 正二研究室'), findsWidgets);
     await _tapSection(tester, 'system');
     await tester.pumpAndSettle();
-    expect(find.textContaining('backend disconnected'), findsWidgets);
+    expect(find.text('系統狀態'), findsWidgets);
+    expect(find.text('backend'), findsOneWidget);
+    expect(find.textContaining('mock'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
@@ -149,7 +170,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.dark_mode));
     await tester.pumpAndSettle();
 
-    expect(find.text('00631L 正二研究室'), findsOneWidget);
+    expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 }
@@ -172,7 +193,9 @@ Future<void> _pumpLab(
 }
 
 Future<void> _tapSection(WidgetTester tester, String sectionName) async {
-  await tester.tap(find.byKey(ValueKey('00631l-section-$sectionName')));
+  final finder = find.byKey(ValueKey('00631l-section-$sectionName'));
+  await tester.ensureVisible(finder);
+  await tester.tap(finder);
 }
 
 class _PriceHistoryRepository extends Mock00631LRepository {

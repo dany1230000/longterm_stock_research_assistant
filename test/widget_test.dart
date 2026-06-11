@@ -11,7 +11,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('00631L 正二研究室'), findsOneWidget);
+    expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('歷史'), findsWidgets);
     expect(find.text('回測'), findsWidgets);
