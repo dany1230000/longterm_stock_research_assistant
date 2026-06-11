@@ -80,6 +80,13 @@ scripts\00631l_remote_maintenance.cmd --mode all
 
 GitHub Actions also runs `.github/workflows/00631l_backend_maintenance.yml` to wake the public backend, collect intraday status, update official price history, and verify key public endpoints. Details: `docs\00631l_remote_maintenance.md`.
 
+v3.6 UI refresh:
+
+- `/00631l-lab` now uses a quote-first stock-app style header.
+- Section navigation is a compact horizontal app bar.
+- Desktop width is constrained while mobile layout stays first-class.
+- Summary: `docs\00631l_v3_6_app_ui_refresh_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

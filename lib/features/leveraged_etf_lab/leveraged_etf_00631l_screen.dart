@@ -101,18 +101,39 @@ class _LabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
-      children: [
-        _QuoteHeader(data: data, onRefresh: onRefresh),
-        const SizedBox(height: 12),
-        _SectionPicker(
-          selected: selectedSection,
-          onChanged: onSectionChanged,
-        ),
-        const SizedBox(height: 12),
-        _sectionWidget(data),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final horizontalPadding = constraints.maxWidth < 520 ? 10.0 : 18.0;
+        return ListView(
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            8,
+            horizontalPadding,
+            24,
+          ),
+          children: [
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1180),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _QuoteHeader(data: data, onRefresh: onRefresh),
+                    const SizedBox(height: 10),
+                    _SectionPicker(
+                      selected: selectedSection,
+                      onChanged: onSectionChanged,
+                    ),
+                    const SizedBox(height: 12),
+                    _sectionWidget(data),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -148,6 +169,7 @@ class _QuoteHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final nav = data.intradayNav;
     final premiumAssessment = PremiumDiscountAssessment.evaluate(
       premiumDiscountPct: nav?.estimatedPremiumDiscountPct,
@@ -155,138 +177,323 @@ class _QuoteHeader extends StatelessWidget {
       isStale: nav?.isStale ?? true,
     );
     final color = _levelColor(theme.colorScheme, premiumAssessment.level);
+    final headerBackground = colorScheme.brightness == Brightness.dark
+        ? colorScheme.surfaceContainerHighest
+        : const Color(0xFF0F172A);
+    final headerForeground = colorScheme.brightness == Brightness.dark
+        ? colorScheme.onSurface
+        : Colors.white;
+    final mutedForeground = headerForeground.withValues(alpha: 0.72);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: headerBackground,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: colorScheme.brightness == Brightness.dark
+              ? colorScheme.outlineVariant
+              : Colors.transparent,
+        ),
+        boxShadow: [
+          if (colorScheme.brightness == Brightness.light)
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.10),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
+            ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final compact = constraints.maxWidth < 620;
+                  final headerTitle = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            '00631L 正二研究室',
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              color: headerForeground,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0,
+                            ),
+                          ),
+                          _HeaderPill(
+                            label: _frontendDataMode,
+                            foreground: headerForeground,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        '官方內容物、盤中預估淨值、歷史資料、回測與系統狀態。',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: mutedForeground,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  );
+                  final actions = Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton.filled(
+                        tooltip: '重新整理',
+                        onPressed: onRefresh,
+                        style: IconButton.styleFrom(
+                          backgroundColor:
+                              headerForeground.withValues(alpha: 0.12),
+                          foregroundColor: headerForeground,
+                        ),
+                        icon: const Icon(Icons.refresh),
+                      ),
+                      const SizedBox(width: 4),
+                      const _ThemeToggleButton(compact: true),
+                    ],
+                  );
+                  return compact
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            headerTitle,
+                            const SizedBox(height: 10),
+                            actions,
+                          ],
+                        )
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: headerTitle),
+                            const SizedBox(width: 12),
+                            actions,
+                          ],
+                        );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final compact = constraints.maxWidth < 620;
+                  final quote = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '00631L 正二研究室',
-                        style: theme.textTheme.headlineSmall?.copyWith(
+                        _price(nav?.marketPrice),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.displaySmall?.copyWith(
+                          color: headerForeground,
                           fontWeight: FontWeight.w900,
+                          letterSpacing: 0,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        '元大台灣 50 正 2 ETF。官方每日內容物、盤中預估淨值、歷史資料與本機維護狀態。',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          height: 1.4,
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            '市價',
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: mutedForeground,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          _HeaderPill(
+                            label: nav?.status.label ?? 'unavailable',
+                            foreground: headerForeground,
+                          ),
+                          if (nav?.sourceContract != null)
+                            _HeaderPill(
+                              label: nav!.sourceContract!,
+                              foreground: headerForeground,
+                            ),
+                        ],
+                      ),
+                    ],
+                  );
+                  final premiumBox = DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: color.withValues(alpha: 0.42)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '折溢價',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: mutedForeground,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            formatSignedNullablePercent(
+                              nav?.estimatedPremiumDiscountPct,
+                            ),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: headerForeground,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _premiumLabel(premiumAssessment),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: mutedForeground,
+                              height: 1.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                  return compact
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            quote,
+                            const SizedBox(height: 12),
+                            premiumBox,
+                          ],
+                        )
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(child: quote),
+                            SizedBox(width: 210, child: premiumBox),
+                          ],
+                        );
+                },
+              ),
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: colorScheme.brightness == Brightness.dark
+                    ? colorScheme.surface.withValues(alpha: 0.42)
+                    : Colors.white.withValues(alpha: 0.08),
+                border: Border(
+                  top: BorderSide(
+                    color: headerForeground.withValues(alpha: 0.12),
+                  ),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final compact = constraints.maxWidth < 620;
+                    return GridView.count(
+                      crossAxisCount: compact ? 2 : 4,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: compact ? 1.22 : 2.05,
+                      children: [
+                        _QuoteStatTile(
+                          label: '預估淨值',
+                          value: _price(nav?.estimatedNav),
+                          caption: '盤中估算資料',
+                          foreground: headerForeground,
+                        ),
+                        _QuoteStatTile(
+                          label: '前日淨值',
+                          value: _price(nav?.previousBusinessDayNav),
+                          caption: '官方揭露欄位',
+                          foreground: headerForeground,
+                        ),
+                        _QuoteStatTile(
+                          label: '資料時間',
+                          value: nav?.dataTime == null
+                              ? 'unavailable'
+                              : formatTimeSeconds(nav!.dataTime!),
+                          caption: nav?.dataDate == null
+                              ? 'intraday unavailable'
+                              : formatTaiwanDate(nav!.dataDate!),
+                          foreground: headerForeground,
+                        ),
+                        _QuoteStatTile(
+                          label: '發行單位',
+                          value: nav?.outstandingUnits == null
+                              ? _compactNumber(data.snapshot.outstandingUnits)
+                              : _compactNumber(nav!.outstandingUnits!),
+                          caption: 'units',
+                          foreground: headerForeground,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              child: _StatusWrap(
+                labels: [
+                  'page ${data.status.label}',
+                  'holdings ${data.snapshot.status.label}',
+                  'intraday ${nav?.status.label ?? 'unavailable'}',
+                  'history ${data.priceHistory.sourceStatusLabel}',
+                  'frontend $_frontendDataMode',
+                  if (_use00631LLiveProxy)
+                    'api ${data.operationsStatus.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : data.operationsStatus.publicApiBaseUrl}',
+                  if (_use00631LLiveProxy)
+                    'apiCheck ${_dateTimeOrDash(data.operationsStatus.lastFetchedAt)}',
+                  if (_use00631LStaticData) 'static $_staticDataBaseUrl00631l',
+                  if (_use00631LStaticData)
+                    'rows ${data.operationsStatus.priceHistoryRows}',
+                  if (_use00631LStaticData)
+                    'generated ${_dateTimeOrDash(data.operationsStatus.latestExportUpdatedAt ?? data.priceHistory.lastFetchedAt)}',
+                  'backend ${data.operationsStatus.backendConnectionLabel}',
+                ],
+                onDark: colorScheme.brightness == Brightness.light,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: color.withValues(alpha: 0.40)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(_levelIcon(premiumAssessment.level), color: color),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          '${_premiumDescription(premiumAssessment)} 非買賣建議。',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: headerForeground,
+                            height: 1.45,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 8),
-                IconButton.filledTonal(
-                  tooltip: '重新整理',
-                  onPressed: onRefresh,
-                  icon: const Icon(Icons.refresh),
-                ),
-                const _ThemeToggleButton(),
-              ],
-            ),
-            const SizedBox(height: 14),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isCompact = constraints.maxWidth < 560;
-                return GridView.count(
-                  crossAxisCount: isCompact ? 2 : 4,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  childAspectRatio: isCompact ? 1.28 : 1.40,
-                  children: [
-                    _MetricCard(
-                      label: '市價',
-                      value: _price(nav?.marketPrice),
-                      caption: '盤中估算資料',
-                      icon: Icons.attach_money_outlined,
-                    ),
-                    _MetricCard(
-                      label: '預估淨值',
-                      value: _price(nav?.estimatedNav),
-                      caption: 'TWSE / 投信來源',
-                      icon: Icons.analytics_outlined,
-                    ),
-                    _MetricCard(
-                      label: '折溢價',
-                      value: formatSignedNullablePercent(
-                        nav?.estimatedPremiumDiscountPct,
-                      ),
-                      caption: _premiumLabel(premiumAssessment),
-                      icon: Icons.percent_outlined,
-                      accentColor: color,
-                    ),
-                    _MetricCard(
-                      label: '資料時間',
-                      value: nav?.dataTime == null
-                          ? 'unavailable'
-                          : formatTimeSeconds(nav!.dataTime!),
-                      caption: nav?.sourceContract ?? 'intraday unavailable',
-                      icon: Icons.schedule_outlined,
-                    ),
-                  ],
-                );
-              },
-            ),
-            const SizedBox(height: 12),
-            _StatusWrap(
-              labels: [
-                'page ${data.status.label}',
-                'holdings ${data.snapshot.status.label}',
-                'intraday ${nav?.status.label ?? 'unavailable'}',
-                'history ${data.priceHistory.sourceStatusLabel}',
-                'frontend $_frontendDataMode',
-                if (_use00631LLiveProxy)
-                  'api ${data.operationsStatus.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : data.operationsStatus.publicApiBaseUrl}',
-                if (_use00631LLiveProxy)
-                  'apiCheck ${_dateTimeOrDash(data.operationsStatus.lastFetchedAt)}',
-                if (_use00631LStaticData) 'static $_staticDataBaseUrl00631l',
-                if (_use00631LStaticData)
-                  'rows ${data.operationsStatus.priceHistoryRows}',
-                if (_use00631LStaticData)
-                  'generated ${_dateTimeOrDash(data.operationsStatus.latestExportUpdatedAt ?? data.priceHistory.lastFetchedAt)}',
-                'backend ${data.operationsStatus.backendConnectionLabel}',
-                if (nav?.sourceContract != null) nav!.sourceContract!,
-              ],
-            ),
-            const SizedBox(height: 12),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: Color.alphaBlend(
-                  color.withValues(alpha: 0.10),
-                  theme.colorScheme.surface,
-                ),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: color.withValues(alpha: 0.35)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(_levelIcon(premiumAssessment.level), color: color),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        '${_premiumDescription(premiumAssessment)} 非買賣建議。',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          height: 1.45,
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),
@@ -350,8 +557,106 @@ String _frontendModeAction(Etf00631LLabData data) {
   return '需要公開手機使用時，請使用 GitHub Pages static-public build。';
 }
 
+class _HeaderPill extends StatelessWidget {
+  const _HeaderPill({
+    required this.label,
+    required this.foreground,
+  });
+
+  final String label;
+  final Color foreground;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: foreground.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: foreground.withValues(alpha: 0.18)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: foreground,
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuoteStatTile extends StatelessWidget {
+  const _QuoteStatTile({
+    required this.label,
+    required this.value,
+    required this.caption,
+    required this.foreground,
+  });
+
+  final String label;
+  final String value;
+  final String caption;
+  final Color foreground;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: foreground.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: foreground.withValues(alpha: 0.12)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: foreground.withValues(alpha: 0.72),
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: foreground,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              caption,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: foreground.withValues(alpha: 0.66),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ThemeToggleButton extends StatelessWidget {
-  const _ThemeToggleButton();
+  const _ThemeToggleButton({this.compact = false});
+
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -359,11 +664,22 @@ class _ThemeToggleButton extends StatelessWidget {
       valueListenable: appThemeModeNotifier,
       builder: (context, mode, _) {
         final isDark = mode == ThemeMode.dark;
+        final theme = Theme.of(context);
         return IconButton(
           tooltip: isDark ? '切換淺色模式' : '切換夜間模式',
           onPressed: () {
             setAppThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
           },
+          style: compact
+              ? IconButton.styleFrom(
+                  backgroundColor:
+                      theme.colorScheme.onSurface.withValues(alpha: 0.10),
+                  foregroundColor:
+                      theme.colorScheme.brightness == Brightness.light
+                          ? Colors.white
+                          : theme.colorScheme.onSurface,
+                )
+              : null,
           icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode),
         );
       },
@@ -382,22 +698,73 @@ class _SectionPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 46,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: _LabSection.values.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final section = _LabSection.values[index];
-          return ChoiceChip(
-            key: ValueKey('00631l-section-${section.name}'),
-            selected: section == selected,
-            avatar: Icon(section.icon, size: 18),
-            label: Text(section.label),
-            onSelected: (_) => onChanged(section),
-          );
-        },
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: SizedBox(
+        height: 76,
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          scrollDirection: Axis.horizontal,
+          itemCount: _LabSection.values.length,
+          separatorBuilder: (context, index) => const SizedBox(width: 6),
+          itemBuilder: (context, index) {
+            final section = _LabSection.values[index];
+            final isSelected = section == selected;
+            return InkWell(
+              key: ValueKey('00631l-section-${section.name}'),
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => onChanged(section),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 160),
+                curve: Curves.easeOut,
+                constraints: const BoxConstraints(minWidth: 74),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? theme.colorScheme.primaryContainer
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected
+                        ? theme.colorScheme.primary.withValues(alpha: 0.35)
+                        : Colors.transparent,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      section.icon,
+                      size: 18,
+                      color: isSelected
+                          ? theme.colorScheme.onPrimaryContainer
+                          : theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      section.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: isSelected
+                            ? theme.colorScheme.onPrimaryContainer
+                            : theme.colorScheme.onSurfaceVariant,
+                        fontWeight:
+                            isSelected ? FontWeight.w900 : FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -1412,9 +1779,13 @@ class _StatusRow extends StatelessWidget {
 }
 
 class _StatusWrap extends StatelessWidget {
-  const _StatusWrap({required this.labels});
+  const _StatusWrap({
+    required this.labels,
+    this.onDark = false,
+  });
 
   final List<String> labels;
+  final bool onDark;
 
   @override
   Widget build(BuildContext context) {
@@ -1422,31 +1793,46 @@ class _StatusWrap extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: [
-        for (final label in labels) _StatusPill(label: label),
+        for (final label in labels)
+          _StatusPill(
+            label: label,
+            onDark: onDark,
+          ),
       ],
     );
   }
 }
 
 class _StatusPill extends StatelessWidget {
-  const _StatusPill({required this.label});
+  const _StatusPill({
+    required this.label,
+    this.onDark = false,
+  });
 
   final String label;
+  final bool onDark;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final foreground =
+        onDark ? Colors.white : theme.colorScheme.onSecondaryContainer;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer,
+        color: onDark
+            ? Colors.white.withValues(alpha: 0.12)
+            : theme.colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(999),
+        border: onDark
+            ? Border.all(color: Colors.white.withValues(alpha: 0.18))
+            : null,
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Text(
           label,
           style: theme.textTheme.labelSmall?.copyWith(
-            color: theme.colorScheme.onSecondaryContainer,
+            color: foreground,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -1529,19 +1915,17 @@ class _MetricCard extends StatelessWidget {
     required this.value,
     required this.caption,
     required this.icon,
-    this.accentColor,
   });
 
   final String label;
   final String value;
   final String caption;
   final IconData icon;
-  final Color? accentColor;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = accentColor ?? theme.colorScheme.primary;
+    final color = theme.colorScheme.primary;
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -1897,6 +2281,23 @@ String _price(num? value) {
     return 'unavailable';
   }
   return value.toStringAsFixed(2);
+}
+
+String _compactNumber(num? value) {
+  if (value == null) {
+    return 'unavailable';
+  }
+  final absValue = value.abs();
+  if (absValue >= 1000000000) {
+    return '${(value / 1000000000).toStringAsFixed(2)}B';
+  }
+  if (absValue >= 1000000) {
+    return '${(value / 1000000).toStringAsFixed(2)}M';
+  }
+  if (absValue >= 1000) {
+    return '${(value / 1000).toStringAsFixed(1)}K';
+  }
+  return value.toStringAsFixed(0);
 }
 
 String _dateOrDash(DateTime? date) {
