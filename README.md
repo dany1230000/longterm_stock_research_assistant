@@ -112,6 +112,12 @@ v3.10 mobile polish:
 - Mobile tables render as readable cards; wider screens still use dense tables.
 - Summary: `docs\00631l_v3_10_mobile_polish_summary.md`.
 
+v3.11 section summaries:
+
+- Each non-overview bottom tab now starts with its own compact summary instead of repeating the overview quote card.
+- Holdings, history, backtest, position, AI, and system pages surface their main data status and key values first.
+- Summary: `docs\00631l_v3_11_section_summaries.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

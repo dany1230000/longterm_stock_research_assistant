@@ -1399,9 +1399,45 @@ class _HoldingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final snapshot = data.snapshot;
+    final txLine = _primaryFuturesLine(snapshot);
+    final tsmcLine = _stockHoldingByCode(snapshot, '2330');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _SectionHeaderCard(
+          title: '內容物快覽',
+          subtitle: '官方每日資料，不是盤中即時內容物；盤中請看 intraday NAV 與折溢價。',
+          icon: Icons.inventory_2_outlined,
+          badges: [
+            'DAY',
+            'source ${snapshot.status.label}',
+            'tradeDate ${formatTaiwanDate(snapshot.tradeDate)}',
+          ],
+          metrics: [
+            _SectionHeaderMetric(
+              label: 'TX 權重',
+              value: txLine == null
+                  ? 'unavailable'
+                  : formatNullablePercent(txLine.weightPct),
+            ),
+            _SectionHeaderMetric(
+              label: '台積電權重',
+              value: tsmcLine == null
+                  ? 'unavailable'
+                  : formatNullablePercent(tsmcLine.weightPct),
+            ),
+            _SectionHeaderMetric(
+              label: '股票 / 期貨',
+              value:
+                  '${formatNullablePercent(snapshot.stockExposureWeightPct)} / ${formatNullablePercent(snapshot.futuresExposureWeightPct)}',
+            ),
+            _SectionHeaderMetric(
+              label: 'NAV',
+              value: _price(snapshot.navPerUnit),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
         _SectionBlock(
           title: '官方每日內容物',
           subtitle:
@@ -1531,6 +1567,36 @@ class _HistorySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _SectionHeaderCard(
+          title: '歷史快覽',
+          subtitle: '價格、淨值與 coverage；公開靜態資料可支援手機查詢與回測。',
+          icon: Icons.show_chart_outlined,
+          badges: [
+            'HIS',
+            'source ${priceHistory.sourceStatusLabel}',
+            '${completeness.rowCount} rows',
+          ],
+          metrics: [
+            _SectionHeaderMetric(
+              label: 'coverage',
+              value:
+                  '${_dateOrDash(completeness.coverageStart)} - ${_dateOrDash(completeness.coverageEnd)}',
+            ),
+            _SectionHeaderMetric(
+              label: '最新收盤',
+              value: _price(completeness.latest?.close),
+            ),
+            _SectionHeaderMetric(
+              label: '累積報酬',
+              value: formatSignedNullablePercent(performance.totalReturnPct),
+            ),
+            _SectionHeaderMetric(
+              label: '最大回撤',
+              value: formatSignedNullablePercent(performance.maxDrawdownPct),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
         _SectionBlock(
           title: '價格 / 淨值歷史',
           subtitle: priceHistory.hasData
@@ -1729,106 +1795,140 @@ class _BacktestSectionState extends State<_BacktestSection> {
       history: history.points,
     );
 
-    return _SectionBlock(
-      title: '歷史回測',
-      subtitle: '只使用已保存的歷史收盤價。回測不代表未來表現，非買賣建議。',
-      child: history.hasData
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    ChoiceChip(
-                      selected: _strategy == EtfBacktestStrategy.lumpSum,
-                      label: const Text('一次投入'),
-                      onSelected: (_) => setState(
-                        () => _strategy = EtfBacktestStrategy.lumpSum,
-                      ),
-                    ),
-                    ChoiceChip(
-                      selected:
-                          _strategy == EtfBacktestStrategy.monthlyContribution,
-                      label: const Text('定期定額'),
-                      onSelected: (_) => setState(
-                        () =>
-                            _strategy = EtfBacktestStrategy.monthlyContribution,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _InputGrid(
-                  children: [
-                    _NumberField(
-                      label: '初始金額',
-                      controller: _initialController,
-                      onChanged: (_) => setState(() {}),
-                    ),
-                    _NumberField(
-                      label: '每月投入金額',
-                      controller: _monthlyController,
-                      onChanged: (_) => setState(() {}),
-                    ),
-                    _NumberField(
-                      label: '每月日期',
-                      controller: _dayController,
-                      onChanged: (_) => setState(() {}),
-                    ),
-                    _NumberField(
-                      label: '手續費率 %',
-                      controller: _feeController,
-                      onChanged: (_) => setState(() {}),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _ResponsiveMetricGrid(
-                  cards: [
-                    _MetricCard(
-                      label: '期末市值',
-                      value: formatNtdAmount(result.finalValue),
-                      caption: result.sourceStatusLabel,
-                      icon: Icons.account_balance_wallet_outlined,
-                    ),
-                    _MetricCard(
-                      label: '總投入',
-                      value: formatNtdAmount(result.totalInvested),
-                      caption: '歷史投入加總',
-                      icon: Icons.savings_outlined,
-                    ),
-                    _MetricCard(
-                      label: '累積報酬',
-                      value: formatSignedNullablePercent(
-                        result.totalReturnPct,
-                      ),
-                      caption: '歷史回測',
-                      icon: Icons.percent_outlined,
-                    ),
-                    _MetricCard(
-                      label: '最大回撤',
-                      value: formatSignedNullablePercent(
-                        result.maxDrawdownPct,
-                      ),
-                      caption: '歷史區間',
-                      icon: Icons.trending_down_outlined,
-                    ),
-                  ],
-                ),
-                if (result.equityCurve.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  _CurveChartPanel(points: result.equityCurve),
-                ],
-                const SizedBox(height: 10),
-                const Text('回測不代表未來表現，非買賣建議。'),
-              ],
-            )
-          : const _EmptyPanel(
-              title: '尚無回測資料',
-              message:
-                  '請先執行 scripts\\00631l_update_price_history.cmd 建立 official price history cache。',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeaderCard(
+          title: '回測快覽',
+          subtitle: '使用歷史收盤價計算；回測不代表未來表現，非買賣建議。',
+          icon: Icons.query_stats_outlined,
+          badges: [
+            'backtest',
+            'source ${history.sourceStatusLabel}',
+            _strategy == EtfBacktestStrategy.lumpSum ? '一次投入' : '定期定額',
+          ],
+          metrics: [
+            _SectionHeaderMetric(
+              label: '期末市值',
+              value: formatNtdAmount(result.finalValue),
             ),
+            _SectionHeaderMetric(
+              label: '總投入',
+              value: formatNtdAmount(result.totalInvested),
+            ),
+            _SectionHeaderMetric(
+              label: '累積報酬',
+              value: formatSignedNullablePercent(result.totalReturnPct),
+            ),
+            _SectionHeaderMetric(
+              label: '最大回撤',
+              value: formatSignedNullablePercent(result.maxDrawdownPct),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: '歷史回測',
+          subtitle: '只使用已保存的歷史收盤價。回測不代表未來表現，非買賣建議。',
+          child: history.hasData
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ChoiceChip(
+                          selected: _strategy == EtfBacktestStrategy.lumpSum,
+                          label: const Text('一次投入'),
+                          onSelected: (_) => setState(
+                            () => _strategy = EtfBacktestStrategy.lumpSum,
+                          ),
+                        ),
+                        ChoiceChip(
+                          selected: _strategy ==
+                              EtfBacktestStrategy.monthlyContribution,
+                          label: const Text('定期定額'),
+                          onSelected: (_) => setState(
+                            () => _strategy =
+                                EtfBacktestStrategy.monthlyContribution,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    _InputGrid(
+                      children: [
+                        _NumberField(
+                          label: '初始金額',
+                          controller: _initialController,
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        _NumberField(
+                          label: '每月投入金額',
+                          controller: _monthlyController,
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        _NumberField(
+                          label: '每月日期',
+                          controller: _dayController,
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        _NumberField(
+                          label: '手續費率 %',
+                          controller: _feeController,
+                          onChanged: (_) => setState(() {}),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    _ResponsiveMetricGrid(
+                      cards: [
+                        _MetricCard(
+                          label: '期末市值',
+                          value: formatNtdAmount(result.finalValue),
+                          caption: result.sourceStatusLabel,
+                          icon: Icons.account_balance_wallet_outlined,
+                        ),
+                        _MetricCard(
+                          label: '總投入',
+                          value: formatNtdAmount(result.totalInvested),
+                          caption: '歷史投入加總',
+                          icon: Icons.savings_outlined,
+                        ),
+                        _MetricCard(
+                          label: '累積報酬',
+                          value: formatSignedNullablePercent(
+                            result.totalReturnPct,
+                          ),
+                          caption: '歷史回測',
+                          icon: Icons.percent_outlined,
+                        ),
+                        _MetricCard(
+                          label: '最大回撤',
+                          value: formatSignedNullablePercent(
+                            result.maxDrawdownPct,
+                          ),
+                          caption: '歷史區間',
+                          icon: Icons.trending_down_outlined,
+                        ),
+                      ],
+                    ),
+                    if (result.equityCurve.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      _CurveChartPanel(points: result.equityCurve),
+                    ],
+                    const SizedBox(height: 10),
+                    const Text('回測不代表未來表現，非買賣建議。'),
+                  ],
+                )
+              : const _EmptyPanel(
+                  title: '尚無回測資料',
+                  message:
+                      '請先執行 scripts\\00631l_update_price_history.cmd 建立 official price history cache。',
+                ),
+        ),
+      ],
     );
   }
 }
@@ -1889,104 +1989,137 @@ class _PositionSectionState extends State<_PositionSection> {
       marketPrice: widget.data.intradayNav?.marketPrice,
       dataTime: widget.data.intradayNav?.dataTime,
     );
-    return _SectionBlock(
-      title: '持倉追蹤',
-      subtitle: 'local-only，本機瀏覽器資料，不需要登入，也不會上傳到外部服務。',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!_loaded) const LinearProgressIndicator(),
-          _InputGrid(
-            children: [
-              _NumberField(
-                label: '持有股數',
-                controller: _sharesController,
-                onChanged: (_) => setState(() {}),
-              ),
-              _NumberField(
-                label: '平均成本',
-                controller: _costController,
-                onChanged: (_) => setState(() {}),
-              ),
-              _NumberField(
-                label: '總資產，選填',
-                controller: _assetsController,
-                onChanged: (_) => setState(() {}),
-              ),
-              _NumberField(
-                label: '費用，選填',
-                controller: _feeController,
-                onChanged: (_) => setState(() {}),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _noteController,
-            decoration: const InputDecoration(labelText: '備註，選填'),
-            minLines: 1,
-            maxLines: 2,
-            onChanged: (_) => setState(() {}),
-          ),
-          const SizedBox(height: 12),
-          _ResponsiveMetricGrid(
-            cards: [
-              _MetricCard(
-                label: '目前市值',
-                value: formatNtdAmount(summary.marketValue),
-                caption: '依 intraday 市價估算',
-                icon: Icons.account_balance_wallet_outlined,
-              ),
-              _MetricCard(
-                label: '成本',
-                value: formatNtdAmount(summary.cost),
-                caption: '股數 x 平均成本 + 費用',
-                icon: Icons.receipt_long_outlined,
-              ),
-              _MetricCard(
-                label: '未實現損益',
-                value: formatNtdAmount(summary.unrealizedPnl),
-                caption: formatSignedNullablePercent(summary.unrealizedPnlPct),
-                icon: Icons.insights_outlined,
-              ),
-              _MetricCard(
-                label: '部位比例',
-                value: formatNullablePercent(summary.assetWeightPct),
-                caption: '需輸入總資產',
-                icon: Icons.pie_chart_outline,
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              FilledButton.icon(
-                onPressed: _save,
-                icon: const Icon(Icons.save_outlined),
-                label: const Text('保存本機資料'),
-              ),
-              OutlinedButton.icon(
-                onPressed: _export,
-                icon: const Icon(Icons.ios_share_outlined),
-                label: const Text('匯出 JSON'),
-              ),
-              TextButton.icon(
-                onPressed: _clear,
-                icon: const Icon(Icons.delete_outline),
-                label: const Text('清除本機資料'),
-              ),
-            ],
-          ),
-          if (_exportJson != null) ...[
-            const SizedBox(height: 12),
-            SelectableText(_exportJson!),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeaderCard(
+          title: '持倉快覽',
+          subtitle: 'local-only；資料保存在本機瀏覽器，不需要登入，也不會上傳個人持倉。',
+          icon: Icons.account_balance_wallet_outlined,
+          badges: const ['local-only', 'browser storage', '00631L'],
+          metrics: [
+            _SectionHeaderMetric(
+              label: '目前市值',
+              value: formatNtdAmount(summary.marketValue),
+            ),
+            _SectionHeaderMetric(
+              label: '成本',
+              value: formatNtdAmount(summary.cost),
+            ),
+            _SectionHeaderMetric(
+              label: '損益',
+              value: formatNtdAmount(summary.unrealizedPnl),
+            ),
+            _SectionHeaderMetric(
+              label: '資料時間',
+              value: summary.dataTime == null
+                  ? 'unavailable'
+                  : formatTimeSeconds(summary.dataTime!),
+            ),
           ],
-          const SizedBox(height: 10),
-          const Text('本區只做持倉資料狀態與估算顯示，非買賣建議。'),
-        ],
-      ),
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: '持倉追蹤',
+          subtitle: 'local-only，本機瀏覽器資料，不需要登入，也不會上傳到外部服務。',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!_loaded) const LinearProgressIndicator(),
+              _InputGrid(
+                children: [
+                  _NumberField(
+                    label: '持有股數',
+                    controller: _sharesController,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  _NumberField(
+                    label: '平均成本',
+                    controller: _costController,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  _NumberField(
+                    label: '總資產，選填',
+                    controller: _assetsController,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  _NumberField(
+                    label: '費用，選填',
+                    controller: _feeController,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _noteController,
+                decoration: const InputDecoration(labelText: '備註，選填'),
+                minLines: 1,
+                maxLines: 2,
+                onChanged: (_) => setState(() {}),
+              ),
+              const SizedBox(height: 12),
+              _ResponsiveMetricGrid(
+                cards: [
+                  _MetricCard(
+                    label: '目前市值',
+                    value: formatNtdAmount(summary.marketValue),
+                    caption: '依 intraday 市價估算',
+                    icon: Icons.account_balance_wallet_outlined,
+                  ),
+                  _MetricCard(
+                    label: '成本',
+                    value: formatNtdAmount(summary.cost),
+                    caption: '股數 x 平均成本 + 費用',
+                    icon: Icons.receipt_long_outlined,
+                  ),
+                  _MetricCard(
+                    label: '未實現損益',
+                    value: formatNtdAmount(summary.unrealizedPnl),
+                    caption:
+                        formatSignedNullablePercent(summary.unrealizedPnlPct),
+                    icon: Icons.insights_outlined,
+                  ),
+                  _MetricCard(
+                    label: '部位比例',
+                    value: formatNullablePercent(summary.assetWeightPct),
+                    caption: '需輸入總資產',
+                    icon: Icons.pie_chart_outline,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  FilledButton.icon(
+                    onPressed: _save,
+                    icon: const Icon(Icons.save_outlined),
+                    label: const Text('保存本機資料'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: _export,
+                    icon: const Icon(Icons.ios_share_outlined),
+                    label: const Text('匯出 JSON'),
+                  ),
+                  TextButton.icon(
+                    onPressed: _clear,
+                    icon: const Icon(Icons.delete_outline),
+                    label: const Text('清除本機資料'),
+                  ),
+                ],
+              ),
+              if (_exportJson != null) ...[
+                const SizedBox(height: 12),
+                SelectableText(_exportJson!),
+              ],
+              const SizedBox(height: 10),
+              const Text('本區只做持倉資料狀態與估算顯示，非買賣建議。'),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -2043,52 +2176,89 @@ class _AiSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final summary = data.aiAnalysis;
-    return _SectionBlock(
-      title: 'AI 分析摘要',
-      subtitle: '預設 rule_based，不需要 API key。只解釋資料狀態、歷史變化與風險暴露。',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _StatusWrap(
-            labels: [
-              'source ${summary.source}',
-              'sourceStatus ${summary.sourceStatusLabel}',
-              'readiness ${summary.readinessLabel}',
-              summary.disclaimer,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeaderCard(
+          title: 'AI 快覽',
+          subtitle: 'rule_based 分析；只解釋資料狀態、歷史變化與風險暴露。',
+          icon: Icons.psychology_alt_outlined,
+          badges: [
+            'AI',
+            'source ${summary.source}',
+            'readiness ${summary.readinessLabel}',
+          ],
+          metrics: [
+            _SectionHeaderMetric(
+              label: '資料時間',
+              value: summary.dataTime == null
+                  ? 'unavailable'
+                  : formatTaiwanDateTimeSeconds(summary.dataTime!),
+              caption: 'analysis data',
+            ),
+            _SectionHeaderMetric(
+              label: '摘要',
+              value: '${summary.bullets.length} 條',
+            ),
+            _SectionHeaderMetric(
+              label: '程式操作',
+              value: '${summary.actionItems.length} 項',
+            ),
+            const _SectionHeaderMetric(
+              label: '性質',
+              value: '非買賣建議',
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: 'AI 分析摘要',
+          subtitle: '預設 rule_based，不需要 API key。只解釋資料狀態、歷史變化與風險暴露。',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _StatusWrap(
+                labels: [
+                  'source ${summary.source}',
+                  'sourceStatus ${summary.sourceStatusLabel}',
+                  'readiness ${summary.readinessLabel}',
+                  summary.disclaimer,
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '產生時間 ${formatTaiwanDateTimeSeconds(summary.generatedAt)}'
+                '${summary.dataTime == null ? '' : '，資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}'}',
+              ),
+              const SizedBox(height: 12),
+              for (final bullet in summary.bullets)
+                _BulletLine(text: bullet, icon: Icons.insights_outlined),
+              const SizedBox(height: 8),
+              Text(
+                '程式操作項目',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              for (final action in summary.actionItems)
+                _BulletLine(text: action, icon: Icons.task_alt_outlined),
+              const Divider(height: 24),
+              Text(
+                '完整資料日報',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              for (final bullet in _completeDataBriefing(data))
+                _BulletLine(text: bullet, icon: Icons.analytics_outlined),
+              const SizedBox(height: 8),
+              const Text('非買賣建議。'),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            '產生時間 ${formatTaiwanDateTimeSeconds(summary.generatedAt)}'
-            '${summary.dataTime == null ? '' : '，資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}'}',
-          ),
-          const SizedBox(height: 12),
-          for (final bullet in summary.bullets)
-            _BulletLine(text: bullet, icon: Icons.insights_outlined),
-          const SizedBox(height: 8),
-          Text(
-            '程式操作項目',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-          ),
-          const SizedBox(height: 8),
-          for (final action in summary.actionItems)
-            _BulletLine(text: action, icon: Icons.task_alt_outlined),
-          const Divider(height: 24),
-          Text(
-            '完整資料日報',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
-          ),
-          const SizedBox(height: 8),
-          for (final bullet in _completeDataBriefing(data))
-            _BulletLine(text: bullet, icon: Icons.analytics_outlined),
-          const SizedBox(height: 8),
-          const Text('非買賣建議。'),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -2100,8 +2270,39 @@ class _SystemStatusSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final readiness = status.dailyReadinessSummary;
     return Column(
       children: [
+        _SectionHeaderCard(
+          title: '系統快覽',
+          subtitle:
+              'backend、static/live、daily cycle、report/export/backup 的操作狀態。',
+          icon: Icons.health_and_safety_outlined,
+          badges: [
+            'SYS',
+            'frontend $_frontendDataMode',
+            status.backendConnectionLabel,
+          ],
+          metrics: [
+            _SectionHeaderMetric(
+              label: 'readiness',
+              value: readiness.label,
+            ),
+            _SectionHeaderMetric(
+              label: 'price rows',
+              value: formatInteger(status.priceHistoryRows),
+            ),
+            _SectionHeaderMetric(
+              label: 'daily cycle',
+              value: status.dailyCycleStatus,
+            ),
+            _SectionHeaderMetric(
+              label: 'persistence',
+              value: status.dataPersistenceLabel,
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
         _SectionBlock(
           title: '系統狀態',
           subtitle: '正式工具狀態摘要，不顯示 debug dump。',
@@ -2639,6 +2840,173 @@ class _StatusPill extends StatelessWidget {
             color: foreground,
             fontWeight: FontWeight.w700,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionHeaderMetric {
+  const _SectionHeaderMetric({
+    required this.label,
+    required this.value,
+    this.caption,
+  });
+
+  final String label;
+  final String value;
+  final String? caption;
+}
+
+class _SectionHeaderCard extends StatelessWidget {
+  const _SectionHeaderCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.badges,
+    required this.metrics,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final List<String> badges;
+  final List<_SectionHeaderMetric> metrics;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.primary;
+    return Card(
+      elevation: 0,
+      color: theme.colorScheme.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(9),
+                    child: Icon(icon, color: color, size: 22),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _StatusWrap(labels: badges),
+            if (metrics.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final compact = constraints.maxWidth < 520;
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final metric in metrics)
+                        SizedBox(
+                          width: compact
+                              ? (constraints.maxWidth - 8) / 2
+                              : (constraints.maxWidth - 24) / 4,
+                          child: _SectionHeaderMetricChip(metric: metric),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionHeaderMetricChip extends StatelessWidget {
+  const _SectionHeaderMetricChip({required this.metric});
+
+  final _SectionHeaderMetric metric;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              metric.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              metric.value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            if (metric.caption != null) ...[
+              const SizedBox(height: 2),
+              Text(
+                metric.caption!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -3355,6 +3723,31 @@ String _monthDay(DateTime date) {
 
 String _dateKey(DateTime date) {
   return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+}
+
+EtfFuturesHoldingLine? _primaryFuturesLine(EtfDailyHoldingSnapshot snapshot) {
+  for (final line in snapshot.futuresHoldings) {
+    final code = line.code.toUpperCase();
+    final name = line.name.toUpperCase();
+    if (code.contains('TX') || name.contains('TX')) {
+      return line;
+    }
+  }
+  return snapshot.futuresHoldings.isEmpty
+      ? null
+      : snapshot.futuresHoldings.first;
+}
+
+EtfStockHoldingLine? _stockHoldingByCode(
+  EtfDailyHoldingSnapshot snapshot,
+  String code,
+) {
+  for (final line in snapshot.stockHoldings) {
+    if (line.code == code) {
+      return line;
+    }
+  }
+  return null;
 }
 
 List<String> _completeDataBriefing(Etf00631LLabData data) {

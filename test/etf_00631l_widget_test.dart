@@ -70,6 +70,8 @@ void main() {
     await _tapSection(tester, 'history');
     await tester.pumpAndSettle();
 
+    expect(find.text('歷史快覽'), findsOneWidget);
+    expect(find.textContaining('coverage'), findsWidgets);
     expect(find.text('價格 / 淨值歷史'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
     expect(find.text('歷史資料完整度'), findsWidgets);
@@ -99,11 +101,13 @@ void main() {
     await _tapSection(tester, 'backtest');
     await tester.pumpAndSettle();
 
+    expect(find.text('回測快覽'), findsOneWidget);
+    expect(find.textContaining('回測不代表未來表現'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
     expect(find.text('市價'), findsNothing);
     expect(find.text('一次投入'), findsOneWidget);
-    expect(find.text('定期定額'), findsOneWidget);
-    expect(find.text('期末市值'), findsOneWidget);
+    expect(find.text('定期定額'), findsWidgets);
+    expect(find.text('期末市值'), findsWidgets);
     expect(find.textContaining('回測不代表未來表現'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);
     _expectNoTradingActionText();
@@ -116,12 +120,13 @@ void main() {
     await _tapSection(tester, 'position');
     await tester.pumpAndSettle();
 
+    expect(find.text('持倉快覽'), findsOneWidget);
     expect(find.text('持倉追蹤'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
     expect(find.text('保存本機資料'), findsOneWidget);
     expect(find.text('匯出 JSON'), findsOneWidget);
     expect(find.text('清除本機資料'), findsOneWidget);
-    expect(find.textContaining('local-only'), findsOneWidget);
+    expect(find.textContaining('local-only'), findsWidgets);
   });
 
   testWidgets('phone holdings tables render as readable cards', (tester) async {
@@ -137,6 +142,8 @@ void main() {
     await _tapSection(tester, 'holdings');
     await tester.pumpAndSettle();
 
+    expect(find.text('內容物快覽'), findsOneWidget);
+    expect(find.textContaining('官方每日資料，不是盤中即時內容物'), findsOneWidget);
     expect(find.text('官方每日內容物'), findsOneWidget);
     expect(find.text('股票資產'), findsWidgets);
     expect(find.text('期貨資產'), findsWidgets);
@@ -161,6 +168,7 @@ void main() {
 
     await _tapSection(tester, 'ai');
     await tester.pumpAndSettle();
+    expect(find.text('AI 快覽'), findsOneWidget);
     expect(find.text('AI 分析摘要'), findsOneWidget);
     expect(find.text('完整資料日報'), findsOneWidget);
     expect(find.textContaining('rule_based'), findsWidgets);
@@ -168,6 +176,7 @@ void main() {
 
     await _tapSection(tester, 'system');
     await tester.pumpAndSettle();
+    expect(find.text('系統快覽'), findsOneWidget);
     expect(find.text('系統狀態'), findsWidgets);
     expect(find.text('backend'), findsOneWidget);
     expect(find.text('historical price'), findsOneWidget);
