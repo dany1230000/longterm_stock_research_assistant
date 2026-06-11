@@ -23,10 +23,19 @@ Production deployment helpers:
 ```cmd
 scripts\00631l_backend_prod_check.cmd
 scripts\00631l_backend_docker_check.cmd
+scripts\00631l_remote_maintenance.cmd --dry-run
 docker compose -f deploy\docker-compose.yml up -d --build
 ```
 
 Full live backend deployment guide: `docs\00631l_live_backend_deployment.md`.
+
+Remote public backend maintenance:
+
+```cmd
+scripts\00631l_remote_maintenance.cmd --mode all
+```
+
+GitHub Actions can run the same checks through `.github/workflows/00631l_backend_maintenance.yml`. The workflow wakes the public backend, checks readiness, collects intraday status, updates official price history, and verifies status endpoints. Details: `docs\00631l_remote_maintenance.md`.
 
 ## v1.0 local setup
 

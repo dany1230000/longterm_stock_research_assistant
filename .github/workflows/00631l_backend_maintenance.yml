@@ -1,0 +1,50 @@
+name: 00631L Public Backend Maintenance
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Maintenance mode: intraday, daily, or all"
+        required: false
+        default: "all"
+  schedule:
+    - cron: "*/15 1-5 * * 1-5"
+    - cron: "20 8 * * 1-5"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 00631l-backend-maintenance
+  cancel-in-progress: false
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_BACKEND_URL: ${{ secrets.PUBLIC_BACKEND_URL || 'https://longterm-stock-research-assistant.onrender.com' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set maintenance mode
+        id: mode
+        shell: bash
+        run: |
+          MODE="${{ github.event.inputs.mode }}"
+          if [ -z "${MODE}" ]; then
+            if [ "${{ github.event.schedule }}" = "20 8 * * 1-5" ]; then
+              MODE="daily"
+            else
+              MODE="intraday"
+            fi
+          fi
+          echo "mode=${MODE}" >> "${GITHUB_OUTPUT}"
+          echo "Maintenance mode: ${MODE}"
+
+      - name: Run remote maintenance
+        run: |
+          python backend/scripts/remote_maintenance_00631l.py \
+            --base-url "${PUBLIC_BACKEND_URL}" \
+            --mode "${{ steps.mode.outputs.mode }}"

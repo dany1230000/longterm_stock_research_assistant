@@ -7,6 +7,7 @@ This is the main entry point for 00631L lab documentation.
 - Standalone PWA v3.2 summary: `docs\00631l_v3_2_standalone_pwa_summary.md`
 - Live-public ready v3.3 summary: `docs\00631l_v3_3_live_public_summary.md`
 - Live backend v3.4 summary: `docs\00631l_v3_4_live_backend_summary.md`
+- Remote maintenance v3.5 summary: `docs\00631l_v3_5_remote_maintenance_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -21,6 +22,7 @@ This is the main entry point for 00631L lab documentation.
 - Future App Store path: `docs\00631l_app_store_path.md`
 - Troubleshooting: `docs\00631l_troubleshooting.md`
 - Maintenance index: `docs\00631l_maintenance_index.md`
+- Remote maintenance: `docs\00631l_remote_maintenance.md`
 - Deployment notes: `docs\00631l_deployment_notes.md`
 
 ## Daily Operation
@@ -34,6 +36,7 @@ This is the main entry point for 00631L lab documentation.
 - Daily cycle: `scripts\00631l_daily_cycle.cmd`
 - Price history update: `scripts\00631l_update_price_history.cmd`
 - Release check: `scripts\00631l_release_check.cmd`
+- Remote public backend maintenance: `scripts\00631l_remote_maintenance.cmd --mode all`
 - Public config check: `scripts\00631l_check_public_config.cmd`
 - Public web build: `scripts\00631l_build_web_public.cmd`
 - Backend production check: `scripts\00631l_backend_prod_check.cmd`
@@ -68,6 +71,7 @@ This is the main entry point for 00631L lab documentation.
 - Deployment precheck: `scripts\00631l_deploy_precheck.cmd`
 - Public config check: `scripts\00631l_check_public_config.cmd`
 - Scheduler setup: `docs\00631l_scheduler_setup.md`
+- Remote maintenance: `docs\00631l_remote_maintenance.md`
 
 ## Release Summaries
 
@@ -85,6 +89,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Standalone PWA release: `docs\00631l_v3_2_standalone_pwa_summary.md`
 - Live-public ready release: `docs\00631l_v3_3_live_public_summary.md`
 - Live backend release: `docs\00631l_v3_4_live_backend_summary.md`
+- Remote maintenance release: `docs\00631l_v3_5_remote_maintenance_summary.md`
 
 ## Scope Boundary
 

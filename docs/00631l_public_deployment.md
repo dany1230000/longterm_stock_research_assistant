@@ -74,6 +74,36 @@ Persistent volume must mount `/data/00631l`. Without it, the backend can run, bu
 
 Full guide: `docs\00631l_live_backend_deployment.md`.
 
+## Remote maintenance after deployment
+
+After the public backend is deployed, use the remote maintenance workflow to keep it warm and verify data endpoints.
+
+Manual command:
+
+```cmd
+scripts\00631l_remote_maintenance.cmd --mode all
+```
+
+Dry-run:
+
+```cmd
+scripts\00631l_remote_maintenance.cmd --dry-run
+```
+
+GitHub Actions:
+
+```text
+.github/workflows/00631l_backend_maintenance.yml
+```
+
+The workflow uses `PUBLIC_BACKEND_URL` if a repository secret is configured. If not, it uses:
+
+```text
+https://longterm-stock-research-assistant.onrender.com
+```
+
+It runs intraday endpoint checks during Taiwan market hours and a daily official history update after the market session. The workflow does not require cloud tokens and does not store backend data in git. Full details: `docs\00631l_remote_maintenance.md`.
+
 ## v3.0 public app-ready note
 
 The codebase is ready for a public frontend plus public backend deployment, but this repository does not include cloud credentials, DNS ownership, TLS certificates, or a running server.

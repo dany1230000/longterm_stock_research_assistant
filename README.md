@@ -46,6 +46,8 @@ Public deployment helpers:
 scripts\00631l_check_public_config.cmd
 scripts\00631l_backend_prod_check.cmd
 scripts\00631l_backend_docker_check.cmd
+scripts\00631l_remote_maintenance.cmd --dry-run
+scripts\00631l_remote_maintenance.cmd --mode all
 scripts\00631l_export_static_data.cmd --status-only
 scripts\00631l_export_static_data.cmd --update
 set PUBLIC_BACKEND_URL=https://your-backend.example.com
@@ -69,6 +71,14 @@ https://longterm-stock-research-assistant.onrender.com
 ```
 
 GitHub Pages builds now use this backend URL by default and keep static history fallback.
+
+Remote maintenance:
+
+```cmd
+scripts\00631l_remote_maintenance.cmd --mode all
+```
+
+GitHub Actions also runs `.github/workflows/00631l_backend_maintenance.yml` to wake the public backend, collect intraday status, update official price history, and verify key public endpoints. Details: `docs\00631l_remote_maintenance.md`.
 
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
