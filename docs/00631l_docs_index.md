@@ -12,6 +12,7 @@ This is the main entry point for 00631L lab documentation.
 - Complete-data UI v3.7 summary: `docs\00631l_v3_7_complete_data_ui_summary.md`
 - Market app UI v3.8 summary: `docs\00631l_v3_8_market_app_ui_summary.md`
 - Mobile information architecture v3.9 summary: `docs\00631l_v3_9_mobile_information_architecture_summary.md`
+- Mobile polish v3.10 summary: `docs\00631l_v3_10_mobile_polish_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -98,6 +99,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Complete-data UI release: `docs\00631l_v3_7_complete_data_ui_summary.md`
 - Market app UI release: `docs\00631l_v3_8_market_app_ui_summary.md`
 - Mobile information architecture release: `docs\00631l_v3_9_mobile_information_architecture_summary.md`
+- Mobile polish release: `docs\00631l_v3_10_mobile_polish_summary.md`
 
 ## Scope Boundary
 

@@ -106,6 +106,12 @@ v3.9 mobile information architecture:
 - Market-focus rows use clear DAY/LIVE/HIS/AI/SYS data badges instead of decorative icons.
 - Summary: `docs\00631l_v3_9_mobile_information_architecture_summary.md`.
 
+v3.10 mobile polish:
+
+- Bottom navigation now fits all seven 00631L sections without horizontal scrolling.
+- Mobile tables render as readable cards; wider screens still use dense tables.
+- Summary: `docs\00631l_v3_10_mobile_polish_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

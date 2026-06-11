@@ -124,6 +124,37 @@ void main() {
     expect(find.textContaining('local-only'), findsOneWidget);
   });
 
+  testWidgets('phone holdings tables render as readable cards', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _tapSection(tester, 'holdings');
+    await tester.pumpAndSettle();
+
+    expect(find.text('官方每日內容物'), findsOneWidget);
+    expect(find.text('股票資產'), findsWidgets);
+    expect(find.text('期貨資產'), findsWidgets);
+    expect(find.byType(DataTable), findsNothing);
+    for (final section in const [
+      'overview',
+      'holdings',
+      'history',
+      'backtest',
+      'position',
+      'ai',
+      'system',
+    ]) {
+      expect(find.byKey(ValueKey('00631l-section-$section')), findsOneWidget);
+    }
+    _expectNoTradingActionText();
+  });
+
   testWidgets('AI and system sections render clean status wording',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());

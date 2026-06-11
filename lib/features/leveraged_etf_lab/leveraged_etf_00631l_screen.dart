@@ -913,51 +913,94 @@ class _MarketBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: _marketNav,
-        border: Border(top: BorderSide(color: _marketBorder)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: 70,
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            scrollDirection: Axis.horizontal,
-            itemCount: _LabSection.values.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 2),
-            itemBuilder: (context, index) {
-              final section = _LabSection.values[index];
-              final isSelected = section == selected;
-              final color = isSelected ? _marketBlue : _marketMutedText;
-              return InkWell(
-                key: ValueKey('00631l-section-${section.name}'),
-                borderRadius: BorderRadius.circular(10),
-                onTap: () => onChanged(section),
-                child: SizedBox(
-                  width: 62,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(section.icon, color: color, size: 24),
-                      const SizedBox(height: 4),
-                      Text(
-                        section.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: color,
-                              fontWeight: isSelected
-                                  ? FontWeight.w900
-                                  : FontWeight.w700,
-                            ),
-                      ),
-                    ],
-                  ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = (constraints.maxWidth / _LabSection.values.length)
+            .clamp(48.0, 96.0)
+            .toDouble();
+        return DecoratedBox(
+          decoration: const BoxDecoration(
+            color: _marketNav,
+            border: Border(top: BorderSide(color: _marketBorder)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              height: 72,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  for (final section in _LabSection.values)
+                    _MarketBottomNavItem(
+                      section: section,
+                      selected: section == selected,
+                      width: itemWidth,
+                      onTap: () => onChanged(section),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _MarketBottomNavItem extends StatelessWidget {
+  const _MarketBottomNavItem({
+    required this.section,
+    required this.selected,
+    required this.width,
+    required this.onTap,
+  });
+
+  final _LabSection section;
+  final bool selected;
+  final double width;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? _marketBlue : _marketMutedText;
+    return InkWell(
+      key: ValueKey('00631l-section-${section.name}'),
+      borderRadius: BorderRadius.circular(10),
+      onTap: onTap,
+      child: SizedBox(
+        width: width,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 160),
+                width: selected ? 34 : 24,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: selected
+                      ? _marketBlue.withValues(alpha: 0.16)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(999),
                 ),
-              );
-            },
+                child: Icon(section.icon, color: color, size: 21),
+              ),
+              const SizedBox(height: 3),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  section.label,
+                  maxLines: 1,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: color,
+                        fontWeight:
+                            selected ? FontWeight.w900 : FontWeight.w700,
+                        letterSpacing: 0,
+                      ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -2935,41 +2978,150 @@ class _HorizontalTable extends StatelessWidget {
     if (rows.isEmpty) {
       return const Text('尚無資料');
     }
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(minWidth: columns.length * 132),
-        child: DataTable(
-          headingRowHeight: 40,
-          dataRowMinHeight: 42,
-          dataRowMaxHeight: 58,
-          columns: [
-            for (final column in columns)
-              DataColumn(
-                label: Text(
-                  column,
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-              ),
-          ],
-          rows: [
-            for (final row in rows)
-              DataRow(
-                cells: [
-                  for (final cell in row)
-                    DataCell(
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 220),
-                        child: Text(
-                          cell,
-                          overflow: TextOverflow.ellipsis,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 560) {
+          return _MobileTableCards(columns: columns, rows: rows);
+        }
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: columns.length * 132),
+            child: DataTable(
+              headingRowHeight: 40,
+              dataRowMinHeight: 42,
+              dataRowMaxHeight: 58,
+              columns: [
+                for (final column in columns)
+                  DataColumn(
+                    label: Text(
+                      column,
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ),
+              ],
+              rows: [
+                for (final row in rows)
+                  DataRow(
+                    cells: [
+                      for (final cell in row)
+                        DataCell(
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 220),
+                            child: Text(
+                              cell,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _MobileTableCards extends StatelessWidget {
+  const _MobileTableCards({
+    required this.columns,
+    required this.rows,
+  });
+
+  final List<String> columns;
+  final List<List<String>> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        for (final row in rows)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest
+                    .withValues(alpha: 0.42),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: theme.colorScheme.outlineVariant),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      row.isEmpty ? '-' : row.first,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
-                ],
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (var index = 1; index < row.length; index++)
+                          _MobileTableField(
+                            label: index < columns.length
+                                ? columns[index]
+                                : '欄位 $index',
+                            value: row[index],
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-          ],
-        ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _MobileTableField extends StatelessWidget {
+  const _MobileTableField({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 118, maxWidth: 180),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
       ),
     );
   }
