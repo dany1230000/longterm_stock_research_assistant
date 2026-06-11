@@ -12,6 +12,7 @@ backend/data/
 backend/exports/
 backend/backups/
 backend/reports/
+web/00631l-static-data/
 ios/Flutter/Generated.xcconfig
 ios/Flutter/flutter_export_environment.sh
 android/.gradle/

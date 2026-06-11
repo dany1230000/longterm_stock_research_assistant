@@ -65,6 +65,10 @@ def main() -> int:
             "price_history_status",
             ["cmd", "/c", "scripts\\00631l_update_price_history.cmd", "--status-only"],
         ),
+        _run_command(
+            "static_public_data",
+            ["cmd", "/c", "scripts\\00631l_export_static_data.cmd", "--status-only"],
+        ),
         _run_command("smoke", ["py", "backend\\scripts\\smoke_00631l_live.py"]),
         _forbidden_wording_scan(),
         _run_command("git_diff_check", ["git", "diff", "--check"]),
@@ -120,11 +124,13 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_position_tracking.md",
         "docs/00631l_data_sources_freshness.md",
         "docs/00631l_v3_0_app_ready_summary.md",
+        "docs/00631l_v3_1_static_public_summary.md",
         "docs/00631l_daily_report_guide.md",
         "backend/Dockerfile",
         "backend/app/analysis.py",
         "backend/app/backtest.py",
         "backend/app/price_history.py",
+        "backend/app/static_export.py",
         "backend/app/data_integrity.py",
         "backend/app/data_backup.py",
         "backend/app/restore_dry_run.py",
@@ -145,6 +151,8 @@ def _required_files_check() -> dict[str, Any]:
         "scripts/00631l_backup_data.cmd",
         "scripts/00631l_restore_dry_run.cmd",
         "scripts/00631l_update_price_history.cmd",
+        "scripts/00631l_export_static_data.cmd",
+        "scripts/00631l_build_pages_static.cmd",
     ]
     missing = [path for path in required_files if not (ROOT / path).exists()]
     return {

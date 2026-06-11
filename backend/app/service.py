@@ -265,7 +265,7 @@ class Etf00631LService:
                 error_message=f"Intraday NAV history summary read failed: {error}",
             )
 
-    def price_history(self, *, limit: int = 800) -> dict[str, Any]:
+    def price_history(self, *, limit: int = 5000) -> dict[str, Any]:
         now = utc_now_iso()
         try:
             return self._price_history_store.price_response(

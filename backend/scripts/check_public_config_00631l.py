@@ -36,6 +36,9 @@ def run_public_config_check(root: Path = ROOT) -> dict[str, Any]:
         _required_file_check(root, "docs/00631l_public_deployment.md"),
         _required_file_check(root, "docs/00631l_pwa_usage.md"),
         _required_file_check(root, "docs/00631l_app_store_path.md"),
+        _required_file_check(root, "docs/00631l_v3_1_static_public_summary.md"),
+        _required_file_check(root, "scripts/00631l_export_static_data.cmd"),
+        _required_file_check(root, "scripts/00631l_build_pages_static.cmd"),
         _tracked_artifact_check(root),
     ]
     failures = [check["message"] for check in checks if check["status"] == "FAIL"]
@@ -165,6 +168,7 @@ def _tracked_artifact_check(root: Path) -> dict[str, Any]:
             "backend/exports",
             "backend/backups",
             "backend/reports",
+            "web/00631l-static-data",
         ],
         cwd=root,
         capture_output=True,

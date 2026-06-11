@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
 - Mobile usage: `docs\00631l_mobile_usage.md`
@@ -31,6 +32,8 @@ This is the main entry point for 00631L lab documentation.
 - Release check: `scripts\00631l_release_check.cmd`
 - Public config check: `scripts\00631l_check_public_config.cmd`
 - Public web build: `scripts\00631l_build_web_public.cmd`
+- Static data export: `scripts\00631l_export_static_data.cmd --update`
+- GitHub Pages static build: `scripts\00631l_build_pages_static.cmd`
 
 ## Data And Reports
 
@@ -71,6 +74,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Mobile + AI release: `docs\00631l_v2_1_mobile_ai_summary.md`
 - Public deploy-ready release: `docs\00631l_v2_2_public_deploy_ready_summary.md`
 - App-ready release: `docs\00631l_v3_0_app_ready_summary.md`
+- Static-public release: `docs\00631l_v3_1_static_public_summary.md`
 
 ## Scope Boundary
 

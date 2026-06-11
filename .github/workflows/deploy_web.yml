@@ -1,6 +1,9 @@
 name: Deploy Flutter Web To GitHub Pages
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 8 * * 1-5"
   push:
     branches:
       - main
@@ -39,8 +42,11 @@ jobs:
       - name: Run tests
         run: flutter test
 
+      - name: Export static 00631L data
+        run: python backend/scripts/export_static_00631l_data.py --update --strict --output-dir web/00631l-static-data
+
       - name: Build web
-        run: flutter build web --base-href="/longterm_stock_research_assistant/"
+        run: flutter build web --base-href="/longterm_stock_research_assistant/" --dart-define=USE_00631L_STATIC_DATA=true --dart-define=00631L_STATIC_DATA_BASE_URL=00631l-static-data
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

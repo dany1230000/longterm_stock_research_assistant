@@ -1,0 +1,342 @@
+import 'dart:convert';
+
+import '../models/leveraged_etf_lab.dart';
+import 'mock_00631l_repository.dart';
+import 'official_00631l_repository.dart';
+import 'proxy_http_client.dart';
+
+class Static00631LRepository extends Mock00631LRepository {
+  Static00631LRepository({
+    String baseUrl = '00631l-static-data',
+    ProxyHttpClient? client,
+    this.timeout = const Duration(seconds: 8),
+  })  : baseUrl = baseUrl.replaceFirst(RegExp(r'/+$'), ''),
+        _client = client ?? createProxyHttpClient();
+
+  final String baseUrl;
+  final ProxyHttpClient _client;
+  final Duration timeout;
+
+  @override
+  Future<EtfIntradayNav?> fetchIntradayNav() async {
+    return null;
+  }
+
+  @override
+  Future<EtfHoldingsHistory> fetchHoldingsHistorySummary({
+    int limit = 30,
+  }) async {
+    return EtfHoldingsHistory.empty(
+      status: EtfDataStatus.error,
+      sourceStatusLabel: 'backend_required',
+      errorMessage:
+          'Static public mode does not include official holdings history.',
+    );
+  }
+
+  @override
+  Future<EtfIntradayNavHistorySummary> fetchIntradayNavHistorySummary() async {
+    return EtfIntradayNavHistorySummary.empty(
+      status: EtfDataStatus.error,
+      sourceStatusLabel: 'backend_required',
+      errorMessage: 'Static public mode does not include live intraday NAV.',
+    );
+  }
+
+  @override
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
+    final payload = await _tryGetJson('price_history.json');
+    if (payload == null) {
+      return EtfPriceHistory.empty(
+        status: EtfDataStatus.error,
+        sourceStatusLabel: 'unavailable',
+        sourceUrl: _resolve('price_history.json').toString(),
+        errorMessage: 'Static public price_history.json is unavailable.',
+      );
+    }
+    final items = [
+      for (final item in _list(payload['items']).take(limit))
+        _pricePoint(_map(item)),
+    ];
+    final rawStatus = _string(payload['sourceStatus'], fallback: 'unavailable');
+    return EtfPriceHistory(
+      points: items,
+      status: rawStatus == 'static_official'
+          ? EtfDataStatus.cached
+          : EtfDataStatus.error,
+      sourceStatusLabel: rawStatus,
+      sourceUrl: _resolve('price_history.json').toString(),
+      lastFetchedAt:
+          _dateTime(payload['generatedAt'] ?? payload['fetchedAt']) ??
+              DateTime.now(),
+      coverageStart: _date(payload['coverageStart']),
+      coverageEnd: _date(payload['coverageEnd']),
+      isCompleteFromListing: payload['isCompleteFromListing'] == true,
+      errorMessage: payload['errorMessage']?.toString(),
+    );
+  }
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    final statusPayload = await _tryGetJson('status.json');
+    if (statusPayload == null) {
+      return _staticOperationsStatus(
+        rawStatus: 'unavailable',
+        rowCount: 0,
+        coverageStart: null,
+        coverageEnd: null,
+        generatedAt: null,
+        isStale: true,
+        errorMessage: 'Static public status.json is unavailable.',
+      );
+    }
+    final rawStatus =
+        _string(statusPayload['sourceStatus'], fallback: 'unavailable');
+    final rowCount = _int(statusPayload['rowCount']);
+    return _staticOperationsStatus(
+      rawStatus: rawStatus,
+      rowCount: rowCount,
+      coverageStart: _date(statusPayload['coverageStart']),
+      coverageEnd: _date(statusPayload['coverageEnd']),
+      generatedAt: _dateTime(statusPayload['generatedAt']),
+      isStale: statusPayload['isStale'] == true,
+      isCompleteFromListing: statusPayload['isCompleteFromListing'] == true,
+      errorMessage: rowCount >= 2
+          ? null
+          : statusPayload['errorMessage']?.toString() ??
+              'Static public price history has fewer than two rows.',
+    );
+  }
+
+  EtfOperationsStatus _staticOperationsStatus({
+    required String rawStatus,
+    required int rowCount,
+    required DateTime? coverageStart,
+    required DateTime? coverageEnd,
+    required DateTime? generatedAt,
+    required bool isStale,
+    bool isCompleteFromListing = false,
+    String? errorMessage,
+  }) {
+    final now = DateTime.now();
+    return EtfOperationsStatus(
+      status: rawStatus == 'static_official'
+          ? EtfDataStatus.cached
+          : EtfDataStatus.error,
+      sourceStatusLabel: 'static_public_data',
+      sourceContract: '00631l_static_public_operations',
+      sourceUrl: _resolve('manifest.json').toString(),
+      lastFetchedAt: generatedAt ?? now,
+      sourceUpdatedAt: coverageEnd,
+      isStale: isStale,
+      intradaySourceMode: 'backend_required',
+      twseIntradayNavConfigured: false,
+      yuantaIntradayNavConfigured: false,
+      publicApiBaseUrl: '',
+      allowedOrigins: const [],
+      dataRoot: 'web/00631l-static-data',
+      dataPersistenceMode: 'static_public',
+      dataPersistenceWarning:
+          'Static public mode has historical data only; live intraday NAV still needs backend.',
+      dataPathWritable: false,
+      dataPathPersistent: true,
+      holdingsHistoryStatus: 'backend_required',
+      holdingsHistoryItemCount: 0,
+      latestHoldingTradeDate: null,
+      intradayHistoryStatus: 'backend_required',
+      intradaySampleCount: 0,
+      latestIntradayDataTime: null,
+      intradayHistoryDate: null,
+      priceHistoryStatus: rawStatus,
+      priceHistoryRows: rowCount,
+      priceHistoryCoverageStart: coverageStart,
+      priceHistoryCoverageEnd: coverageEnd,
+      priceHistoryCompleteFromListing: isCompleteFromListing,
+      backtestStatus: rowCount >= 2 ? 'static_official' : 'unavailable',
+      backtestAvailable: rowCount >= 2,
+      positionStatus: 'local_only',
+      collectorOneShotCommand: 'public backend required for live collection',
+      collectorIntradayCommand: 'public backend required for live intraday NAV',
+      envFileExists: false,
+      missingEnvKeys: const ['PUBLIC_API_BASE_URL', 'ALLOWED_ORIGINS'],
+      optionalMissingEnvKeys: const [],
+      dataDirReady: true,
+      exportDirReady: true,
+      backupDirReady: false,
+      exportAvailable: true,
+      latestExportPath: 'web/00631l-static-data/price_history.json',
+      latestExportUpdatedAt: generatedAt,
+      backupAvailable: false,
+      latestBackupPath: null,
+      latestBackupUpdatedAt: null,
+      reportAvailable: false,
+      latestReportPath: null,
+      latestReportGeneratedAt: null,
+      reportOverallStatus: 'static_public',
+      reportWarningCount: rowCount >= 2 ? 0 : 1,
+      reportFailureCount: 0,
+      dailyCycleStatus: 'not_available_in_static_mode',
+      dailyCycleStartedAt: null,
+      dailyCycleFinishedAt: null,
+      dailyCycleWarningCount: 0,
+      dailyCycleFailureCount: 0,
+      errorMessage: errorMessage,
+    );
+  }
+
+  @override
+  Future<EtfAiAnalysisSummary> fetchAiAnalysisSummary() async {
+    final status = await fetchOperationsStatus();
+    final hasHistory = status.priceHistoryRows >= 2;
+    return EtfAiAnalysisSummary(
+      source: 'rule_based',
+      sourceStatusLabel: hasHistory ? 'static_official' : 'unavailable',
+      generatedAt: DateTime.now(),
+      dataTime: status.priceHistoryCoverageEnd,
+      readinessLevel: hasHistory ? 'attention' : 'action_needed',
+      bullets: [
+        'static public mode 使用 GitHub Pages 靜態 JSON 顯示歷史價格與回測資料。',
+        if (hasHistory)
+          '歷史價格 coverage ${_dateLabel(status.priceHistoryCoverageStart)} - ${_dateLabel(status.priceHistoryCoverageEnd)}，rows ${status.priceHistoryRows}。'
+        else
+          '尚無足夠 static price history，歷史與回測區會顯示資料不足。',
+        'live intraday NAV、official holdings 更新與 daily cycle 仍需要 backend proxy。',
+        '此摘要只解釋資料狀態與歷史資料可用性。',
+      ],
+      actionItems: hasHistory
+          ? const ['若需要 live intraday NAV，請部署 public backend proxy。']
+          : const [
+              '請執行 scripts\\00631l_update_price_history.cmd。',
+              '請執行 scripts\\00631l_export_static_data.cmd --update。',
+            ],
+      sourceStatuses: {
+        'analysis': hasHistory ? 'static_official' : 'unavailable',
+        'priceHistory': status.priceHistoryStatus,
+        'intradayNav': 'backend_required',
+        'holdingsHistory': 'backend_required',
+      },
+      disclaimer: '非買賣建議',
+      errorMessage: status.errorMessage,
+    );
+  }
+
+  Future<Map<String, dynamic>> _getJson(String filename) async {
+    final body = await _client.getString(_resolve(filename), timeout: timeout);
+    final decoded = jsonDecode(body);
+    if (decoded is! Map<String, dynamic>) {
+      throw RepositoryFetchException(
+        'Static public data $filename is not an object',
+      );
+    }
+    return decoded;
+  }
+
+  Future<Map<String, dynamic>?> _tryGetJson(String filename) async {
+    try {
+      return await _getJson(filename);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Uri _resolve(String filename) {
+    final normalized = filename.replaceFirst(RegExp(r'^/+'), '');
+    return Uri.parse('$baseUrl/$normalized');
+  }
+}
+
+EtfPriceHistoryPoint _pricePoint(Map<String, dynamic> payload) {
+  return EtfPriceHistoryPoint(
+    date: _date(payload['date']) ?? DateTime(1970),
+    close: _double(payload['close']),
+    open: _nullableDouble(payload['open']),
+    high: _nullableDouble(payload['high']),
+    low: _nullableDouble(payload['low']),
+    volume: _nullableInt(payload['volume']),
+    nav: _nullableDouble(payload['nav']),
+    premiumDiscountPct: _nullableDouble(payload['premiumDiscountPct']),
+    dailyReturnPct: _nullableDouble(payload['dailyReturnPct']),
+    cumulativeReturnPct: _nullableDouble(payload['cumulativeReturnPct']),
+    drawdownPct: _nullableDouble(payload['drawdownPct']),
+  );
+}
+
+Map<String, dynamic> _map(Object? value) {
+  if (value is Map<String, dynamic>) {
+    return value;
+  }
+  if (value is Map) {
+    return value.map((key, item) => MapEntry(key.toString(), item));
+  }
+  return const {};
+}
+
+List<Object?> _list(Object? value) {
+  if (value is List) {
+    return value.cast<Object?>();
+  }
+  return const [];
+}
+
+String _string(Object? value, {String fallback = ''}) {
+  final text = value?.toString();
+  if (text == null || text.isEmpty) {
+    return fallback;
+  }
+  return text;
+}
+
+double _double(Object? value, {double fallback = 0}) {
+  return _nullableDouble(value) ?? fallback;
+}
+
+double? _nullableDouble(Object? value) {
+  if (value is num) {
+    return value.toDouble();
+  }
+  if (value == null) {
+    return null;
+  }
+  return double.tryParse(value.toString().replaceAll(',', '').trim());
+}
+
+int _int(Object? value, {int fallback = 0}) {
+  return _nullableInt(value) ?? fallback;
+}
+
+int? _nullableInt(Object? value) {
+  if (value is int) {
+    return value;
+  }
+  if (value is num) {
+    return value.toInt();
+  }
+  if (value == null) {
+    return null;
+  }
+  return int.tryParse(value.toString().replaceAll(',', '').trim());
+}
+
+DateTime? _date(Object? value) {
+  final parsed = _dateTime(value);
+  if (parsed == null) {
+    return null;
+  }
+  return DateTime(parsed.year, parsed.month, parsed.day);
+}
+
+DateTime? _dateTime(Object? value) {
+  if (value == null) {
+    return null;
+  }
+  return DateTime.tryParse(value.toString());
+}
+
+String _dateLabel(DateTime? value) {
+  if (value == null) {
+    return 'unavailable';
+  }
+  final month = value.month.toString().padLeft(2, '0');
+  final day = value.day.toString().padLeft(2, '0');
+  return '${value.year}/$month/$day';
+}

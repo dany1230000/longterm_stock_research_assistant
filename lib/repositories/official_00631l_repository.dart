@@ -36,7 +36,7 @@ abstract class Official00631LRepository {
     return EtfAiAnalysisSummary.mockFallback();
   }
 
-  Future<EtfPriceHistory> fetchPriceHistory({int limit = 800}) async {
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
     return EtfPriceHistory.empty(
       sourceStatusLabel: 'unavailable',
       status: EtfDataStatus.error,

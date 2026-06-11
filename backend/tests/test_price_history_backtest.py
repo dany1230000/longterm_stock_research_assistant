@@ -9,6 +9,7 @@ from backend.app.price_history import (
     parse_twse_stock_day,
     performance_summary,
 )
+from backend.app.static_export import export_static_00631l_data, static_export_status
 
 
 class PriceHistoryAndBacktestTests(unittest.TestCase):
@@ -67,6 +68,45 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertEqual(result["totalInvested"], 100000)
         self.assertGreater(len(result["equityCurve"]), 1)
         self.assertEqual(result["disclaimer"], "回測不代表未來表現，非買賣建議")
+
+    def test_static_export_writes_public_json_when_history_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            store.save_points(rows)
+
+            result = export_static_00631l_data(
+                output_dir=root / "static",
+                price_history_store=store,
+                strict=True,
+            )
+
+            self.assertEqual(result["overallStatus"], "PASS")
+            self.assertEqual(result["rowCount"], 3)
+            self.assertTrue((root / "static" / "price_history.json").exists())
+            self.assertTrue((root / "static" / "performance.json").exists())
+            self.assertTrue((root / "static" / "status.json").exists())
+            self.assertTrue((root / "static" / "manifest.json").exists())
+
+            status = static_export_status(root / "static")
+            self.assertEqual(status["overallStatus"], "PASS")
+            self.assertEqual(status["sourceStatus"], "static_official")
+
+    def test_static_export_strict_fails_without_price_history(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+
+            result = export_static_00631l_data(
+                output_dir=root / "static",
+                price_history_store=store,
+                strict=True,
+            )
+
+            self.assertEqual(result["overallStatus"], "FAIL")
+            self.assertEqual(result["rowCount"], 0)
+            self.assertTrue(result["failures"])
 
 
 def _stock_day_fixture() -> str:

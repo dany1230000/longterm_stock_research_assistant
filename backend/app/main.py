@@ -99,7 +99,7 @@ def create_app(
         return current_service().analysis_summary()
 
     @fastapi_app.get("/api/etf/00631l/history/price")
-    def history_price(limit: int = Query(800, ge=1, le=5000)) -> dict:
+    def history_price(limit: int = Query(5000, ge=1, le=5000)) -> dict:
         return current_service().price_history(limit=limit)
 
     @fastapi_app.get("/api/etf/00631l/history/performance")

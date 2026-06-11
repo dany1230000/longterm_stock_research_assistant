@@ -25,6 +25,7 @@ import 'portfolio_repository.dart';
 import 'proxy_00631l_repository.dart';
 import 'stock_repository.dart';
 import 'screener_preset_repository.dart';
+import 'static_00631l_repository.dart';
 
 final stockRepositoryProvider = Provider<StockRepository>((ref) {
   return MockStockRepository();
@@ -161,14 +162,26 @@ final portfolioRiskProvider = FutureProvider<PortfolioRisk>((ref) {
 final official00631LRepositoryProvider =
     Provider<Official00631LRepository>((ref) {
   const useLiveProxy = bool.fromEnvironment('USE_00631L_LIVE_PROXY');
+  const useStaticData = bool.fromEnvironment('USE_00631L_STATIC_DATA');
   const proxyBaseUrl = String.fromEnvironment(
     '00631L_PROXY_BASE_URL',
     defaultValue: 'http://localhost:8000',
+  );
+  const staticDataBaseUrl = String.fromEnvironment(
+    '00631L_STATIC_DATA_BASE_URL',
+    defaultValue: '00631l-static-data',
   );
 
   if (useLiveProxy) {
     return Cached00631LRepository(
       primary: Proxy00631LRepository(baseUri: Uri.parse(proxyBaseUrl)),
+      fallback: Mock00631LRepository(),
+    );
+  }
+
+  if (useStaticData) {
+    return Cached00631LRepository(
+      primary: Static00631LRepository(baseUrl: staticDataBaseUrl),
       fallback: Mock00631LRepository(),
     );
   }

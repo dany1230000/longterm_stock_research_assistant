@@ -1333,6 +1333,9 @@ class EtfOperationsStatus {
   }
 
   String get backendConnectionLabel {
+    if (sourceStatusLabel == 'static_public_data') {
+      return 'static public data';
+    }
     if (backendDisconnected) {
       return 'backend disconnected';
     }
@@ -1349,6 +1352,9 @@ class EtfOperationsStatus {
   }
 
   String get backendConnectionCaption {
+    if (sourceStatusLabel == 'static_public_data') {
+      return 'historical data is loaded from static files; live intraday NAV needs backend';
+    }
     if (backendDisconnected) {
       return 'start scripts\\00631l_start_backend.cmd; fallback remains visible';
     }

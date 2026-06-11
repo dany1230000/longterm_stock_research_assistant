@@ -75,8 +75,8 @@ class Settings:
     twse_price_history_url_template: str = os.getenv(
         "TWSE_00631L_PRICE_HISTORY_URL_TEMPLATE",
         (
-            "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY"
-            "?date={yyyymmdd}&stockNo=00631L&response=json"
+            "https://www.twse.com.tw/exchangeReport/STOCK_DAY"
+            "?response=json&date={yyyymmdd}&stockNo=00631L"
         ),
     )
     request_timeout_seconds: float = _env_float("00631L_PROXY_TIMEOUT_SECONDS", 8)

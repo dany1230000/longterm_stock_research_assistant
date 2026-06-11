@@ -16,6 +16,39 @@ Minimum public setup:
 
 Without a public backend, the PWA can still load, but live data sections will show mock, stale, unavailable, or error states instead of official live data.
 
+## v3.1 GitHub Pages static mode
+
+If there is no cloud account, token, domain, or backend server yet, use static-public mode first.
+
+Static-public mode:
+
+- Generates official TWSE price history into `web\00631l-static-data`.
+- Builds Flutter Web with `USE_00631L_STATIC_DATA=true`.
+- Lets a phone open GitHub Pages and use history/backtest sections.
+- Labels the frontend mode as `static_public`.
+- Labels static history as `static_official`.
+- Keeps live intraday NAV marked as backend-required.
+
+Manual commands:
+
+```cmd
+scripts\00631l_export_static_data.cmd --update
+scripts\00631l_build_pages_static.cmd
+```
+
+GitHub Actions:
+
+- `.github/workflows/deploy_web.yml` supports manual `workflow_dispatch`.
+- It also runs on weekdays.
+- It runs strict static export before Flutter build.
+- If TWSE price history cannot be fetched and no usable cache exists, the build fails rather than deploying empty history.
+
+Public static URL after Pages deployment:
+
+```text
+https://dany1230000.github.io/longterm_stock_research_assistant/#/00631l-lab
+```
+
 本文件說明如何把 00631L 正二研究室部署成公開可連線工具。這不是綁定特定 cloud 平台的教學，也不需要把 token 或 secret 放進 repo。
 
 ## 架構

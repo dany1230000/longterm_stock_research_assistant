@@ -6,6 +6,7 @@ import 'package:longterm_stock_research_assistant/repositories/cached_00631l_rep
 import 'package:longterm_stock_research_assistant/repositories/mock_00631l_repository.dart';
 import 'package:longterm_stock_research_assistant/repositories/proxy_00631l_repository.dart';
 import 'package:longterm_stock_research_assistant/repositories/proxy_http_client.dart';
+import 'package:longterm_stock_research_assistant/repositories/static_00631l_repository.dart';
 
 void main() {
   test('proxy repository maps normalized backend profile and holdings',
@@ -178,6 +179,34 @@ void main() {
     expect(history.points, hasLength(3));
     expect(history.points.first.close, 30.5);
     expect(history.points.last.drawdownPct, -3.23);
+  });
+
+  test('static repository reads static public price history and status',
+      () async {
+    final repository = Static00631LRepository(
+      client: _FakeProxyHttpClient({
+        '00631l-static-data/price_history.json':
+            jsonEncode(_staticPriceHistoryPayload()),
+        '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
+      }),
+    );
+
+    final history = await repository.fetchPriceHistory();
+    final status = await repository.fetchOperationsStatus();
+    final analysis = await repository.fetchAiAnalysisSummary();
+
+    expect(history.status, EtfDataStatus.cached);
+    expect(history.sourceStatusLabel, 'static_official');
+    expect(history.points, hasLength(3));
+    expect(history.coverageStart, DateTime(2026, 6, 1));
+    expect(status.sourceStatusLabel, 'static_public_data');
+    expect(status.priceHistoryStatus, 'static_official');
+    expect(status.priceHistoryRows, 3);
+    expect(status.backtestAvailable, isTrue);
+    expect(status.backendConnectionLabel, 'static public data');
+    expect(analysis.sourceStatusLabel, 'static_official');
+    expect(analysis.sourceStatuses['intradayNav'], 'backend_required');
+    expect(analysis.disclaimer, '非買賣建議');
   });
 
   test('proxy repository maps AI analysis summary payload', () async {
@@ -630,6 +659,38 @@ Map<String, Object?> _priceHistoryPayload() {
     'coverageEnd': '2026-06-03',
     'isCompleteFromListing': false,
     'isStale': false,
+    'errorMessage': null,
+  };
+}
+
+Map<String, Object?> _staticPriceHistoryPayload() {
+  return {
+    ..._priceHistoryPayload(),
+    'sourceStatus': 'static_official',
+    'sourceContract': '00631l_static_price_history',
+    'sourceUrl': 'web/00631l-static-data/price_history.json',
+    'generatedAt': '2026-06-11T10:00:00+08:00',
+    'rowCount': 3,
+  };
+}
+
+Map<String, Object?> _staticStatusPayload() {
+  return {
+    'sourceStatus': 'static_official',
+    'sourceContract': '00631l_static_public_data',
+    'generatedAt': '2026-06-11T10:00:00+08:00',
+    'fetchedAt': '2026-06-11T10:00:00+08:00',
+    'sourceUpdatedAt': '2026-06-03',
+    'dataTime': '2026-06-03',
+    'coverageStart': '2026-06-01',
+    'coverageEnd': '2026-06-03',
+    'rowCount': 3,
+    'isCompleteFromListing': false,
+    'isStale': false,
+    'outputDir': 'web/00631l-static-data',
+    'warnings': [],
+    'failures': [],
+    'strict': false,
     'errorMessage': null,
   };
 }

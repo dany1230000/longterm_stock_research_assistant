@@ -115,7 +115,7 @@ class Cached00631LRepository extends Official00631LRepository {
   }
 
   @override
-  Future<EtfPriceHistory> fetchPriceHistory({int limit = 800}) async {
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
     try {
       final history = await _primary.fetchPriceHistory(limit: limit);
       _priceHistoryCache = history;

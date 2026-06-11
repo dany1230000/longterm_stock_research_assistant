@@ -168,7 +168,7 @@ Future<void> _tapSection(WidgetTester tester, String sectionName) async {
 
 class _PriceHistoryRepository extends Mock00631LRepository {
   @override
-  Future<EtfPriceHistory> fetchPriceHistory({int limit = 800}) async {
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
     final points = [
       EtfPriceHistoryPoint(date: DateTime(2026, 6, 1), close: 30.5),
       EtfPriceHistoryPoint(date: DateTime(2026, 6, 2), close: 31.0),
@@ -189,7 +189,7 @@ class _PriceHistoryRepository extends Mock00631LRepository {
 
 class _NoHistoryRepository extends Mock00631LRepository {
   @override
-  Future<EtfPriceHistory> fetchPriceHistory({int limit = 800}) async {
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
     return EtfPriceHistory.empty(
       lastFetchedAt: DateTime(2026, 6, 11),
       status: EtfDataStatus.error,

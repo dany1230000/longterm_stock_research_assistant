@@ -191,7 +191,7 @@ class Proxy00631LRepository extends Official00631LRepository {
   }
 
   @override
-  Future<EtfPriceHistory> fetchPriceHistory({int limit = 800}) async {
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
     final payload =
         await _getJson('/api/etf/00631l/history/price?limit=$limit');
     final rawStatus = _rawStatus(payload);

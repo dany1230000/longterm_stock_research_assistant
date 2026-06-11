@@ -12,9 +12,14 @@ import '../../services/position_store.dart';
 import '../../shared/utils/formatters.dart';
 
 const _use00631LLiveProxy = bool.fromEnvironment('USE_00631L_LIVE_PROXY');
+const _use00631LStaticData = bool.fromEnvironment('USE_00631L_STATIC_DATA');
 const _proxyBaseUrl00631l = String.fromEnvironment(
   '00631L_PROXY_BASE_URL',
   defaultValue: 'http://localhost:8000',
+);
+const _staticDataBaseUrl00631l = String.fromEnvironment(
+  '00631L_STATIC_DATA_BASE_URL',
+  defaultValue: '00631l-static-data',
 );
 
 class LeveragedEtf00631LScreen extends ConsumerStatefulWidget {
@@ -242,7 +247,8 @@ class _QuoteHeader extends StatelessWidget {
                 'holdings ${data.snapshot.status.label}',
                 'intraday ${nav?.status.label ?? 'unavailable'}',
                 'history ${data.priceHistory.sourceStatusLabel}',
-                'frontend ${_use00631LLiveProxy ? 'live_proxy' : 'mock_default'}',
+                'frontend $_frontendDataMode',
+                if (_use00631LStaticData) 'static $_staticDataBaseUrl00631l',
                 'backend ${data.operationsStatus.backendConnectionLabel}',
                 if (nav?.sourceContract != null) nav!.sourceContract!,
               ],
@@ -281,6 +287,16 @@ class _QuoteHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+String get _frontendDataMode {
+  if (_use00631LLiveProxy) {
+    return 'live_proxy';
+  }
+  if (_use00631LStaticData) {
+    return 'static_public';
+  }
+  return 'mock_default';
 }
 
 class _ThemeToggleButton extends StatelessWidget {
@@ -1134,7 +1150,7 @@ class _SystemStatusSection extends StatelessWidget {
                 detail:
                     'rows ${status.priceHistoryRows}，coverage ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}。',
                 action: status.priceHistoryRows < 2
-                    ? '請執行 scripts\\00631l_update_price_history.cmd。'
+                    ? '請執行 scripts\\00631l_update_price_history.cmd；GitHub Pages 請執行 scripts\\00631l_export_static_data.cmd --update。'
                     : '歷史價格可供回測。',
               ),
               _StatusItem(
