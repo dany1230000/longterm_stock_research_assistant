@@ -248,6 +248,10 @@ class _QuoteHeader extends StatelessWidget {
                 'intraday ${nav?.status.label ?? 'unavailable'}',
                 'history ${data.priceHistory.sourceStatusLabel}',
                 'frontend $_frontendDataMode',
+                if (_use00631LLiveProxy)
+                  'api ${data.operationsStatus.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : data.operationsStatus.publicApiBaseUrl}',
+                if (_use00631LLiveProxy)
+                  'apiCheck ${_dateTimeOrDash(data.operationsStatus.lastFetchedAt)}',
                 if (_use00631LStaticData) 'static $_staticDataBaseUrl00631l',
                 if (_use00631LStaticData)
                   'rows ${data.operationsStatus.priceHistoryRows}',
@@ -304,6 +308,16 @@ String get _frontendDataMode {
 }
 
 String _frontendModeDetail(Etf00631LLabData data) {
+  if (_use00631LLiveProxy) {
+    final status = data.operationsStatus;
+    final api = status.publicApiBaseUrl.isEmpty
+        ? _proxyBaseUrl00631l
+        : status.publicApiBaseUrl;
+    const fallback = _use00631LStaticData
+        ? '; static public history remains available when live API is disconnected'
+        : '';
+    return 'live_proxy API $api$fallback.';
+  }
   if (_use00631LStaticData) {
     final status = data.operationsStatus;
     return '公開靜態資料模式，rowCount ${status.priceHistoryRows}，coverage '
@@ -319,6 +333,12 @@ String _frontendModeDetail(Etf00631LLabData data) {
 }
 
 String _frontendModeAction(Etf00631LLabData data) {
+  if (_use00631LLiveProxy) {
+    if (_use00631LStaticData && data.operationsStatus.backendDisconnected) {
+      return 'Check public backend /ready; static public history remains visible while live API is unavailable.';
+    }
+    return 'Check public backend /health, /ready, and operations/status.';
+  }
   if (_use00631LStaticData) {
     return data.operationsStatus.priceHistoryRows < 2
         ? '請執行 scripts\\00631l_export_static_data.cmd --update 產生 static JSON。'

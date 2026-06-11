@@ -31,8 +31,11 @@ def main() -> int:
     steps = [
         _required_files_check(),
         _pwa_metadata_check(),
+        _readiness_endpoint_check(),
         _analysis_endpoint_check(),
         _run_command("public_config", ["cmd", "/c", "scripts\\00631l_check_public_config.cmd"]),
+        _run_command("backend_prod_check", ["cmd", "/c", "scripts\\00631l_backend_prod_check.cmd"]),
+        _run_command("backend_docker_check", ["cmd", "/c", "scripts\\00631l_backend_docker_check.cmd"]),
         _run_command("deploy_precheck", ["cmd", "/c", "scripts\\00631l_deploy_precheck.cmd"]),
         _run_command("env_check", ["cmd", "/c", "scripts\\00631l_check_env.cmd"]),
         _run_command("flutter_analyze", ["cmd", "/c", "flutter", "analyze"]),
@@ -127,7 +130,13 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v3_0_app_ready_summary.md",
         "docs/00631l_v3_1_static_public_summary.md",
         "docs/00631l_v3_2_standalone_pwa_summary.md",
+        "docs/00631l_live_backend_deployment.md",
+        "docs/00631l_v3_3_live_public_summary.md",
         "docs/00631l_daily_report_guide.md",
+        "deploy/docker-compose.yml",
+        "deploy/Caddyfile",
+        "deploy/nginx.example.conf",
+        "deploy/render.yaml",
         "backend/Dockerfile",
         "backend/app/analysis.py",
         "backend/app/backtest.py",
@@ -138,9 +147,13 @@ def _required_files_check() -> dict[str, Any]:
         "backend/app/restore_dry_run.py",
         "backend/app/retention_policy.py",
         "backend/scripts/check_public_config_00631l.py",
+        "backend/scripts/backend_prod_check_00631l.py",
+        "backend/scripts/backend_docker_check_00631l.py",
         "backend/scripts/deploy_precheck_00631l.py",
         "scripts/00631l_check_public_config.cmd",
         "scripts/00631l_build_web_public.cmd",
+        "scripts/00631l_backend_prod_check.cmd",
+        "scripts/00631l_backend_docker_check.cmd",
         "scripts/00631l_bootstrap_deploy.cmd",
         "scripts/00631l_deploy_precheck.cmd",
         "scripts/00631l_daily_cycle_scheduled.cmd",
@@ -205,6 +218,42 @@ def _pwa_metadata_check() -> dict[str, Any]:
         "stdoutTail": json.dumps(manifest, ensure_ascii=True)[-3000:],
         "stderrTail": "",
     }
+
+
+def _readiness_endpoint_check() -> dict[str, Any]:
+    try:
+        from fastapi.testclient import TestClient
+        from backend.app.main import app
+
+        response = TestClient(app).get("/ready")
+        payload = response.json()
+        failures = []
+        if response.status_code != 200:
+            failures.append(f"status_code={response.status_code}")
+        if payload.get("sourceContract") != "00631l_backend_readiness":
+            failures.append("missing readiness sourceContract")
+        if payload.get("overallStatus") == "FAIL":
+            failures.extend(payload.get("failures") or ["readiness failed"])
+        status = "FAIL" if failures else "PASS"
+        return {
+            "name": "readiness_endpoint",
+            "command": "internal TestClient GET /ready",
+            "status": status,
+            "message": "; ".join(str(item) for item in failures) if failures else "ok",
+            "exitCode": 1 if failures else 0,
+            "stdoutTail": json.dumps(payload, ensure_ascii=True)[-3000:],
+            "stderrTail": "",
+        }
+    except Exception as error:  # pragma: no cover - release guard
+        return {
+            "name": "readiness_endpoint",
+            "command": "internal TestClient GET /ready",
+            "status": "FAIL",
+            "message": str(error),
+            "exitCode": 1,
+            "stdoutTail": "",
+            "stderrTail": str(error),
+        }
 
 
 def _analysis_endpoint_check() -> dict[str, Any]:

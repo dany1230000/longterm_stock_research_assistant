@@ -20,6 +20,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PUBLIC_BACKEND_URL: ${{ secrets.PUBLIC_BACKEND_URL }}
 
     steps:
       - name: Checkout repository
@@ -46,7 +48,23 @@ jobs:
         run: python backend/scripts/export_static_00631l_data.py --update --strict --output-dir web/00631l-static-data
 
       - name: Build web
-        run: flutter build web --base-href="/longterm_stock_research_assistant/" --dart-define=USE_00631L_STATIC_DATA=true --dart-define=00631L_STATIC_DATA_BASE_URL=00631l-static-data
+        shell: bash
+        run: |
+          if [ -n "${PUBLIC_BACKEND_URL}" ]; then
+            echo "Building Pages with live_proxy plus static_public fallback."
+            flutter build web \
+              --base-href="/longterm_stock_research_assistant/" \
+              --dart-define=USE_00631L_LIVE_PROXY=true \
+              --dart-define=00631L_PROXY_BASE_URL="${PUBLIC_BACKEND_URL}" \
+              --dart-define=USE_00631L_STATIC_DATA=true \
+              --dart-define=00631L_STATIC_DATA_BASE_URL=00631l-static-data
+          else
+            echo "PUBLIC_BACKEND_URL secret is not set; building static_public Pages mode."
+            flutter build web \
+              --base-href="/longterm_stock_research_assistant/" \
+              --dart-define=USE_00631L_STATIC_DATA=true \
+              --dart-define=00631L_STATIC_DATA_BASE_URL=00631l-static-data
+          fi
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

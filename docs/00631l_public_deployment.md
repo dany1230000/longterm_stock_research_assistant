@@ -1,5 +1,59 @@
 # 00631L public deployment
 
+## v3.3 live backend ready
+
+v3.3 支援公開 backend + GitHub Pages frontend 的正式路線。
+
+公開手機入口仍是：
+
+```text
+https://dany1230000.github.io/longterm_stock_research_assistant/
+```
+
+若要讓此 PWA 取得 live intraday NAV、official holdings、operations/status 與 AI summary，需要另行部署 public backend。
+
+Backend readiness:
+
+```text
+GET https://your-backend.example.com/health
+GET https://your-backend.example.com/ready
+GET https://your-backend.example.com/api/etf/00631l/operations/status
+```
+
+Production backend checks:
+
+```cmd
+scripts\00631l_backend_prod_check.cmd
+scripts\00631l_backend_docker_check.cmd
+```
+
+Docker/VPS template:
+
+```cmd
+docker compose -f deploy\docker-compose.yml up -d --build
+```
+
+Public frontend build with live backend plus static fallback:
+
+```cmd
+set PUBLIC_BACKEND_URL=https://your-backend.example.com
+scripts\00631l_build_web_public.cmd
+```
+
+Required public backend env:
+
+```env
+PUBLIC_API_BASE_URL=https://your-backend.example.com
+ALLOWED_ORIGINS=https://dany1230000.github.io
+TWSE_00631L_INTRADAY_NAV_URL=https://mis.twse.com.tw/stock/data/all_etf.txt
+00631L_DATA_DIR=/data/00631l
+00631L_DATA_PERSISTENCE_MODE=persistent
+```
+
+Persistent volume must mount `/data/00631l`. Without it, the backend can run, but operations/status should show a persistence WARN.
+
+Full guide: `docs\00631l_live_backend_deployment.md`.
+
 ## v3.0 public app-ready note
 
 The codebase is ready for a public frontend plus public backend deployment, but this repository does not include cloud credentials, DNS ownership, TLS certificates, or a running server.
@@ -41,6 +95,8 @@ GitHub Actions:
 - `.github/workflows/deploy_web.yml` supports manual `workflow_dispatch`.
 - It also runs on weekdays.
 - It runs strict static export before Flutter build.
+- If repository secret `PUBLIC_BACKEND_URL` is set, Pages build enables `live_proxy` plus `static_public` fallback.
+- If `PUBLIC_BACKEND_URL` is not set, Pages build stays in `static_public` mode and does not fail for missing backend credentials.
 - If TWSE price history cannot be fetched and no usable cache exists, the build fails rather than deploying empty history.
 
 Public static URL after Pages deployment:
@@ -75,7 +131,7 @@ ALLOWED_ORIGINS=https://your-frontend.example.com
 TWSE_00631L_INTRADAY_NAV_URL=https://mis.twse.com.tw/stock/data/all_etf.txt
 YUANTA_00631L_INTRADAY_NAV_URL=
 00631L_INTRADAY_NAV_SOURCE=auto
-00631L_DATA_DIR=/data
+00631L_DATA_DIR=/data/00631l
 00631L_DATA_PERSISTENCE_MODE=persistent
 ```
 
@@ -93,7 +149,7 @@ Docker build 範例：
 
 ```cmd
 docker build -f backend\Dockerfile -t 00631l-lab-backend .
-docker run --rm -p 8000:8000 --env-file backend\.env -v 00631l-data:/data 00631l-lab-backend
+docker run --rm -p 8000:8000 --env-file backend\.env -v 00631l-data:/data/00631l 00631l-lab-backend
 ```
 
 部署平台 health check 可用：

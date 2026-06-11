@@ -70,7 +70,7 @@ class Etf00631LService:
             "status": "ok",
             "serverTime": now,
             "appName": "00631L lab backend",
-            "appVersion": "1.42",
+            "appVersion": "3.3-live-public-ready",
             "sourceContract": "00631l_backend_health",
             "scope": "00631L only",
             "publicApiBaseUrl": self._config.public_api_base_url,
@@ -94,6 +94,7 @@ class Etf00631LService:
                 "optionalMissingKeys": env_status["optionalMissingKeys"],
             },
             "endpoints": {
+                "readiness": "/ready",
                 "profile": "/api/etf/00631l/profile",
                 "holdings": "/api/etf/00631l/holdings",
                 "intradayNav": "/api/etf/00631l/intraday-nav",
@@ -104,6 +105,62 @@ class Etf00631LService:
                 "backtestDefaults": "/api/etf/00631l/backtest/defaults",
                 "backtestRun": "/api/etf/00631l/backtest/run",
             },
+        }
+
+    def readiness_status(self) -> dict[str, Any]:
+        now = utc_now_iso()
+        checks = [
+            self._readiness_public_api_check(),
+            self._readiness_cors_check(),
+            self._readiness_data_dir_check(),
+            self._readiness_persistence_check(),
+            self._readiness_url_check(
+                "twse_intraday_nav_url",
+                self._config.twse_intraday_nav_url,
+                required=True,
+            ),
+            self._readiness_url_check(
+                "yuanta_intraday_nav_url",
+                self._config.yuanta_intraday_nav_url,
+                required=False,
+            ),
+            self._readiness_url_check(
+                "twse_price_history_url_template",
+                self._config.twse_price_history_url_template,
+                required=True,
+            ),
+            self._readiness_live_source_check(),
+        ]
+        failures = [
+            f"{check['name']}: {check['message']}"
+            for check in checks
+            if check["status"] == "FAIL"
+        ]
+        warnings = [
+            f"{check['name']}: {check['message']}"
+            for check in checks
+            if check["status"] == "WARN"
+        ]
+        overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
+        return {
+            "status": "ok" if not failures else "degraded",
+            "sourceStatus": "cached" if not failures else "error",
+            "sourceContract": "00631l_backend_readiness",
+            "sourceUrl": "local://00631l-backend-readiness",
+            "checkedAt": now,
+            "fetchedAt": now,
+            "sourceUpdatedAt": now,
+            "dataTime": now,
+            "isStale": bool(warnings),
+            "overallStatus": overall_status,
+            "failures": failures,
+            "warnings": warnings,
+            "checks": checks,
+            "publicApiBaseUrl": self._config.public_api_base_url,
+            "allowedOrigins": list(self._config.allowed_origins),
+            "dataDir": self._config.data_dir,
+            "dataPersistenceMode": self._config.data_persistence_mode,
+            "errorMessage": "; ".join(failures) if failures else None,
         }
 
     def profile(self) -> dict[str, Any]:
@@ -761,6 +818,128 @@ class Etf00631LService:
             "dataPersistenceWarning": persistence["warning"],
         }
 
+    def _readiness_public_api_check(self) -> dict[str, Any]:
+        url = self._config.public_api_base_url.strip()
+        if not url:
+            return _readiness_check(
+                "public_api_base_url",
+                "WARN",
+                "PUBLIC_API_BASE_URL is not set; backend can run locally but public status will not advertise a public URL.",
+            )
+        if not _looks_like_http_url(url):
+            return _readiness_check(
+                "public_api_base_url",
+                "FAIL",
+                "PUBLIC_API_BASE_URL must be an http(s) URL.",
+                value=url,
+            )
+        return _readiness_check("public_api_base_url", "PASS", "ok", value=url)
+
+    def _readiness_cors_check(self) -> dict[str, Any]:
+        origins = list(self._config.allowed_origins)
+        if not origins:
+            return _readiness_check(
+                "allowed_origins",
+                "WARN",
+                "ALLOWED_ORIGINS is not set; backend will use localhost/LAN development CORS.",
+            )
+        if "*" in origins:
+            return _readiness_check(
+                "allowed_origins",
+                "FAIL",
+                "ALLOWED_ORIGINS must list explicit frontend origins.",
+                origins=origins,
+            )
+        invalid = [origin for origin in origins if not _looks_like_http_url(origin)]
+        if invalid:
+            return _readiness_check(
+                "allowed_origins",
+                "FAIL",
+                f"Invalid origin values: {', '.join(invalid)}",
+                origins=origins,
+            )
+        return _readiness_check("allowed_origins", "PASS", "ok", origins=origins)
+
+    def _readiness_data_dir_check(self) -> dict[str, Any]:
+        path = Path(self._config.data_dir)
+        writable = _ensure_directory_writable(path)
+        return _readiness_check(
+            "data_dir_writable",
+            "PASS" if writable else "FAIL",
+            "ok" if writable else "00631L_DATA_DIR is not writable.",
+            path=str(path),
+            exists=path.exists(),
+            writable=writable,
+        )
+
+    def _readiness_persistence_check(self) -> dict[str, Any]:
+        persistence = _persistence_health(
+            Path(self._config.data_dir),
+            mode=self._config.data_persistence_mode,
+        )
+        if not persistence["writable"]:
+            status = "FAIL"
+        elif persistence["isPersistent"]:
+            status = "PASS"
+        else:
+            status = "WARN"
+        return _readiness_check(
+            "data_persistence",
+            status,
+            persistence["warning"] or "ok",
+            mode=persistence["mode"],
+            isPersistent=persistence["isPersistent"],
+            path=persistence["path"],
+        )
+
+    def _readiness_url_check(
+        self,
+        name: str,
+        url: str,
+        *,
+        required: bool,
+    ) -> dict[str, Any]:
+        if not url:
+            return _readiness_check(
+                name,
+                "WARN" if required else "PASS",
+                f"{name} is not set."
+                if required
+                else f"{name} is optional and not set.",
+            )
+        return _readiness_check(
+            name,
+            "PASS" if _looks_like_fetch_url(url) else "FAIL",
+            "ok" if _looks_like_fetch_url(url) else f"{name} must be an http(s) or fixture URL.",
+            value=url,
+        )
+
+    def _readiness_live_source_check(self) -> dict[str, Any]:
+        url = self._config.twse_intraday_nav_url
+        if not url:
+            return _readiness_check(
+                "live_source_connectivity",
+                "WARN",
+                "TWSE intraday NAV URL is not configured; live intraday data may be unavailable.",
+            )
+        try:
+            source = self._fetcher(url, min(self._config.request_timeout_seconds, 5))
+        except (FetchError, OSError, RuntimeError, ValueError) as error:
+            return _readiness_check(
+                "live_source_connectivity",
+                "WARN",
+                f"TWSE intraday NAV source was not reachable during readiness check: {error}",
+                url=url,
+            )
+        length = len(source)
+        return _readiness_check(
+            "live_source_connectivity",
+            "PASS" if length > 0 else "WARN",
+            "ok" if length > 0 else "TWSE intraday NAV source returned empty content.",
+            url=url,
+            contentLength=length,
+        )
+
     def _intraday_candidates(self) -> list[tuple[str, str, Callable[..., dict[str, Any]]]]:
         mode = self._config.intraday_nav_source
         if mode not in {"twse", "yuanta", "auto"}:
@@ -787,6 +966,29 @@ def _parse_date(value: str | None) -> date | None:
         return datetime.strptime(value, "%Y-%m-%d").date()
     except ValueError:
         return None
+
+
+def _readiness_check(
+    name: str,
+    status: str,
+    message: str,
+    **extra: Any,
+) -> dict[str, Any]:
+    payload = {
+        "name": name,
+        "status": status,
+        "message": message,
+    }
+    payload.update(extra)
+    return payload
+
+
+def _looks_like_http_url(value: str) -> bool:
+    return value.startswith("http://") or value.startswith("https://")
+
+
+def _looks_like_fetch_url(value: str) -> bool:
+    return _looks_like_http_url(value) or value.startswith("fixture://")
 
 
 def _empty_price_history_response(

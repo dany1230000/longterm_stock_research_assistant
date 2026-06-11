@@ -5,11 +5,13 @@ This is the main entry point for 00631L lab documentation.
 ## Start Here
 
 - Standalone PWA v3.2 summary: `docs\00631l_v3_2_standalone_pwa_summary.md`
+- Live-public ready v3.3 summary: `docs\00631l_v3_3_live_public_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
 - Mobile usage: `docs\00631l_mobile_usage.md`
 - Public deployment: `docs\00631l_public_deployment.md`
+- Live backend deployment: `docs\00631l_live_backend_deployment.md`
 - PWA usage: `docs\00631l_pwa_usage.md`
 - Data source and freshness guide: `docs\00631l_data_sources_freshness.md`
 - Backtest guide: `docs\00631l_backtest_guide.md`
@@ -33,6 +35,8 @@ This is the main entry point for 00631L lab documentation.
 - Release check: `scripts\00631l_release_check.cmd`
 - Public config check: `scripts\00631l_check_public_config.cmd`
 - Public web build: `scripts\00631l_build_web_public.cmd`
+- Backend production check: `scripts\00631l_backend_prod_check.cmd`
+- Backend Docker check: `scripts\00631l_backend_docker_check.cmd`
 - Static data export: `scripts\00631l_export_static_data.cmd --update`
 - GitHub Pages static build: `scripts\00631l_build_pages_static.cmd`
 
@@ -56,6 +60,7 @@ This is the main entry point for 00631L lab documentation.
 - Env template: `backend\.env.example`
 - Backend Dockerfile: `backend\Dockerfile`
 - Public deployment guide: `docs\00631l_public_deployment.md`
+- Live backend deployment guide: `docs\00631l_live_backend_deployment.md`
 - PWA usage guide: `docs\00631l_pwa_usage.md`
 - App Store path: `docs\00631l_app_store_path.md`
 - Deployment bootstrap: `scripts\00631l_bootstrap_deploy.cmd`
@@ -77,6 +82,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - App-ready release: `docs\00631l_v3_0_app_ready_summary.md`
 - Static-public release: `docs\00631l_v3_1_static_public_summary.md`
 - Standalone PWA release: `docs\00631l_v3_2_standalone_pwa_summary.md`
+- Live-public ready release: `docs\00631l_v3_3_live_public_summary.md`
 
 ## Scope Boundary
 

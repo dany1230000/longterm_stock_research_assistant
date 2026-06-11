@@ -250,6 +250,34 @@ void main() {
     expect(data.aiAnalysis.source, 'rule_based');
     expect(data.aiAnalysis.sourceStatusLabel, 'mock');
   });
+
+  test('live proxy failure can fall back to static public data before mock',
+      () async {
+    final repository = Cached00631LRepository(
+      primary: Proxy00631LRepository(client: _FailingProxyHttpClient()),
+      fallback: Cached00631LRepository(
+        primary: Static00631LRepository(
+          client: _FakeProxyHttpClient({
+            '00631l-static-data/price_history.json':
+                jsonEncode(_staticPriceHistoryPayload()),
+            '00631l-static-data/status.json':
+                jsonEncode(_staticStatusPayload()),
+          }),
+        ),
+        fallback: Mock00631LRepository(),
+      ),
+    );
+
+    final data = await repository.fetchLabData();
+
+    expect(data.profile.status, EtfDataStatus.mock);
+    expect(data.operationsStatus.sourceStatusLabel, 'error');
+    expect(data.operationsStatus.backendConnectionLabel, 'backend disconnected');
+    expect(data.operationsStatus.priceHistoryRows, 3);
+    expect(data.priceHistory.sourceStatusLabel, 'static_official');
+    expect(data.aiAnalysis.sourceStatusLabel, 'static_official');
+    expect(data.aiAnalysis.sourceStatuses['intradayNav'], 'backend_required');
+  });
 }
 
 class _FakeProxyHttpClient implements ProxyHttpClient {
@@ -262,7 +290,7 @@ class _FakeProxyHttpClient implements ProxyHttpClient {
     Uri uri, {
     Duration timeout = const Duration(seconds: 8),
   }) async {
-    final response = responses[uri.path];
+    final response = responses[uri.path] ?? responses[uri.toString()];
     if (response == null) {
       throw StateError('missing fake response for ${uri.path}');
     }

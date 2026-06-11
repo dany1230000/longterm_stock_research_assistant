@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    image: 00631l-lab-backend:latest
+    container_name: 00631l-lab-backend
+    restart: unless-stopped
+    env_file:
+      - ../backend/.env
+    environment:
+      00631L_DATA_DIR: /data/00631l
+      00631L_DATA_PERSISTENCE_MODE: persistent
+      00631L_HOLDINGS_HISTORY_PATH: /data/00631l/00631l_holdings_history.jsonl
+      00631L_INTRADAY_NAV_HISTORY_PATH: /data/00631l/00631l_intraday_nav_history.jsonl
+      00631L_PRICE_HISTORY_PATH: /data/00631l/00631l_price_history.jsonl
+      00631L_HISTORY_EXPORT_DIR: /data/00631l/exports
+      00631L_BACKUP_DIR: /data/00631l/backups
+      00631L_REPORT_DIR: /data/00631l/reports
+    ports:
+      - "8000:8000"
+    volumes:
+      - 00631l_data:/data/00631l
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=5).read()"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  00631l_data:

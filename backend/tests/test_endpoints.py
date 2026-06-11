@@ -44,6 +44,70 @@ class EndpointTests(unittest.TestCase):
         self.assertIn("localState", payload)
         self.assertIn("operationsStatus", payload["endpoints"])
         self.assertIn("analysisSummary", payload["endpoints"])
+        self.assertIn("readiness", payload["endpoints"])
+
+    def test_ready_endpoint_reports_public_persistent_config(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            data_dir = Path(temp_dir) / "data"
+            service = Etf00631LService(
+                config=Settings(
+                    public_api_base_url="https://api.example.com",
+                    allowed_origins=("https://dany1230000.github.io",),
+                    data_dir=str(data_dir),
+                    data_persistence_mode="persistent",
+                    twse_intraday_nav_url="fixture://twse/all_etf",
+                    yuanta_intraday_nav_url="",
+                    holdings_history_path=str(data_dir / "history.jsonl"),
+                    intraday_nav_history_path=str(data_dir / "intraday.jsonl"),
+                    price_history_path=str(data_dir / "price.jsonl"),
+                ),
+                fetcher=lambda url, timeout_seconds: '{"msgArray":[]}',
+                cache=TimedMemoryCache(),
+                history_store=HoldingsHistoryStore(data_dir / "history.jsonl"),
+                intraday_history_store=IntradayNavHistoryStore(
+                    data_dir / "intraday.jsonl"
+                ),
+                price_history_store=PriceHistoryStore(data_dir / "price.jsonl"),
+            )
+            client = TestClient(main_module.create_app(app_service=service))
+
+            response = client.get("/ready")
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+            self.assertEqual(payload["sourceContract"], "00631l_backend_readiness")
+            self.assertIn(payload["overallStatus"], {"PASS", "WARN"})
+            self.assertEqual(payload["failures"], [])
+            self.assertEqual(payload["publicApiBaseUrl"], "https://api.example.com")
+            self.assertEqual(payload["allowedOrigins"], ["https://dany1230000.github.io"])
+            checks = {item["name"]: item for item in payload["checks"]}
+            self.assertEqual(checks["data_dir_writable"]["status"], "PASS")
+            self.assertEqual(checks["data_persistence"]["status"], "PASS")
+            self.assertEqual(checks["live_source_connectivity"]["status"], "PASS")
+
+    def test_ready_endpoint_warns_for_local_transient_config(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            service = Etf00631LService(
+                config=Settings(
+                    public_api_base_url="",
+                    allowed_origins=(),
+                    data_dir=str(Path(temp_dir) / "data"),
+                    data_persistence_mode="local",
+                    twse_intraday_nav_url="",
+                    yuanta_intraday_nav_url="",
+                ),
+                fetcher=lambda url, timeout_seconds: "",
+                cache=TimedMemoryCache(),
+            )
+            client = TestClient(main_module.create_app(app_service=service))
+
+            payload = client.get("/ready").json()
+            self.assertEqual(payload["overallStatus"], "WARN")
+            self.assertEqual(payload["failures"], [])
+            self.assertTrue(payload["warnings"])
+            checks = {item["name"]: item for item in payload["checks"]}
+            self.assertEqual(checks["public_api_base_url"]["status"], "WARN")
+            self.assertEqual(checks["allowed_origins"]["status"], "WARN")
+            self.assertEqual(checks["data_persistence"]["status"], "WARN")
 
     def test_cors_allows_private_lan_origin_for_mobile_mode(self) -> None:
         response = self.client.options(

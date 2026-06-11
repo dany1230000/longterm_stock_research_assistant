@@ -59,6 +59,10 @@ def create_app(
             server_time=datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         )
 
+    @fastapi_app.get("/ready")
+    def readiness() -> dict:
+        return current_service().readiness_status()
+
     @fastapi_app.get("/api/etf/00631l/profile")
     def profile() -> dict:
         return current_service().profile()

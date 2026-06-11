@@ -18,5 +18,5 @@ if "%PUBLIC_BACKEND_URL_EFFECTIVE%"=="" (
 echo Building 00631L public Flutter web app.
 echo Backend API base URL: %PUBLIC_BACKEND_URL_EFFECTIVE%
 
-flutter build web --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_PROXY_BASE_URL=%PUBLIC_BACKEND_URL_EFFECTIVE%
+flutter build web --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_PROXY_BASE_URL=%PUBLIC_BACKEND_URL_EFFECTIVE% --dart-define=USE_00631L_STATIC_DATA=true --dart-define=00631L_STATIC_DATA_BASE_URL=00631l-static-data
 exit /b %ERRORLEVEL%

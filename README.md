@@ -16,7 +16,7 @@ Compatibility route:
 https://dany1230000.github.io/longterm_stock_research_assistant/#/00631l-lab
 ```
 
-Start from `docs/00631l_docs_index.md` or `docs/00631l_v3_2_standalone_pwa_summary.md`.
+Start from `docs/00631l_docs_index.md`, `docs/00631l_v3_2_standalone_pwa_summary.md`, or `docs/00631l_v3_3_live_public_summary.md`.
 
 Daily helper:
 
@@ -44,12 +44,23 @@ Public deployment helpers:
 
 ```cmd
 scripts\00631l_check_public_config.cmd
+scripts\00631l_backend_prod_check.cmd
+scripts\00631l_backend_docker_check.cmd
 scripts\00631l_export_static_data.cmd --status-only
 scripts\00631l_export_static_data.cmd --update
 set PUBLIC_BACKEND_URL=https://your-backend.example.com
 scripts\00631l_build_web_public.cmd
 scripts\00631l_build_pages_static.cmd
 ```
+
+v3.3 live-public ready status:
+
+- GitHub Pages static mode remains usable without a backend.
+- A public FastAPI backend can be deployed with `backend\Dockerfile` or `deploy\docker-compose.yml`.
+- Public backend readiness is exposed at `/ready`.
+- Production data should be mounted at `/data/00631l` with `00631L_DATA_PERSISTENCE_MODE=persistent`.
+- Public frontend builds can enable both live proxy and static fallback through `scripts\00631l_build_web_public.cmd`.
+- Live intraday NAV requires the public backend; static mode is not live intraday data.
 
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
@@ -149,6 +160,7 @@ v1.0 live sources:
 - Public deploy-ready v2.2: `backend\Dockerfile`, `scripts\00631l_check_public_config.cmd`, `scripts\00631l_build_web_public.cmd`, `docs\00631l_public_deployment.md`, and `docs\00631l_pwa_usage.md` prepare the lab for a public Flutter Web frontend plus public FastAPI backend. Local LAN mode remains available.
 - Static-public v3.1: GitHub Pages can serve generated 00631L price history and backtest data without a live backend.
 - Standalone PWA v3.2: the public root URL opens `00631L 正二研究室` directly; `/#/00631l-lab` remains compatible.
+- Live-public ready v3.3: backend deployment package, `/ready`, persistent volume guidance, deploy templates, and live-to-static frontend fallback are complete.
 
 Local backend env:
 

@@ -173,9 +173,15 @@ final official00631LRepositoryProvider =
   );
 
   if (useLiveProxy) {
+    final fallback = useStaticData
+        ? Cached00631LRepository(
+            primary: Static00631LRepository(baseUrl: staticDataBaseUrl),
+            fallback: Mock00631LRepository(),
+          )
+        : Mock00631LRepository();
     return Cached00631LRepository(
       primary: Proxy00631LRepository(baseUri: Uri.parse(proxyBaseUrl)),
-      fallback: Mock00631LRepository(),
+      fallback: fallback,
     );
   }
 

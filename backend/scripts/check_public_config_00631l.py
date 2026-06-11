@@ -37,8 +37,16 @@ def run_public_config_check(root: Path = ROOT) -> dict[str, Any]:
         _required_file_check(root, "docs/00631l_pwa_usage.md"),
         _required_file_check(root, "docs/00631l_app_store_path.md"),
         _required_file_check(root, "docs/00631l_v3_1_static_public_summary.md"),
+        _required_file_check(root, "docs/00631l_live_backend_deployment.md"),
+        _required_file_check(root, "docs/00631l_v3_3_live_public_summary.md"),
+        _required_file_check(root, "deploy/docker-compose.yml"),
+        _required_file_check(root, "deploy/Caddyfile"),
+        _required_file_check(root, "deploy/nginx.example.conf"),
+        _required_file_check(root, "deploy/render.yaml"),
         _required_file_check(root, "scripts/00631l_export_static_data.cmd"),
         _required_file_check(root, "scripts/00631l_build_pages_static.cmd"),
+        _required_file_check(root, "scripts/00631l_backend_prod_check.cmd"),
+        _required_file_check(root, "scripts/00631l_backend_docker_check.cmd"),
         _tracked_artifact_check(root),
     ]
     failures = [check["message"] for check in checks if check["status"] == "FAIL"]

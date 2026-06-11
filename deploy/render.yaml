@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: 00631l-lab-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    plan: starter
+    healthCheckPath: /ready
+    envVars:
+      - key: PUBLIC_API_BASE_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://dany1230000.github.io
+      - key: TWSE_00631L_INTRADAY_NAV_URL
+        value: https://mis.twse.com.tw/stock/data/all_etf.txt
+      - key: 00631L_INTRADAY_NAV_SOURCE
+        value: auto
+      - key: 00631L_DATA_DIR
+        value: /data/00631l
+      - key: 00631L_DATA_PERSISTENCE_MODE
+        value: persistent
+      - key: 00631L_HOLDINGS_HISTORY_PATH
+        value: /data/00631l/00631l_holdings_history.jsonl
+      - key: 00631L_INTRADAY_NAV_HISTORY_PATH
+        value: /data/00631l/00631l_intraday_nav_history.jsonl
+      - key: 00631L_PRICE_HISTORY_PATH
+        value: /data/00631l/00631l_price_history.jsonl
+      - key: 00631L_HISTORY_EXPORT_DIR
+        value: /data/00631l/exports
+      - key: 00631L_BACKUP_DIR
+        value: /data/00631l/backups
+      - key: 00631L_REPORT_DIR
+        value: /data/00631l/reports

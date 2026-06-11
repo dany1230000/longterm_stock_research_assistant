@@ -10,6 +10,24 @@ GET /health
 
 The response includes backend version, 00631L-only scope, live-source configuration flags, local-state readiness, and key endpoint paths. It does not fetch live Yuanta or TWSE data.
 
+Readiness endpoint:
+
+```text
+GET /ready
+```
+
+`/ready` checks public API URL, CORS origins, data directory write access, persistent data mode, TWSE URL configuration, and live source connectivity. Missing public deployment values are WARN in local mode. An unwritable data directory or invalid URL format is FAIL.
+
+Production deployment helpers:
+
+```cmd
+scripts\00631l_backend_prod_check.cmd
+scripts\00631l_backend_docker_check.cmd
+docker compose -f deploy\docker-compose.yml up -d --build
+```
+
+Full live backend deployment guide: `docs\00631l_live_backend_deployment.md`.
+
 ## v1.0 local setup
 
 Create a local env file:
@@ -49,7 +67,7 @@ Docker:
 
 ```cmd
 docker build -f backend\Dockerfile -t 00631l-lab-backend .
-docker run --rm -p 8000:8000 --env-file backend\.env -v 00631l-data:/data 00631l-lab-backend
+docker run --rm -p 8000:8000 --env-file backend\.env -v 00631l-data:/data/00631l 00631l-lab-backend
 ```
 
 Frontend live proxy mode:
