@@ -118,6 +118,13 @@ v3.11 section summaries:
 - Holdings, history, backtest, position, AI, and system pages surface their main data status and key values first.
 - Summary: `docs\00631l_v3_11_section_summaries.md`.
 
+v3.12 navigation and settings:
+
+- History and backtest are merged into one `歷史回測` bottom tab.
+- The old user-facing system status tab is replaced by `設定`; diagnostics now live under settings as an advanced section.
+- Settings also states which data is complete, which data requires live backend, and why TX live is still not connected.
+- Summary: `docs\00631l_v3_12_navigation_settings_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

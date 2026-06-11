@@ -14,6 +14,7 @@ This is the main entry point for 00631L lab documentation.
 - Mobile information architecture v3.9 summary: `docs\00631l_v3_9_mobile_information_architecture_summary.md`
 - Mobile polish v3.10 summary: `docs\00631l_v3_10_mobile_polish_summary.md`
 - Section summaries v3.11 summary: `docs\00631l_v3_11_section_summaries.md`
+- Navigation/settings v3.12 summary: `docs\00631l_v3_12_navigation_settings_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -102,6 +103,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Mobile information architecture release: `docs\00631l_v3_9_mobile_information_architecture_summary.md`
 - Mobile polish release: `docs\00631l_v3_10_mobile_polish_summary.md`
 - Section summaries release: `docs\00631l_v3_11_section_summaries.md`
+- Navigation/settings release: `docs\00631l_v3_12_navigation_settings_summary.md`
 
 ## Scope Boundary
 

@@ -21,19 +21,17 @@ void main() {
     expect(find.text('官方內容物'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('內容物'), findsWidgets);
-    expect(find.text('歷史'), findsWidgets);
-    expect(find.text('回測'), findsWidgets);
+    expect(find.text('歷史回測'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI 分析'), findsWidgets);
-    expect(find.text('系統狀態'), findsWidgets);
+    expect(find.text('設定'), findsWidgets);
     for (final section in const [
       'overview',
       'holdings',
-      'history',
-      'backtest',
+      'historyBacktest',
       'position',
       'ai',
-      'system',
+      'settings',
     ]) {
       expect(find.byKey(ValueKey('00631l-section-$section')), findsOneWidget);
     }
@@ -67,7 +65,7 @@ void main() {
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());
 
-    await _tapSection(tester, 'history');
+    await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
 
     expect(find.text('歷史快覽'), findsOneWidget);
@@ -81,6 +79,8 @@ void main() {
     expect(find.text('回撤'), findsWidgets);
     expect(find.text('2026/06/03'), findsWidgets);
     expect(find.text('每日 holdings history'), findsOneWidget);
+    expect(find.text('回測快覽'), findsOneWidget);
+    expect(find.text('歷史回測'), findsWidgets);
     _expectNoTradingActionText();
   });
 
@@ -88,17 +88,18 @@ void main() {
       (tester) async {
     await _pumpLab(tester, _NoHistoryRepository());
 
-    await _tapSection(tester, 'history');
+    await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
 
     expect(find.text('尚無 official price history'), findsWidgets);
     expect(find.text('尚無歷史紀錄'), findsWidgets);
   });
 
-  testWidgets('backtest section renders inputs and disclaimer', (tester) async {
+  testWidgets('history backtest section renders inputs and disclaimer',
+      (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());
 
-    await _tapSection(tester, 'backtest');
+    await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
 
     expect(find.text('回測快覽'), findsOneWidget);
@@ -151,18 +152,17 @@ void main() {
     for (final section in const [
       'overview',
       'holdings',
-      'history',
-      'backtest',
+      'historyBacktest',
       'position',
       'ai',
-      'system',
+      'settings',
     ]) {
       expect(find.byKey(ValueKey('00631l-section-$section')), findsOneWidget);
     }
     _expectNoTradingActionText();
   });
 
-  testWidgets('AI and system sections render clean status wording',
+  testWidgets('AI and settings sections render clean status wording',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 
@@ -174,10 +174,12 @@ void main() {
     expect(find.textContaining('rule_based'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);
 
-    await _tapSection(tester, 'system');
+    await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
-    expect(find.text('系統快覽'), findsOneWidget);
-    expect(find.text('系統狀態'), findsWidgets);
+    expect(find.text('設定'), findsWidgets);
+    expect(find.text('帳戶與隱私'), findsOneWidget);
+    expect(find.text('資料完整度'), findsOneWidget);
+    expect(find.text('進階診斷'), findsOneWidget);
     expect(find.text('backend'), findsOneWidget);
     expect(find.text('historical price'), findsOneWidget);
     expect(find.text('position local data'), findsOneWidget);
@@ -194,9 +196,10 @@ void main() {
     );
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
-    await _tapSection(tester, 'system');
+    await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
-    expect(find.text('系統狀態'), findsWidgets);
+    expect(find.text('設定'), findsWidgets);
+    expect(find.text('進階診斷'), findsOneWidget);
     expect(find.text('backend'), findsOneWidget);
     expect(find.textContaining('mock'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);

@@ -75,11 +75,10 @@ class _LeveragedEtf00631LScreenState
 enum _LabSection {
   overview('總覽', Icons.dashboard_outlined),
   holdings('內容物', Icons.inventory_2_outlined),
-  history('歷史', Icons.show_chart_outlined),
-  backtest('回測', Icons.query_stats_outlined),
+  historyBacktest('歷史回測', Icons.query_stats_outlined),
   position('持倉', Icons.account_balance_wallet_outlined),
   ai('AI 分析', Icons.psychology_alt_outlined),
-  system('系統狀態', Icons.health_and_safety_outlined);
+  settings('設定', Icons.manage_accounts_outlined);
 
   const _LabSection(this.label, this.icon);
   final String label;
@@ -160,16 +159,14 @@ class _LabContent extends StatelessWidget {
         return _OverviewSection(data: data, onRefresh: onRefresh);
       case _LabSection.holdings:
         return _HoldingsSection(data: data);
-      case _LabSection.history:
-        return _HistorySection(data: data);
-      case _LabSection.backtest:
-        return _BacktestSection(data: data);
+      case _LabSection.historyBacktest:
+        return _HistoryBacktestSection(data: data);
       case _LabSection.position:
         return _PositionSection(data: data);
       case _LabSection.ai:
         return _AiSection(data: data);
-      case _LabSection.system:
-        return _SystemStatusSection(status: data.operationsStatus);
+      case _LabSection.settings:
+        return _SettingsSection(data: data);
     }
   }
 }
@@ -454,7 +451,7 @@ class _QuoteHeader extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        '官方內容物、盤中預估淨值、歷史資料、回測與系統狀態。',
+                        '官方內容物、盤中預估淨值、歷史回測、持倉與 AI 摘要。',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: mutedForeground,
                           height: 1.35,
@@ -1745,6 +1742,24 @@ class _HistorySection extends StatelessWidget {
   }
 }
 
+class _HistoryBacktestSection extends StatelessWidget {
+  const _HistoryBacktestSection({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _HistorySection(data: data),
+        const SizedBox(height: 12),
+        _BacktestSection(data: data),
+      ],
+    );
+  }
+}
+
 class _BacktestSection extends StatefulWidget {
   const _BacktestSection({required this.data});
 
@@ -2263,49 +2278,118 @@ class _AiSection extends StatelessWidget {
   }
 }
 
-class _SystemStatusSection extends StatelessWidget {
-  const _SystemStatusSection({required this.status});
+class _SettingsSection extends StatelessWidget {
+  const _SettingsSection({required this.data});
 
-  final EtfOperationsStatus status;
+  final Etf00631LLabData data;
 
   @override
   Widget build(BuildContext context) {
+    final status = data.operationsStatus;
     final readiness = status.dailyReadinessSummary;
+    final price = data.priceHistory.completenessSummary();
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionHeaderCard(
-          title: '系統快覽',
-          subtitle:
-              'backend、static/live、daily cycle、report/export/backup 的操作狀態。',
-          icon: Icons.health_and_safety_outlined,
+          title: '設定',
+          subtitle: '帳戶、外觀、資料模式與維護狀態。一般使用只需要確認資料是不是可讀。',
+          icon: Icons.manage_accounts_outlined,
           badges: [
-            'SYS',
+            'APP',
             'frontend $_frontendDataMode',
             status.backendConnectionLabel,
           ],
           metrics: [
             _SectionHeaderMetric(
-              label: 'readiness',
+              label: '資料狀態',
               value: readiness.label,
             ),
             _SectionHeaderMetric(
               label: 'price rows',
-              value: formatInteger(status.priceHistoryRows),
+              value: formatInteger(price.rowCount),
             ),
             _SectionHeaderMetric(
-              label: 'daily cycle',
-              value: status.dailyCycleStatus,
+              label: 'coverage end',
+              value: _dateOrDash(price.coverageEnd),
             ),
             _SectionHeaderMetric(
-              label: 'persistence',
+              label: '儲存模式',
               value: status.dataPersistenceLabel,
             ),
           ],
         ),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: '系統狀態',
-          subtitle: '正式工具狀態摘要，不顯示 debug dump。',
+          title: '帳戶與隱私',
+          subtitle: '目前不需要登入。持倉資料預設只保存在本機瀏覽器。',
+          child: _StatusList(
+            items: [
+              const _StatusItem(
+                label: '帳戶',
+                status: 'not required',
+                detail: '00631L 正二研究室目前不需要帳號或券商登入。',
+                action: '可直接使用公開 PWA；持倉資料留在本機。',
+              ),
+              const _StatusItem(
+                label: '外觀',
+                status: 'available',
+                detail: '右上角可切換夜間模式，偏好會保存在本機。',
+                action: '需要切換時點選月亮或太陽圖示。',
+              ),
+              _StatusItem(
+                label: '持倉資料',
+                status: status.positionStatus,
+                detail: '持倉追蹤採 local-only，不會上傳個人持倉。',
+                action: '可在持倉頁保存、匯出 JSON 或清除。',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: '資料完整度',
+          subtitle: '這裡只說明資料是否齊全；static 歷史資料不是 live intraday。',
+          child: _StatusList(
+            items: [
+              _StatusItem(
+                label: '價格歷史',
+                status: data.priceHistory.sourceStatusLabel,
+                detail:
+                    'rows ${price.rowCount}，coverage ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，completeFromListing ${price.isCompleteFromListing}。',
+                action: price.rowCount >= 2
+                    ? '歷史與回測資料可讀。'
+                    : '請執行 scripts\\00631l_update_price_history.cmd 或 static export。',
+              ),
+              _StatusItem(
+                label: '官方內容物',
+                status: data.snapshot.status.label,
+                detail:
+                    'latest snapshot ${formatTaiwanDate(data.snapshot.tradeDate)}；holdings history count ${status.holdingsHistoryItemCount}。',
+                action: '內容物是每日快照；缺歷史時請執行 daily cycle 累積。',
+              ),
+              _StatusItem(
+                label: '盤中 NAV',
+                status: data.intradayNav?.status.label ?? 'unavailable',
+                detail:
+                    'dataTime ${data.intradayNav?.dataTime == null ? 'unavailable' : formatTaiwanDateTimeSeconds(data.intradayNav!.dataTime!)}。',
+                action: _use00631LLiveProxy
+                    ? '需 public backend 與 TWSE 資料可用。'
+                    : 'static mode 不提供 live intraday NAV。',
+              ),
+              const _StatusItem(
+                label: 'TX live',
+                status: 'not connected',
+                detail: '目前只讀官方 holdings 裡的 TX 權重，沒有接 TX live quote。',
+                action: '本版不需要設定 TX live。',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: '進階診斷',
+          subtitle: '只有資料不可讀或部署排除問題時需要看。',
           child: _StatusList(
             items: [
               _StatusItem(
@@ -2314,7 +2398,7 @@ class _SystemStatusSection extends StatelessWidget {
                 detail: status.backendConnectionCaption,
                 action: status.backendDisconnected
                     ? '請啟動 backend 或檢查公開 backend URL。'
-                    : 'backend connected。',
+                    : 'backend reachable。',
               ),
               _StatusItem(
                 label: 'official holdings',
@@ -3782,7 +3866,7 @@ List<String> _completeDataBriefing(Etf00631LLabData data) {
         .add('intraday NAV history 尚未累積；live 折溢價需 public backend 與 TWSE 資料可用。');
   }
   lines.add(
-    '系統狀態：backend ${data.operationsStatus.backendConnectionCaption}，report ${data.operationsStatus.reportOverallStatus}，export ${data.operationsStatus.exportAvailable ? 'ready' : 'missing'}，backup ${data.operationsStatus.backupAvailable ? 'ready' : 'missing'}。',
+    '維護狀態：backend ${data.operationsStatus.backendConnectionCaption}，report ${data.operationsStatus.reportOverallStatus}，export ${data.operationsStatus.exportAvailable ? 'ready' : 'missing'}，backup ${data.operationsStatus.backupAvailable ? 'ready' : 'missing'}。',
   );
   return lines;
 }
