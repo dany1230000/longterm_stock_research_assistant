@@ -101,39 +101,66 @@ class _LabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final horizontalPadding = constraints.maxWidth < 520 ? 10.0 : 18.0;
-        return ListView(
-          padding: EdgeInsets.fromLTRB(
-            horizontalPadding,
-            8,
-            horizontalPadding,
-            24,
-          ),
-          children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1180),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _QuoteHeader(data: data, onRefresh: onRefresh),
-                    const SizedBox(height: 10),
-                    _SectionPicker(
-                      selected: selectedSection,
-                      onChanged: onSectionChanged,
+    return Theme(
+      data: _marketTheme(context),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact = constraints.maxWidth < 720;
+          final horizontalPadding = constraints.maxWidth < 520 ? 12.0 : 18.0;
+          final shellBackground = _marketBackground(context);
+          return DecoratedBox(
+            decoration: BoxDecoration(color: shellBackground),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding,
+                      10,
+                      horizontalPadding,
+                      isCompact ? 18 : 24,
                     ),
-                    const SizedBox(height: 12),
-                    _sectionWidget(data),
-                  ],
+                    children: [
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 1180),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _MarketTopBar(
+                                selectedSection: selectedSection,
+                                onSectionChanged: onSectionChanged,
+                                onRefresh: onRefresh,
+                              ),
+                              const SizedBox(height: 12),
+                              _MarketSentimentStrip(data: data),
+                              const SizedBox(height: 12),
+                              _SectionPicker(
+                                selected: selectedSection,
+                                onChanged: onSectionChanged,
+                              ),
+                              const SizedBox(height: 12),
+                              _QuoteHeader(data: data, onRefresh: onRefresh),
+                              const SizedBox(height: 12),
+                              _sectionWidget(data),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                if (isCompact)
+                  _MarketBottomNav(
+                    selected: selectedSection,
+                    onChanged: onSectionChanged,
+                  ),
+              ],
             ),
-          ],
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -154,6 +181,222 @@ class _LabContent extends StatelessWidget {
       case _LabSection.system:
         return _SystemStatusSection(status: data.operationsStatus);
     }
+  }
+}
+
+class _MarketTopBar extends StatelessWidget {
+  const _MarketTopBar({
+    required this.selectedSection,
+    required this.onSectionChanged,
+    required this.onRefresh,
+  });
+
+  final _LabSection selectedSection;
+  final ValueChanged<_LabSection> onSectionChanged;
+  final VoidCallback onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    const highlight = _marketRed;
+    final primarySections = [
+      _LabSection.overview,
+      _LabSection.holdings,
+      _LabSection.history,
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const _MarketIndexPill(),
+            const SizedBox(width: 14),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (final section in primarySections)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 18),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () => onSectionChanged(section),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  section.label,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: selectedSection == section
+                                        ? highlight
+                                        : _marketMutedText,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 160),
+                                  height: 3,
+                                  width: selectedSection == section ? 34 : 0,
+                                  decoration: BoxDecoration(
+                                    color: highlight,
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: '重新整理',
+              onPressed: onRefresh,
+              color: _marketText,
+              icon: const Icon(Icons.search_outlined),
+            ),
+            const _ThemeToggleButton(compact: true),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '篩選：00631L 專用 | $_frontendDataMode',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: _marketMutedText,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MarketIndexPill extends StatelessWidget {
+  const _MarketIndexPill();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xFF2D6B4B),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: const Color(0xFF67C58B)),
+      ),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        child: Text(
+          '00631L ▼',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MarketSentimentStrip extends StatelessWidget {
+  const _MarketSentimentStrip({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final nav = data.intradayNav;
+    final premiumAssessment = PremiumDiscountAssessment.evaluate(
+      premiumDiscountPct: nav?.estimatedPremiumDiscountPct,
+      sourceStatus: nav?.status ?? EtfDataStatus.error,
+      isStale: nav?.isStale ?? true,
+    );
+    final statusSummary = data.statusSummary;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Wrap(
+          spacing: 12,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(
+              '市場資料',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: _marketText,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+            _MarketSignalPill(
+              icon: Icons.verified_outlined,
+              label: 'holdings ${data.snapshot.status.label}',
+              color: _marketGreen,
+            ),
+            _MarketSignalPill(
+              icon: _levelIcon(premiumAssessment.level),
+              label: premiumAssessment.label,
+              color: _levelColor(
+                  Theme.of(context).colorScheme, premiumAssessment.level),
+            ),
+            _MarketSignalPill(
+              icon: Icons.health_and_safety_outlined,
+              label: statusSummary.label,
+              color: _marketBlue,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MarketSignalPill extends StatelessWidget {
+  const _MarketSignalPill({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.55)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 17),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -258,8 +501,6 @@ class _QuoteHeader extends StatelessWidget {
                         ),
                         icon: const Icon(Icons.refresh),
                       ),
-                      const SizedBox(width: 4),
-                      const _ThemeToggleButton(compact: true),
                     ],
                   );
                   return compact
@@ -700,61 +941,56 @@ class _SectionPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
+      decoration: const BoxDecoration(
+        color: Colors.transparent,
+        border: Border(
+          bottom: BorderSide(color: _marketBorder),
+        ),
       ),
       child: SizedBox(
-        height: 76,
+        height: 58,
         child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 7),
           scrollDirection: Axis.horizontal,
           itemCount: _LabSection.values.length,
-          separatorBuilder: (context, index) => const SizedBox(width: 6),
+          separatorBuilder: (context, index) => const SizedBox(width: 10),
           itemBuilder: (context, index) {
             final section = _LabSection.values[index];
             final isSelected = section == selected;
             return InkWell(
               key: ValueKey('00631l-section-${section.name}'),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               onTap: () => onChanged(section),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 160),
                 curve: Curves.easeOut,
-                constraints: const BoxConstraints(minWidth: 74),
+                constraints: const BoxConstraints(minWidth: 86),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? theme.colorScheme.primaryContainer
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+                  color: isSelected ? _marketBlue : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: isSelected
-                        ? theme.colorScheme.primary.withValues(alpha: 0.35)
+                        ? _marketBlue.withValues(alpha: 0.65)
                         : Colors.transparent,
                   ),
                 ),
-                child: Column(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       section.icon,
                       size: 18,
-                      color: isSelected
-                          ? theme.colorScheme.onPrimaryContainer
-                          : theme.colorScheme.onSurfaceVariant,
+                      color: isSelected ? Colors.black : _marketMutedText,
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(width: 6),
                     Text(
                       section.label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: isSelected
-                            ? theme.colorScheme.onPrimaryContainer
-                            : theme.colorScheme.onSurfaceVariant,
+                        color: isSelected ? Colors.black : _marketMutedText,
                         fontWeight:
                             isSelected ? FontWeight.w900 : FontWeight.w700,
                       ),
@@ -764,6 +1000,68 @@ class _SectionPicker extends StatelessWidget {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _MarketBottomNav extends StatelessWidget {
+  const _MarketBottomNav({
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final _LabSection selected;
+  final ValueChanged<_LabSection> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        color: _marketNav,
+        border: Border(top: BorderSide(color: _marketBorder)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 70,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            scrollDirection: Axis.horizontal,
+            itemCount: _LabSection.values.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 2),
+            itemBuilder: (context, index) {
+              final section = _LabSection.values[index];
+              final isSelected = section == selected;
+              final color = isSelected ? _marketBlue : _marketMutedText;
+              return InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () => onChanged(section),
+                child: SizedBox(
+                  width: 62,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(section.icon, color: color, size: 24),
+                      const SizedBox(height: 4),
+                      Text(
+                        section.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: color,
+                              fontWeight: isSelected
+                                  ? FontWeight.w900
+                                  : FontWeight.w700,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -785,6 +1083,8 @@ class _OverviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _MarketFocusBoard(data: data),
+        const SizedBox(height: 12),
         _SectionBlock(
           title: '今日資料狀態',
           subtitle: '清楚區分每日官方資料、盤中估算資料與尚未接入的 TX live。',
@@ -876,6 +1176,307 @@ class _OverviewSection extends StatelessWidget {
               : _HistoryChangeCards(summary: history),
         ),
       ],
+    );
+  }
+}
+
+class _MarketFocusBoard extends StatelessWidget {
+  const _MarketFocusBoard({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final price = data.priceHistory.completenessSummary();
+    final nav = data.intradayNav;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFF2A2A2A),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: const Row(
+              children: [
+                SizedBox(width: 52, child: Text('類型')),
+                Expanded(flex: 3, child: Text('資料名稱')),
+                Expanded(flex: 2, child: Text('狀態')),
+                Expanded(flex: 3, child: Text('重點')),
+              ],
+            ),
+          ),
+          _MarketFocusRow(
+            marker: 'DAY',
+            markerColor: _marketGreen,
+            name: '官方內容物',
+            code: formatTaiwanDate(data.snapshot.tradeDate),
+            status: data.snapshot.status.label,
+            primary: 'NAV ${_price(data.snapshot.navPerUnit)}',
+            secondary: '淨資產 ${_compactNumber(data.snapshot.fundNetAssetValue)}',
+          ),
+          _MarketFocusRow(
+            marker: 'LIVE',
+            markerColor: _marketRed,
+            name: '盤中 NAV',
+            code: nav?.dataTime == null
+                ? 'unavailable'
+                : formatTimeSeconds(nav!.dataTime!),
+            status: nav?.status.label ?? 'unavailable',
+            primary: '市價 ${_price(nav?.marketPrice)}',
+            secondary:
+                '折溢價 ${formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct)}',
+          ),
+          _MarketFocusRow(
+            marker: 'HIS',
+            markerColor: _marketBlue,
+            name: '歷史價格',
+            code: '${price.rowCount} rows',
+            status: data.priceHistory.sourceStatusLabel,
+            primary:
+                '${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}',
+            secondary:
+                '52週 ${_price(price.trailingLowClose)} - ${_price(price.trailingHighClose)}',
+          ),
+          _MarketFocusRow(
+            marker: 'AI',
+            markerColor: const Color(0xFFC084FC),
+            name: '資料摘要',
+            code: data.aiAnalysis.source,
+            status: data.aiAnalysis.readinessLabel,
+            primary: 'bullets ${data.aiAnalysis.bullets.length}',
+            secondary: data.aiAnalysis.disclaimer,
+          ),
+          _MarketFocusRow(
+            marker: 'SYS',
+            markerColor: const Color(0xFFFBBF24),
+            name: '日常維護',
+            code: data.operationsStatus.dailyCycleStatus,
+            status: data.operationsStatus.reportOverallStatus,
+            primary:
+                'export ${data.operationsStatus.exportAvailable ? 'ready' : 'missing'}',
+            secondary:
+                'backup ${data.operationsStatus.backupAvailable ? 'ready' : 'missing'}',
+            showDivider: false,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MarketFocusRow extends StatelessWidget {
+  const _MarketFocusRow({
+    required this.marker,
+    required this.markerColor,
+    required this.name,
+    required this.code,
+    required this.status,
+    required this.primary,
+    required this.secondary,
+    this.showDivider = true,
+  });
+
+  final String marker;
+  final Color markerColor;
+  final String name;
+  final String code;
+  final String status;
+  final String primary;
+  final String secondary;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: showDivider
+            ? const Border(bottom: BorderSide(color: _marketBorder))
+            : null,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 52,
+              child: Text(
+                marker,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: markerColor,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: Row(
+                children: [
+                  _MiniCandlestick(color: markerColor),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: _marketText,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        Text(
+                          code,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: _marketMutedText,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: _MiniStatusBadge(label: status),
+            ),
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    primary,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  Text(
+                    secondary,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: _marketMutedText,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MiniCandlestick extends StatelessWidget {
+  const _MiniCandlestick({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 20,
+      height: 42,
+      child: CustomPaint(
+        painter: _MiniCandlestickPainter(color),
+      ),
+    );
+  }
+}
+
+class _MiniCandlestickPainter extends CustomPainter {
+  const _MiniCandlestickPainter(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.6
+      ..strokeCap = StrokeCap.round;
+    final centerX = size.width / 2;
+    canvas.drawLine(
+      Offset(centerX, 3),
+      Offset(centerX, size.height - 3),
+      paint,
+    );
+    final body = RRect.fromRectAndRadius(
+      Rect.fromLTWH(centerX - 5, size.height * 0.30, 10, size.height * 0.42),
+      const Radius.circular(2),
+    );
+    canvas.drawRRect(body, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _MiniCandlestickPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+class _MiniStatusBadge extends StatelessWidget {
+  const _MiniStatusBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final lower = label.toLowerCase();
+    final color = lower.contains('official') ||
+            lower.contains('ready') ||
+            lower.contains('pass') ||
+            lower.contains('可日常')
+        ? _marketGreen
+        : lower.contains('warn') ||
+                lower.contains('觀察') ||
+                lower.contains('cached')
+            ? const Color(0xFFFBBF24)
+            : lower.contains('error') ||
+                    lower.contains('missing') ||
+                    lower.contains('unavailable')
+                ? _marketRed
+                : _marketBlue;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.16),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withValues(alpha: 0.45)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -2616,6 +3217,84 @@ class _ErrorState extends StatelessWidget {
     );
   }
 }
+
+const _marketBackgroundColor = Color(0xFF101010);
+const _marketPanel = Color(0xFF181818);
+const _marketPanelAlt = Color(0xFF202020);
+const _marketNav = Color(0xFF1B1B1B);
+const _marketBorder = Color(0xFF303030);
+const _marketText = Color(0xFFF5F5F5);
+const _marketMutedText = Color(0xFFAAAAAA);
+const _marketRed = Color(0xFFFF5A5F);
+const _marketGreen = Color(0xFF67C58B);
+const _marketBlue = Color(0xFF7DD3FC);
+
+ThemeData _marketTheme(BuildContext context) {
+  final base = Theme.of(context);
+  final scheme = ColorScheme.fromSeed(
+    seedColor: _marketBlue,
+    brightness: Brightness.dark,
+  ).copyWith(
+    primary: _marketBlue,
+    onPrimary: Colors.black,
+    secondary: _marketGreen,
+    tertiary: _marketRed,
+    surface: _marketPanel,
+    surfaceContainerHighest: _marketPanelAlt,
+    onSurface: _marketText,
+    onSurfaceVariant: _marketMutedText,
+    outlineVariant: _marketBorder,
+    error: const Color(0xFFFF7777),
+  );
+  return base.copyWith(
+    brightness: Brightness.dark,
+    colorScheme: scheme,
+    scaffoldBackgroundColor: _marketBackgroundColor,
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: _marketPanel,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: const BorderSide(color: _marketBorder),
+      ),
+    ),
+    dividerColor: _marketBorder,
+    textTheme: base.textTheme.apply(
+      bodyColor: _marketText,
+      displayColor: _marketText,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: _marketPanelAlt,
+      labelStyle: const TextStyle(color: _marketMutedText),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: _marketBorder),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: _marketBlue),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: _marketBorder),
+      ),
+    ),
+    dataTableTheme: const DataTableThemeData(
+      headingRowColor: WidgetStatePropertyAll(Color(0xFF282828)),
+      dataRowColor: WidgetStatePropertyAll(_marketPanel),
+      dividerThickness: 0.8,
+      headingTextStyle: TextStyle(
+        color: _marketMutedText,
+        fontWeight: FontWeight.w900,
+      ),
+      dataTextStyle: TextStyle(color: _marketText),
+    ),
+  );
+}
+
+Color _marketBackground(BuildContext context) => _marketBackgroundColor;
 
 String _price(num? value) {
   if (value == null) {

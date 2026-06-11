@@ -93,6 +93,12 @@ v3.7 complete-data UI:
 - The AI tab includes a complete-data daily briefing built from price history, holdings history, intraday NAV history, and operations state.
 - Summary: `docs\00631l_v3_7_complete_data_ui_summary.md`.
 
+v3.8 market app UI:
+
+- The 00631L lab now uses a market-dark mobile app shell with top tabs, data-status strip, market-focus rows, and bottom navigation.
+- This is a visual/product polish release only; it does not add TX live, new ETF scope, notifications, or investment guidance.
+- Summary: `docs\00631l_v3_8_market_app_ui_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

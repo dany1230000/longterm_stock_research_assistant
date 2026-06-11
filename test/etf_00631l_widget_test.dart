@@ -17,6 +17,8 @@ void main() {
     expect(find.text('市價'), findsOneWidget);
     expect(find.text('預估淨值'), findsOneWidget);
     expect(find.text('折溢價'), findsOneWidget);
+    expect(find.text('市場資料'), findsOneWidget);
+    expect(find.text('官方內容物'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('內容物'), findsWidgets);
     expect(find.text('歷史'), findsWidgets);
@@ -39,6 +41,8 @@ void main() {
 
     expect(find.text('00631L 正二研究室'), findsOneWidget);
     expect(find.textContaining('frontend mock_default'), findsOneWidget);
+    expect(find.text('市場資料'), findsOneWidget);
+    expect(find.text('00631L ▼'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);
   });
