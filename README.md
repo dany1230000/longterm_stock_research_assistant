@@ -87,6 +87,12 @@ v3.6 UI refresh:
 - Desktop width is constrained while mobile layout stays first-class.
 - Summary: `docs\00631l_v3_6_app_ui_refresh_summary.md`.
 
+v3.7 complete-data UI:
+
+- Overview and history now use more of the existing official/static data, including OHLC, volume, row count, coverage, trailing 52-week range, drawdown, and holdings trend charts.
+- The AI tab includes a complete-data daily briefing built from price history, holdings history, intraday NAV history, and operations state.
+- Summary: `docs\00631l_v3_7_complete_data_ui_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

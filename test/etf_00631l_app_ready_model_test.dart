@@ -22,6 +22,36 @@ void main() {
     expect(performance.worstDailyReturnPct, lessThan(0));
   });
 
+  test('price history completeness summary uses OHLC volume and range data',
+      () {
+    final history = EtfPriceHistory(
+      points: _richPricePoints,
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'static_official',
+      sourceUrl: 'local://00631l-price-history',
+      lastFetchedAt: DateTime(2026, 6, 11),
+      coverageStart: DateTime(2026, 6, 1),
+      coverageEnd: DateTime(2026, 6, 4),
+      isCompleteFromListing: true,
+    );
+
+    final summary = history.completenessSummary(trailingRows: 3);
+
+    expect(summary.rowCount, 4);
+    expect(summary.isCompleteFromListing, isTrue);
+    expect(summary.latest?.close, 32.0);
+    expect(summary.previous?.close, 30.0);
+    expect(summary.latestCloseChange, 2.0);
+    expect(summary.latestDailyReturnPct, closeTo(6.666, 0.01));
+    expect(summary.trailingHighClose, 32.0);
+    expect(summary.trailingLowClose, 30.0);
+    expect(summary.trailingHighDate, DateTime(2026, 6, 4));
+    expect(summary.hasOhlc, isTrue);
+    expect(summary.hasVolume, isTrue);
+    expect(summary.hasNav, isTrue);
+    expect(summary.hasPremiumDiscount, isTrue);
+  });
+
   test('backtest engine returns equity and drawdown curves', () {
     final result = const EtfBacktestEngine().run(
       request: EtfBacktestRequest(
@@ -66,4 +96,47 @@ final _pricePoints = [
   EtfPriceHistoryPoint(date: DateTime(2026, 6, 1), close: 30.5),
   EtfPriceHistoryPoint(date: DateTime(2026, 6, 2), close: 31.0),
   EtfPriceHistoryPoint(date: DateTime(2026, 6, 3), close: 30.0),
+];
+
+final _richPricePoints = [
+  EtfPriceHistoryPoint(
+    date: DateTime(2026, 6),
+    open: 30,
+    high: 31,
+    low: 29.8,
+    close: 30.5,
+    volume: 1000000,
+    nav: 30.4,
+    premiumDiscountPct: 0.33,
+  ),
+  EtfPriceHistoryPoint(
+    date: DateTime(2026, 6, 2),
+    open: 30.6,
+    high: 31.2,
+    low: 30.4,
+    close: 31.0,
+    volume: 1100000,
+    nav: 30.9,
+    premiumDiscountPct: 0.32,
+  ),
+  EtfPriceHistoryPoint(
+    date: DateTime(2026, 6, 3),
+    open: 30.8,
+    high: 31.1,
+    low: 29.9,
+    close: 30.0,
+    volume: 1200000,
+    nav: 30.1,
+    premiumDiscountPct: -0.33,
+  ),
+  EtfPriceHistoryPoint(
+    date: DateTime(2026, 6, 4),
+    open: 30.2,
+    high: 32.3,
+    low: 30.0,
+    close: 32.0,
+    volume: 1300000,
+    nav: 31.9,
+    premiumDiscountPct: 0.31,
+  ),
 ];

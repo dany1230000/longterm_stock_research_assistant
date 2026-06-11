@@ -1822,6 +1822,106 @@ class EtfPriceHistory {
 
   EtfPerformanceSummary get performance =>
       EtfPerformanceSummary.fromPoints(points);
+
+  EtfPriceHistoryCompletenessSummary completenessSummary({
+    int trailingRows = 252,
+  }) {
+    return EtfPriceHistoryCompletenessSummary.fromHistory(
+      this,
+      trailingRows: trailingRows,
+    );
+  }
+}
+
+class EtfPriceHistoryCompletenessSummary {
+  const EtfPriceHistoryCompletenessSummary({
+    required this.rowCount,
+    required this.coverageStart,
+    required this.coverageEnd,
+    required this.isCompleteFromListing,
+    required this.latest,
+    required this.previous,
+    required this.first,
+    required this.latestDailyReturnPct,
+    required this.latestCloseChange,
+    required this.trailingHighClose,
+    required this.trailingLowClose,
+    required this.trailingHighDate,
+    required this.trailingLowDate,
+    required this.hasOhlc,
+    required this.hasVolume,
+    required this.hasNav,
+    required this.hasPremiumDiscount,
+  });
+
+  factory EtfPriceHistoryCompletenessSummary.fromHistory(
+    EtfPriceHistory history, {
+    int trailingRows = 252,
+  }) {
+    final ordered = [...history.points]
+      ..sort((a, b) => a.date.compareTo(b.date));
+    final latest = ordered.isEmpty ? null : ordered.last;
+    final previous = ordered.length > 1 ? ordered[ordered.length - 2] : null;
+    final first = ordered.isEmpty ? null : ordered.first;
+    final trailing = ordered.length <= trailingRows
+        ? ordered
+        : ordered.sublist(ordered.length - trailingRows);
+    EtfPriceHistoryPoint? highPoint;
+    EtfPriceHistoryPoint? lowPoint;
+    for (final point in trailing) {
+      if (highPoint == null || point.close > highPoint.close) {
+        highPoint = point;
+      }
+      if (lowPoint == null || point.close < lowPoint.close) {
+        lowPoint = point;
+      }
+    }
+    final latestDailyReturn = latest?.dailyReturnPct ??
+        (latest == null || previous == null || previous.close <= 0
+            ? null
+            : (latest.close / previous.close - 1) * 100);
+    return EtfPriceHistoryCompletenessSummary(
+      rowCount: ordered.length,
+      coverageStart: history.coverageStart ?? first?.date,
+      coverageEnd: history.coverageEnd ?? latest?.date,
+      isCompleteFromListing: history.isCompleteFromListing,
+      latest: latest,
+      previous: previous,
+      first: first,
+      latestDailyReturnPct: latestDailyReturn,
+      latestCloseChange: latest == null || previous == null
+          ? null
+          : latest.close - previous.close,
+      trailingHighClose: highPoint?.close,
+      trailingLowClose: lowPoint?.close,
+      trailingHighDate: highPoint?.date,
+      trailingLowDate: lowPoint?.date,
+      hasOhlc: ordered.any((point) =>
+          point.open != null || point.high != null || point.low != null),
+      hasVolume: ordered.any((point) => point.volume != null),
+      hasNav: ordered.any((point) => point.nav != null),
+      hasPremiumDiscount:
+          ordered.any((point) => point.premiumDiscountPct != null),
+    );
+  }
+
+  final int rowCount;
+  final DateTime? coverageStart;
+  final DateTime? coverageEnd;
+  final bool isCompleteFromListing;
+  final EtfPriceHistoryPoint? latest;
+  final EtfPriceHistoryPoint? previous;
+  final EtfPriceHistoryPoint? first;
+  final double? latestDailyReturnPct;
+  final double? latestCloseChange;
+  final double? trailingHighClose;
+  final double? trailingLowClose;
+  final DateTime? trailingHighDate;
+  final DateTime? trailingLowDate;
+  final bool hasOhlc;
+  final bool hasVolume;
+  final bool hasNav;
+  final bool hasPremiumDiscount;
 }
 
 class EtfPerformanceSummary {

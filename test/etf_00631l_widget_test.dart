@@ -51,7 +51,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('價格 / 淨值歷史'), findsOneWidget);
+    expect(find.text('歷史資料完整度'), findsWidgets);
     expect(find.text('累積報酬'), findsWidgets);
+    expect(find.text('52 週區間'), findsWidgets);
+    expect(find.text('成交量'), findsWidgets);
+    expect(find.text('回撤'), findsWidgets);
     expect(find.text('2026/06/03'), findsWidgets);
     expect(find.text('每日 holdings history'), findsOneWidget);
     _expectNoTradingActionText();
@@ -104,6 +108,7 @@ void main() {
     await _tapSection(tester, 'ai');
     await tester.pumpAndSettle();
     expect(find.text('AI 分析摘要'), findsOneWidget);
+    expect(find.text('完整資料日報'), findsOneWidget);
     expect(find.textContaining('rule_based'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);
 
@@ -170,9 +175,36 @@ class _PriceHistoryRepository extends Mock00631LRepository {
   @override
   Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
     final points = [
-      EtfPriceHistoryPoint(date: DateTime(2026, 6, 1), close: 30.5),
-      EtfPriceHistoryPoint(date: DateTime(2026, 6, 2), close: 31.0),
-      EtfPriceHistoryPoint(date: DateTime(2026, 6, 3), close: 30.0),
+      EtfPriceHistoryPoint(
+        date: DateTime(2026, 6, 1),
+        open: 30.1,
+        high: 30.9,
+        low: 29.8,
+        close: 30.5,
+        volume: 1000000,
+        nav: 30.4,
+        premiumDiscountPct: 0.33,
+      ),
+      EtfPriceHistoryPoint(
+        date: DateTime(2026, 6, 2),
+        open: 30.6,
+        high: 31.2,
+        low: 30.4,
+        close: 31.0,
+        volume: 1100000,
+        nav: 30.9,
+        premiumDiscountPct: 0.32,
+      ),
+      EtfPriceHistoryPoint(
+        date: DateTime(2026, 6, 3),
+        open: 30.8,
+        high: 31.1,
+        low: 29.9,
+        close: 30.0,
+        volume: 1200000,
+        nav: 30.1,
+        premiumDiscountPct: -0.33,
+      ),
     ];
     return EtfPriceHistory(
       points: points,

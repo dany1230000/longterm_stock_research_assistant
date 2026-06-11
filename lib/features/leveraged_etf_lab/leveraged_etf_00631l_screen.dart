@@ -150,7 +150,7 @@ class _LabContent extends StatelessWidget {
       case _LabSection.position:
         return _PositionSection(data: data);
       case _LabSection.ai:
-        return _AiSection(summary: data.aiAnalysis);
+        return _AiSection(data: data);
       case _LabSection.system:
         return _SystemStatusSection(status: data.operationsStatus);
     }
@@ -780,6 +780,7 @@ class _OverviewSection extends StatelessWidget {
     final snapshot = data.snapshot;
     final history = data.holdingsHistory.trendSummary();
     final performance = data.priceHistory.performance;
+    final priceCompleteness = data.priceHistory.completenessSummary();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -853,6 +854,15 @@ class _OverviewSection extends StatelessWidget {
               icon: Icons.timeline_outlined,
             ),
           ],
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: '歷史資料完整度',
+          subtitle: '公開靜態資料與 live backend 共用這份 price history；沒有資料時不補假資料。',
+          child: _PriceCompletenessPanel(
+            priceHistory: data.priceHistory,
+            summary: priceCompleteness,
+          ),
         ),
         const SizedBox(height: 12),
         _SectionBlock(
@@ -1005,6 +1015,7 @@ class _HistorySection extends StatelessWidget {
     final holdingsTrend = data.holdingsHistory.trendSummary();
     final priceHistory = data.priceHistory;
     final performance = priceHistory.performance;
+    final completeness = priceHistory.completenessSummary();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1055,20 +1066,46 @@ class _HistorySection extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    _LineChartPanel(
-                      points: priceHistory.points,
-                      valueOf: (point) => point.close,
-                      labelOf: (point) => _monthDay(point.date),
+                    Text(
+                      '歷史資料完整度',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w900,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    _PriceCompletenessPanel(
+                      priceHistory: priceHistory,
+                      summary: completeness,
                     ),
                     const SizedBox(height: 12),
+                    _PriceTrendCharts(priceHistory: priceHistory),
+                    const SizedBox(height: 12),
                     _HorizontalTable(
-                      columns: const ['日期', '收盤', '量', '日報酬', '回撤'],
+                      columns: const [
+                        '日期',
+                        '開',
+                        '高',
+                        '低',
+                        '收',
+                        'NAV',
+                        '折溢價',
+                        '量',
+                        '日報酬',
+                        '回撤',
+                      ],
                       rows: [
                         for (final point
                             in priceHistory.points.reversed.take(30))
                           [
                             formatTaiwanDate(point.date),
+                            _price(point.open),
+                            _price(point.high),
+                            _price(point.low),
                             _price(point.close),
+                            _price(point.nav),
+                            formatSignedNullablePercent(
+                              point.premiumDiscountPct,
+                            ),
                             formatInteger(point.volume),
                             formatSignedNullablePercent(point.dailyReturnPct),
                             formatSignedNullablePercent(point.drawdownPct),
@@ -1091,6 +1128,8 @@ class _HistorySection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _HistoryChangeCards(summary: holdingsTrend),
+                    const SizedBox(height: 12),
+                    _HoldingsTrendCharts(summary: holdingsTrend),
                     const SizedBox(height: 12),
                     _HorizontalTable(
                       columns: const [
@@ -1486,12 +1525,13 @@ class _PositionSectionState extends State<_PositionSection> {
 }
 
 class _AiSection extends StatelessWidget {
-  const _AiSection({required this.summary});
+  const _AiSection({required this.data});
 
-  final EtfAiAnalysisSummary summary;
+  final Etf00631LLabData data;
 
   @override
   Widget build(BuildContext context) {
+    final summary = data.aiAnalysis;
     return _SectionBlock(
       title: 'AI 分析摘要',
       subtitle: '預設 rule_based，不需要 API key。只解釋資料狀態、歷史變化與風險暴露。',
@@ -1524,6 +1564,16 @@ class _AiSection extends StatelessWidget {
           const SizedBox(height: 8),
           for (final action in summary.actionItems)
             _BulletLine(text: action, icon: Icons.task_alt_outlined),
+          const Divider(height: 24),
+          Text(
+            '完整資料日報',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          const SizedBox(height: 8),
+          for (final bullet in _completeDataBriefing(data))
+            _BulletLine(text: bullet, icon: Icons.analytics_outlined),
           const SizedBox(height: 8),
           const Text('非買賣建議。'),
         ],
@@ -1693,6 +1743,249 @@ class _HistoryChangeCards extends StatelessWidget {
             icon: Icons.compare_arrows_outlined,
           ),
       ],
+    );
+  }
+}
+
+class _PriceCompletenessPanel extends StatelessWidget {
+  const _PriceCompletenessPanel({
+    required this.priceHistory,
+    required this.summary,
+  });
+
+  final EtfPriceHistory priceHistory;
+  final EtfPriceHistoryCompletenessSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final latest = summary.latest;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _StatusWrap(
+          labels: [
+            'source ${priceHistory.sourceStatusLabel}',
+            'rows ${summary.rowCount}',
+            'coverage ${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}',
+            summary.isCompleteFromListing ? 'from listing' : 'partial range',
+          ],
+        ),
+        const SizedBox(height: 12),
+        _ResponsiveMetricGrid(
+          cards: [
+            _MetricCard(
+              label: '最新收盤',
+              value: _price(latest?.close),
+              caption: summary.latestDailyReturnPct == null
+                  ? '日報酬 unavailable'
+                  : '日報酬 ${formatSignedNullablePercent(summary.latestDailyReturnPct)}',
+              icon: Icons.candlestick_chart_outlined,
+            ),
+            _MetricCard(
+              label: '最新 OHLC',
+              value: latest == null
+                  ? 'unavailable'
+                  : '${_price(latest.open)} / ${_price(latest.high)} / ${_price(latest.low)}',
+              caption: summary.hasOhlc ? '開 / 高 / 低' : 'OHLC unavailable',
+              icon: Icons.stacked_line_chart_outlined,
+            ),
+            _MetricCard(
+              label: '成交量',
+              value: formatInteger(latest?.volume),
+              caption: summary.hasVolume ? '最新交易日' : 'volume unavailable',
+              icon: Icons.bar_chart_outlined,
+            ),
+            _MetricCard(
+              label: '52 週區間',
+              value:
+                  '${_price(summary.trailingLowClose)} - ${_price(summary.trailingHighClose)}',
+              caption:
+                  '${_dateOrDash(summary.trailingLowDate)} / ${_dateOrDash(summary.trailingHighDate)}',
+              icon: Icons.swap_vert_outlined,
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'NAV 欄位 ${summary.hasNav ? '可用' : '尚未覆蓋'}，折溢價欄位 ${summary.hasPremiumDiscount ? '可用' : '尚未覆蓋'}；盤中 live 折溢價仍以 backend intraday NAV 為準。',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PriceTrendCharts extends StatelessWidget {
+  const _PriceTrendCharts({required this.priceHistory});
+
+  final EtfPriceHistory priceHistory;
+
+  @override
+  Widget build(BuildContext context) {
+    final derived = _DerivedPriceSeries(priceHistory.points);
+    return _MiniChartGrid(
+      children: [
+        _MiniChartCard(
+          title: '收盤價',
+          caption: '完整 price history',
+          points: priceHistory.points,
+          valueOf: (point) => point.close,
+        ),
+        _MiniChartCard(
+          title: '累積報酬',
+          caption: '從 coverage start 計算',
+          points: priceHistory.points,
+          valueOf: (point) =>
+              point.cumulativeReturnPct ??
+              derived.cumulativeReturnPct(point.date),
+        ),
+        _MiniChartCard(
+          title: '回撤',
+          caption: '相對歷史高點',
+          points: priceHistory.points,
+          valueOf: (point) =>
+              point.drawdownPct ?? derived.drawdownPct(point.date),
+        ),
+        _MiniChartCard(
+          title: '成交量',
+          caption: '最新資料表同步',
+          points: priceHistory.points
+              .where((point) => point.volume != null)
+              .toList(),
+          valueOf: (point) => point.volume?.toDouble() ?? 0,
+        ),
+      ],
+    );
+  }
+}
+
+class _HoldingsTrendCharts extends StatelessWidget {
+  const _HoldingsTrendCharts({required this.summary});
+
+  final EtfHoldingsHistoryTrendSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final ordered = [...summary.points]
+      ..sort((a, b) => a.tradeDate.compareTo(b.tradeDate));
+    return _MiniChartGrid(
+      children: [
+        _MiniChartCard(
+          title: 'TX 權重',
+          caption: '官方 holdings history',
+          points: _holdingChartPoints(ordered, (point) => point.txWeightPct),
+        ),
+        _MiniChartCard(
+          title: '台積電權重',
+          caption: '官方 holdings history',
+          points: _holdingChartPoints(ordered, (point) => point.tsmcWeightPct),
+        ),
+        _MiniChartCard(
+          title: '股票資產 %',
+          caption: '官方每日資產結構',
+          points:
+              _holdingChartPoints(ordered, (point) => point.stockExposurePct),
+        ),
+        _MiniChartCard(
+          title: '期貨資產 %',
+          caption: '官方每日資產結構',
+          points:
+              _holdingChartPoints(ordered, (point) => point.futuresExposurePct),
+        ),
+        _MiniChartCard(
+          title: '現金/保證金 %',
+          caption: '官方每日資產結構',
+          points:
+              _holdingChartPoints(ordered, (point) => point.cashAndMarginPct),
+        ),
+        _MiniChartCard(
+          title: 'NAV',
+          caption: '官方每日淨值',
+          points: _holdingChartPoints(ordered, (point) => point.navPerUnit),
+        ),
+      ],
+    );
+  }
+}
+
+class _MiniChartGrid extends StatelessWidget {
+  const _MiniChartGrid({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 620;
+        return GridView.count(
+          crossAxisCount: isCompact ? 1 : 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          childAspectRatio: isCompact ? 2.15 : 1.65,
+          children: children,
+        );
+      },
+    );
+  }
+}
+
+class _MiniChartCard extends StatelessWidget {
+  const _MiniChartCard({
+    required this.title,
+    required this.caption,
+    required this.points,
+    this.valueOf,
+  });
+
+  final String title;
+  final String caption;
+  final List<EtfPriceHistoryPoint> points;
+  final double Function(EtfPriceHistoryPoint point)? valueOf;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            Text(
+              caption,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Expanded(
+              child: _LineChartPanel(
+                points: points,
+                valueOf: valueOf ?? (point) => point.close,
+                labelOf: (point) => _monthDay(point.date),
+                height: 132,
+                color: theme.colorScheme.secondary,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -2031,11 +2324,15 @@ class _LineChartPanel extends StatelessWidget {
     required this.points,
     required this.valueOf,
     required this.labelOf,
+    this.height = 220,
+    this.color,
   });
 
   final List<EtfPriceHistoryPoint> points;
   final double Function(EtfPriceHistoryPoint point) valueOf;
   final String Function(EtfPriceHistoryPoint point) labelOf;
+  final double height;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -2047,12 +2344,15 @@ class _LineChartPanel extends StatelessWidget {
               points[i],
           ]
         : points;
-    final spots = [
-      for (var index = 0; index < selected.length; index += 1)
-        FlSpot(index.toDouble(), valueOf(selected[index])),
-    ];
+    final spots = <FlSpot>[];
+    for (var index = 0; index < selected.length; index += 1) {
+      final value = valueOf(selected[index]);
+      if (value.isFinite) {
+        spots.add(FlSpot(index.toDouble(), value));
+      }
+    }
     return SizedBox(
-      height: 220,
+      height: height,
       child: spots.isEmpty
           ? const Center(child: Text('尚無圖表資料'))
           : LineChart(
@@ -2085,7 +2385,7 @@ class _LineChartPanel extends StatelessWidget {
                     barWidth: 2.5,
                     isCurved: false,
                     dotData: FlDotData(show: spots.length <= 12),
-                    color: Theme.of(context).colorScheme.primary,
+                    color: color ?? Theme.of(context).colorScheme.primary,
                   ),
                 ],
               ),
@@ -2110,6 +2410,47 @@ class _CurveChartPanel extends StatelessWidget {
       labelOf: (point) => _monthDay(point.date),
     );
   }
+}
+
+class _DerivedPriceSeries {
+  _DerivedPriceSeries(List<EtfPriceHistoryPoint> points) {
+    final ordered = [...points]..sort((a, b) => a.date.compareTo(b.date));
+    if (ordered.isEmpty) {
+      return;
+    }
+    final firstClose = ordered.first.close;
+    var peak = firstClose;
+    for (final point in ordered) {
+      if (point.close > peak) {
+        peak = point.close;
+      }
+      _cumulativeByDate[_dateKey(point.date)] =
+          firstClose <= 0 ? 0 : (point.close / firstClose - 1) * 100;
+      _drawdownByDate[_dateKey(point.date)] =
+          peak <= 0 ? 0 : (point.close / peak - 1) * 100;
+    }
+  }
+
+  final Map<String, double> _cumulativeByDate = {};
+  final Map<String, double> _drawdownByDate = {};
+
+  double cumulativeReturnPct(DateTime date) {
+    return _cumulativeByDate[_dateKey(date)] ?? 0;
+  }
+
+  double drawdownPct(DateTime date) {
+    return _drawdownByDate[_dateKey(date)] ?? 0;
+  }
+}
+
+List<EtfPriceHistoryPoint> _holdingChartPoints(
+  List<EtfHoldingsHistoryPoint> points,
+  double Function(EtfHoldingsHistoryPoint point) valueOf,
+) {
+  return [
+    for (final point in points)
+      EtfPriceHistoryPoint(date: point.tradeDate, close: valueOf(point)),
+  ];
 }
 
 class _HorizontalTable extends StatelessWidget {
@@ -2312,6 +2653,47 @@ String _dateTimeOrDash(DateTime? dateTime) {
 
 String _monthDay(DateTime date) {
   return '${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+}
+
+String _dateKey(DateTime date) {
+  return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+}
+
+List<String> _completeDataBriefing(Etf00631LLabData data) {
+  final price = data.priceHistory.completenessSummary();
+  final performance = data.priceHistory.performance;
+  final holdings = data.holdingsHistory.trendSummary();
+  final intraday = data.intradayNavHistory;
+  final lines = <String>[
+    '價格歷史共 ${price.rowCount} 筆，coverage ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，source ${data.priceHistory.sourceStatusLabel}。',
+  ];
+  if (price.latest != null) {
+    lines.add(
+      '最新收盤 ${_price(price.latest!.close)}，日報酬 ${formatSignedNullablePercent(price.latestDailyReturnPct)}，52 週區間 ${_price(price.trailingLowClose)} - ${_price(price.trailingHighClose)}。',
+    );
+  }
+  lines.add(
+    '歷史累積報酬 ${formatSignedNullablePercent(performance.totalReturnPct)}，最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}，年化波動 ${formatNullablePercent(performance.annualizedVolatilityPct)}。',
+  );
+  if (holdings.latest != null) {
+    lines.add(
+      '最新 official holdings：TX 權重 ${formatNullablePercent(holdings.latest!.txWeightPct)}，台積電權重 ${formatNullablePercent(holdings.latest!.tsmcWeightPct)}，股票/期貨/現金保證金 ${formatNullablePercent(holdings.latest!.stockExposurePct)} / ${formatNullablePercent(holdings.latest!.futuresExposurePct)} / ${formatNullablePercent(holdings.latest!.cashAndMarginPct)}。',
+    );
+  } else {
+    lines.add('尚無 holdings history，請執行 daily cycle 累積官方每日快照。');
+  }
+  if (intraday.hasData) {
+    lines.add(
+      '今日 intraday NAV samples ${intraday.sampleCount}，折溢價區間 ${formatSignedNullablePercent(intraday.lowestPremiumDiscountPct)} 至 ${formatSignedNullablePercent(intraday.highestPremiumDiscountPct)}，最後時間 ${_dateTimeOrDash(intraday.lastDataTime)}。',
+    );
+  } else {
+    lines
+        .add('intraday NAV history 尚未累積；live 折溢價需 public backend 與 TWSE 資料可用。');
+  }
+  lines.add(
+    '系統狀態：backend ${data.operationsStatus.backendConnectionCaption}，report ${data.operationsStatus.reportOverallStatus}，export ${data.operationsStatus.exportAvailable ? 'ready' : 'missing'}，backup ${data.operationsStatus.backupAvailable ? 'ready' : 'missing'}。',
+  );
+  return lines;
 }
 
 String _historyMetricLabel(String key) {
