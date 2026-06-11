@@ -14,7 +14,7 @@ class RuleBasedAnalysisTests(unittest.TestCase):
         self.assertEqual(payload["disclaimer"], "非買賣建議")
         self.assertGreaterEqual(len(payload["bullets"]), 3)
         self.assertIn("official", payload["sourceStatuses"]["holdingsHistory"])
-        self.assertEqual(payload["actionItems"], ["目前沒有必要的本機處理項目；請以官方資料時間為準。"])
+        self.assertEqual(payload["actionItems"], ["目前沒有必要的程式操作；請持續確認官方資料時間。"])
 
     def test_rule_based_summary_returns_actions_when_data_is_missing(self) -> None:
         context = _context()
@@ -98,6 +98,14 @@ def _context() -> dict:
             "sourceStatus": "cached",
             "averagePremiumDiscountPct": 0.17,
             "lastDataTime": "2026-06-09T12:13:15+08:00",
+        },
+        "priceHistory": {
+            "sourceStatus": "cached",
+            "rowCount": 120,
+            "coverageStart": "2014-10-31",
+            "coverageEnd": "2026-06-08",
+            "totalReturnPct": 122.5,
+            "maxDrawdownPct": -68.4,
         },
         "integrity": {
             "sourceStatus": "cached",

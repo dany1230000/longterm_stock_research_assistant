@@ -15,11 +15,7 @@ class AnalysisProvider(ABC):
 
 
 class ExternalLlmAnalysisProvider(AnalysisProvider):
-    """Placeholder for a future opt-in LLM provider.
-
-    The production default is rule-based. External LLM integration must stay
-    disabled unless a future release explicitly enables it through local env.
-    """
+    """Disabled placeholder for a future opt-in external LLM provider."""
 
     def summarize(self, context: dict[str, Any]) -> dict[str, Any]:
         return {
@@ -30,14 +26,14 @@ class ExternalLlmAnalysisProvider(AnalysisProvider):
             "dataTime": _data_time(context),
             "readinessLevel": "unavailable",
             "bullets": [
-                "外部 LLM 分析目前未啟用；預設只使用 rule-based 摘要。",
+                "外部 LLM 尚未啟用；目前使用 rule_based 分析。",
             ],
             "actionItems": [
-                "維持 rule-based analysis；若未來接外部 LLM，必須透過本機 env 明確啟用。",
+                "未來若啟用外部 LLM，請只透過本機 .env 設定，且預設保持關閉。",
             ],
             "sourceStatuses": _source_statuses(context),
             "disclaimer": DISCLAIMER,
-            "errorMessage": "External LLM provider is a disabled placeholder.",
+            "errorMessage": "External LLM provider is disabled.",
         }
 
 
@@ -46,6 +42,7 @@ class RuleBasedAnalysisProvider(AnalysisProvider):
         operations = _as_dict(context.get("operations"))
         holdings = _as_dict(context.get("holdingsHistory"))
         intraday = _as_dict(context.get("intradayNavHistory"))
+        price_history = _as_dict(context.get("priceHistory"))
         integrity = _as_dict(context.get("integrity"))
         report = _as_dict(operations.get("report"))
         export = _as_dict(operations.get("export"))
@@ -56,6 +53,7 @@ class RuleBasedAnalysisProvider(AnalysisProvider):
             operations=operations,
             holdings=holdings,
             intraday=intraday,
+            price_history=price_history,
             integrity=integrity,
             report=report,
             export=export,
@@ -67,6 +65,7 @@ class RuleBasedAnalysisProvider(AnalysisProvider):
             operations=operations,
             holdings=holdings,
             intraday=intraday,
+            price_history=price_history,
             integrity=integrity,
             report=report,
             export=export,
@@ -77,6 +76,7 @@ class RuleBasedAnalysisProvider(AnalysisProvider):
             operations=operations,
             holdings=holdings,
             intraday=intraday,
+            price_history=price_history,
             integrity=integrity,
             report=report,
             export=export,
@@ -91,8 +91,8 @@ class RuleBasedAnalysisProvider(AnalysisProvider):
             "generatedAt": _now_iso(),
             "dataTime": _data_time(context),
             "readinessLevel": readiness_level,
-            "bullets": bullets[:6],
-            "actionItems": action_items[:6],
+            "bullets": bullets[:8],
+            "actionItems": action_items[:8],
             "sourceStatuses": _source_statuses(context),
             "disclaimer": DISCLAIMER,
             "errorMessage": None,
@@ -104,6 +104,7 @@ def _readiness_level(
     operations: dict[str, Any],
     holdings: dict[str, Any],
     intraday: dict[str, Any],
+    price_history: dict[str, Any],
     integrity: dict[str, Any],
     report: dict[str, Any],
     export: dict[str, Any],
@@ -125,16 +126,14 @@ def _readiness_level(
         operations.get("isStale") is True,
         holdings.get("isStale") is True,
         intraday.get("isStale") is True,
+        price_history.get("sourceStatus") in {"unavailable", "error"},
         integrity.get("overallStatus") == "WARN",
         report.get("overallStatus") == "WARN",
         daily_cycle.get("overallStatus") == "WARN",
         not bool(export.get("available")),
         not bool(backup.get("available")),
     ]
-    if any(attention_markers):
-        return "attention"
-
-    return "ready"
+    return "attention" if any(attention_markers) else "ready"
 
 
 def _bullets(
@@ -143,6 +142,7 @@ def _bullets(
     operations: dict[str, Any],
     holdings: dict[str, Any],
     intraday: dict[str, Any],
+    price_history: dict[str, Any],
     integrity: dict[str, Any],
     report: dict[str, Any],
     export: dict[str, Any],
@@ -150,34 +150,34 @@ def _bullets(
     daily_cycle: dict[str, Any],
 ) -> list[str]:
     bullets = [
-        f"今日資料狀態為 {_readiness_label(readiness_level)}；此摘要只描述資料狀態與偏離程度。",
+        f"今日資料狀態為 {_readiness_label(readiness_level)}；本摘要只描述資料狀態與歷史變化。",
     ]
 
     latest_holding = _nested(operations, "holdingsHistory", "latestTradeDate")
     holding_status = _nested(operations, "holdingsHistory", "sourceStatus") or holdings.get("sourceStatus")
     if latest_holding:
         bullets.append(
-            f"official holdings 為每日快照，最近日期 {latest_holding}，sourceStatus {holding_status}。"
+            f"official holdings 最新日期為 {latest_holding}，sourceStatus {holding_status}。"
         )
     else:
-        bullets.append("official holdings history 尚未累積，暫時無法比較每日內容物變化。")
+        bullets.append("official holdings history 尚無本機紀錄，請先執行 daily cycle。")
 
     latest_intraday = _nested(operations, "intradayNavHistory", "latestDataTime") or intraday.get("lastDataTime")
     intraday_status = _nested(operations, "intradayNavHistory", "sourceStatus") or intraday.get("sourceStatus")
     if latest_intraday:
         bullets.append(
-            f"intraday NAV 為盤中估算資料，最近資料時間 {latest_intraday}，sourceStatus {intraday_status}。"
+            f"intraday NAV 最新資料時間為 {latest_intraday}，sourceStatus {intraday_status}。"
         )
     else:
-        bullets.append("intraday NAV history 尚無可用樣本，暫時無法判斷盤中折溢價歷史。")
+        bullets.append("intraday NAV 尚無可用紀錄，折溢價狀態可能無法判斷。")
 
     latest_point = _latest_holding_point(holdings)
     if latest_point:
         bullets.append(
-            "最新 holdings summary：TX 權重 "
-            f"{_pct(latest_point.get('txWeightPct'))}，台積電權重 "
-            f"{_pct(latest_point.get('tsmcWeightPct'))}，股票/期貨/現金與保證金 "
-            f"{_pct(latest_point.get('stockExposurePct'))} / "
+            "最新 holdings 摘要："
+            f"TX 權重 {_pct(latest_point.get('txWeightPct'))}，"
+            f"台積電權重 {_pct(latest_point.get('tsmcWeightPct'))}，"
+            f"股票/期貨/現金保證金 {_pct(latest_point.get('stockExposurePct'))} / "
             f"{_pct(latest_point.get('futuresExposurePct'))} / "
             f"{_pct(latest_point.get('cashAndMarginPct'))}。"
         )
@@ -185,20 +185,31 @@ def _bullets(
     premium = intraday.get("averagePremiumDiscountPct")
     if premium is not None:
         bullets.append(
-            f"今日 intraday NAV history 平均折溢價 {_signed_pct(premium)}，屬於價格偏離提示。"
+            f"今日 intraday NAV 平均折溢價為 {_signed_pct(premium)}；這是價格偏離提示。"
         )
+
+    if price_history.get("rowCount", 0):
+        bullets.append(
+            "歷史價格 coverage "
+            f"{price_history.get('coverageStart')} - {price_history.get('coverageEnd')}，"
+            f"累積報酬 {_signed_pct(price_history.get('totalReturnPct'))}，"
+            f"最大回撤 {_signed_pct(price_history.get('maxDrawdownPct'))}。"
+        )
+    else:
+        bullets.append("歷史價格尚未建立 official cache，回測區會顯示資料不足。")
 
     bullets.append(
         "daily report/export/backup 狀態："
-        f" report {report.get('sourceStatus', 'unknown')}，"
-        f" export {export.get('sourceStatus', 'unknown')}，"
-        f" backup {backup.get('sourceStatus', 'unknown')}。"
+        f"report {report.get('sourceStatus', 'unknown')}，"
+        f"export {export.get('sourceStatus', 'unknown')}，"
+        f"backup {backup.get('sourceStatus', 'unknown')}。"
     )
 
     if integrity:
         bullets.append(
-            f"資料完整性最近結果為 {integrity.get('overallStatus', 'unknown')}，"
-            f"failures {integrity.get('failureCount', 0)}，warnings {integrity.get('warningCount', 0)}。"
+            f"資料完整性檢查為 {integrity.get('overallStatus', 'unknown')}，"
+            f"failures {integrity.get('failureCount', 0)}，"
+            f"warnings {integrity.get('warningCount', 0)}。"
         )
 
     return bullets
@@ -209,6 +220,7 @@ def _action_items(
     operations: dict[str, Any],
     holdings: dict[str, Any],
     intraday: dict[str, Any],
+    price_history: dict[str, Any],
     integrity: dict[str, Any],
     report: dict[str, Any],
     export: dict[str, Any],
@@ -219,31 +231,34 @@ def _action_items(
     config = _as_dict(operations.get("config"))
     missing_keys = config.get("missingKeys") if isinstance(config.get("missingKeys"), list) else []
     if missing_keys:
-        actions.append("請檢查 backend .env 與必要設定，並執行 scripts\\00631l_check_env.cmd。")
+        actions.append("請檢查 backend .env，並執行 scripts\\00631l_check_env.cmd。")
 
     if daily_cycle.get("sourceStatus") in {"unavailable", "error"} or daily_cycle.get("overallStatus") in {None, "missing", "FAIL"}:
-        actions.append("請先執行 scripts\\00631l_daily_cycle.cmd。")
+        actions.append("請執行 scripts\\00631l_daily_cycle.cmd。")
 
     if intraday.get("sourceStatus") in {"unavailable", "error"} or not _nested(operations, "intradayNavHistory", "latestDataTime"):
-        actions.append("請確認 intraday NAV 資料時間，並檢查 TWSE URL 設定或交易時段。")
+        actions.append("請確認 intraday NAV 資料時間、TWSE URL 設定與交易時段。")
 
     if holdings.get("sourceStatus") in {"unavailable", "error"} or not _nested(operations, "holdingsHistory", "latestTradeDate"):
-        actions.append("請執行 daily cycle，確認 Yuanta official ratio 是否已累積到 local history。")
+        actions.append("請執行 daily cycle，確認 Yuanta official ratio 是否寫入 local history。")
+
+    if price_history.get("sourceStatus") in {"unavailable", "error"} or not price_history.get("rowCount"):
+        actions.append("請執行 scripts\\00631l_update_price_history.cmd 建立 official price history cache。")
 
     if report.get("sourceStatus") in {"unavailable", "error"}:
         actions.append("請執行 scripts\\00631l_generate_daily_report.cmd 產生日報。")
 
     if not bool(export.get("available")):
-        actions.append("請執行 scripts\\00631l_export_history.cmd 更新 CSV export。")
+        actions.append("請執行 scripts\\00631l_export_history.cmd 產生 CSV export。")
 
     if not bool(backup.get("available")):
-        actions.append("請執行 scripts\\00631l_backup_data.cmd 建立 local backup。")
+        actions.append("請執行 scripts\\00631l_backup_data.cmd 建立本機備份。")
 
     if integrity.get("overallStatus") in {"WARN", "FAIL"}:
-        actions.append("請執行 scripts\\00631l_check_integrity.cmd 並查看完整性結果。")
+        actions.append("請執行 scripts\\00631l_check_integrity.cmd 檢查本機資料完整性。")
 
     if not actions:
-        actions.append("目前沒有必要的本機處理項目；請以官方資料時間為準。")
+        actions.append("目前沒有必要的程式操作；請持續確認官方資料時間。")
 
     return actions
 
@@ -251,10 +266,12 @@ def _action_items(
 def _source_statuses(context: dict[str, Any]) -> dict[str, str]:
     operations = _as_dict(context.get("operations"))
     integrity = _as_dict(context.get("integrity"))
+    price_history = _as_dict(context.get("priceHistory"))
     return {
         "operations": str(operations.get("sourceStatus") or "unavailable"),
         "holdingsHistory": str(_nested(operations, "holdingsHistory", "sourceStatus") or "unavailable"),
         "intradayNavHistory": str(_nested(operations, "intradayNavHistory", "sourceStatus") or "unavailable"),
+        "priceHistory": str(price_history.get("sourceStatus") or _nested(operations, "priceHistory", "sourceStatus") or "unavailable"),
         "dailyCycle": str(_nested(operations, "dailyCycle", "sourceStatus") or "unavailable"),
         "report": str(_nested(operations, "report", "sourceStatus") or "unavailable"),
         "export": str(_nested(operations, "export", "sourceStatus") or "unavailable"),
@@ -268,6 +285,7 @@ def _data_time(context: dict[str, Any]) -> str | None:
     return (
         _nested(operations, "intradayNavHistory", "latestDataTime")
         or _nested(operations, "holdingsHistory", "latestTradeDate")
+        or _nested(operations, "priceHistory", "coverageEnd")
         or operations.get("dataTime")
         or operations.get("sourceUpdatedAt")
     )

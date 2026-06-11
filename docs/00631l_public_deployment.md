@@ -1,5 +1,21 @@
 # 00631L public deployment
 
+## v3.0 public app-ready note
+
+The codebase is ready for a public frontend plus public backend deployment, but this repository does not include cloud credentials, DNS ownership, TLS certificates, or a running server.
+
+Minimum public setup:
+
+1. Deploy the FastAPI backend with `backend\Dockerfile` or a production Python service.
+2. Mount a persistent data volume for backend local state.
+3. Set `PUBLIC_API_BASE_URL` to the backend public URL.
+4. Set `ALLOWED_ORIGINS` to the frontend public origin.
+5. Build Flutter Web with `USE_00631L_LIVE_PROXY=true` and `00631L_PROXY_BASE_URL=https://your-backend.example.com`.
+6. Host `build\web` on static hosting.
+7. Open `https://your-frontend.example.com/#/00631l-lab` on mobile.
+
+Without a public backend, the PWA can still load, but live data sections will show mock, stale, unavailable, or error states instead of official live data.
+
 本文件說明如何把 00631L 正二研究室部署成公開可連線工具。這不是綁定特定 cloud 平台的教學，也不需要把 token 或 secret 放進 repo。
 
 ## 架構

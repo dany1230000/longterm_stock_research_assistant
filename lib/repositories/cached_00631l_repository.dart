@@ -18,6 +18,7 @@ class Cached00631LRepository extends Official00631LRepository {
   FuturesQuote? _futuresQuoteCache;
   EtfHoldingsHistory? _holdingsHistoryCache;
   EtfIntradayNavHistorySummary? _intradayNavHistoryCache;
+  EtfPriceHistory? _priceHistoryCache;
   EtfOperationsStatus? _operationsStatusCache;
   EtfAiAnalysisSummary? _aiAnalysisCache;
 
@@ -110,6 +111,21 @@ class Cached00631LRepository extends Official00631LRepository {
         return _cachedIntradayHistory(cached);
       }
       return _fallback.fetchIntradayNavHistorySummary();
+    }
+  }
+
+  @override
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 800}) async {
+    try {
+      final history = await _primary.fetchPriceHistory(limit: limit);
+      _priceHistoryCache = history;
+      return history;
+    } catch (_) {
+      final cached = _priceHistoryCache;
+      if (cached != null) {
+        return _cachedPriceHistory(cached);
+      }
+      return _fallback.fetchPriceHistory(limit: limit);
     }
   }
 
@@ -254,6 +270,20 @@ EtfIntradayNavHistorySummary _cachedIntradayHistory(
   );
 }
 
+EtfPriceHistory _cachedPriceHistory(EtfPriceHistory history) {
+  return EtfPriceHistory(
+    points: history.points,
+    status: EtfDataStatus.cached,
+    sourceStatusLabel: 'cached',
+    sourceUrl: history.sourceUrl,
+    lastFetchedAt: history.lastFetchedAt,
+    coverageStart: history.coverageStart,
+    coverageEnd: history.coverageEnd,
+    isCompleteFromListing: history.isCompleteFromListing,
+    errorMessage: history.errorMessage,
+  );
+}
+
 EtfOperationsStatus _cachedOperationsStatus(EtfOperationsStatus status) {
   return EtfOperationsStatus(
     status: EtfDataStatus.cached,
@@ -273,6 +303,14 @@ EtfOperationsStatus _cachedOperationsStatus(EtfOperationsStatus status) {
     intradaySampleCount: status.intradaySampleCount,
     latestIntradayDataTime: status.latestIntradayDataTime,
     intradayHistoryDate: status.intradayHistoryDate,
+    priceHistoryStatus: status.priceHistoryStatus,
+    priceHistoryRows: status.priceHistoryRows,
+    priceHistoryCoverageStart: status.priceHistoryCoverageStart,
+    priceHistoryCoverageEnd: status.priceHistoryCoverageEnd,
+    priceHistoryCompleteFromListing: status.priceHistoryCompleteFromListing,
+    backtestStatus: status.backtestStatus,
+    backtestAvailable: status.backtestAvailable,
+    positionStatus: status.positionStatus,
     collectorOneShotCommand: status.collectorOneShotCommand,
     collectorIntradayCommand: status.collectorIntradayCommand,
     envFileExists: status.envFileExists,
@@ -324,6 +362,14 @@ EtfOperationsStatus _backendDisconnectedOperationsStatus(
     intradaySampleCount: status.intradaySampleCount,
     latestIntradayDataTime: status.latestIntradayDataTime,
     intradayHistoryDate: status.intradayHistoryDate,
+    priceHistoryStatus: status.priceHistoryStatus,
+    priceHistoryRows: status.priceHistoryRows,
+    priceHistoryCoverageStart: status.priceHistoryCoverageStart,
+    priceHistoryCoverageEnd: status.priceHistoryCoverageEnd,
+    priceHistoryCompleteFromListing: status.priceHistoryCompleteFromListing,
+    backtestStatus: status.backtestStatus,
+    backtestAvailable: status.backtestAvailable,
+    positionStatus: status.positionStatus,
     collectorOneShotCommand: status.collectorOneShotCommand,
     collectorIntradayCommand: status.collectorIntradayCommand,
     envFileExists: status.envFileExists,

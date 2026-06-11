@@ -42,11 +42,26 @@ INTRADAY_EXPORT_COLUMNS = [
     "fetchedAt",
 ]
 
+PRICE_EXPORT_COLUMNS = [
+    "date",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "nav",
+    "premiumDiscountPct",
+    "sourceStatus",
+    "sourceContract",
+    "sourceUrl",
+]
+
 
 def export_00631l_history(
     *,
     holdings_history_path: str | Path,
     intraday_history_path: str | Path,
+    price_history_path: str | Path | None = None,
     output_dir: str | Path,
 ) -> dict[str, Any]:
     output = Path(output_dir)
@@ -54,34 +69,42 @@ def export_00631l_history(
 
     holdings_records = _read_jsonl(Path(holdings_history_path))
     intraday_records = _read_jsonl(Path(intraday_history_path))
+    price_records = _read_jsonl(Path(price_history_path)) if price_history_path else []
 
     holdings_rows = [_holdings_row(record) for record in holdings_records]
     intraday_rows = [_intraday_row(record) for record in intraday_records]
+    price_rows = [_price_row(record) for record in price_records]
 
     holdings_output = output / "00631l_holdings_history_summary.csv"
     intraday_output = output / "00631l_intraday_nav_history.csv"
+    price_output = output / "00631l_price_history.csv"
     metadata_output = output / "00631l_history_export_metadata.json"
 
     _write_csv(holdings_output, HOLDINGS_EXPORT_COLUMNS, holdings_rows)
     _write_csv(intraday_output, INTRADAY_EXPORT_COLUMNS, intraday_rows)
+    _write_csv(price_output, PRICE_EXPORT_COLUMNS, price_rows)
 
     exported_at = _utc_now_iso()
     metadata = {
-        "sourceStatus": "cached" if holdings_rows or intraday_rows else "unavailable",
+        "sourceStatus": "cached" if holdings_rows or intraday_rows or price_rows else "unavailable",
         "sourceContract": "00631l_history_csv_export",
         "exportedAt": exported_at,
         "holdingsInputPath": str(holdings_history_path),
         "intradayInputPath": str(intraday_history_path),
+        "priceInputPath": str(price_history_path) if price_history_path else None,
         "outputDir": str(output),
         "holdingsOutputPath": str(holdings_output),
         "intradayOutputPath": str(intraday_output),
+        "priceOutputPath": str(price_output),
         "metadataOutputPath": str(metadata_output),
         "holdingsRowCount": len(holdings_rows),
         "intradayRowCount": len(intraday_rows),
-        "totalRowCount": len(holdings_rows) + len(intraday_rows),
+        "priceRowCount": len(price_rows),
+        "totalRowCount": len(holdings_rows) + len(intraday_rows) + len(price_rows),
         "sourceHistoryRange": _source_history_range(
             holdings_rows=holdings_rows,
             intraday_rows=intraday_rows,
+            price_rows=price_rows,
         ),
     }
     metadata_output.write_text(
@@ -172,6 +195,22 @@ def _intraday_row(record: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _price_row(record: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "date": record.get("date"),
+        "open": record.get("open"),
+        "high": record.get("high"),
+        "low": record.get("low"),
+        "close": record.get("close"),
+        "volume": record.get("volume"),
+        "nav": record.get("nav"),
+        "premiumDiscountPct": record.get("premiumDiscountPct"),
+        "sourceStatus": record.get("sourceStatus"),
+        "sourceContract": record.get("sourceContract"),
+        "sourceUrl": record.get("sourceUrl"),
+    }
+
+
 def _cash_breakdown(lines_value: Any) -> dict[str, float]:
     lines = lines_value if isinstance(lines_value, list) else []
     amounts: list[float] = []
@@ -205,6 +244,7 @@ def _source_history_range(
     *,
     holdings_rows: list[dict[str, Any]],
     intraday_rows: list[dict[str, Any]],
+    price_rows: list[dict[str, Any]],
 ) -> dict[str, Any]:
     holding_dates = sorted(
         str(row.get("tradeDate") or "") for row in holdings_rows if row.get("tradeDate")
@@ -212,11 +252,16 @@ def _source_history_range(
     intraday_times = sorted(
         str(row.get("dataTime") or "") for row in intraday_rows if row.get("dataTime")
     )
+    price_dates = sorted(
+        str(row.get("date") or "") for row in price_rows if row.get("date")
+    )
     return {
         "holdingsStartDate": holding_dates[0] if holding_dates else None,
         "holdingsEndDate": holding_dates[-1] if holding_dates else None,
         "intradayStartDataTime": intraday_times[0] if intraday_times else None,
         "intradayEndDataTime": intraday_times[-1] if intraday_times else None,
+        "priceStartDate": price_dates[0] if price_dates else None,
+        "priceEndDate": price_dates[-1] if price_dates else None,
     }
 
 

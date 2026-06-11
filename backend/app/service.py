@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -10,11 +10,17 @@ from .analysis import AnalysisProvider, RuleBasedAnalysisProvider
 from .cache import TimedMemoryCache
 from .config import Settings, settings
 from .fetcher import FetchError, fetch_text
+from .backtest import default_backtest_payload, run_backtest
 from .daily_report import report_status
 from .holdings_history import HoldingsHistoryStore, empty_history_response
 from .intraday_nav_history import (
     IntradayNavHistoryStore,
     empty_intraday_history_response,
+)
+from .price_history import (
+    PriceHistoryStore,
+    fetch_twse_stock_day_range,
+    performance_summary,
 )
 from .parsers import (
     empty_holdings_response,
@@ -40,6 +46,7 @@ class Etf00631LService:
         cache: TimedMemoryCache | None = None,
         history_store: HoldingsHistoryStore | None = None,
         intraday_history_store: IntradayNavHistoryStore | None = None,
+        price_history_store: PriceHistoryStore | None = None,
         analysis_provider: AnalysisProvider | None = None,
     ) -> None:
         self._config = config
@@ -50,6 +57,9 @@ class Etf00631LService:
         )
         self._intraday_history_store = intraday_history_store or IntradayNavHistoryStore(
             self._config.intraday_nav_history_path
+        )
+        self._price_history_store = price_history_store or PriceHistoryStore(
+            self._config.price_history_path
         )
         self._analysis_provider = analysis_provider or RuleBasedAnalysisProvider()
 
@@ -70,6 +80,7 @@ class Etf00631LService:
                 "yuantaIntradayNav": bool(self._config.yuanta_intraday_nav_url),
                 "yuantaProfile": bool(self._config.yuanta_profile_url),
                 "yuantaHoldings": bool(self._config.yuanta_holdings_url),
+                "twsePriceHistory": bool(self._config.twse_price_history_url_template),
             },
             "localState": {
                 "envFileExists": env_status["envFileExists"],
@@ -88,6 +99,10 @@ class Etf00631LService:
                 "intradayNav": "/api/etf/00631l/intraday-nav",
                 "operationsStatus": "/api/etf/00631l/operations/status",
                 "analysisSummary": "/api/etf/00631l/analysis/summary",
+                "priceHistory": "/api/etf/00631l/history/price",
+                "pricePerformance": "/api/etf/00631l/history/performance",
+                "backtestDefaults": "/api/etf/00631l/backtest/defaults",
+                "backtestRun": "/api/etf/00631l/backtest/run",
             },
         }
 
@@ -250,10 +265,105 @@ class Etf00631LService:
                 error_message=f"Intraday NAV history summary read failed: {error}",
             )
 
+    def price_history(self, *, limit: int = 800) -> dict[str, Any]:
+        now = utc_now_iso()
+        try:
+            return self._price_history_store.price_response(
+                limit=limit,
+                fetched_at=now,
+            )
+        except (OSError, RuntimeError) as error:
+            return _empty_price_history_response(
+                limit=limit,
+                fetched_at=now,
+                error_message=f"Price history read failed: {error}",
+            )
+
+    def price_history_performance(self) -> dict[str, Any]:
+        now = utc_now_iso()
+        try:
+            return self._price_history_store.performance_response(fetched_at=now)
+        except (OSError, RuntimeError) as error:
+            return _empty_performance_response(
+                fetched_at=now,
+                error_message=f"Price performance read failed: {error}",
+            )
+
+    def price_history_status(self) -> dict[str, Any]:
+        now = utc_now_iso()
+        try:
+            return self._price_history_store.status_response(fetched_at=now)
+        except (OSError, RuntimeError) as error:
+            return _empty_performance_response(
+                fetched_at=now,
+                error_message=f"Price history status read failed: {error}",
+            )
+
+    def price_history_update(
+        self,
+        *,
+        start_date: str | None = None,
+        end_date: str | None = None,
+    ) -> dict[str, Any]:
+        now = utc_now_iso()
+        start = _parse_date(start_date) or date(2014, 10, 31)
+        end = _parse_date(end_date) or datetime.now(timezone.utc).date()
+        try:
+            fetched = fetch_twse_stock_day_range(
+                fetcher=self._fetcher,
+                url_template=self._config.twse_price_history_url_template,
+                start_date=start,
+                end_date=end,
+                timeout_seconds=self._config.request_timeout_seconds,
+            )
+            saved_count = self._price_history_store.save_points(fetched["points"])
+            status = self._price_history_store.status_response(fetched_at=now)
+            return {
+                "sourceStatus": fetched["sourceStatus"],
+                "sourceContract": "twse_stock_day_history_update",
+                "sourceUrl": fetched["sourceUrl"],
+                "fetchedAt": now,
+                "sourceUpdatedAt": status.get("coverageEnd"),
+                "dataTime": status.get("coverageEnd"),
+                "requestedMonths": fetched["requestedMonths"],
+                "fetchedRows": fetched["rowCount"],
+                "savedRows": saved_count,
+                "coverageStart": status.get("coverageStart"),
+                "coverageEnd": status.get("coverageEnd"),
+                "isStale": status.get("isStale"),
+                "warnings": fetched["warnings"],
+                "errorMessage": fetched.get("errorMessage"),
+            }
+        except (OSError, RuntimeError, ValueError, FetchError) as error:
+            return {
+                "sourceStatus": "error",
+                "sourceContract": "twse_stock_day_history_update",
+                "sourceUrl": self._config.twse_price_history_url_template,
+                "fetchedAt": now,
+                "sourceUpdatedAt": None,
+                "dataTime": None,
+                "requestedMonths": 0,
+                "fetchedRows": 0,
+                "savedRows": 0,
+                "coverageStart": None,
+                "coverageEnd": None,
+                "isStale": True,
+                "warnings": [],
+                "errorMessage": f"Price history update failed: {error}",
+            }
+
+    def backtest_defaults(self) -> dict[str, Any]:
+        return default_backtest_payload()
+
+    def backtest_run(self, payload: dict[str, Any]) -> dict[str, Any]:
+        records = self._price_history_store.all()
+        return run_backtest(request=payload, history=records)
+
     def operations_status(self) -> dict[str, Any]:
         now = utc_now_iso()
         holdings = self.holdings_history_summary(limit=1)
         intraday = self.intraday_nav_history_summary()
+        price_history_status = self.price_history_status()
         export_status = self._export_status()
         backup_status = self._backup_status()
         report = report_status(self._config.report_dir)
@@ -314,6 +424,8 @@ class Etf00631LService:
                 "intradayNavCacheSeconds": self._config.intraday_cache_seconds,
                 "holdingsHistoryPathConfigured": bool(self._config.holdings_history_path),
                 "intradayNavHistoryPathConfigured": bool(self._config.intraday_nav_history_path),
+                "priceHistoryPathConfigured": bool(self._config.price_history_path),
+                "twsePriceHistoryUrlTemplateConfigured": bool(self._config.twse_price_history_url_template),
                 "historyExportDir": self._config.history_export_dir,
                 "dailyCycleStatusPath": self._config.daily_cycle_status_path,
                 "backupDir": self._config.backup_dir,
@@ -342,6 +454,34 @@ class Etf00631LService:
                 "isStale": intraday.get("isStale"),
                 "errorMessage": intraday.get("errorMessage"),
             },
+            "priceHistory": {
+                "sourceStatus": price_history_status.get("sourceStatus"),
+                "sourceContract": price_history_status.get("sourceContract"),
+                "rowCount": price_history_status.get("rowCount", 0),
+                "coverageStart": price_history_status.get("coverageStart"),
+                "coverageEnd": price_history_status.get("coverageEnd"),
+                "isCompleteFromListing": price_history_status.get("isCompleteFromListing"),
+                "isStale": price_history_status.get("isStale"),
+                "errorMessage": price_history_status.get("errorMessage"),
+            },
+            "backtest": {
+                "sourceStatus": "cached"
+                if price_history_status.get("sourceStatus") == "cached"
+                else "unavailable",
+                "sourceContract": "00631l_backtest_data_availability",
+                "available": price_history_status.get("rowCount", 0) >= 2,
+                "priceHistoryRows": price_history_status.get("rowCount", 0),
+                "errorMessage": None
+                if price_history_status.get("rowCount", 0) >= 2
+                else "Price history needs at least two rows before backtest can run.",
+            },
+            "position": {
+                "sourceStatus": "local_only",
+                "sourceContract": "00631l_frontend_local_position",
+                "storage": "browser_local_storage",
+                "uploadedToBackend": False,
+                "errorMessage": None,
+            },
             "export": export_status,
             "backup": backup_status,
             "report": report,
@@ -351,6 +491,7 @@ class Etf00631LService:
                 "operations": source_status,
                 "holdingsHistory": holdings.get("sourceStatus"),
                 "intradayHistory": intraday.get("sourceStatus"),
+                "priceHistory": price_history_status.get("sourceStatus"),
                 "export": export_status["sourceStatus"],
                 "backup": backup_status["sourceStatus"],
                 "report": report["sourceStatus"],
@@ -372,12 +513,14 @@ class Etf00631LService:
             operations = self.operations_status()
             holdings = self.holdings_history_summary(limit=30)
             intraday = self.intraday_nav_history_summary()
+            price_history = self.price_history_performance()
             integrity = _read_json_file(Path(self._config.integrity_status_path))
             payload = self._analysis_provider.summarize(
                 {
                     "operations": operations,
                     "holdingsHistory": holdings,
                     "intradayNavHistory": intraday,
+                    "priceHistory": price_history,
                     "integrity": integrity,
                 }
             )
@@ -452,11 +595,13 @@ class Etf00631LService:
         data_files = [
             Path(self._config.holdings_history_path),
             Path(self._config.intraday_nav_history_path),
+            Path(self._config.price_history_path),
             Path(self._config.daily_cycle_status_path),
         ]
         export_files = [
             export_dir / "00631l_holdings_history_summary.csv",
             export_dir / "00631l_intraday_nav_history.csv",
+            export_dir / "00631l_price_history.csv",
             export_dir / "00631l_history_export_metadata.json",
         ]
         health = {
@@ -491,6 +636,7 @@ class Etf00631LService:
         expected = [
             export_dir / "00631l_holdings_history_summary.csv",
             export_dir / "00631l_intraday_nav_history.csv",
+            export_dir / "00631l_price_history.csv",
             export_dir / "00631l_history_export_metadata.json",
         ]
         files = []
@@ -582,7 +728,7 @@ class Etf00631LService:
         )
         data_dir_ready = _path_parent_ready(self._config.holdings_history_path) and _path_parent_ready(
             self._config.intraday_nav_history_path
-        )
+        ) and _path_parent_ready(self._config.price_history_path)
         export_dir = Path(self._config.history_export_dir)
         export_dir_ready = export_dir.exists() or export_dir.parent.exists()
         backup_dir = Path(self._config.backup_dir)
@@ -593,6 +739,8 @@ class Etf00631LService:
             missing_keys.append("backend/.env")
         if not self._config.twse_intraday_nav_url:
             missing_keys.append("TWSE_00631L_INTRADAY_NAV_URL")
+        if not self._config.twse_price_history_url_template:
+            missing_keys.append("TWSE_00631L_PRICE_HISTORY_URL_TEMPLATE")
         if not self._config.yuanta_intraday_nav_url:
             optional_missing_keys.append("YUANTA_00631L_INTRADAY_NAV_URL")
         if not data_dir_ready:
@@ -630,6 +778,60 @@ def _mtime_iso(mtime: float | None) -> str | None:
     if mtime is None:
         return None
     return datetime.fromtimestamp(mtime, tz=timezone.utc).replace(microsecond=0).isoformat()
+
+
+def _parse_date(value: str | None) -> date | None:
+    if not value:
+        return None
+    try:
+        return datetime.strptime(value, "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+
+def _empty_price_history_response(
+    *,
+    limit: int,
+    fetched_at: str,
+    error_message: str,
+) -> dict[str, Any]:
+    return {
+        "items": [],
+        "limit": limit,
+        "sourceStatus": "error",
+        "sourceContract": "twse_stock_day_local_jsonl",
+        "sourceUrl": "local://00631l-price-history",
+        "fetchedAt": fetched_at,
+        "sourceUpdatedAt": None,
+        "dataTime": None,
+        "coverageStart": None,
+        "coverageEnd": None,
+        "isCompleteFromListing": False,
+        "isStale": True,
+        "errorMessage": error_message,
+    }
+
+
+def _empty_performance_response(
+    *,
+    fetched_at: str,
+    error_message: str,
+) -> dict[str, Any]:
+    return {
+        **performance_summary([]),
+        "sourceStatus": "error",
+        "sourceContract": "00631l_price_performance",
+        "sourceUrl": "local://00631l-price-history",
+        "fetchedAt": fetched_at,
+        "sourceUpdatedAt": None,
+        "dataTime": None,
+        "coverageStart": None,
+        "coverageEnd": None,
+        "rowCount": 0,
+        "isCompleteFromListing": False,
+        "isStale": True,
+        "errorMessage": error_message,
+    }
 
 
 def _path_parent_ready(path_text: str) -> bool:

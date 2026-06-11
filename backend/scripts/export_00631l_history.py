@@ -30,11 +30,16 @@ def main() -> int:
         "--intraday-history-path",
         default=settings.intraday_nav_history_path,
     )
+    parser.add_argument(
+        "--price-history-path",
+        default=settings.price_history_path,
+    )
     args = parser.parse_args()
 
     payload = export_00631l_history(
         holdings_history_path=args.holdings_history_path,
         intraday_history_path=args.intraday_history_path,
+        price_history_path=args.price_history_path,
         output_dir=args.output_dir,
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
@@ -42,6 +47,7 @@ def main() -> int:
         "[summary] "
         f"holdingsRows={payload['holdingsRowCount']} "
         f"intradayRows={payload['intradayRowCount']} "
+        f"priceRows={payload['priceRowCount']} "
         f"metadata={payload['metadataOutputPath']}"
     )
     return 0

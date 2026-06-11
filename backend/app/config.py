@@ -72,6 +72,13 @@ class Settings:
     twse_intraday_nav_url: str = os.getenv("TWSE_00631L_INTRADAY_NAV_URL", "")
     yuanta_intraday_nav_url: str = os.getenv("YUANTA_00631L_INTRADAY_NAV_URL", "")
     intraday_nav_source: str = os.getenv("00631L_INTRADAY_NAV_SOURCE", "auto").strip().lower()
+    twse_price_history_url_template: str = os.getenv(
+        "TWSE_00631L_PRICE_HISTORY_URL_TEMPLATE",
+        (
+            "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY"
+            "?date={yyyymmdd}&stockNo=00631L&response=json"
+        ),
+    )
     request_timeout_seconds: float = _env_float("00631L_PROXY_TIMEOUT_SECONDS", 8)
     profile_cache_seconds: int = _env_int("00631L_PROFILE_CACHE_SECONDS", 24 * 60 * 60)
     holdings_cache_seconds: int = _env_int("00631L_HOLDINGS_CACHE_SECONDS", 10 * 60)
@@ -86,6 +93,10 @@ class Settings:
             "00631L_INTRADAY_NAV_HISTORY_PATH",
             "00631l_intraday_nav_history.jsonl",
         ),
+    )
+    price_history_path: str = os.getenv(
+        "00631L_PRICE_HISTORY_PATH",
+        _data_path("00631L_PRICE_HISTORY_PATH", "00631l_price_history.jsonl"),
     )
     history_export_dir: str = os.getenv(
         "00631L_HISTORY_EXPORT_DIR",

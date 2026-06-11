@@ -1,0 +1,43 @@
+# 00631L data sources and freshness
+
+This page explains what is live, what is daily, and what is local-only.
+
+## Source Types
+
+| Data | Source | Update Frequency | Notes |
+| --- | --- | --- | --- |
+| Profile | Yuanta official basic information | Low frequency | Fund name, benchmark, fee, listing information. |
+| Holdings ratio | Yuanta official ratio page | Daily official snapshot | This is not an intraday holdings feed. |
+| Intraday NAV | TWSE ETF `all_etf.txt`, with Yuanta INAV fallback | About 15 to 30 seconds when backend and source are available | Used for market price, estimated NAV, premium/discount, and data time. |
+| Price history | TWSE official STOCK_DAY cache | Manual update through script | Used for historical performance and backtest. Coverage is shown in the app. |
+| Holdings history | Local backend JSONL | Accumulates after daily cycle runs | Past holdings before local collection are not invented. |
+| Position tracking | Browser local storage | Local-only | Not uploaded to the backend by default. |
+| TX quote | Mock/fallback only | Not live | TX live is outside the current scope. |
+
+## Status Labels
+
+- `official`: parsed from the official source.
+- `cached`: loaded from local cache after a previous successful official fetch.
+- `mock`: fallback fixture for app availability; never shown as official.
+- `stale`: data exists but may be older than expected.
+- `error`: the source or parser failed.
+- `unavailable`: the app does not have enough data for this section.
+
+## App Behavior
+
+- Holdings ratio is daily official data. It should not be read as a live intraday basket.
+- Intraday NAV is the fast-updating source for market price, estimated NAV, premium/discount, and data time.
+- Price history must be updated with `scripts\00631l_update_price_history.cmd` before long-range history and backtest results are meaningful.
+- Backtest output is historical calculation only. It does not describe future results.
+- Every section that uses mock, stale, unavailable, or error data must display that status instead of hiding it.
+
+## Useful Commands
+
+```cmd
+scripts\00631l_update_price_history.cmd --status-only
+scripts\00631l_update_price_history.cmd
+scripts\00631l_daily_cycle.cmd
+scripts\00631l_release_check.cmd
+```
+
+`--status-only` is safe for release checks because it does not call the network.

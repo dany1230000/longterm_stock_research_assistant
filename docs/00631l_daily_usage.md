@@ -1,5 +1,22 @@
 # 00631L 正二研究室日常使用手冊
 
+## v3.0 quick flow
+
+1. Start backend or use a public backend deployment.
+2. Open the app at `/#/00631l-lab`.
+3. Run `scripts\00631l_daily_cycle.cmd` to collect official daily data, export CSV, and generate the daily report.
+4. Run `scripts\00631l_update_price_history.cmd --status-only` to check local price history coverage.
+5. Run `scripts\00631l_update_price_history.cmd` when you want to refresh long-range price history.
+6. Review the app sections: overview, holdings, history, backtest, position, AI analysis, and system status.
+
+Important source timing:
+
+- Holdings ratio is an official daily snapshot.
+- Intraday NAV is the fast-updating market price, estimated NAV, premium/discount, and data-time source.
+- Price history is a local official TWSE cache after update.
+- Position tracking is browser local-only.
+- TX live remains mock/fallback.
+
 本文件說明如何每天用同一套本機流程檢查 00631L 資料。這個研究室只整理資料來源、內容物歷史、折溢價狀態與本機操作狀態，不提供操作建議。
 
 ## 第一次安裝

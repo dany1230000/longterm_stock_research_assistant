@@ -191,6 +191,29 @@ class Proxy00631LRepository extends Official00631LRepository {
   }
 
   @override
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 800}) async {
+    final payload =
+        await _getJson('/api/etf/00631l/history/price?limit=$limit');
+    final rawStatus = _rawStatus(payload);
+    final items = [
+      for (final item in _list(payload['items']))
+        _priceHistoryPointFromPayload(_map(item)),
+    ];
+
+    return EtfPriceHistory(
+      points: items,
+      status: _status(payload),
+      sourceStatusLabel: rawStatus.isEmpty ? _status(payload).label : rawStatus,
+      sourceUrl: _string(payload['sourceUrl']),
+      lastFetchedAt: _dateTime(payload['fetchedAt']) ?? DateTime.now(),
+      coverageStart: _nullableDate(payload['coverageStart']),
+      coverageEnd: _nullableDate(payload['coverageEnd']),
+      isCompleteFromListing: payload['isCompleteFromListing'] == true,
+      errorMessage: payload['errorMessage']?.toString(),
+    );
+  }
+
+  @override
   Future<EtfOperationsStatus> fetchOperationsStatus() async {
     final payload = await _getJson('/api/etf/00631l/operations/status');
     final rawStatus = _rawStatus(payload);
@@ -201,6 +224,9 @@ class Proxy00631LRepository extends Official00631LRepository {
     final backup = _map(payload['backup']);
     final report = _map(payload['report']);
     final dailyCycle = _map(payload['dailyCycle']);
+    final priceHistory = _map(payload['priceHistory']);
+    final backtest = _map(payload['backtest']);
+    final position = _map(payload['position']);
     final backendHealth = _map(payload['backendHealth']);
     final dataDirectoryHealth = _map(payload['dataDirectoryHealth']);
     final persistence = _map(dataDirectoryHealth['persistence']);
@@ -252,6 +278,24 @@ class Proxy00631LRepository extends Official00631LRepository {
       intradaySampleCount: _int(intraday['sampleCount']),
       latestIntradayDataTime: _wallClockDateTime(intraday['latestDataTime']),
       intradayHistoryDate: _nullableDate(intraday['date']),
+      priceHistoryStatus: _string(
+        priceHistory['sourceStatus'],
+        fallback: 'unavailable',
+      ),
+      priceHistoryRows: _int(priceHistory['rowCount']),
+      priceHistoryCoverageStart: _nullableDate(priceHistory['coverageStart']),
+      priceHistoryCoverageEnd: _nullableDate(priceHistory['coverageEnd']),
+      priceHistoryCompleteFromListing:
+          priceHistory['isCompleteFromListing'] == true,
+      backtestStatus: _string(
+        backtest['sourceStatus'],
+        fallback: 'unavailable',
+      ),
+      backtestAvailable: backtest['available'] == true,
+      positionStatus: _string(
+        position['sourceStatus'],
+        fallback: 'local_only',
+      ),
       collectorOneShotCommand: _string(
         collector['oneShotCommand'],
         fallback: 'scripts\\00631l_collect_snapshot.cmd --samples 1',
@@ -333,6 +377,24 @@ class Proxy00631LRepository extends Official00631LRepository {
     final normalizedPath = path.startsWith('/') ? path : '/$path';
     return Uri.parse('$base$normalizedPath');
   }
+}
+
+EtfPriceHistoryPoint _priceHistoryPointFromPayload(
+  Map<String, dynamic> payload,
+) {
+  return EtfPriceHistoryPoint(
+    date: _date(payload['date']),
+    open: _nullableDouble(payload['open']),
+    high: _nullableDouble(payload['high']),
+    low: _nullableDouble(payload['low']),
+    close: _double(payload['close']),
+    volume: _nullableInt(payload['volume']),
+    nav: _nullableDouble(payload['nav']),
+    premiumDiscountPct: _nullableDouble(payload['premiumDiscountPct']),
+    dailyReturnPct: _nullableDouble(payload['dailyReturnPct']),
+    cumulativeReturnPct: _nullableDouble(payload['cumulativeReturnPct']),
+    drawdownPct: _nullableDouble(payload['drawdownPct']),
+  );
 }
 
 EtfHoldingsHistoryPoint _historyPointFromPayload(Map<String, dynamic> payload) {

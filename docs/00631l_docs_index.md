@@ -4,11 +4,14 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
-- Final daily-use summary: `docs\00631l_v2_0_final_summary.md`
+- App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
 - Mobile usage: `docs\00631l_mobile_usage.md`
 - Public deployment: `docs\00631l_public_deployment.md`
 - PWA usage: `docs\00631l_pwa_usage.md`
+- Data source and freshness guide: `docs\00631l_data_sources_freshness.md`
+- Backtest guide: `docs\00631l_backtest_guide.md`
+- Position tracking guide: `docs\00631l_position_tracking.md`
 - AI analysis: `docs\00631l_ai_analysis.md`
 - Future App Store path: `docs\00631l_app_store_path.md`
 - Troubleshooting: `docs\00631l_troubleshooting.md`
@@ -24,6 +27,7 @@ This is the main entry point for 00631L lab documentation.
 - Backend LAN startup: `scripts\00631l_start_backend_lan.cmd`
 - Frontend LAN startup: `scripts\00631l_start_frontend_lan.cmd`
 - Daily cycle: `scripts\00631l_daily_cycle.cmd`
+- Price history update: `scripts\00631l_update_price_history.cmd`
 - Release check: `scripts\00631l_release_check.cmd`
 - Public config check: `scripts\00631l_check_public_config.cmd`
 - Public web build: `scripts\00631l_build_web_public.cmd`
@@ -32,6 +36,9 @@ This is the main entry point for 00631L lab documentation.
 
 - Daily report guide: `docs\00631l_daily_report_guide.md`
 - Holdings and intraday source notes: `docs\00631l_lab.md`
+- Price history, source freshness, and coverage: `docs\00631l_data_sources_freshness.md`
+- Historical backtest guide: `docs\00631l_backtest_guide.md`
+- Local position tracking guide: `docs\00631l_position_tracking.md`
 - AI analysis notes: `docs\00631l_ai_analysis.md`
 - Live proxy details: `docs\00631l_live_proxy.md`
 - CSV export: `scripts\00631l_export_history.cmd`
@@ -63,6 +70,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Formal daily-use completion: `docs\00631l_v2_0_final_summary.md`
 - Mobile + AI release: `docs\00631l_v2_1_mobile_ai_summary.md`
 - Public deploy-ready release: `docs\00631l_v2_2_public_deploy_ready_summary.md`
+- App-ready release: `docs\00631l_v3_0_app_ready_summary.md`
 
 ## Scope Boundary
 

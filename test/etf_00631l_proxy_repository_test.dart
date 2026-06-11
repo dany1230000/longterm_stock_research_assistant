@@ -154,6 +154,30 @@ void main() {
     expect(status.dataPathWritable, isTrue);
     expect(status.dataPathPersistent, isTrue);
     expect(status.dataPersistenceLabel, 'persistent data ready');
+    expect(status.priceHistoryStatus, 'cached');
+    expect(status.priceHistoryRows, 3);
+    expect(status.priceHistoryCoverageStart, DateTime(2026, 6, 1));
+    expect(status.priceHistoryCoverageEnd, DateTime(2026, 6, 3));
+    expect(status.backtestAvailable, isTrue);
+    expect(status.positionStatus, 'local_only');
+  });
+
+  test('proxy repository maps price history payload', () async {
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/00631l/history/price': jsonEncode(_priceHistoryPayload()),
+      }),
+    );
+
+    final history = await repository.fetchPriceHistory();
+
+    expect(history.status, EtfDataStatus.cached);
+    expect(history.sourceStatusLabel, 'cached');
+    expect(history.coverageStart, DateTime(2026, 6, 1));
+    expect(history.coverageEnd, DateTime(2026, 6, 3));
+    expect(history.points, hasLength(3));
+    expect(history.points.first.close, 30.5);
+    expect(history.points.last.drawdownPct, -3.23);
   });
 
   test('proxy repository maps AI analysis summary payload', () async {
@@ -467,6 +491,30 @@ Map<String, Object?> _operationsStatusPayload() {
       'isStale': false,
       'errorMessage': null,
     },
+    'priceHistory': {
+      'sourceStatus': 'cached',
+      'sourceContract': '00631l_price_history_status',
+      'rowCount': 3,
+      'coverageStart': '2026-06-01',
+      'coverageEnd': '2026-06-03',
+      'isCompleteFromListing': false,
+      'isStale': false,
+      'errorMessage': null,
+    },
+    'backtest': {
+      'sourceStatus': 'cached',
+      'sourceContract': '00631l_backtest_data_availability',
+      'available': true,
+      'priceHistoryRows': 3,
+      'errorMessage': null,
+    },
+    'position': {
+      'sourceStatus': 'local_only',
+      'sourceContract': '00631l_frontend_local_position',
+      'storage': 'browser_local_storage',
+      'uploadedToBackend': false,
+      'errorMessage': null,
+    },
     'export': {
       'sourceStatus': 'cached',
       'sourceContract': '00631l_history_export_status',
@@ -532,6 +580,57 @@ Map<String, Object?> _operationsStatusPayload() {
       'publicApiBaseUrl': 'https://api.example.com',
       'allowedOrigins': ['https://00631l.example.com'],
     },
+  };
+}
+
+Map<String, Object?> _priceHistoryPayload() {
+  return {
+    'items': [
+      {
+        'date': '2026-06-01',
+        'open': 30.0,
+        'high': 31.0,
+        'low': 29.5,
+        'close': 30.5,
+        'volume': 1000000,
+        'dailyReturnPct': null,
+        'cumulativeReturnPct': 0.0,
+        'drawdownPct': 0.0,
+      },
+      {
+        'date': '2026-06-02',
+        'open': 31.0,
+        'high': 32.0,
+        'low': 30.5,
+        'close': 31.0,
+        'volume': 1100000,
+        'dailyReturnPct': 1.64,
+        'cumulativeReturnPct': 1.64,
+        'drawdownPct': 0.0,
+      },
+      {
+        'date': '2026-06-03',
+        'open': 30.5,
+        'high': 31.0,
+        'low': 29.8,
+        'close': 30.0,
+        'volume': 1200000,
+        'dailyReturnPct': -3.23,
+        'cumulativeReturnPct': -1.64,
+        'drawdownPct': -3.23,
+      },
+    ],
+    'sourceStatus': 'cached',
+    'sourceContract': 'twse_stock_day_local_jsonl',
+    'sourceUrl': 'local://00631l-price-history',
+    'fetchedAt': '2026-06-11T10:00:00+08:00',
+    'sourceUpdatedAt': '2026-06-03',
+    'dataTime': '2026-06-03',
+    'coverageStart': '2026-06-01',
+    'coverageEnd': '2026-06-03',
+    'isCompleteFromListing': false,
+    'isStale': false,
+    'errorMessage': null,
   };
 }
 

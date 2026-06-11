@@ -1,5 +1,29 @@
 # 00631L AI 分析摘要
 
+## v3.0 scope
+
+The default provider remains `rule_based`.
+
+The summary may describe:
+
+- Today data status.
+- Official holdings freshness.
+- Intraday NAV freshness and premium/discount status.
+- Holdings history changes.
+- Price history coverage and historical performance.
+- Backtest result availability and main historical result fields.
+- Local position tracking status.
+- Daily report, export, backup, and integrity status.
+- Program actions such as running daily cycle, price history update, export, backup, or release check.
+
+The summary must not call an external LLM unless a future explicit configuration enables it. No API key is required for the current default flow.
+
+The summary is always marked:
+
+```text
+非買賣建議
+```
+
 `00631L 正二研究室` 的 AI 分析摘要目前是 rule-based，不會呼叫外部 LLM，也不需要 API key。
 
 ## 目前來源

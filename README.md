@@ -2,7 +2,7 @@
 
 ## 00631L lab status
 
-00631L lab v2.2 is public deployment ready. Start from `docs/00631l_docs_index.md`, `docs/00631l_public_deployment.md`, or `docs/00631l_pwa_usage.md`.
+00631L lab v3.0 is app-ready for mobile-first daily use, public deployment preparation, historical price review, historical backtest, local position tracking, and rule-based AI data analysis. Start from `docs/00631l_docs_index.md` or `docs/00631l_v3_0_app_ready_summary.md`.
 
 Daily helper:
 
@@ -35,6 +35,26 @@ scripts\00631l_build_web_public.cmd
 ```
 
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
+
+Price history and historical backtest:
+
+```cmd
+scripts\00631l_update_price_history.cmd --status-only
+scripts\00631l_update_price_history.cmd
+```
+
+Guides:
+
+- `docs\00631l_data_sources_freshness.md`
+- `docs\00631l_backtest_guide.md`
+- `docs\00631l_position_tracking.md`
+
+Current source timing:
+
+- Yuanta holdings ratio is an official daily snapshot, not an intraday holdings feed.
+- TWSE intraday NAV is the fast-updating market price, estimated NAV, premium/discount, and data-time source.
+- TWSE price history is cached locally after running the update script.
+- TX live remains out of scope and is still mock/fallback by design.
 
 ## 00631L lab v1.0 completed
 

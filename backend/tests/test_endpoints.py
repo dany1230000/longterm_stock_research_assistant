@@ -10,6 +10,7 @@ try:
     from backend.app.config import Settings
     from backend.app.holdings_history import HoldingsHistoryStore
     from backend.app.intraday_nav_history import IntradayNavHistoryStore
+    from backend.app.price_history import PriceHistoryStore, parse_twse_stock_day
     from backend.app.service import Etf00631LService
 
     HAS_FASTAPI = True
@@ -475,6 +476,68 @@ Custodian Fee
             self.assertFalse(payload["export"]["available"])
             self.assertEqual(payload["report"]["sourceStatus"], "unavailable")
             self.assertEqual(payload["statusSummary"]["dailyCycle"], "unavailable")
+
+    def test_price_history_and_backtest_endpoints_return_fixture_data(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            price_store = PriceHistoryStore(Path(temp_dir) / "price.jsonl")
+            price_store.save_points(
+                parse_twse_stock_day(
+                    json.dumps(
+                        {
+                            "data": [
+                                ["115/06/01", "1,000,000", "30,500,000", "30.00", "31.00", "29.50", "30.50", "+0.50", "1,234"],
+                                ["115/06/02", "1,100,000", "34,100,000", "31.00", "32.00", "30.50", "31.00", "+0.50", "1,300"],
+                                ["115/06/03", "1,200,000", "36,000,000", "30.50", "31.00", "29.80", "30.00", "-1.00", "1,400"],
+                            ]
+                        }
+                    ),
+                    source_url="fixture://twse",
+                )
+            )
+            main_module.service = Etf00631LService(
+                config=Settings(
+                    price_history_path=str(Path(temp_dir) / "price.jsonl"),
+                    holdings_history_path=str(Path(temp_dir) / "history.jsonl"),
+                    intraday_nav_history_path=str(Path(temp_dir) / "intraday.jsonl"),
+                ),
+                cache=TimedMemoryCache(),
+                history_store=HoldingsHistoryStore(Path(temp_dir) / "history.jsonl"),
+                intraday_history_store=IntradayNavHistoryStore(
+                    Path(temp_dir) / "intraday.jsonl"
+                ),
+                price_history_store=price_store,
+            )
+
+            price_response = self.client.get("/api/etf/00631l/history/price")
+            self.assertEqual(price_response.status_code, 200)
+            price_payload = price_response.json()
+            self.assertEqual(price_payload["sourceStatus"], "cached")
+            self.assertEqual(price_payload["coverageStart"], "2026-06-01")
+            self.assertEqual(len(price_payload["items"]), 3)
+
+            performance = self.client.get("/api/etf/00631l/history/performance").json()
+            self.assertEqual(performance["sourceStatus"], "cached")
+            self.assertEqual(performance["rowCount"], 3)
+
+            defaults = self.client.get("/api/etf/00631l/backtest/defaults").json()
+            self.assertEqual(defaults["defaultStrategy"], "monthly_contribution")
+            self.assertEqual(defaults["disclaimer"], "回測不代表未來表現，非買賣建議")
+
+            result = self.client.post(
+                "/api/etf/00631l/backtest/run",
+                json={
+                    "strategy": "lump_sum",
+                    "startDate": "2026-06-01",
+                    "endDate": "2026-06-03",
+                    "initialAmount": 100000,
+                    "monthlyAmount": 0,
+                    "monthlyDay": 5,
+                    "feeRatePct": 0,
+                },
+            ).json()
+            self.assertEqual(result["sourceStatus"], "calculated")
+            self.assertEqual(result["totalInvested"], 100000)
+            self.assertGreater(len(result["equityCurve"]), 1)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 enum EtfDataStatus {
   official,
   proxy,
@@ -1115,6 +1117,14 @@ class EtfOperationsStatus {
     required this.intradaySampleCount,
     required this.latestIntradayDataTime,
     required this.intradayHistoryDate,
+    this.priceHistoryStatus = 'unavailable',
+    this.priceHistoryRows = 0,
+    this.priceHistoryCoverageStart,
+    this.priceHistoryCoverageEnd,
+    this.priceHistoryCompleteFromListing = false,
+    this.backtestStatus = 'unavailable',
+    this.backtestAvailable = false,
+    this.positionStatus = 'local_only',
     required this.collectorOneShotCommand,
     required this.collectorIntradayCommand,
     this.envFileExists = false,
@@ -1174,6 +1184,14 @@ class EtfOperationsStatus {
       intradaySampleCount: 0,
       latestIntradayDataTime: null,
       intradayHistoryDate: null,
+      priceHistoryStatus: sourceStatusLabel,
+      priceHistoryRows: 0,
+      priceHistoryCoverageStart: null,
+      priceHistoryCoverageEnd: null,
+      priceHistoryCompleteFromListing: false,
+      backtestStatus: sourceStatusLabel,
+      backtestAvailable: false,
+      positionStatus: 'local_only',
       collectorOneShotCommand:
           'scripts\\00631l_collect_snapshot.cmd --samples 1',
       collectorIntradayCommand:
@@ -1229,6 +1247,14 @@ class EtfOperationsStatus {
   final int intradaySampleCount;
   final DateTime? latestIntradayDataTime;
   final DateTime? intradayHistoryDate;
+  final String priceHistoryStatus;
+  final int priceHistoryRows;
+  final DateTime? priceHistoryCoverageStart;
+  final DateTime? priceHistoryCoverageEnd;
+  final bool priceHistoryCompleteFromListing;
+  final String backtestStatus;
+  final bool backtestAvailable;
+  final String positionStatus;
   final String collectorOneShotCommand;
   final String collectorIntradayCommand;
   final bool envFileExists;
@@ -1257,7 +1283,9 @@ class EtfOperationsStatus {
   final String? errorMessage;
 
   bool get hasAnyHistory =>
-      holdingsHistoryItemCount > 0 || intradaySampleCount > 0;
+      holdingsHistoryItemCount > 0 ||
+      intradaySampleCount > 0 ||
+      priceHistoryRows > 0;
 
   bool get envReady =>
       missingEnvKeys.isEmpty &&
@@ -1712,6 +1740,386 @@ class EtfAiAnalysisSummary {
   }
 }
 
+class EtfPriceHistoryPoint {
+  const EtfPriceHistoryPoint({
+    required this.date,
+    required this.close,
+    this.open,
+    this.high,
+    this.low,
+    this.volume,
+    this.nav,
+    this.premiumDiscountPct,
+    this.dailyReturnPct,
+    this.cumulativeReturnPct,
+    this.drawdownPct,
+  });
+
+  final DateTime date;
+  final double close;
+  final double? open;
+  final double? high;
+  final double? low;
+  final int? volume;
+  final double? nav;
+  final double? premiumDiscountPct;
+  final double? dailyReturnPct;
+  final double? cumulativeReturnPct;
+  final double? drawdownPct;
+}
+
+class EtfPriceHistory {
+  const EtfPriceHistory({
+    required this.points,
+    required this.status,
+    required this.sourceStatusLabel,
+    required this.sourceUrl,
+    required this.lastFetchedAt,
+    required this.coverageStart,
+    required this.coverageEnd,
+    required this.isCompleteFromListing,
+    this.errorMessage,
+  });
+
+  factory EtfPriceHistory.empty({
+    DateTime? lastFetchedAt,
+    EtfDataStatus status = EtfDataStatus.mock,
+    String sourceStatusLabel = 'mock',
+    String sourceUrl = '',
+    String? errorMessage,
+  }) {
+    final now = lastFetchedAt ?? DateTime.now();
+    return EtfPriceHistory(
+      points: const [],
+      status: status,
+      sourceStatusLabel: sourceStatusLabel,
+      sourceUrl: sourceUrl,
+      lastFetchedAt: now,
+      coverageStart: null,
+      coverageEnd: null,
+      isCompleteFromListing: false,
+      errorMessage: errorMessage,
+    );
+  }
+
+  final List<EtfPriceHistoryPoint> points;
+  final EtfDataStatus status;
+  final String sourceStatusLabel;
+  final String sourceUrl;
+  final DateTime lastFetchedAt;
+  final DateTime? coverageStart;
+  final DateTime? coverageEnd;
+  final bool isCompleteFromListing;
+  final String? errorMessage;
+
+  bool get hasData => points.isNotEmpty;
+
+  EtfPerformanceSummary get performance =>
+      EtfPerformanceSummary.fromPoints(points);
+}
+
+class EtfPerformanceSummary {
+  const EtfPerformanceSummary({
+    required this.totalReturnPct,
+    required this.annualizedReturnPct,
+    required this.annualizedVolatilityPct,
+    required this.maxDrawdownPct,
+    required this.bestDailyReturnPct,
+    required this.worstDailyReturnPct,
+  });
+
+  factory EtfPerformanceSummary.empty() {
+    return const EtfPerformanceSummary(
+      totalReturnPct: null,
+      annualizedReturnPct: null,
+      annualizedVolatilityPct: null,
+      maxDrawdownPct: null,
+      bestDailyReturnPct: null,
+      worstDailyReturnPct: null,
+    );
+  }
+
+  factory EtfPerformanceSummary.fromPoints(List<EtfPriceHistoryPoint> points) {
+    if (points.length < 2) {
+      return EtfPerformanceSummary.empty();
+    }
+    final ordered = [...points]..sort((a, b) => a.date.compareTo(b.date));
+    final first = ordered.first.close;
+    final last = ordered.last.close;
+    final totalReturn = first == 0 ? null : (last / first - 1) * 100;
+    final days = ordered.last.date.difference(ordered.first.date).inDays;
+    final annualizedReturn = totalReturn == null || days <= 0
+        ? null
+        : ((powDouble(last / first, 365 / days) - 1) * 100);
+    final returns = <double>[];
+    var peak = first;
+    var maxDrawdown = 0.0;
+    for (var index = 1; index < ordered.length; index += 1) {
+      final previous = ordered[index - 1].close;
+      final current = ordered[index].close;
+      if (previous > 0) {
+        returns.add((current / previous - 1) * 100);
+      }
+      if (current > peak) {
+        peak = current;
+      }
+      if (peak > 0) {
+        final drawdown = (current / peak - 1) * 100;
+        if (drawdown < maxDrawdown) {
+          maxDrawdown = drawdown;
+        }
+      }
+    }
+    final volatility = returns.length < 2
+        ? null
+        : _standardDeviation(returns) * powDouble(252, 0.5);
+    returns.sort();
+    return EtfPerformanceSummary(
+      totalReturnPct: totalReturn,
+      annualizedReturnPct: annualizedReturn,
+      annualizedVolatilityPct: volatility,
+      maxDrawdownPct: maxDrawdown,
+      bestDailyReturnPct: returns.isEmpty ? null : returns.last,
+      worstDailyReturnPct: returns.isEmpty ? null : returns.first,
+    );
+  }
+
+  final double? totalReturnPct;
+  final double? annualizedReturnPct;
+  final double? annualizedVolatilityPct;
+  final double? maxDrawdownPct;
+  final double? bestDailyReturnPct;
+  final double? worstDailyReturnPct;
+}
+
+enum EtfBacktestStrategy {
+  lumpSum,
+  monthlyContribution,
+}
+
+class EtfBacktestRequest {
+  const EtfBacktestRequest({
+    required this.strategy,
+    required this.startDate,
+    required this.endDate,
+    required this.initialAmount,
+    required this.monthlyAmount,
+    required this.monthlyDay,
+    required this.feeRatePct,
+  });
+
+  final EtfBacktestStrategy strategy;
+  final DateTime startDate;
+  final DateTime endDate;
+  final double initialAmount;
+  final double monthlyAmount;
+  final int monthlyDay;
+  final double feeRatePct;
+}
+
+class EtfBacktestResult {
+  const EtfBacktestResult({
+    required this.sourceStatusLabel,
+    required this.totalInvested,
+    required this.finalValue,
+    required this.totalReturnPct,
+    required this.annualizedReturnPct,
+    required this.maxDrawdownPct,
+    required this.volatilityPct,
+    required this.bestPeriodReturnPct,
+    required this.worstPeriodReturnPct,
+    required this.equityCurve,
+    required this.drawdownCurve,
+    this.errorMessage,
+  });
+
+  factory EtfBacktestResult.unavailable(String message) {
+    return EtfBacktestResult(
+      sourceStatusLabel: 'unavailable',
+      totalInvested: 0,
+      finalValue: 0,
+      totalReturnPct: null,
+      annualizedReturnPct: null,
+      maxDrawdownPct: null,
+      volatilityPct: null,
+      bestPeriodReturnPct: null,
+      worstPeriodReturnPct: null,
+      equityCurve: const [],
+      drawdownCurve: const [],
+      errorMessage: message,
+    );
+  }
+
+  final String sourceStatusLabel;
+  final double totalInvested;
+  final double finalValue;
+  final double? totalReturnPct;
+  final double? annualizedReturnPct;
+  final double? maxDrawdownPct;
+  final double? volatilityPct;
+  final double? bestPeriodReturnPct;
+  final double? worstPeriodReturnPct;
+  final List<EtfBacktestCurvePoint> equityCurve;
+  final List<EtfBacktestCurvePoint> drawdownCurve;
+  final String? errorMessage;
+}
+
+class EtfBacktestCurvePoint {
+  const EtfBacktestCurvePoint({
+    required this.date,
+    required this.value,
+  });
+
+  final DateTime date;
+  final double value;
+}
+
+class EtfBacktestEngine {
+  const EtfBacktestEngine();
+
+  EtfBacktestResult run({
+    required EtfBacktestRequest request,
+    required List<EtfPriceHistoryPoint> history,
+  }) {
+    final points = history
+        .where((point) =>
+            !point.date.isBefore(request.startDate) &&
+            !point.date.isAfter(request.endDate))
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+    if (points.length < 2) {
+      return EtfBacktestResult.unavailable('歷史資料不足，無法執行回測。');
+    }
+
+    var cashInvested = 0.0;
+    var units = 0.0;
+    var lastContributionMonth = '';
+    final equity = <EtfBacktestCurvePoint>[];
+    final drawdowns = <EtfBacktestCurvePoint>[];
+    final periodReturns = <double>[];
+    var peak = 0.0;
+
+    for (var index = 0; index < points.length; index += 1) {
+      final point = points[index];
+      final shouldInitial = index == 0 && request.initialAmount > 0;
+      final monthKey = '${point.date.year}-${point.date.month}';
+      final shouldMonthly =
+          request.strategy == EtfBacktestStrategy.monthlyContribution &&
+              request.monthlyAmount > 0 &&
+              point.date.day >= request.monthlyDay &&
+              monthKey != lastContributionMonth;
+      var contribution = 0.0;
+      if (shouldInitial) {
+        contribution += request.initialAmount;
+      }
+      if (shouldMonthly) {
+        contribution += request.monthlyAmount;
+        lastContributionMonth = monthKey;
+      }
+      if (contribution > 0 && point.close > 0) {
+        final fee = contribution * request.feeRatePct / 100;
+        units += (contribution - fee) / point.close;
+        cashInvested += contribution;
+      }
+      final value = units * point.close;
+      if (value > peak) {
+        peak = value;
+      }
+      final drawdown = peak <= 0 ? 0.0 : (value / peak - 1) * 100;
+      equity.add(EtfBacktestCurvePoint(date: point.date, value: value));
+      drawdowns.add(EtfBacktestCurvePoint(date: point.date, value: drawdown));
+      if (index > 0 && equity[index - 1].value > 0) {
+        periodReturns.add((value / equity[index - 1].value - 1) * 100);
+      }
+    }
+
+    final finalValue = equity.last.value;
+    final totalReturn =
+        cashInvested <= 0 ? null : (finalValue / cashInvested - 1) * 100;
+    final days = points.last.date.difference(points.first.date).inDays;
+    final annualized = totalReturn == null || days <= 0 || cashInvested == 0
+        ? null
+        : ((powDouble(finalValue / cashInvested, 365 / days) - 1) * 100);
+    periodReturns.sort();
+    return EtfBacktestResult(
+      sourceStatusLabel: 'calculated',
+      totalInvested: cashInvested,
+      finalValue: finalValue,
+      totalReturnPct: totalReturn,
+      annualizedReturnPct: annualized,
+      maxDrawdownPct: drawdowns.map((point) => point.value).reduce(
+            (a, b) => a < b ? a : b,
+          ),
+      volatilityPct: periodReturns.length < 2
+          ? null
+          : _standardDeviation(periodReturns) * powDouble(252, 0.5),
+      bestPeriodReturnPct: periodReturns.isEmpty ? null : periodReturns.last,
+      worstPeriodReturnPct: periodReturns.isEmpty ? null : periodReturns.first,
+      equityCurve: equity,
+      drawdownCurve: drawdowns,
+    );
+  }
+}
+
+class EtfPositionInput {
+  const EtfPositionInput({
+    required this.shares,
+    required this.averageCost,
+    this.totalAssets,
+    this.feeAndTax = 0,
+    this.note = '',
+  });
+
+  factory EtfPositionInput.empty() {
+    return const EtfPositionInput(shares: 0, averageCost: 0);
+  }
+
+  final double shares;
+  final double averageCost;
+  final double? totalAssets;
+  final double feeAndTax;
+  final String note;
+}
+
+class EtfPositionSummary {
+  const EtfPositionSummary({
+    required this.marketValue,
+    required this.cost,
+    required this.unrealizedPnl,
+    required this.unrealizedPnlPct,
+    required this.assetWeightPct,
+    required this.dataTime,
+  });
+
+  factory EtfPositionSummary.evaluate({
+    required EtfPositionInput input,
+    required double? marketPrice,
+    required DateTime? dataTime,
+  }) {
+    final price = marketPrice ?? 0;
+    final marketValue = input.shares * price;
+    final cost = input.shares * input.averageCost + input.feeAndTax;
+    final pnl = marketValue - cost;
+    return EtfPositionSummary(
+      marketValue: marketValue,
+      cost: cost,
+      unrealizedPnl: pnl,
+      unrealizedPnlPct: cost <= 0 ? null : pnl / cost * 100,
+      assetWeightPct: (input.totalAssets ?? 0) <= 0
+          ? null
+          : marketValue / input.totalAssets! * 100,
+      dataTime: dataTime,
+    );
+  }
+
+  final double marketValue;
+  final double cost;
+  final double unrealizedPnl;
+  final double? unrealizedPnlPct;
+  final double? assetWeightPct;
+  final DateTime? dataTime;
+}
+
 class Etf00631LLabData {
   const Etf00631LLabData({
     required this.profile,
@@ -1720,6 +2128,7 @@ class Etf00631LLabData {
     required this.futuresQuote,
     required this.holdingsHistory,
     required this.intradayNavHistory,
+    required this.priceHistory,
     required this.operationsStatus,
     required this.analysis,
     required this.aiAnalysis,
@@ -1732,6 +2141,7 @@ class Etf00631LLabData {
   final FuturesQuote futuresQuote;
   final EtfHoldingsHistory holdingsHistory;
   final EtfIntradayNavHistorySummary intradayNavHistory;
+  final EtfPriceHistory priceHistory;
   final EtfOperationsStatus operationsStatus;
   final EtfAnalysisSummary analysis;
   final EtfAiAnalysisSummary aiAnalysis;
@@ -1783,6 +2193,25 @@ class Etf00631LLabData {
     }
     return EtfDataStatus.official;
   }
+}
+
+double powDouble(double base, double exponent) {
+  if (base <= 0) {
+    return 0;
+  }
+  return math.pow(base, exponent).toDouble();
+}
+
+double _standardDeviation(List<double> values) {
+  if (values.length < 2) {
+    return 0;
+  }
+  final mean = values.reduce((a, b) => a + b) / values.length;
+  final variance = values
+          .map((value) => (value - mean) * (value - mean))
+          .reduce((a, b) => a + b) /
+      (values.length - 1);
+  return powDouble(variance, 0.5);
 }
 
 String _premiumDiscountLabel(double? premium) {

@@ -46,7 +46,7 @@ def create_app(
         allow_origins=_allowed_origins(app_config),
         allow_origin_regex=_allow_origin_regex(app_config),
         allow_credentials=False,
-        allow_methods=["GET"],
+        allow_methods=["GET", "POST"],
         allow_headers=["*"],
     )
 
@@ -97,6 +97,36 @@ def create_app(
     @fastapi_app.get("/api/etf/00631l/analysis/summary")
     def analysis_summary() -> dict:
         return current_service().analysis_summary()
+
+    @fastapi_app.get("/api/etf/00631l/history/price")
+    def history_price(limit: int = Query(800, ge=1, le=5000)) -> dict:
+        return current_service().price_history(limit=limit)
+
+    @fastapi_app.get("/api/etf/00631l/history/performance")
+    def history_performance() -> dict:
+        return current_service().price_history_performance()
+
+    @fastapi_app.get("/api/etf/00631l/history/status")
+    def history_status() -> dict:
+        return current_service().price_history_status()
+
+    @fastapi_app.post("/api/etf/00631l/history/update")
+    def history_update(
+        startDate: str | None = None,
+        endDate: str | None = None,
+    ) -> dict:
+        return current_service().price_history_update(
+            start_date=startDate,
+            end_date=endDate,
+        )
+
+    @fastapi_app.get("/api/etf/00631l/backtest/defaults")
+    def backtest_defaults() -> dict:
+        return current_service().backtest_defaults()
+
+    @fastapi_app.post("/api/etf/00631l/backtest/run")
+    def backtest_run(payload: dict[str, Any]) -> dict:
+        return current_service().backtest_run(payload)
 
     return fastapi_app
 

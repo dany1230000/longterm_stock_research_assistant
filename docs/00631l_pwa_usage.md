@@ -1,5 +1,22 @@
 # 00631L PWA usage
 
+## v3.0 mobile use
+
+On a public deployment, open:
+
+```text
+https://your-frontend.example.com/#/00631l-lab
+```
+
+Then use the browser menu to add the app to the phone home screen.
+
+Important:
+
+- The PWA is the frontend shell.
+- Official live data still requires the backend proxy to be reachable from the phone.
+- If the backend is disconnected, the app keeps the page visible and shows backend disconnected / fallback status.
+- iOS and Android install flows differ by browser, but both still require a reachable backend for live data.
+
 00631L 正二研究室可以用 Flutter Web 形式部署成 PWA。PWA 是前端入口，live data 仍需要 backend proxy。
 
 ## 手機使用

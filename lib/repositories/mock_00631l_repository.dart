@@ -87,6 +87,48 @@ class Mock00631LRepository extends Official00631LRepository {
   }
 
   @override
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 800}) async {
+    final now = _clock();
+    final points = [
+      EtfPriceHistoryPoint(
+        date: _mockHistoryStart,
+        close: 22.15,
+        open: 21.8,
+        high: 22.3,
+        low: 21.6,
+        volume: 18000000,
+      ),
+      EtfPriceHistoryPoint(
+        date: _mockHistoryMid,
+        close: 28.40,
+        open: 27.9,
+        high: 28.6,
+        low: 27.7,
+        volume: 21000000,
+      ),
+      EtfPriceHistoryPoint(
+        date: _mockHistoryEnd,
+        close: 35.20,
+        open: 34.8,
+        high: 35.5,
+        low: 34.7,
+        volume: 26000000,
+      ),
+    ];
+    return EtfPriceHistory(
+      points: points,
+      status: EtfDataStatus.mock,
+      sourceStatusLabel: 'mock',
+      sourceUrl: 'mock://00631l-price-history',
+      lastFetchedAt: now,
+      coverageStart: points.first.date,
+      coverageEnd: points.last.date,
+      isCompleteFromListing: false,
+      errorMessage: 'Mock price history is for UI fallback only.',
+    );
+  }
+
+  @override
   Future<Etf00631LLabData> fetchLabData() async {
     final profile = await fetchProfile();
     final snapshot = await fetchDailySnapshot();
@@ -96,6 +138,7 @@ class Mock00631LRepository extends Official00631LRepository {
     final intradayHistory = await fetchIntradayNavHistorySummary();
     final operationsStatus = await fetchOperationsStatus();
     final aiAnalysis = await fetchAiAnalysisSummary();
+    final priceHistory = await fetchPriceHistory();
     final now = _clock();
 
     return Etf00631LLabData(
@@ -105,6 +148,7 @@ class Mock00631LRepository extends Official00631LRepository {
       futuresQuote: futuresQuote,
       holdingsHistory: history,
       intradayNavHistory: intradayHistory,
+      priceHistory: priceHistory,
       operationsStatus: operationsStatus,
       analysis: EtfAnalysisSummary.fromSnapshot(
         snapshot: snapshot,
@@ -116,6 +160,10 @@ class Mock00631LRepository extends Official00631LRepository {
     );
   }
 }
+
+final _mockHistoryStart = DateTime(2024, 1, 2);
+final _mockHistoryMid = DateTime(2025, 1, 2);
+final _mockHistoryEnd = DateTime(2026, 6, 8);
 
 const mock00631LProfileFixture = '''
 Fund Profile

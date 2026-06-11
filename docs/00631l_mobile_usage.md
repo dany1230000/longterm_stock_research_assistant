@@ -1,5 +1,14 @@
 # 00631L 手機使用方式
 
+## v3.0 mobile modes
+
+There are two supported phone paths:
+
+1. Public deployment: phone opens `https://your-frontend.example.com/#/00631l-lab` from anywhere, and the frontend calls a public backend API.
+2. LAN mode: phone and computer are on the same Wi-Fi, and the phone opens `http://<LAN-IP>:<frontend-port>/#/00631l-lab`.
+
+Public deployment is the correct path for daily use outside the home or office network. LAN mode is still useful for local testing.
+
 本文件說明如何用手機開啟 `00631L 正二研究室`。目前支援 LAN 模式；公開部署後，手機可用公開網址開啟。
 
 ## 先確認資料更新頻率
