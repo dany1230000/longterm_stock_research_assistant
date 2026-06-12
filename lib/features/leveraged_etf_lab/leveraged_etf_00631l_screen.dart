@@ -435,7 +435,7 @@ class _MarketTopBar extends StatelessWidget {
                 ),
               ),
               if (showModeBadge) ...[
-                _CompactTextBadge(label: _frontendDataMode),
+                _CompactTextBadge(label: _frontendDataModeDisplay),
                 const SizedBox(width: 4),
               ],
               IconButton(
@@ -666,7 +666,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                             ),
                           ),
                           _CompactTextBadge(
-                            label: nav?.status.label ?? 'unavailable',
+                            label: _statusDisplay(nav?.status.label),
                           ),
                         ],
                       ),
@@ -684,7 +684,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '市價 | ${nav?.dataTime == null ? '資料時間 unavailable' : formatTaiwanDateTimeSeconds(nav!.dataTime!)}',
+                        '市價 | ${nav?.dataTime == null ? '資料時間暫無' : formatTaiwanDateTimeSeconds(nav!.dataTime!)}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -1288,6 +1288,54 @@ String get _frontendDataModeLabel {
   return 'mock default';
 }
 
+String get _frontendDataModeDisplay {
+  if (_use00631LLiveProxy) {
+    return 'Live 後端';
+  }
+  if (_use00631LStaticData) {
+    return '公開靜態';
+  }
+  return 'Mock 預設';
+}
+
+String _statusDisplay(String? rawStatus) {
+  final value = rawStatus?.trim();
+  switch (value) {
+    case 'official':
+      return '官方';
+    case 'cached':
+      return '快取';
+    case 'mock':
+      return 'Mock';
+    case 'error':
+      return '錯誤';
+    case 'stale':
+      return '過期';
+    case 'unavailable':
+    case null:
+    case '':
+      return '暫無';
+    case 'static_official':
+      return '靜態官方';
+    case 'static_public_data':
+    case 'static_public':
+      return '公開靜態';
+    case 'backend_required':
+      return '需後端';
+    case 'deferred':
+      return '待載入';
+    case 'live_proxy':
+      return 'Live 後端';
+    case 'mock_default':
+      return 'Mock 預設';
+    case 'backend disconnected':
+      return '後端未連線';
+    case 'backend connected':
+      return '後端已連線';
+  }
+  return value;
+}
+
 class _HeaderPill extends StatelessWidget {
   const _HeaderPill({
     required this.label,
@@ -1639,7 +1687,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                     ),
                   ),
                 ),
-                _CompactTextBadge(label: data.status.label),
+                _CompactTextBadge(label: _statusDisplay(data.status.label)),
               ],
             ),
             const SizedBox(height: 8),
@@ -1675,27 +1723,29 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                       label: '盤中 NAV',
                       value: _price(nav?.estimatedNav),
                       caption: nav?.dataTime == null
-                          ? 'live unavailable'
+                          ? '盤中資料暫無'
                           : formatTimeSeconds(nav!.dataTime!),
                     ),
                     _AtAGlanceMetric(
                       width: itemWidth,
                       label: '內容物重點',
                       value: exposureText,
-                      caption: 'official holdings history',
+                      caption: '官方 history',
                     ),
                     _AtAGlanceMetric(
                       width: itemWidth,
                       label: '歷史覆蓋',
-                      value: '${formatInteger(history.rowCount)} rows',
+                      value: '${formatInteger(history.rowCount)} 筆',
                       caption:
                           '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
                     ),
                     _AtAGlanceMetric(
                       width: itemWidth,
                       label: '資料模式',
-                      value: _frontendDataMode,
-                      caption: data.operationsStatus.backendConnectionLabel,
+                      value: _frontendDataModeDisplay,
+                      caption: _statusDisplay(
+                        data.operationsStatus.backendConnectionLabel,
+                      ),
                     ),
                   ],
                 );

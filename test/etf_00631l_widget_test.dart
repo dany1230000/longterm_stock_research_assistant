@@ -28,7 +28,7 @@ void main() {
     expect(find.text('內容物重點'), findsOneWidget);
     expect(find.text('歷史覆蓋'), findsOneWidget);
     expect(find.text('官方 NAV'), findsWidgets);
-    expect(find.textContaining('mock_default'), findsWidgets);
+    expect(find.textContaining('Mock 預設'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('內容物'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);

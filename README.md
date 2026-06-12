@@ -203,6 +203,12 @@ v3.25 compact quote board:
 - Detailed source labels remain available in `更多檢視` and settings.
 - Summary: `docs\00631l_v3_25_compact_quote_board_summary.md`.
 
+v3.26 user-facing status labels:
+
+- The top app chrome and overview first screen now use short labels such as `公開靜態`, `Live 後端`, `Mock 預設`, and `盤中資料暫無`.
+- Raw source contracts remain available in deeper diagnostics instead of crowding the first screen.
+- Summary: `docs\00631l_v3_26_user_facing_status_labels_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
