@@ -555,7 +555,7 @@ class _CompactQuoteHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   child: Column(
@@ -579,7 +579,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                         _price(nav?.marketPrice),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.displaySmall?.copyWith(
+                        style: theme.textTheme.headlineLarge?.copyWith(
                           color: _marketText,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0,
@@ -609,52 +609,26 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _CompactQuoteMetric(
+            const SizedBox(height: 8),
+            _QuoteFactsStrip(
+              items: [
+                _QuoteFact(
                   label: '預估淨值',
                   value: _price(nav?.estimatedNav),
                 ),
-                _CompactQuoteMetric(
+                _QuoteFact(
                   label: '前日淨值',
                   value: _price(nav?.previousBusinessDayNav),
                 ),
-                _CompactQuoteMetric(
+                _QuoteFact(
                   label: '官方 NAV',
                   value: _price(data.snapshot.navPerUnit),
                 ),
-                _CompactQuoteMetric(
-                  label: '發行單位',
+                _QuoteFact(
+                  label: '單位',
                   value: nav?.outstandingUnits == null
                       ? _compactNumber(data.snapshot.outstandingUnits)
                       : _compactNumber(nav!.outstandingUnits!),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  _levelIcon(premiumAssessment.level),
-                  color: premiumColor,
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '${_premiumDescription(premiumAssessment)} 非買賣建議。',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: _marketMutedText,
-                      height: 1.35,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
                 ),
               ],
             ),
@@ -726,55 +700,205 @@ class _CompactPremiumBox extends StatelessWidget {
   }
 }
 
-class _CompactQuoteMetric extends StatelessWidget {
-  const _CompactQuoteMetric({
+class _QuoteFact {
+  const _QuoteFact({
     required this.label,
     required this.value,
   });
 
   final String label;
   final String value;
+}
+
+class _QuoteFactsStrip extends StatelessWidget {
+  const _QuoteFactsStrip({required this.items});
+
+  final List<_QuoteFact> items;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 118,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: _marketPanelAlt,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: _marketBorder),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: _marketMutedText,
-                      fontWeight: FontWeight.w800,
-                    ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: _marketText,
-                      fontWeight: FontWeight.w900,
-                    ),
-              ),
-            ],
-          ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          for (var index = 0; index < items.length; index++) ...[
+            if (index > 0) const SizedBox(width: 6),
+            _QuoteFactChip(item: items[index]),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _QuoteFactChip extends StatelessWidget {
+  const _QuoteFactChip({required this.item});
+
+  final _QuoteFact item;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAlt,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: _marketMutedText,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              item.value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: _marketText,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ],
         ),
       ),
     );
   }
+}
+
+class _OverviewPremiumNote extends StatelessWidget {
+  const _OverviewPremiumNote({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final nav = data.intradayNav;
+    final premiumAssessment = PremiumDiscountAssessment.evaluate(
+      premiumDiscountPct: nav?.estimatedPremiumDiscountPct,
+      sourceStatus: nav?.status ?? EtfDataStatus.error,
+      isStale: nav?.isStale ?? true,
+    );
+    final color =
+        _levelColor(Theme.of(context).colorScheme, premiumAssessment.level);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.32)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(_levelIcon(premiumAssessment.level), color: color, size: 17),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '${_premiumDescription(premiumAssessment)} 非買賣建議。',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: _marketText,
+                      height: 1.35,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewMiniStatusStrip extends StatelessWidget {
+  const _OverviewMiniStatusStrip({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          for (final label in [
+            _frontendDataMode,
+            data.status.label,
+            'holdings ${data.snapshot.status.label}',
+            'history ${data.priceHistory.sourceStatusLabel}',
+            'backend ${data.operationsStatus.backendConnectionLabel}',
+          ]) ...[
+            _CompactTextBadge(label: label),
+            const SizedBox(width: 6),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _OverviewActionRow extends StatelessWidget {
+  const _OverviewActionRow({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final history = data.holdingsHistory.trendSummary();
+    final latest = history.latest;
+    final label = latest == null
+        ? 'holdings history 尚未累積'
+        : 'holdings ${formatTaiwanDate(latest.tradeDate)} | TX ${formatNullablePercent(latest.txWeightPct)} | 台積電 ${formatNullablePercent(latest.tsmcWeightPct)}';
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAlt,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          children: [
+            const _MiniStatusBadge(label: 'DAY'),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+String _historyChangeSubtitle(EtfHoldingsHistoryTrendSummary history) {
+  final latest = history.latest;
+  if (latest == null) {
+    return '尚無 daily cycle 累積資料；不補假資料。';
+  }
+  return 'latest ${formatTaiwanDate(latest.tradeDate)}，TX ${formatNullablePercent(latest.txWeightPct)}，台積電 ${formatNullablePercent(latest.tsmcWeightPct)}。';
 }
 
 // ignore: unused_element
@@ -1395,6 +1519,8 @@ class _OverviewSection extends StatelessWidget {
         const SizedBox(height: 10),
         _OverviewAtAGlancePanel(data: data),
         const SizedBox(height: 10),
+        _OverviewActionRow(data: data),
+        const SizedBox(height: 10),
         _CompactExpansionPanel(
           title: '完整數字比較',
           subtitle: 'NAV、規模、發行單位數與歷史績效；需要核對時再展開。',
@@ -1407,9 +1533,9 @@ class _OverviewSection extends StatelessWidget {
           child: _OverviewModeCards(data: data),
         ),
         const SizedBox(height: 10),
-        _SectionBlock(
+        _CompactExpansionPanel(
           title: '7 / 30 日內容物變化',
-          subtitle: '根據本機保存的 official holdings history；缺資料時不補假資料。',
+          subtitle: _historyChangeSubtitle(history),
           child: history.latest == null
               ? const _EmptyPanel(
                   title: '尚無 holdings history',
@@ -1485,6 +1611,8 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
+            _OverviewMiniStatusStrip(data: data),
+            const SizedBox(height: 10),
             LayoutBuilder(
               builder: (context, constraints) {
                 final isWide = constraints.maxWidth >= 680;
@@ -1540,6 +1668,8 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 10),
+            _OverviewPremiumNote(data: data),
           ],
         ),
       ),

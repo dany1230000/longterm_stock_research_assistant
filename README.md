@@ -173,6 +173,12 @@ v3.20 home at-a-glance:
 - Full numeric comparison remains available in an expandable section instead of occupying the first screen.
 - Summary: `docs\00631l_v3_20_home_at_a_glance_summary.md`.
 
+v3.21 compact home:
+
+- The quote card now uses a compact market row and small facts strip instead of tall stacked metric boxes.
+- Holdings change details are collapsed by default, while latest exposure remains visible in a concise row.
+- Summary: `docs\00631l_v3_21_compact_home_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
