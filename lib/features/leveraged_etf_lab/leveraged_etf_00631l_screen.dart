@@ -726,6 +726,7 @@ String get _frontendDataMode {
   return 'mock_default';
 }
 
+// ignore: unused_element
 String _frontendModeDetail(Etf00631LLabData data) {
   if (_use00631LLiveProxy) {
     final status = data.operationsStatus;
@@ -751,6 +752,7 @@ String _frontendModeDetail(Etf00631LLabData data) {
   return 'mock_default 模式，畫面可測試但不會把 fallback 標示為 official。';
 }
 
+// ignore: unused_element
 String _frontendModeAction(Etf00631LLabData data) {
   if (_use00631LLiveProxy) {
     if (_use00631LStaticData && data.operationsStatus.backendDisconnected) {
@@ -1026,44 +1028,12 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _QuoteHeader(data: data, onRefresh: onRefresh),
         const SizedBox(height: 12),
-        _MarketFocusBoard(data: data),
+        _OverviewBriefPanel(data: data),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: '今日資料狀態',
-          subtitle: '清楚區分每日官方資料、盤中估算資料與尚未接入的 TX live。',
-          child: _StatusList(
-            items: [
-              _StatusItem(
-                label: '官方 holdings / ratio',
-                status: snapshot.status.label,
-                detail:
-                    '每日快照，內容物日期 ${formatTaiwanDate(snapshot.tradeDate)}，不是盤中即時內容物。',
-                action: snapshot.isStale(data.lastFetchedAt)
-                    ? '請執行 daily cycle 並確認 Yuanta official ratio。'
-                    : '資料已可讀，請以官方日期為準。',
-              ),
-              _StatusItem(
-                label: 'intraday NAV / 折溢價',
-                status: data.intradayNav?.status.label ?? 'unavailable',
-                detail: 'TWSE all_etf.txt 可約 15 秒級更新，需 backend 與 env 設定正常。',
-                action: data.intradayNav == null
-                    ? '請檢查 backend、TWSE URL 與交易時段。'
-                    : '請以資料時間 ${data.intradayNav!.dataTime == null ? 'unavailable' : formatTaiwanDateTimeSeconds(data.intradayNav!.dataTime!)} 為準。',
-              ),
-              const _StatusItem(
-                label: 'TX live',
-                status: 'mock/fallback',
-                detail: '尚未接 TX live，現階段只保留模型與 fallback 顯示。',
-                action: '本版不需要任何 TX live 設定。',
-              ),
-              _StatusItem(
-                label: 'frontend mode',
-                status: _frontendDataMode,
-                detail: _frontendModeDetail(data),
-                action: _frontendModeAction(data),
-              ),
-            ],
-          ),
+          title: '資料模式與更新',
+          subtitle: '總覽只保留最常看的更新狀態；完整診斷放在設定頁。',
+          child: _OverviewModeCards(data: data),
         ),
         const SizedBox(height: 12),
         _SectionBlock(
@@ -1129,6 +1099,126 @@ class _OverviewSection extends StatelessWidget {
   }
 }
 
+class _OverviewBriefPanel extends StatelessWidget {
+  const _OverviewBriefPanel({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final nav = data.intradayNav;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'OVERVIEW'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '今日快覽',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              _overviewAiBrief(data),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                height: 1.45,
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            _StatusWrap(
+              labels: [
+                'frontend $_frontendDataMode',
+                data.operationsStatus.backendConnectionLabel,
+                'NAV ${_dateTimeOrDash(nav?.dataTime)}',
+                data.aiAnalysis.disclaimer,
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewModeCards extends StatelessWidget {
+  const _OverviewModeCards({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final price = data.priceHistory.completenessSummary();
+    final nav = data.intradayNav;
+    return _InfoCardGrid(
+      children: [
+        _HoldingInfoCard(
+          badge: 'DAY',
+          title: '官方內容物',
+          primary: formatTaiwanDate(data.snapshot.tradeDate),
+          secondary: data.snapshot.status.label,
+          caption: '每日官方快照，不是盤中即時內容物',
+          progressValue: null,
+        ),
+        _HoldingInfoCard(
+          badge: 'LIVE',
+          title: '盤中 NAV',
+          primary: _price(nav?.marketPrice),
+          secondary:
+              '折溢價 ${formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct)}',
+          caption: 'live backend 可連線時更新；static mode 不提供盤中資料',
+          progressValue: nav?.estimatedPremiumDiscountPct == null
+              ? null
+              : (nav!.estimatedPremiumDiscountPct!.abs() / 1.5)
+                  .clamp(0, 1)
+                  .toDouble(),
+        ),
+        _HoldingInfoCard(
+          badge: 'HIS',
+          title: '歷史價格',
+          primary: '${formatInteger(price.rowCount)} rows',
+          secondary:
+              '${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}',
+          caption: price.isCompleteFromListing ? '已補齊到上市日起' : '目前為部分區間',
+          progressValue: price.rowCount < 2
+              ? null
+              : (price.rowCount / 3000).clamp(0, 1).toDouble(),
+        ),
+        _HoldingInfoCard(
+          badge: 'AI',
+          title: 'AI 摘要',
+          primary: data.aiAnalysis.readinessLabel,
+          secondary: data.aiAnalysis.source,
+          caption: data.aiAnalysis.disclaimer,
+          progressValue: null,
+        ),
+      ],
+    );
+  }
+}
+
+// ignore: unused_element
 class _MarketFocusBoard extends StatelessWidget {
   const _MarketFocusBoard({required this.data});
 
@@ -4301,6 +4391,13 @@ String _intradayDataTimeText(EtfIntradayNav? intradayNav) {
   return intradayNav?.dataTime == null
       ? 'unavailable'
       : formatTaiwanDateTimeSeconds(intradayNav!.dataTime!);
+}
+
+String _overviewAiBrief(Etf00631LLabData data) {
+  if (data.aiAnalysis.bullets.isEmpty) {
+    return 'AI 摘要暫無內容；請確認資料來源狀態後重新整理。';
+  }
+  return data.aiAnalysis.bullets.first;
 }
 
 List<String> _completeDataBriefing(Etf00631LLabData data) {

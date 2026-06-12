@@ -17,7 +17,8 @@ void main() {
     expect(find.text('市價'), findsOneWidget);
     expect(find.text('預估淨值'), findsOneWidget);
     expect(find.text('折溢價'), findsOneWidget);
-    expect(find.text('市場資料'), findsOneWidget);
+    expect(find.text('今日快覽'), findsOneWidget);
+    expect(find.text('資料模式與更新'), findsOneWidget);
     expect(find.text('官方內容物'), findsWidgets);
     expect(find.text('資料覆蓋狀態'), findsOneWidget);
     expect(find.text('價格歷史'), findsWidgets);
@@ -44,7 +45,6 @@ void main() {
     expect(find.text('LIVE'), findsOneWidget);
     expect(find.text('HIS'), findsOneWidget);
     expect(find.text('AI'), findsOneWidget);
-    expect(find.text('SYS'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -60,7 +60,8 @@ void main() {
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(find.textContaining('mock_default'), findsWidgets);
-    expect(find.text('市場資料'), findsOneWidget);
+    expect(find.text('今日快覽'), findsOneWidget);
+    expect(find.text('資料模式與更新'), findsOneWidget);
     expect(find.text('00631L ▼'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);

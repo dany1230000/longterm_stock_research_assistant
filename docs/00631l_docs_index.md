@@ -18,6 +18,7 @@ This is the main entry point for 00631L lab documentation.
 - Data coverage v3.13 summary: `docs\00631l_v3_13_data_coverage_summary.md`
 - Holdings coverage v3.14 summary: `docs\00631l_v3_14_holdings_coverage_summary.md`
 - Holdings mobile cards v3.15 summary: `docs\00631l_v3_15_holdings_mobile_cards_summary.md`
+- Overview first screen v3.16 summary: `docs\00631l_v3_16_overview_first_screen_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -110,6 +111,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Data coverage release: `docs\00631l_v3_13_data_coverage_summary.md`
 - Holdings coverage release: `docs\00631l_v3_14_holdings_coverage_summary.md`
 - Holdings mobile cards release: `docs\00631l_v3_15_holdings_mobile_cards_summary.md`
+- Overview first screen release: `docs\00631l_v3_16_overview_first_screen_summary.md`
 
 ## Scope Boundary
 
