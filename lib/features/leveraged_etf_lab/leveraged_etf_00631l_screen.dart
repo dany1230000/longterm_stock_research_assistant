@@ -199,9 +199,9 @@ class _LabLoadingShell extends StatelessWidget {
                           const SizedBox(height: 8),
                           const _LoadingQuoteCard(),
                           const SizedBox(height: 10),
-                          const _LoadingSectionCard(title: '今日快覽'),
+                          const _LoadingSectionCard(title: '今日一眼看'),
                           const SizedBox(height: 10),
-                          const _LoadingSectionCard(title: '核心數字比較'),
+                          const _LoadingSectionCard(title: '完整數字比較'),
                         ],
                       ),
                     ),
@@ -1393,11 +1393,11 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data),
         const SizedBox(height: 10),
-        _OverviewBriefPanel(data: data),
+        _OverviewAtAGlancePanel(data: data),
         const SizedBox(height: 10),
-        _SectionBlock(
-          title: '核心數字比較',
-          subtitle: '把 NAV、規模與歷史績效放在同一區，方便快速比對。',
+        _CompactExpansionPanel(
+          title: '完整數字比較',
+          subtitle: 'NAV、規模、發行單位數與歷史績效；需要核對時再展開。',
           child: _OverviewComparisonPanel(data: data),
         ),
         const SizedBox(height: 10),
@@ -1428,6 +1428,191 @@ class _OverviewSection extends StatelessWidget {
   }
 }
 
+class _OverviewAtAGlancePanel extends StatelessWidget {
+  const _OverviewAtAGlancePanel({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final nav = data.intradayNav;
+    final history = data.priceHistory.completenessSummary();
+    final performance = data.priceHistory.performance;
+    final latestHoldings = data.holdingsHistory.trendSummary().latest;
+    final exposureText = latestHoldings == null
+        ? 'history 尚未累積'
+        : 'TX ${formatNullablePercent(latestHoldings.txWeightPct)} / 台積電 ${formatNullablePercent(latestHoldings.tsmcWeightPct)}';
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'TODAY'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '今日一眼看',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                _CompactTextBadge(label: data.status.label),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              _overviewAiBrief(data),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                height: 1.4,
+                color: _marketText,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 680;
+                final itemWidth = isWide
+                    ? (constraints.maxWidth - 16) / 3
+                    : (constraints.maxWidth - 8) / 2;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _AtAGlanceMetric(
+                      width: itemWidth,
+                      label: '官方內容物',
+                      value: formatTaiwanDate(data.snapshot.tradeDate),
+                      caption: data.snapshot.status.label,
+                    ),
+                    _AtAGlanceMetric(
+                      width: itemWidth,
+                      label: '盤中 NAV',
+                      value: _price(nav?.estimatedNav),
+                      caption: nav?.dataTime == null
+                          ? 'live unavailable'
+                          : formatTimeSeconds(nav!.dataTime!),
+                    ),
+                    _AtAGlanceMetric(
+                      width: itemWidth,
+                      label: '主要曝險',
+                      value: exposureText,
+                      caption: 'official holdings history',
+                    ),
+                    _AtAGlanceMetric(
+                      width: itemWidth,
+                      label: '歷史覆蓋',
+                      value: '${formatInteger(history.rowCount)} rows',
+                      caption:
+                          '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
+                    ),
+                    _AtAGlanceMetric(
+                      width: itemWidth,
+                      label: '歷史總報酬',
+                      value: formatSignedNullablePercent(
+                        performance.totalReturnPct,
+                      ),
+                      caption: '回測不代表未來表現',
+                    ),
+                    _AtAGlanceMetric(
+                      width: itemWidth,
+                      label: '資料模式',
+                      value: _frontendDataMode,
+                      caption: data.operationsStatus.backendConnectionLabel,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AtAGlanceMetric extends StatelessWidget {
+  const _AtAGlanceMetric({
+    required this.width,
+    required this.label,
+    required this.value,
+    required this.caption,
+  });
+
+  final double width;
+  final String label;
+  final String value;
+  final String caption;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketPanelAlt,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: _marketBorder),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _marketMutedText,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                caption,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _marketMutedText,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: unused_element
 class _OverviewBriefPanel extends StatelessWidget {
   const _OverviewBriefPanel({required this.data});
 

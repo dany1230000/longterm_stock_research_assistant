@@ -16,14 +16,16 @@ void main() {
     await _pumpLab(tester, Mock00631LRepository());
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
-    expect(find.text('市價'), findsWidgets);
+    expect(find.textContaining('市價'), findsWidgets);
     expect(find.text('預估淨值'), findsWidgets);
     expect(find.text('折溢價'), findsWidgets);
-    expect(find.text('今日快覽'), findsOneWidget);
-    expect(find.text('核心數字比較'), findsOneWidget);
+    expect(find.text('今日一眼看'), findsOneWidget);
+    expect(find.text('完整數字比較'), findsOneWidget);
     expect(find.text('資料來源'), findsOneWidget);
     expect(find.text('更多資料狀態'), findsOneWidget);
     expect(find.text('7 / 30 日內容物變化'), findsOneWidget);
+    expect(find.text('主要曝險'), findsOneWidget);
+    expect(find.text('歷史覆蓋'), findsOneWidget);
     expect(find.text('官方 NAV'), findsWidgets);
     expect(find.textContaining('mock_default'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
@@ -56,8 +58,8 @@ void main() {
     await _pumpLab(tester, Mock00631LRepository());
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
-    expect(find.text('今日快覽'), findsOneWidget);
-    expect(find.text('核心數字比較'), findsOneWidget);
+    expect(find.text('今日一眼看'), findsOneWidget);
+    expect(find.text('完整數字比較'), findsOneWidget);
     expect(find.text('資料來源'), findsOneWidget);
     expect(find.text('00631L ▼'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -81,8 +83,8 @@ void main() {
     await tester.pump();
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
-    expect(find.text('今日快覽'), findsOneWidget);
-    expect(find.text('核心數字比較'), findsOneWidget);
+    expect(find.text('今日一眼看'), findsOneWidget);
+    expect(find.text('完整數字比較'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     for (final section in const [
       'overview',

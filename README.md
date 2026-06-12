@@ -167,6 +167,12 @@ v3.19 first-screen speed and layout:
 - The overview quote area is compact, with low-priority data-source details collapsed by default.
 - Summary: `docs\00631l_v3_19_first_screen_speed_layout_summary.md`.
 
+v3.20 home at-a-glance:
+
+- The overview page now starts with a compact quote card and a single at-a-glance panel for official holdings date, intraday NAV, major exposure, historical coverage, historical return, and data mode.
+- Full numeric comparison remains available in an expandable section instead of occupying the first screen.
+- Summary: `docs\00631l_v3_20_home_at_a_glance_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
