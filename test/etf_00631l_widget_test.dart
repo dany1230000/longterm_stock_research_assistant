@@ -81,10 +81,7 @@ void main() {
     expect(find.text('市價'), findsNothing);
     expect(find.text('歷史資料完整度'), findsWidgets);
     expect(find.text('累積報酬'), findsWidgets);
-    expect(find.text('52 週區間'), findsWidgets);
-    expect(find.text('成交量'), findsWidgets);
-    expect(find.text('回撤'), findsWidgets);
-    expect(find.text('2026/06/03'), findsWidgets);
+    expect(find.text('最近 30 筆價格表'), findsOneWidget);
     expect(find.text('每日 holdings history'), findsOneWidget);
     expect(find.text('回測快覽'), findsOneWidget);
     expect(find.text('歷史回測'), findsWidgets);
@@ -153,11 +150,9 @@ void main() {
     expect(find.text('內容物快覽'), findsOneWidget);
     expect(find.textContaining('官方每日資料，不是盤中即時內容物'), findsOneWidget);
     expect(find.text('內容物歷史覆蓋'), findsOneWidget);
-    expect(find.text('history 累積'), findsOneWidget);
-    expect(find.text('完整性檢查'), findsOneWidget);
-    expect(find.textContaining('缺日尚未檢查'), findsWidgets);
     expect(find.text('官方每日內容物'), findsOneWidget);
     expect(find.text('主要內容物'), findsOneWidget);
+    expect(find.text('完整明細'), findsOneWidget);
     expect(find.text('完整股票明細'), findsOneWidget);
     expect(find.text('完整期貨明細'), findsOneWidget);
     expect(find.text('完整現金 / 保證金明細'), findsOneWidget);

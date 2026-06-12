@@ -155,6 +155,12 @@ v3.17 information hierarchy:
 - Settings keeps account/privacy and data completeness visible, while technical backend/report/export/backup diagnostics are collapsed by default.
 - Summary: `docs\00631l_v3_17_information_hierarchy_summary.md`.
 
+v3.18 progressive details:
+
+- Holdings and history pages now show key summaries first and keep full detail tables behind expandable panels.
+- Mobile users can scan exposure, charts, and changes before opening raw stock/futures/cash/history tables.
+- Summary: `docs\00631l_v3_18_detail_progressive_disclosure_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

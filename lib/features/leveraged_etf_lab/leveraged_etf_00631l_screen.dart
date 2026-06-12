@@ -1359,12 +1359,6 @@ class _HoldingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: '內容物歷史覆蓋',
-          subtitle: '官方 ratio 是每日快照；本機 history 從 daily cycle 開始保存，不補假過去資料。',
-          child: _HoldingsCoveragePanel(data: data),
-        ),
-        const SizedBox(height: 12),
-        _SectionBlock(
           title: '官方每日內容物',
           subtitle:
               'tradeDate ${formatTaiwanDate(snapshot.tradeDate)}，每日揭露資料，不代表盤中即時變動。',
@@ -1375,50 +1369,54 @@ class _HoldingsSection extends StatelessWidget {
               const SizedBox(height: 12),
               _ExposureBars(snapshot: snapshot),
               const SizedBox(height: 12),
-              _HorizontalTable(
-                columns: const ['項目', '金額', '占基金淨資產'],
-                rows: [
-                  [
-                    '股票資產',
-                    formatNtdAmount(snapshot.assetSummary.stock),
-                    formatNullablePercent(
-                      snapshot.assetWeightPct(EtfAssetClass.stock),
-                    ),
+              _CompactExpansionPanel(
+                title: '資產結構表格',
+                subtitle: '金額與占基金淨資產比例；需要核對數字時再展開。',
+                child: _HorizontalTable(
+                  columns: const ['項目', '金額', '占基金淨資產'],
+                  rows: [
+                    [
+                      '股票資產',
+                      formatNtdAmount(snapshot.assetSummary.stock),
+                      formatNullablePercent(
+                        snapshot.assetWeightPct(EtfAssetClass.stock),
+                      ),
+                    ],
+                    [
+                      '期貨資產',
+                      formatNtdAmount(snapshot.assetSummary.futures),
+                      formatNullablePercent(
+                        snapshot.assetWeightPct(EtfAssetClass.futures),
+                      ),
+                    ],
+                    [
+                      'ETF',
+                      formatNtdAmount(snapshot.assetSummary.etf),
+                      formatNullablePercent(
+                        snapshot.assetWeightPct(EtfAssetClass.etf),
+                      ),
+                    ],
+                    [
+                      '債券',
+                      formatNtdAmount(snapshot.assetSummary.bond),
+                      formatNullablePercent(
+                        snapshot.assetWeightPct(EtfAssetClass.bond),
+                      ),
+                    ],
+                    [
+                      '現金與保證金',
+                      formatNtdAmount(snapshot.cashAndMarginValue),
+                      formatNullablePercent(snapshot.cashAndMarginWeightPct),
+                    ],
+                    [
+                      '其他應收應付',
+                      formatNtdAmount(snapshot.otherReceivablesPayablesValue),
+                      formatNullablePercent(
+                        snapshot.otherReceivablesPayablesWeightPct,
+                      ),
+                    ],
                   ],
-                  [
-                    '期貨資產',
-                    formatNtdAmount(snapshot.assetSummary.futures),
-                    formatNullablePercent(
-                      snapshot.assetWeightPct(EtfAssetClass.futures),
-                    ),
-                  ],
-                  [
-                    'ETF',
-                    formatNtdAmount(snapshot.assetSummary.etf),
-                    formatNullablePercent(
-                      snapshot.assetWeightPct(EtfAssetClass.etf),
-                    ),
-                  ],
-                  [
-                    '債券',
-                    formatNtdAmount(snapshot.assetSummary.bond),
-                    formatNullablePercent(
-                      snapshot.assetWeightPct(EtfAssetClass.bond),
-                    ),
-                  ],
-                  [
-                    '現金與保證金',
-                    formatNtdAmount(snapshot.cashAndMarginValue),
-                    formatNullablePercent(snapshot.cashAndMarginWeightPct),
-                  ],
-                  [
-                    '其他應收應付',
-                    formatNtdAmount(snapshot.otherReceivablesPayablesValue),
-                    formatNullablePercent(
-                      snapshot.otherReceivablesPayablesWeightPct,
-                    ),
-                  ],
-                ],
+                ),
               ),
             ],
           ),
@@ -1431,54 +1429,68 @@ class _HoldingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: '完整股票明細',
-          subtitle: '官方每日資料，手機版以卡片顯示。',
-          child: _HorizontalTable(
-            columns: const ['代碼', '名稱', '數量', '權重'],
-            rows: [
-              for (final line in snapshot.stockHoldings)
-                [
-                  line.code,
-                  line.name,
-                  formatInteger(line.quantity),
-                  formatNullablePercent(line.weightPct),
-                ],
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        _SectionBlock(
-          title: '完整期貨明細',
-          subtitle: 'TX live 尚未接入，這裡是官方每日內容物快照。',
-          child: _HorizontalTable(
-            columns: const ['代碼', '名稱', '數量', '權重', '年月'],
-            rows: [
-              for (final line in snapshot.futuresHoldings)
-                [
-                  line.code,
-                  line.name,
-                  formatInteger(line.quantity),
-                  formatNullablePercent(line.weightPct),
-                  line.contractMonth,
-                ],
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        _SectionBlock(
-          title: '完整現金 / 保證金明細',
-          subtitle: '官方每日資料，包含現金、保證金與其他應收應付。',
-          child: _HorizontalTable(
-            columns: const ['項目', '金額', '占基金淨資產'],
-            rows: [
-              for (final line in snapshot.cashHoldings)
-                [
-                  line.item,
-                  formatNtdAmount(line.amount),
-                  formatNullablePercent(
-                    line.weightPct(snapshot.fundNetAssetValue),
-                  ),
-                ],
+          title: '完整明細',
+          subtitle: '平常先看主要內容物；需要核對官方表格時再展開。',
+          child: Column(
+            children: [
+              _CompactExpansionPanel(
+                title: '完整股票明細',
+                subtitle: '官方每日資料，手機版可橫向閱讀。',
+                child: _HorizontalTable(
+                  columns: const ['代碼', '名稱', '數量', '權重'],
+                  rows: [
+                    for (final line in snapshot.stockHoldings)
+                      [
+                        line.code,
+                        line.name,
+                        formatInteger(line.quantity),
+                        formatNullablePercent(line.weightPct),
+                      ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              _CompactExpansionPanel(
+                title: '完整期貨明細',
+                subtitle: 'TX live 尚未接入，這裡是官方每日內容物快照。',
+                child: _HorizontalTable(
+                  columns: const ['代碼', '名稱', '數量', '權重', '年月'],
+                  rows: [
+                    for (final line in snapshot.futuresHoldings)
+                      [
+                        line.code,
+                        line.name,
+                        formatInteger(line.quantity),
+                        formatNullablePercent(line.weightPct),
+                        line.contractMonth,
+                      ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              _CompactExpansionPanel(
+                title: '完整現金 / 保證金明細',
+                subtitle: '官方每日資料，包含現金、保證金與其他應收應付。',
+                child: _HorizontalTable(
+                  columns: const ['項目', '金額', '占基金淨資產'],
+                  rows: [
+                    for (final line in snapshot.cashHoldings)
+                      [
+                        line.item,
+                        formatNtdAmount(line.amount),
+                        formatNullablePercent(
+                          line.weightPct(snapshot.fundNetAssetValue),
+                        ),
+                      ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              _CompactExpansionPanel(
+                title: '內容物歷史覆蓋',
+                subtitle: '本機 history 從 daily cycle 開始保存，不補假過去資料。',
+                child: _HoldingsCoveragePanel(data: data),
+              ),
             ],
           ),
         ),
@@ -1578,51 +1590,52 @@ class _HistorySection extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      '歷史資料完整度',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    _PriceCompletenessPanel(
-                      priceHistory: priceHistory,
-                      summary: completeness,
-                    ),
-                    const SizedBox(height: 12),
                     _PriceTrendCharts(priceHistory: priceHistory),
                     const SizedBox(height: 12),
-                    _HorizontalTable(
-                      columns: const [
-                        '日期',
-                        '開',
-                        '高',
-                        '低',
-                        '收',
-                        'NAV',
-                        '折溢價',
-                        '量',
-                        '日報酬',
-                        '回撤',
-                      ],
-                      rows: [
-                        for (final point
-                            in priceHistory.points.reversed.take(30))
-                          [
-                            formatTaiwanDate(point.date),
-                            _price(point.open),
-                            _price(point.high),
-                            _price(point.low),
-                            _price(point.close),
-                            _price(point.nav),
-                            formatSignedNullablePercent(
-                              point.premiumDiscountPct,
-                            ),
-                            formatInteger(point.volume),
-                            formatSignedNullablePercent(point.dailyReturnPct),
-                            formatSignedNullablePercent(point.drawdownPct),
-                          ],
-                      ],
+                    _CompactExpansionPanel(
+                      title: '歷史資料完整度',
+                      subtitle: 'rows、coverage、52 週區間與欄位覆蓋。',
+                      child: _PriceCompletenessPanel(
+                        priceHistory: priceHistory,
+                        summary: completeness,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _CompactExpansionPanel(
+                      title: '最近 30 筆價格表',
+                      subtitle: '開高低收、NAV、折溢價、成交量與回撤。',
+                      child: _HorizontalTable(
+                        columns: const [
+                          '日期',
+                          '開',
+                          '高',
+                          '低',
+                          '收',
+                          'NAV',
+                          '折溢價',
+                          '量',
+                          '日報酬',
+                          '回撤',
+                        ],
+                        rows: [
+                          for (final point
+                              in priceHistory.points.reversed.take(30))
+                            [
+                              formatTaiwanDate(point.date),
+                              _price(point.open),
+                              _price(point.high),
+                              _price(point.low),
+                              _price(point.close),
+                              _price(point.nav),
+                              formatSignedNullablePercent(
+                                point.premiumDiscountPct,
+                              ),
+                              formatInteger(point.volume),
+                              formatSignedNullablePercent(point.dailyReturnPct),
+                              formatSignedNullablePercent(point.drawdownPct),
+                            ],
+                        ],
+                      ),
                     ),
                   ],
                 )
@@ -1643,30 +1656,34 @@ class _HistorySection extends StatelessWidget {
                     const SizedBox(height: 12),
                     _HoldingsTrendCharts(summary: holdingsTrend),
                     const SizedBox(height: 12),
-                    _HorizontalTable(
-                      columns: const [
-                        '日期',
-                        'TX 權重',
-                        '台積電權重',
-                        '股票 %',
-                        '期貨 %',
-                        '現金/保證金 %',
-                        'NAV',
-                        '發行單位數',
-                      ],
-                      rows: [
-                        for (final point in holdingsTrend.points)
-                          [
-                            formatTaiwanDate(point.tradeDate),
-                            formatNullablePercent(point.txWeightPct),
-                            formatNullablePercent(point.tsmcWeightPct),
-                            formatNullablePercent(point.stockExposurePct),
-                            formatNullablePercent(point.futuresExposurePct),
-                            formatNullablePercent(point.cashAndMarginPct),
-                            _price(point.navPerUnit),
-                            formatInteger(point.outstandingUnits),
-                          ],
-                      ],
+                    _CompactExpansionPanel(
+                      title: '最近 30 筆 holdings 表',
+                      subtitle: 'TX、台積電、股票、期貨、現金與 NAV 明細。',
+                      child: _HorizontalTable(
+                        columns: const [
+                          '日期',
+                          'TX 權重',
+                          '台積電權重',
+                          '股票 %',
+                          '期貨 %',
+                          '現金/保證金 %',
+                          'NAV',
+                          '發行單位數',
+                        ],
+                        rows: [
+                          for (final point in holdingsTrend.points)
+                            [
+                              formatTaiwanDate(point.tradeDate),
+                              formatNullablePercent(point.txWeightPct),
+                              formatNullablePercent(point.tsmcWeightPct),
+                              formatNullablePercent(point.stockExposurePct),
+                              formatNullablePercent(point.futuresExposurePct),
+                              formatNullablePercent(point.cashAndMarginPct),
+                              _price(point.navPerUnit),
+                              formatInteger(point.outstandingUnits),
+                            ],
+                        ],
+                      ),
                     ),
                   ],
                 )
