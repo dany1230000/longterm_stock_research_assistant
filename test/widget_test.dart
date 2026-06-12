@@ -89,6 +89,8 @@ void main() {
     await tester.tap(find.text('進入 00631L 正二研究室'));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('twse_a_k_json'), findsWidgets);
+    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('市價'), findsWidgets);
+    expect(find.text('更多檢視'), findsOneWidget);
   });
 }

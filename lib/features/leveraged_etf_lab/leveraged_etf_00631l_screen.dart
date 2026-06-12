@@ -640,7 +640,7 @@ class _CompactQuoteHeader extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -651,20 +651,26 @@ class _CompactQuoteHeader extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        crossAxisAlignment: WrapCrossAlignment.center,
+                      Row(
                         children: [
-                          const _MiniStatusBadge(label: '00631L'),
+                          Expanded(
+                            child: Text(
+                              '00631L 元大台灣50正2',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: _marketMutedText,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0,
+                              ),
+                            ),
+                          ),
                           _CompactTextBadge(
                             label: nav?.status.label ?? 'unavailable',
                           ),
-                          if (nav?.sourceContract != null)
-                            _CompactTextBadge(label: nav!.sourceContract!),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 5),
                       Text(
                         _price(nav?.marketPrice),
                         maxLines: 1,
@@ -676,7 +682,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                           height: 0.95,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 3),
                       Text(
                         '市價 | ${nav?.dataTime == null ? '資料時間 unavailable' : formatTaiwanDateTimeSeconds(nav!.dataTime!)}',
                         maxLines: 1,
@@ -699,7 +705,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 7),
             _QuoteFactsStrip(
               items: [
                 _QuoteFact(

@@ -197,6 +197,12 @@ v3.24 overview layout:
 - Full numeric comparison, data sources, holdings changes, and technical checks are grouped under `更多檢視`.
 - Summary: `docs\00631l_v3_24_overview_layout_summary.md`.
 
+v3.25 compact quote board:
+
+- The top quote card now uses a lean market-board layout and avoids repeating source-contract badges in the first screen.
+- Detailed source labels remain available in `更多檢視` and settings.
+- Summary: `docs\00631l_v3_25_compact_quote_board_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
