@@ -6,11 +6,13 @@ class Cached00631LRepository extends Official00631LRepository {
   Cached00631LRepository({
     required Official00631LRepository primary,
     Official00631LRepository? fallback,
+    this.fastPrimaryTimeout = const Duration(milliseconds: 900),
   })  : _primary = primary,
         _fallback = fallback ?? Mock00631LRepository();
 
   final Official00631LRepository _primary;
   final Official00631LRepository _fallback;
+  final Duration fastPrimaryTimeout;
 
   LeveragedEtfProfile? _profileCache;
   EtfDailyHoldingSnapshot? _snapshotCache;
@@ -21,6 +23,21 @@ class Cached00631LRepository extends Official00631LRepository {
   EtfPriceHistory? _priceHistoryCache;
   EtfOperationsStatus? _operationsStatusCache;
   EtfAiAnalysisSummary? _aiAnalysisCache;
+
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() async {
+    try {
+      final data =
+          await _primary.fetchFastLabData().timeout(fastPrimaryTimeout);
+      _profileCache = data.profile;
+      _snapshotCache = data.snapshot;
+      _intradayNavCache = data.intradayNav;
+      _futuresQuoteCache = data.futuresQuote;
+      return data;
+    } catch (_) {
+      return _fallback.fetchFastLabData();
+    }
+  }
 
   @override
   Future<LeveragedEtfProfile> fetchProfile() async {

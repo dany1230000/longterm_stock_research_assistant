@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -284,6 +285,23 @@ void main() {
     expect(data.aiAnalysis.sourceStatusLabel, 'static_official');
     expect(data.aiAnalysis.sourceStatuses['intradayNav'], 'backend_required');
   });
+
+  test('cached fast startup falls back when primary is slow', () async {
+    final repository = Cached00631LRepository(
+      primary: _NeverCompletingFastRepository(),
+      fallback: Mock00631LRepository(),
+      fastPrimaryTimeout: const Duration(milliseconds: 5),
+    );
+
+    final stopwatch = Stopwatch()..start();
+    final data = await repository.fetchFastLabData();
+    stopwatch.stop();
+
+    expect(stopwatch.elapsed, lessThan(const Duration(seconds: 1)));
+    expect(data.profile.status, EtfDataStatus.mock);
+    expect(data.snapshot.status, EtfDataStatus.mock);
+    expect(data.priceHistory.sourceStatusLabel, 'deferred');
+  });
 }
 
 class _FakeProxyHttpClient implements ProxyHttpClient {
@@ -311,6 +329,15 @@ class _FailingProxyHttpClient implements ProxyHttpClient {
     Duration timeout = const Duration(seconds: 8),
   }) {
     throw StateError('backend down');
+  }
+}
+
+class _NeverCompletingFastRepository extends Mock00631LRepository {
+  final Completer<Etf00631LLabData> _completer = Completer<Etf00631LLabData>();
+
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() {
+    return _completer.future;
   }
 }
 

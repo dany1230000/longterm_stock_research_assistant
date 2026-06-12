@@ -185,6 +185,12 @@ v3.22 fast startup:
 - If full details fail, the quote and overview remain visible with a clear fallback state instead of a blank page.
 - Summary: `docs\00631l_v3_22_fast_startup_summary.md`.
 
+v3.23 live cold-start fallback:
+
+- Fast startup now gives the public live backend a short first-screen timeout, then shows static/mock fallback if the backend is still cold.
+- Full live data continues loading in the normal path and can replace the fallback once available.
+- Summary: `docs\00631l_v3_23_live_cold_start_fallback_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
