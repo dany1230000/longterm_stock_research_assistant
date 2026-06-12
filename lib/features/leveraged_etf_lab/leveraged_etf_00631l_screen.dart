@@ -106,6 +106,15 @@ enum _LabSection {
   final IconData icon;
 }
 
+enum _HistoryBacktestView {
+  history('歷史', Icons.show_chart_outlined),
+  backtest('回測', Icons.query_stats_outlined);
+
+  const _HistoryBacktestView(this.label, this.icon);
+  final String label;
+  final IconData icon;
+}
+
 class _LabContent extends StatelessWidget {
   const _LabContent({
     required this.data,
@@ -140,9 +149,9 @@ class _LabContent extends StatelessWidget {
                   child: ListView(
                     padding: EdgeInsets.fromLTRB(
                       horizontalPadding,
-                      10,
+                      6,
                       horizontalPadding,
-                      isCompact ? 88 : 96,
+                      isCompact ? 84 : 92,
                     ),
                     children: [
                       Align(
@@ -414,7 +423,7 @@ class _MarketTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SizedBox(
-      height: 44,
+      height: 40,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 430;
@@ -658,7 +667,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                               '00631L 元大台灣50正2',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.labelLarge?.copyWith(
+                              style: theme.textTheme.labelMedium?.copyWith(
                                 color: _marketMutedText,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 0,
@@ -670,12 +679,12 @@ class _CompactQuoteHeader extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 4),
                       Text(
                         _price(nav?.marketPrice),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.headlineLarge?.copyWith(
+                        style: theme.textTheme.headlineMedium?.copyWith(
                           color: _marketText,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0,
@@ -705,7 +714,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 7),
+            const SizedBox(height: 6),
             _QuoteFactsStrip(
               items: [
                 _QuoteFact(
@@ -1586,9 +1595,9 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data),
         const SizedBox(height: 8),
-        _OverviewAtAGlancePanel(data: data),
-        const SizedBox(height: 8),
         _OverviewSignalPanel(data: data),
+        const SizedBox(height: 8),
+        _OverviewAtAGlancePanel(data: data),
         const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '更多檢視',
@@ -1670,7 +1679,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
         border: Border.all(color: _marketBorder),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.fromLTRB(10, 9, 10, 9),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1692,7 +1701,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                 _CompactTextBadge(label: _statusDisplay(data.status.label)),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               _overviewAiBrief(data),
               maxLines: 1,
@@ -1703,47 +1712,44 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(height: 8),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth >= 680;
-                final itemWidth = isWide
-                    ? (constraints.maxWidth - 24) / 4
-                    : (constraints.maxWidth - 8) / 2;
-                return Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _AtAGlanceMetric(
-                      width: itemWidth,
-                      label: '官方內容物',
-                      value: formatTaiwanDate(data.snapshot.tradeDate),
-                      caption: data.snapshot.status.label,
-                    ),
-                    _AtAGlanceMetric(
-                      width: itemWidth,
-                      label: '盤中 NAV',
-                      value: _price(nav?.estimatedNav),
-                      caption: nav?.dataTime == null
-                          ? '盤中資料暫無'
-                          : formatTimeSeconds(nav!.dataTime!),
-                    ),
-                    _AtAGlanceMetric(
-                      width: itemWidth,
-                      label: '內容物重點',
-                      value: exposureText,
-                      caption: '官方 history',
-                    ),
-                    _AtAGlanceMetric(
-                      width: itemWidth,
-                      label: '歷史覆蓋',
-                      value: '${formatInteger(history.rowCount)} 筆',
-                      caption:
-                          '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
-                    ),
-                  ],
-                );
-              },
+            const SizedBox(height: 7),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  _AtAGlanceMetric(
+                    width: 136,
+                    label: '官方內容物',
+                    value: formatTaiwanDate(data.snapshot.tradeDate),
+                    caption: data.snapshot.status.label,
+                  ),
+                  const SizedBox(width: 8),
+                  _AtAGlanceMetric(
+                    width: 132,
+                    label: '盤中 NAV',
+                    value: _price(nav?.estimatedNav),
+                    caption: nav?.dataTime == null
+                        ? '盤中資料暫無'
+                        : formatTimeSeconds(nav!.dataTime!),
+                  ),
+                  const SizedBox(width: 8),
+                  _AtAGlanceMetric(
+                    width: 184,
+                    label: '內容物重點',
+                    value: exposureText,
+                    caption: '官方 history',
+                  ),
+                  const SizedBox(width: 8),
+                  _AtAGlanceMetric(
+                    width: 164,
+                    label: '歷史覆蓋',
+                    value: '${formatInteger(history.rowCount)} 筆',
+                    caption:
+                        '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -2065,11 +2071,11 @@ class _AtAGlanceMetric extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: _marketPanelAlt,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(color: _marketBorder),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -2082,7 +2088,7 @@ class _AtAGlanceMetric extends StatelessWidget {
                       fontWeight: FontWeight.w800,
                     ),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 2),
               Text(
                 value,
                 maxLines: 1,
@@ -2092,7 +2098,7 @@ class _AtAGlanceMetric extends StatelessWidget {
                       fontWeight: FontWeight.w900,
                     ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 1),
               Text(
                 caption,
                 maxLines: 1,
@@ -2586,7 +2592,7 @@ class _HoldingsSection extends StatelessWidget {
 }
 
 class _HistorySection extends StatelessWidget {
-  const _HistorySection({required this.data});
+  const _HistorySection({super.key, required this.data});
 
   final Etf00631LLabData data;
 
@@ -2783,26 +2789,130 @@ class _HistorySection extends StatelessWidget {
   }
 }
 
-class _HistoryBacktestSection extends StatelessWidget {
+class _HistoryBacktestSection extends StatefulWidget {
   const _HistoryBacktestSection({required this.data});
 
   final Etf00631LLabData data;
+
+  @override
+  State<_HistoryBacktestSection> createState() =>
+      _HistoryBacktestSectionState();
+}
+
+class _HistoryBacktestSectionState extends State<_HistoryBacktestSection> {
+  _HistoryBacktestView _view = _HistoryBacktestView.history;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HistorySection(data: data),
-        const SizedBox(height: 12),
-        _BacktestSection(data: data),
+        _HistoryBacktestSwitcher(
+          selected: _view,
+          onChanged: (view) => setState(() => _view = view),
+        ),
+        const SizedBox(height: 10),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 180),
+          child: _view == _HistoryBacktestView.history
+              ? _HistorySection(
+                  key: const ValueKey('00631l-history-view'),
+                  data: widget.data,
+                )
+              : _BacktestSection(
+                  key: const ValueKey('00631l-backtest-view'),
+                  data: widget.data,
+                ),
+        ),
       ],
     );
   }
 }
 
+class _HistoryBacktestSwitcher extends StatelessWidget {
+  const _HistoryBacktestSwitcher({
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final _HistoryBacktestView selected;
+  final ValueChanged<_HistoryBacktestView> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Row(
+          children: [
+            for (final view in _HistoryBacktestView.values)
+              Expanded(
+                child: _HistoryBacktestSwitchButton(
+                  view: view,
+                  selected: selected == view,
+                  onTap: () => onChanged(view),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HistoryBacktestSwitchButton extends StatelessWidget {
+  const _HistoryBacktestSwitchButton({
+    required this.view,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final _HistoryBacktestView view;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? _marketBlue : _marketMutedText;
+    return InkWell(
+      key: ValueKey('00631l-history-backtest-${view.name}'),
+      borderRadius: BorderRadius.circular(9),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
+        decoration: BoxDecoration(
+          color: selected
+              ? _marketBlue.withValues(alpha: 0.18)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(9),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(view.icon, size: 17, color: color),
+            const SizedBox(width: 6),
+            Text(
+              view.label,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: color,
+                    fontWeight: selected ? FontWeight.w900 : FontWeight.w800,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _BacktestSection extends StatefulWidget {
-  const _BacktestSection({required this.data});
+  const _BacktestSection({super.key, required this.data});
 
   final Etf00631LLabData data;
 

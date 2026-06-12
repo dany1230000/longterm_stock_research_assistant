@@ -221,6 +221,12 @@ v3.28 home sparkline and exposure:
 - The panel uses existing price history and official daily holdings data; it does not add a new data source.
 - Summary: `docs\00631l_v3_28_home_sparkline_exposure_summary.md`.
 
+v3.29 first-screen segmentation:
+
+- The overview first screen now prioritizes quote, 60-day sparkline, and official exposure before secondary details.
+- The history/backtest tab uses an in-page switch so users see history first and open backtest inputs only when needed.
+- Summary: `docs\00631l_v3_29_first_screen_segmentation_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
