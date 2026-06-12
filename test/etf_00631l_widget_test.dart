@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,12 +21,11 @@ void main() {
     expect(find.text('折溢價'), findsWidgets);
     expect(find.text('今日快覽'), findsOneWidget);
     expect(find.text('核心數字比較'), findsOneWidget);
-    expect(find.text('資料來源比較'), findsOneWidget);
-    expect(find.text('官方內容物'), findsWidgets);
+    expect(find.text('資料來源'), findsOneWidget);
     expect(find.text('更多資料狀態'), findsOneWidget);
-    expect(find.text('歷史價格'), findsWidgets);
     expect(find.text('7 / 30 日內容物變化'), findsOneWidget);
-    expect(find.text('盤中 NAV'), findsWidgets);
+    expect(find.text('官方 NAV'), findsWidgets);
+    expect(find.textContaining('mock_default'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('內容物'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
@@ -41,10 +42,6 @@ void main() {
     ]) {
       expect(find.byKey(ValueKey('00631l-section-$section')), findsOneWidget);
     }
-    expect(find.text('DAY'), findsOneWidget);
-    expect(find.text('LIVE'), findsOneWidget);
-    expect(find.text('HIS'), findsOneWidget);
-    expect(find.text('AI'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -59,12 +56,47 @@ void main() {
     await _pumpLab(tester, Mock00631LRepository());
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
-    expect(find.textContaining('mock_default'), findsWidgets);
     expect(find.text('今日快覽'), findsOneWidget);
     expect(find.text('核心數字比較'), findsOneWidget);
-    expect(find.text('資料來源比較'), findsOneWidget);
+    expect(find.text('資料來源'), findsOneWidget);
     expect(find.text('00631L ▼'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('loading state shows app shell skeleton instead of blank spinner',
+      (tester) async {
+    final repository = _PendingLabRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          official00631LRepositoryProvider.overrideWithValue(repository),
+        ],
+        child: const MaterialApp(
+          home: Scaffold(body: LeveragedEtf00631LScreen()),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.text('今日快覽'), findsOneWidget);
+    expect(find.text('核心數字比較'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    for (final section in const [
+      'overview',
+      'holdings',
+      'historyBacktest',
+      'position',
+      'ai',
+      'settings',
+    ]) {
+      expect(find.byKey(ValueKey('00631l-section-$section')), findsOneWidget);
+    }
+
+    await repository.complete();
+    await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
 
@@ -313,6 +345,19 @@ class _NoHistoryRepository extends Mock00631LRepository {
       sourceUrl: 'local://empty-price-history',
       errorMessage: 'No official price history fixture.',
     );
+  }
+}
+
+class _PendingLabRepository extends Mock00631LRepository {
+  final Completer<Etf00631LLabData> _completer = Completer<Etf00631LLabData>();
+
+  @override
+  Future<Etf00631LLabData> fetchLabData() {
+    return _completer.future;
+  }
+
+  Future<void> complete() async {
+    _completer.complete(await Mock00631LRepository().fetchLabData());
   }
 }
 

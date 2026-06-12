@@ -56,7 +56,9 @@ class _LeveragedEtf00631LScreenState
     final labValue = ref.watch(etf00631LLabProvider);
     return SafeArea(
       child: labValue.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => _LabLoadingShell(
+          onRefresh: () => ref.invalidate(etf00631LLabProvider),
+        ),
         error: (error, _) => _ErrorState(
           error: error,
           onRefresh: () => ref.invalidate(etf00631LLabProvider),
@@ -130,9 +132,7 @@ class _LabContent extends StatelessWidget {
                               _MarketTopBar(
                                 onRefresh: onRefresh,
                               ),
-                              const SizedBox(height: 12),
-                              _MarketSentimentStrip(data: data),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 8),
                               _sectionWidget(data),
                             ],
                           ),
@@ -156,7 +156,7 @@ class _LabContent extends StatelessWidget {
   Widget _sectionWidget(Etf00631LLabData data) {
     switch (selectedSection) {
       case _LabSection.overview:
-        return _OverviewSection(data: data, onRefresh: onRefresh);
+        return _OverviewSection(data: data);
       case _LabSection.holdings:
         return _HoldingsSection(data: data);
       case _LabSection.historyBacktest:
@@ -171,6 +171,148 @@ class _LabContent extends StatelessWidget {
   }
 }
 
+class _LabLoadingShell extends StatelessWidget {
+  const _LabLoadingShell({required this.onRefresh});
+
+  final VoidCallback onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: _marketTheme(context),
+      child: DecoratedBox(
+        decoration: const BoxDecoration(color: _marketBackgroundColor),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 88),
+                children: [
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1180),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _MarketTopBar(onRefresh: onRefresh),
+                          const SizedBox(height: 8),
+                          const _LoadingQuoteCard(),
+                          const SizedBox(height: 10),
+                          const _LoadingSectionCard(title: '今日快覽'),
+                          const SizedBox(height: 10),
+                          const _LoadingSectionCard(title: '核心數字比較'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            _MarketBottomNav(
+              selected: _LabSection.overview,
+              onChanged: (_) {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingQuoteCard extends StatelessWidget {
+  const _LoadingQuoteCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: const Padding(
+        padding: EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _LoadingBar(width: 92, height: 20),
+            SizedBox(height: 12),
+            _LoadingBar(width: 156, height: 36),
+            SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _LoadingBar(width: 96, height: 34),
+                _LoadingBar(width: 96, height: 34),
+                _LoadingBar(width: 108, height: 34),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingSectionCard extends StatelessWidget {
+  const _LoadingSectionCard({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: _marketText,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            const _LoadingBar(width: double.infinity, height: 16),
+            const SizedBox(height: 8),
+            const _LoadingBar(width: 220, height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingBar extends StatelessWidget {
+  const _LoadingBar({required this.width, required this.height});
+
+  final double width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketMutedText.withValues(alpha: 0.22),
+          borderRadius: BorderRadius.circular(999),
+        ),
+      ),
+    );
+  }
+}
+
 class _MarketTopBar extends StatelessWidget {
   const _MarketTopBar({
     required this.onRefresh,
@@ -181,70 +323,43 @@ class _MarketTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const _MarketIndexPill(),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '00631L 正二研究室',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: _marketText,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0,
-                    ),
+    return SizedBox(
+      height: 44,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final showModeBadge = constraints.maxWidth >= 430;
+          return Row(
+            children: [
+              const _MarketIndexPill(),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '00631L 正二研究室',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: _marketText,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '公開 PWA | $_frontendDataMode',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: _marketMutedText,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              tooltip: '重新整理',
-              onPressed: onRefresh,
-              color: _marketText,
-              icon: const Icon(Icons.refresh),
-            ),
-            const _ThemeToggleButton(compact: true),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            const Icon(
-              Icons.info_outline,
-              size: 16,
-              color: _marketMutedText,
-            ),
-            const SizedBox(width: 6),
-            Expanded(
-              child: Text(
-                '導覽固定在底部；目前只追蹤 00631L。',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: _marketMutedText,
-                  fontWeight: FontWeight.w700,
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+              if (showModeBadge) ...[
+                _CompactTextBadge(label: _frontendDataMode),
+                const SizedBox(width: 4),
+              ],
+              IconButton(
+                tooltip: '重新整理',
+                onPressed: onRefresh,
+                color: _marketText,
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.refresh, size: 21),
+              ),
+              const _ThemeToggleButton(compact: true),
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -261,11 +376,12 @@ class _MarketIndexPill extends StatelessWidget {
         border: Border.all(color: const Color(0xFF67C58B)),
       ),
       child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        padding: EdgeInsets.symmetric(horizontal: 11, vertical: 6),
         child: Text(
           '00631L ▼',
           style: TextStyle(
             color: Colors.white,
+            fontSize: 13,
             fontWeight: FontWeight.w900,
           ),
         ),
@@ -274,6 +390,36 @@ class _MarketIndexPill extends StatelessWidget {
   }
 }
 
+class _CompactTextBadge extends StatelessWidget {
+  const _CompactTextBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAlt,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: _marketMutedText,
+                fontWeight: FontWeight.w900,
+              ),
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: unused_element
 class _MarketSentimentStrip extends StatelessWidget {
   const _MarketSentimentStrip({required this.data});
 
@@ -371,6 +517,267 @@ class _MarketSignalPill extends StatelessWidget {
   }
 }
 
+class _CompactQuoteHeader extends StatelessWidget {
+  const _CompactQuoteHeader({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final nav = data.intradayNav;
+    final premiumAssessment = PremiumDiscountAssessment.evaluate(
+      premiumDiscountPct: nav?.estimatedPremiumDiscountPct,
+      sourceStatus: nav?.status ?? EtfDataStatus.error,
+      isStale: nav?.isStale ?? true,
+    );
+    final premiumColor = _levelColor(
+      theme.colorScheme,
+      premiumAssessment.level,
+    );
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _marketBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          const _MiniStatusBadge(label: '00631L'),
+                          _CompactTextBadge(
+                            label: nav?.status.label ?? 'unavailable',
+                          ),
+                          if (nav?.sourceContract != null)
+                            _CompactTextBadge(label: nav!.sourceContract!),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _price(nav?.marketPrice),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.displaySmall?.copyWith(
+                          color: _marketText,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0,
+                          height: 0.95,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '市價 | ${nav?.dataTime == null ? '資料時間 unavailable' : formatTaiwanDateTimeSeconds(nav!.dataTime!)}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: _marketMutedText,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                _CompactPremiumBox(
+                  value: formatSignedNullablePercent(
+                    nav?.estimatedPremiumDiscountPct,
+                  ),
+                  label: _premiumLabel(premiumAssessment),
+                  color: premiumColor,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _CompactQuoteMetric(
+                  label: '預估淨值',
+                  value: _price(nav?.estimatedNav),
+                ),
+                _CompactQuoteMetric(
+                  label: '前日淨值',
+                  value: _price(nav?.previousBusinessDayNav),
+                ),
+                _CompactQuoteMetric(
+                  label: '官方 NAV',
+                  value: _price(data.snapshot.navPerUnit),
+                ),
+                _CompactQuoteMetric(
+                  label: '發行單位',
+                  value: nav?.outstandingUnits == null
+                      ? _compactNumber(data.snapshot.outstandingUnits)
+                      : _compactNumber(nav!.outstandingUnits!),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  _levelIcon(premiumAssessment.level),
+                  color: premiumColor,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${_premiumDescription(premiumAssessment)} 非買賣建議。',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: _marketMutedText,
+                      height: 1.35,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CompactPremiumBox extends StatelessWidget {
+  const _CompactPremiumBox({
+    required this.value,
+    required this.label,
+    required this.color,
+  });
+
+  final String value;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 96, maxWidth: 116),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.46)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '折溢價',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _marketMutedText,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CompactQuoteMetric extends StatelessWidget {
+  const _CompactQuoteMetric({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 118,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketPanelAlt,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: _marketBorder),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _marketMutedText,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: unused_element
 class _QuoteHeader extends StatelessWidget {
   const _QuoteHeader({
     required this.data,
@@ -973,13 +1380,9 @@ class _MarketBottomNavItem extends StatelessWidget {
 }
 
 class _OverviewSection extends StatelessWidget {
-  const _OverviewSection({
-    required this.data,
-    required this.onRefresh,
-  });
+  const _OverviewSection({required this.data});
 
   final Etf00631LLabData data;
-  final VoidCallback onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -988,22 +1391,22 @@ class _OverviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _QuoteHeader(data: data, onRefresh: onRefresh),
-        const SizedBox(height: 12),
+        _CompactQuoteHeader(data: data),
+        const SizedBox(height: 10),
         _OverviewBriefPanel(data: data),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         _SectionBlock(
           title: '核心數字比較',
           subtitle: '把 NAV、規模與歷史績效放在同一區，方便快速比對。',
           child: _OverviewComparisonPanel(data: data),
         ),
-        const SizedBox(height: 12),
-        _SectionBlock(
-          title: '資料來源比較',
-          subtitle: '只列出常用資料來源；進階診斷收在設定頁。',
+        const SizedBox(height: 10),
+        _CompactExpansionPanel(
+          title: '資料來源',
+          subtitle: '目前模式、官方每日資料、盤中 NAV 與歷史資料來源。',
           child: _OverviewModeCards(data: data),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         _SectionBlock(
           title: '7 / 30 日內容物變化',
           subtitle: '根據本機保存的 official holdings history；缺資料時不補假資料。',
@@ -1014,10 +1417,10 @@ class _OverviewSection extends StatelessWidget {
                 )
               : _HistoryChangeCards(summary: history),
         ),
-        const SizedBox(height: 12),
-        _SectionBlock(
+        const SizedBox(height: 10),
+        _CompactExpansionPanel(
           title: '更多資料狀態',
-          subtitle: '平常可略過；需要排除資料問題時再展開查看。',
+          subtitle: '平常可略過；需要排除資料問題時再展開。',
           child: _OverviewHiddenDetails(data: data),
         ),
       ],
@@ -3297,10 +3700,12 @@ class _CompactExpansionPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
+    return Material(
+      color: theme.colorScheme.surface,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
       ),
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),

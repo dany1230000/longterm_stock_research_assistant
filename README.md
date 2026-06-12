@@ -161,6 +161,12 @@ v3.18 progressive details:
 - Mobile users can scan exposure, charts, and changes before opening raw stock/futures/cash/history tables.
 - Summary: `docs\00631l_v3_18_detail_progressive_disclosure_summary.md`.
 
+v3.19 first-screen speed and layout:
+
+- Initial loading now shows the 00631L app shell and skeleton cards instead of a single spinner.
+- The overview quote area is compact, with low-priority data-source details collapsed by default.
+- Summary: `docs\00631l_v3_19_first_screen_speed_layout_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

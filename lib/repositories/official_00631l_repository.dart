@@ -44,15 +44,25 @@ abstract class Official00631LRepository {
   }
 
   Future<Etf00631LLabData> fetchLabData() async {
-    final profile = await fetchProfile();
-    final snapshot = await fetchDailySnapshot();
-    final intradayNav = await fetchIntradayNav();
-    final futuresQuote = await fetchFuturesQuote();
-    final history = await _fetchHistorySafely();
-    final intradayHistory = await _fetchIntradayHistorySafely();
-    final operationsStatus = await _fetchOperationsStatusSafely();
-    final aiAnalysis = await _fetchAiAnalysisSafely();
-    final priceHistory = await _fetchPriceHistorySafely();
+    final profileFuture = fetchProfile();
+    final snapshotFuture = fetchDailySnapshot();
+    final intradayNavFuture = fetchIntradayNav();
+    final futuresQuoteFuture = fetchFuturesQuote();
+    final historyFuture = _fetchHistorySafely();
+    final intradayHistoryFuture = _fetchIntradayHistorySafely();
+    final operationsStatusFuture = _fetchOperationsStatusSafely();
+    final aiAnalysisFuture = _fetchAiAnalysisSafely();
+    final priceHistoryFuture = _fetchPriceHistorySafely();
+
+    final profile = await profileFuture;
+    final snapshot = await snapshotFuture;
+    final intradayNav = await intradayNavFuture;
+    final futuresQuote = await futuresQuoteFuture;
+    final history = await historyFuture;
+    final intradayHistory = await intradayHistoryFuture;
+    final operationsStatus = await operationsStatusFuture;
+    final aiAnalysis = await aiAnalysisFuture;
+    final priceHistory = await priceHistoryFuture;
     final now = DateTime.now();
 
     return Etf00631LLabData(
