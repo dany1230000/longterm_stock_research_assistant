@@ -1066,6 +1066,12 @@ class _OverviewSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
+        _SectionBlock(
+          title: '資料覆蓋狀態',
+          subtitle: '回答資料是否補齊：價格歷史、官方內容物、盤中 NAV 與 TX live 各自分開標示。',
+          child: _DataCoveragePanel(data: data),
+        ),
+        const SizedBox(height: 12),
         _ResponsiveMetricGrid(
           cards: [
             _MetricCard(
@@ -2351,39 +2357,7 @@ class _SettingsSection extends StatelessWidget {
           title: '資料完整度',
           subtitle: '這裡只說明資料是否齊全；static 歷史資料不是 live intraday。',
           child: _StatusList(
-            items: [
-              _StatusItem(
-                label: '價格歷史',
-                status: data.priceHistory.sourceStatusLabel,
-                detail:
-                    'rows ${price.rowCount}，coverage ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，completeFromListing ${price.isCompleteFromListing}。',
-                action: price.rowCount >= 2
-                    ? '歷史與回測資料可讀。'
-                    : '請執行 scripts\\00631l_update_price_history.cmd 或 static export。',
-              ),
-              _StatusItem(
-                label: '官方內容物',
-                status: data.snapshot.status.label,
-                detail:
-                    'latest snapshot ${formatTaiwanDate(data.snapshot.tradeDate)}；holdings history count ${status.holdingsHistoryItemCount}。',
-                action: '內容物是每日快照；缺歷史時請執行 daily cycle 累積。',
-              ),
-              _StatusItem(
-                label: '盤中 NAV',
-                status: data.intradayNav?.status.label ?? 'unavailable',
-                detail:
-                    'dataTime ${data.intradayNav?.dataTime == null ? 'unavailable' : formatTaiwanDateTimeSeconds(data.intradayNav!.dataTime!)}。',
-                action: _use00631LLiveProxy
-                    ? '需 public backend 與 TWSE 資料可用。'
-                    : 'static mode 不提供 live intraday NAV。',
-              ),
-              const _StatusItem(
-                label: 'TX live',
-                status: 'not connected',
-                detail: '目前只讀官方 holdings 裡的 TX 權重，沒有接 TX live quote。',
-                action: '本版不需要設定 TX live。',
-              ),
-            ],
+            items: _dataCoverageItems(data),
           ),
         ),
         const SizedBox(height: 12),
@@ -2516,6 +2490,36 @@ class _ExposureBars extends StatelessWidget {
               ],
             ),
           ),
+      ],
+    );
+  }
+}
+
+class _DataCoveragePanel extends StatelessWidget {
+  const _DataCoveragePanel({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final price = data.priceHistory.completenessSummary();
+    final holdingsCount = _holdingsHistoryCount(data);
+    final intradayTime = _intradayDataTimeText(data.intradayNav);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _StatusWrap(
+          labels: [
+            price.isCompleteFromListing
+                ? '價格歷史已補齊到上市日起'
+                : '價格歷史 ${price.rowCount >= 2 ? '部分區間' : '尚無資料'}',
+            'price rows ${formatInteger(price.rowCount)}',
+            'holdings history $holdingsCount',
+            'intraday $intradayTime',
+          ],
+        ),
+        const SizedBox(height: 12),
+        _StatusList(items: _dataCoverageItems(data)),
       ],
     );
   }
@@ -3832,6 +3836,88 @@ EtfStockHoldingLine? _stockHoldingByCode(
     }
   }
   return null;
+}
+
+List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
+  final price = data.priceHistory.completenessSummary();
+  final holdingsCount = _holdingsHistoryCount(data);
+  final latestHoldingDate = _latestHoldingsDate(data);
+  final intradayTime = _intradayDataTimeText(data.intradayNav);
+  final txLine = _primaryFuturesLine(data.snapshot);
+
+  return [
+    _StatusItem(
+      label: '價格歷史',
+      status: _priceCoverageStatus(data),
+      detail:
+          'rows ${formatInteger(price.rowCount)}，coverage ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，source ${data.priceHistory.sourceStatusLabel}。',
+      action: price.rowCount >= 2
+          ? price.isCompleteFromListing
+              ? '已可支援歷史與回測；coverage 仍以 static manifest 與官方更新時間為準。'
+              : '可支援歷史與回測，但 coverage 不是完整上市以來區間。'
+          : '請執行 scripts\\00631l_update_price_history.cmd 或 scripts\\00631l_export_static_data.cmd --update。',
+    ),
+    _StatusItem(
+      label: '內容物歷史',
+      status: holdingsCount > 0
+          ? data.holdingsHistory.sourceStatusLabel
+          : 'not accumulated',
+      detail:
+          'latest ${_dateOrDash(latestHoldingDate)}，history count $holdingsCount；官方 ratio 是每日快照，不是盤中即時內容物。',
+      action: holdingsCount > 0
+          ? '已從本機 daily cycle 開始累積；不補假過去內容物。'
+          : '請執行 scripts\\00631l_daily_cycle.cmd 累積官方每日快照。',
+    ),
+    _StatusItem(
+      label: '盤中 NAV / 折溢價',
+      status: data.intradayNav?.status.label ?? 'unavailable',
+      detail:
+          'dataTime $intradayTime；live intraday NAV 需要 backend 連到 TWSE all_etf.txt。',
+      action: data.intradayNav == null
+          ? 'static public mode 只提供歷史與回測；若要盤中資料，請啟用 public backend。'
+          : '請以資料時間與 sourceContract 為準。',
+    ),
+    _StatusItem(
+      label: 'TX live',
+      status: 'not connected',
+      detail: txLine == null
+          ? '目前沒有接 TX live quote；也沒有可顯示的官方 TX 權重行。'
+          : '目前沒有接 TX live quote；只顯示官方 holdings 裡的 TX 權重 ${formatNullablePercent(txLine.weightPct)}。',
+      action: '本版不需要設定 TX live；資料只用於內容物透明化。',
+    ),
+  ];
+}
+
+String _priceCoverageStatus(Etf00631LLabData data) {
+  final price = data.priceHistory.completenessSummary();
+  if (price.rowCount < 2) {
+    return 'unavailable';
+  }
+  if (price.isCompleteFromListing) {
+    return '${data.priceHistory.sourceStatusLabel} complete';
+  }
+  return '${data.priceHistory.sourceStatusLabel} partial';
+}
+
+int _holdingsHistoryCount(Etf00631LLabData data) {
+  final localCount = data.holdingsHistory.points.length;
+  final statusCount = data.operationsStatus.holdingsHistoryItemCount;
+  return localCount > statusCount ? localCount : statusCount;
+}
+
+DateTime? _latestHoldingsDate(Etf00631LLabData data) {
+  final fromStatus = data.operationsStatus.latestHoldingTradeDate;
+  if (fromStatus != null) {
+    return fromStatus;
+  }
+  final latestHistory = data.holdingsHistory.trendSummary().latest?.tradeDate;
+  return latestHistory ?? data.snapshot.tradeDate;
+}
+
+String _intradayDataTimeText(EtfIntradayNav? intradayNav) {
+  return intradayNav?.dataTime == null
+      ? 'unavailable'
+      : formatTaiwanDateTimeSeconds(intradayNav!.dataTime!);
 }
 
 List<String> _completeDataBriefing(Etf00631LLabData data) {

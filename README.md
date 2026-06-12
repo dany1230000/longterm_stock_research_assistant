@@ -125,6 +125,12 @@ v3.12 navigation and settings:
 - Settings also states which data is complete, which data requires live backend, and why TX live is still not connected.
 - Summary: `docs\00631l_v3_12_navigation_settings_summary.md`.
 
+v3.13 data coverage status:
+
+- Overview now answers whether the core datasets are filled: price history, holdings history, intraday NAV, and TX live.
+- Settings uses the same data coverage rows, so static-public, live backend, and mock/fallback boundaries stay consistent.
+- Summary: `docs\00631l_v3_13_data_coverage_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

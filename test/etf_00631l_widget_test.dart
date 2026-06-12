@@ -19,6 +19,11 @@ void main() {
     expect(find.text('折溢價'), findsOneWidget);
     expect(find.text('市場資料'), findsOneWidget);
     expect(find.text('官方內容物'), findsWidgets);
+    expect(find.text('資料覆蓋狀態'), findsOneWidget);
+    expect(find.text('價格歷史'), findsWidgets);
+    expect(find.text('內容物歷史'), findsOneWidget);
+    expect(find.text('盤中 NAV / 折溢價'), findsOneWidget);
+    expect(find.text('TX live'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('內容物'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
@@ -179,6 +184,9 @@ void main() {
     expect(find.text('設定'), findsWidgets);
     expect(find.text('帳戶與隱私'), findsOneWidget);
     expect(find.text('資料完整度'), findsOneWidget);
+    expect(find.text('內容物歷史'), findsOneWidget);
+    expect(find.text('盤中 NAV / 折溢價'), findsOneWidget);
+    expect(find.text('TX live'), findsOneWidget);
     expect(find.text('進階診斷'), findsOneWidget);
     expect(find.text('backend'), findsOneWidget);
     expect(find.text('historical price'), findsOneWidget);
