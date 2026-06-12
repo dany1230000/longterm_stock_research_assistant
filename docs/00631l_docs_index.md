@@ -32,6 +32,7 @@ This is the main entry point for 00631L lab documentation.
 - Four-metric home v3.27 summary: `docs\00631l_v3_27_four_metric_home_summary.md`
 - Home sparkline/exposure v3.28 summary: `docs\00631l_v3_28_home_sparkline_exposure_summary.md`
 - First-screen segmentation v3.29 summary: `docs\00631l_v3_29_first_screen_segmentation_summary.md`
+- Home data readiness v3.30 summary: `docs\00631l_v3_30_home_data_readiness_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -138,6 +139,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Four-metric home release: `docs\00631l_v3_27_four_metric_home_summary.md`
 - Home sparkline/exposure release: `docs\00631l_v3_28_home_sparkline_exposure_summary.md`
 - First-screen segmentation release: `docs\00631l_v3_29_first_screen_segmentation_summary.md`
+- Home data readiness release: `docs\00631l_v3_30_home_data_readiness_summary.md`
 
 ## Scope Boundary
 

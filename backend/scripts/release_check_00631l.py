@@ -162,6 +162,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v3_27_four_metric_home_summary.md",
         "docs/00631l_v3_28_home_sparkline_exposure_summary.md",
         "docs/00631l_v3_29_first_screen_segmentation_summary.md",
+        "docs/00631l_v3_30_home_data_readiness_summary.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

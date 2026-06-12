@@ -1713,6 +1713,8 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 7),
+            _OverviewDataReadinessStrip(data: data),
+            const SizedBox(height: 7),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
@@ -1750,6 +1752,123 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewDataReadinessStrip extends StatelessWidget {
+  const _OverviewDataReadinessStrip({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final price = data.priceHistory.completenessSummary();
+    final nav = data.intradayNav;
+    final holdingsReady = data.snapshot.status != EtfDataStatus.error;
+    final historyReady = price.rowCount >= 2;
+    final backtestReady = data.operationsStatus.backtestAvailable ||
+        data.priceHistory.points.length >= 2;
+    final intradayReady = nav != null &&
+        nav.status != EtfDataStatus.error &&
+        nav.status != EtfDataStatus.mock &&
+        nav.dataTime != null;
+    final items = [
+      _ReadinessItem(
+        label: '歷史',
+        value: historyReady ? '${formatInteger(price.rowCount)} 筆' : '尚無',
+        ready: historyReady,
+      ),
+      _ReadinessItem(
+        label: '回測',
+        value: backtestReady ? '可用' : '缺歷史',
+        ready: backtestReady,
+      ),
+      _ReadinessItem(
+        label: '內容物',
+        value:
+            holdingsReady ? formatTaiwanDate(data.snapshot.tradeDate) : '缺資料',
+        ready: holdingsReady,
+      ),
+      _ReadinessItem(
+        label: '盤中',
+        value: intradayReady ? formatTimeSeconds(nav.dataTime!) : '暫無',
+        ready: intradayReady,
+      ),
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          Text(
+            '資料完整度',
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: _marketMutedText,
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          const SizedBox(width: 8),
+          for (var index = 0; index < items.length; index++) ...[
+            if (index > 0) const SizedBox(width: 6),
+            _ReadinessPill(item: items[index]),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ReadinessItem {
+  const _ReadinessItem({
+    required this.label,
+    required this.value,
+    required this.ready,
+  });
+
+  final String label;
+  final String value;
+  final bool ready;
+}
+
+class _ReadinessPill extends StatelessWidget {
+  const _ReadinessPill({required this.item});
+
+  final _ReadinessItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = item.ready ? _marketGreen : _marketRed;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.38)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              item.label,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: _marketMutedText,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              item.value,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: _marketText,
+                    fontWeight: FontWeight.w900,
+                  ),
             ),
           ],
         ),

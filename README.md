@@ -227,6 +227,12 @@ v3.29 first-screen segmentation:
 - The history/backtest tab uses an in-page switch so users see history first and open backtest inputs only when needed.
 - Summary: `docs\00631l_v3_29_first_screen_segmentation_summary.md`.
 
+v3.30 home data readiness:
+
+- The overview first screen now has a compact data readiness strip for history rows, backtest availability, official holdings date, and intraday NAV time.
+- The strip answers whether data is usable without sending users to settings or technical diagnostics.
+- Summary: `docs\00631l_v3_30_home_data_readiness_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

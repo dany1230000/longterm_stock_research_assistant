@@ -20,6 +20,9 @@ void main() {
     expect(find.text('預估淨值'), findsWidgets);
     expect(find.text('折溢價'), findsWidgets);
     expect(find.text('今日一眼看'), findsOneWidget);
+    expect(find.text('資料完整度'), findsOneWidget);
+    expect(find.text('回測'), findsWidgets);
+    expect(find.text('可用'), findsWidgets);
     expect(find.text('更多檢視'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('資料來源'), findsNothing);
@@ -62,6 +65,7 @@ void main() {
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(find.text('今日一眼看'), findsOneWidget);
+    expect(find.text('資料完整度'), findsOneWidget);
     expect(find.text('更多檢視'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('資料來源'), findsNothing);
