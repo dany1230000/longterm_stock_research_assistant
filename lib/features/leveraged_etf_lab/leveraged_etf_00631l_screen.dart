@@ -290,10 +290,8 @@ class _LabLoadingShell extends StatelessWidget {
                           _MarketTopBar(onRefresh: onRefresh),
                           const SizedBox(height: 8),
                           const _LoadingQuoteCard(),
-                          const SizedBox(height: 10),
-                          const _LoadingSectionCard(title: '今日一眼看'),
-                          const SizedBox(height: 10),
-                          const _LoadingSectionCard(title: '完整數字比較'),
+                          const SizedBox(height: 8),
+                          const _LoadingSectionCard(title: '今日狀態'),
                         ],
                       ),
                     ),
@@ -863,81 +861,6 @@ class _QuoteFactChip extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _OverviewPremiumNote extends StatelessWidget {
-  const _OverviewPremiumNote({required this.data});
-
-  final Etf00631LLabData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final nav = data.intradayNav;
-    final premiumAssessment = PremiumDiscountAssessment.evaluate(
-      premiumDiscountPct: nav?.estimatedPremiumDiscountPct,
-      sourceStatus: nav?.status ?? EtfDataStatus.error,
-      isStale: nav?.isStale ?? true,
-    );
-    final color =
-        _levelColor(Theme.of(context).colorScheme, premiumAssessment.level);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withValues(alpha: 0.32)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(_levelIcon(premiumAssessment.level), color: color, size: 17),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                '${_premiumDescription(premiumAssessment)} 非買賣建議。',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: _marketText,
-                      height: 1.35,
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _OverviewMiniStatusStrip extends StatelessWidget {
-  const _OverviewMiniStatusStrip({required this.data});
-
-  final Etf00631LLabData data;
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: [
-          for (final label in [
-            _frontendDataMode,
-            data.status.label,
-            'holdings ${data.snapshot.status.label}',
-            'history ${data.priceHistory.sourceStatusLabel}',
-            'backend ${data.operationsStatus.backendConnectionLabel}',
-          ]) ...[
-            _CompactTextBadge(label: label),
-            const SizedBox(width: 6),
-          ],
-        ],
       ),
     );
   }
@@ -1608,23 +1531,46 @@ class _OverviewSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _CompactQuoteHeader(data: data),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         _OverviewAtAGlancePanel(data: data),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
+        _CompactExpansionPanel(
+          title: '更多檢視',
+          subtitle: '內容物變化、完整數字與資料來源需要時再展開。',
+          child: _OverviewMorePanel(data: data, history: history),
+        ),
+      ],
+    );
+  }
+}
+
+class _OverviewMorePanel extends StatelessWidget {
+  const _OverviewMorePanel({
+    required this.data,
+    required this.history,
+  });
+
+  final Etf00631LLabData data;
+  final EtfHoldingsHistoryTrendSummary history;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
         _OverviewActionRow(data: data),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '完整數字比較',
           subtitle: 'NAV、規模、發行單位數與歷史績效；需要核對時再展開。',
           child: _OverviewComparisonPanel(data: data),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '資料來源',
           subtitle: '目前模式、官方每日資料、盤中 NAV 與歷史資料來源。',
           child: _OverviewModeCards(data: data),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '7 / 30 日內容物變化',
           subtitle: _historyChangeSubtitle(history),
@@ -1635,7 +1581,7 @@ class _OverviewSection extends StatelessWidget {
                 )
               : _HistoryChangeCards(summary: history),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '更多資料狀態',
           subtitle: '平常可略過；需要排除資料問題時再展開。',
@@ -1656,7 +1602,6 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
     final theme = Theme.of(context);
     final nav = data.intradayNav;
     final history = data.priceHistory.completenessSummary();
-    final performance = data.priceHistory.performance;
     final latestHoldings = data.holdingsHistory.trendSummary().latest;
     final exposureText = latestHoldings == null
         ? 'history 尚未累積'
@@ -1669,7 +1614,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
         border: Border.all(color: _marketBorder),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1691,25 +1636,23 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                 _CompactTextBadge(label: data.status.label),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(
               _overviewAiBrief(data),
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
-                height: 1.4,
+                height: 1.25,
                 color: _marketText,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(height: 10),
-            _OverviewMiniStatusStrip(data: data),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             LayoutBuilder(
               builder: (context, constraints) {
                 final isWide = constraints.maxWidth >= 680;
                 final itemWidth = isWide
-                    ? (constraints.maxWidth - 16) / 3
+                    ? (constraints.maxWidth - 24) / 4
                     : (constraints.maxWidth - 8) / 2;
                 return Wrap(
                   spacing: 8,
@@ -1731,7 +1674,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                     ),
                     _AtAGlanceMetric(
                       width: itemWidth,
-                      label: '主要曝險',
+                      label: '內容物重點',
                       value: exposureText,
                       caption: 'official holdings history',
                     ),
@@ -1744,14 +1687,6 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                     ),
                     _AtAGlanceMetric(
                       width: itemWidth,
-                      label: '歷史總報酬',
-                      value: formatSignedNullablePercent(
-                        performance.totalReturnPct,
-                      ),
-                      caption: '回測不代表未來表現',
-                    ),
-                    _AtAGlanceMetric(
-                      width: itemWidth,
                       label: '資料模式',
                       value: _frontendDataMode,
                       caption: data.operationsStatus.backendConnectionLabel,
@@ -1760,8 +1695,6 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 10),
-            _OverviewPremiumNote(data: data),
           ],
         ),
       ),

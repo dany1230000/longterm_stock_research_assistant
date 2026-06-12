@@ -20,11 +20,12 @@ void main() {
     expect(find.text('預估淨值'), findsWidgets);
     expect(find.text('折溢價'), findsWidgets);
     expect(find.text('今日一眼看'), findsOneWidget);
-    expect(find.text('完整數字比較'), findsOneWidget);
-    expect(find.text('資料來源'), findsOneWidget);
-    expect(find.text('更多資料狀態'), findsOneWidget);
-    expect(find.text('7 / 30 日內容物變化'), findsOneWidget);
-    expect(find.text('主要曝險'), findsOneWidget);
+    expect(find.text('更多檢視'), findsOneWidget);
+    expect(find.text('完整數字比較'), findsNothing);
+    expect(find.text('資料來源'), findsNothing);
+    expect(find.text('更多資料狀態'), findsNothing);
+    expect(find.text('7 / 30 日內容物變化'), findsNothing);
+    expect(find.text('內容物重點'), findsOneWidget);
     expect(find.text('歷史覆蓋'), findsOneWidget);
     expect(find.text('官方 NAV'), findsWidgets);
     expect(find.textContaining('mock_default'), findsWidgets);
@@ -59,8 +60,9 @@ void main() {
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(find.text('今日一眼看'), findsOneWidget);
-    expect(find.text('完整數字比較'), findsOneWidget);
-    expect(find.text('資料來源'), findsOneWidget);
+    expect(find.text('更多檢視'), findsOneWidget);
+    expect(find.text('完整數字比較'), findsNothing);
+    expect(find.text('資料來源'), findsNothing);
     expect(find.text('00631L ▼'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);
@@ -83,8 +85,8 @@ void main() {
     await tester.pump();
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
-    expect(find.text('今日一眼看'), findsOneWidget);
-    expect(find.text('完整數字比較'), findsOneWidget);
+    expect(find.text('今日狀態'), findsOneWidget);
+    expect(find.text('完整數字比較'), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     for (final section in const [
       'overview',
@@ -112,8 +114,9 @@ void main() {
     expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(find.text('今日一眼看'), findsOneWidget);
     expect(find.textContaining('先顯示首屏資料'), findsOneWidget);
-    expect(find.text('完整數字比較'), findsOneWidget);
-    expect(find.text('7 / 30 日內容物變化'), findsOneWidget);
+    expect(find.text('更多檢視'), findsOneWidget);
+    expect(find.text('完整數字比較'), findsNothing);
+    expect(find.text('7 / 30 日內容物變化'), findsNothing);
     _expectNoTradingActionText();
 
     await repository.complete();

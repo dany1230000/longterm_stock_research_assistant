@@ -26,6 +26,7 @@ This is the main entry point for 00631L lab documentation.
 - Compact home v3.21 summary: `docs\00631l_v3_21_compact_home_summary.md`
 - Fast startup v3.22 summary: `docs\00631l_v3_22_fast_startup_summary.md`
 - Live cold-start fallback v3.23 summary: `docs\00631l_v3_23_live_cold_start_fallback_summary.md`
+- Overview layout v3.24 summary: `docs\00631l_v3_24_overview_layout_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -126,6 +127,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Compact home release: `docs\00631l_v3_21_compact_home_summary.md`
 - Fast startup release: `docs\00631l_v3_22_fast_startup_summary.md`
 - Live cold-start fallback release: `docs\00631l_v3_23_live_cold_start_fallback_summary.md`
+- Overview layout release: `docs\00631l_v3_24_overview_layout_summary.md`
 
 ## Scope Boundary
 

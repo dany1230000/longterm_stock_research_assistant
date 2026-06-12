@@ -191,6 +191,12 @@ v3.23 live cold-start fallback:
 - Full live data continues loading in the normal path and can replace the fallback once available.
 - Summary: `docs\00631l_v3_23_live_cold_start_fallback_summary.md`.
 
+v3.24 overview layout:
+
+- The mobile overview first screen now keeps the quote, core status, and a few key metrics visible without filling the page with diagnostics.
+- Full numeric comparison, data sources, holdings changes, and technical checks are grouped under `更多檢視`.
+- Summary: `docs\00631l_v3_24_overview_layout_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
