@@ -1739,14 +1739,6 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                       caption:
                           '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
                     ),
-                    _AtAGlanceMetric(
-                      width: itemWidth,
-                      label: '資料模式',
-                      value: _frontendDataModeDisplay,
-                      caption: _statusDisplay(
-                        data.operationsStatus.backendConnectionLabel,
-                      ),
-                    ),
                   ],
                 );
               },

@@ -209,6 +209,12 @@ v3.26 user-facing status labels:
 - Raw source contracts remain available in deeper diagnostics instead of crowding the first screen.
 - Summary: `docs\00631l_v3_26_user_facing_status_labels_summary.md`.
 
+v3.27 four-metric home:
+
+- The overview "今日一眼看" panel is now a four-metric grid: official holdings date, intraday NAV, holdings exposure, and historical coverage.
+- Data mode remains in the top bar instead of taking another metric slot.
+- Summary: `docs\00631l_v3_27_four_metric_home_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

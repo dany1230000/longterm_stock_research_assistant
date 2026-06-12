@@ -29,6 +29,7 @@ This is the main entry point for 00631L lab documentation.
 - Overview layout v3.24 summary: `docs\00631l_v3_24_overview_layout_summary.md`
 - Compact quote board v3.25 summary: `docs\00631l_v3_25_compact_quote_board_summary.md`
 - User-facing status labels v3.26 summary: `docs\00631l_v3_26_user_facing_status_labels_summary.md`
+- Four-metric home v3.27 summary: `docs\00631l_v3_27_four_metric_home_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -132,6 +133,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Overview layout release: `docs\00631l_v3_24_overview_layout_summary.md`
 - Compact quote board release: `docs\00631l_v3_25_compact_quote_board_summary.md`
 - User-facing status labels release: `docs\00631l_v3_26_user_facing_status_labels_summary.md`
+- Four-metric home release: `docs\00631l_v3_27_four_metric_home_summary.md`
 
 ## Scope Boundary
 

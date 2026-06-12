@@ -159,6 +159,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v3_24_overview_layout_summary.md",
         "docs/00631l_v3_25_compact_quote_board_summary.md",
         "docs/00631l_v3_26_user_facing_status_labels_summary.md",
+        "docs/00631l_v3_27_four_metric_home_summary.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
