@@ -726,49 +726,14 @@ String get _frontendDataMode {
   return 'mock_default';
 }
 
-// ignore: unused_element
-String _frontendModeDetail(Etf00631LLabData data) {
+String get _frontendDataModeLabel {
   if (_use00631LLiveProxy) {
-    final status = data.operationsStatus;
-    final api = status.publicApiBaseUrl.isEmpty
-        ? _proxyBaseUrl00631l
-        : status.publicApiBaseUrl;
-    const fallback = _use00631LStaticData
-        ? '; static public history remains available when live API is disconnected'
-        : '';
-    return 'live_proxy API $api$fallback.';
+    return 'live proxy';
   }
   if (_use00631LStaticData) {
-    final status = data.operationsStatus;
-    return '公開靜態資料模式，rowCount ${status.priceHistoryRows}，coverage '
-        '${_dateOrDash(status.priceHistoryCoverageStart)} - '
-        '${_dateOrDash(status.priceHistoryCoverageEnd)}，generated '
-        '${_dateTimeOrDash(status.latestExportUpdatedAt ?? data.priceHistory.lastFetchedAt)}。';
+    return 'static public';
   }
-  if (_use00631LLiveProxy) {
-    final status = data.operationsStatus;
-    return 'live proxy 模式，API ${status.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : status.publicApiBaseUrl}。';
-  }
-  return 'mock_default 模式，畫面可測試但不會把 fallback 標示為 official。';
-}
-
-// ignore: unused_element
-String _frontendModeAction(Etf00631LLabData data) {
-  if (_use00631LLiveProxy) {
-    if (_use00631LStaticData && data.operationsStatus.backendDisconnected) {
-      return 'Check public backend /ready; static public history remains visible while live API is unavailable.';
-    }
-    return 'Check public backend /health, /ready, and operations/status.';
-  }
-  if (_use00631LStaticData) {
-    return data.operationsStatus.priceHistoryRows < 2
-        ? '請執行 scripts\\00631l_export_static_data.cmd --update 產生 static JSON。'
-        : '歷史與回測可讀；live intraday NAV 仍需要 backend。';
-  }
-  if (_use00631LLiveProxy) {
-    return '請確認 backend /health 與 operations/status。';
-  }
-  return '需要公開手機使用時，請使用 GitHub Pages static-public build。';
+  return 'mock default';
 }
 
 class _HeaderPill extends StatelessWidget {
@@ -1018,10 +983,7 @@ class _OverviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final snapshot = data.snapshot;
     final history = data.holdingsHistory.trendSummary();
-    final performance = data.priceHistory.performance;
-    final priceCompleteness = data.priceHistory.completenessSummary();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1031,57 +993,15 @@ class _OverviewSection extends StatelessWidget {
         _OverviewBriefPanel(data: data),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: '資料模式與更新',
-          subtitle: '總覽只保留最常看的更新狀態；完整診斷放在設定頁。',
+          title: '核心數字比較',
+          subtitle: '把 NAV、規模與歷史績效放在同一區，方便快速比對。',
+          child: _OverviewComparisonPanel(data: data),
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: '資料來源比較',
+          subtitle: '只列出常用資料來源；進階診斷收在設定頁。',
           child: _OverviewModeCards(data: data),
-        ),
-        const SizedBox(height: 12),
-        _SectionBlock(
-          title: '資料覆蓋狀態',
-          subtitle: '回答資料是否補齊：價格歷史、官方內容物、盤中 NAV 與 TX live 各自分開標示。',
-          child: _DataCoveragePanel(data: data),
-        ),
-        const SizedBox(height: 12),
-        _ResponsiveMetricGrid(
-          cards: [
-            _MetricCard(
-              label: '基金淨資產',
-              value: formatNtdAmount(snapshot.fundNetAssetValue),
-              caption: '官方每日資料',
-              icon: Icons.account_balance_outlined,
-            ),
-            _MetricCard(
-              label: '每單位淨值',
-              value: _price(snapshot.navPerUnit),
-              caption: '官方每日資料',
-              icon: Icons.paid_outlined,
-            ),
-            _MetricCard(
-              label: '發行單位數',
-              value: formatInteger(snapshot.outstandingUnits),
-              caption: '官方每日資料',
-              icon: Icons.confirmation_number_outlined,
-            ),
-            _MetricCard(
-              label: '價格總報酬',
-              value: formatSignedNullablePercent(
-                performance.totalReturnPct,
-              ),
-              caption: data.priceHistory.hasData
-                  ? '${_dateOrDash(data.priceHistory.coverageStart)} - ${_dateOrDash(data.priceHistory.coverageEnd)}'
-                  : '尚無 official price history',
-              icon: Icons.timeline_outlined,
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _SectionBlock(
-          title: '歷史資料完整度',
-          subtitle: '公開靜態資料與 live backend 共用這份 price history；沒有資料時不補假資料。',
-          child: _PriceCompletenessPanel(
-            priceHistory: data.priceHistory,
-            summary: priceCompleteness,
-          ),
         ),
         const SizedBox(height: 12),
         _SectionBlock(
@@ -1093,6 +1013,12 @@ class _OverviewSection extends StatelessWidget {
                   message: '請先執行 daily cycle 累積官方每日快照。',
                 )
               : _HistoryChangeCards(summary: history),
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: '更多資料狀態',
+          subtitle: '平常可略過；需要排除資料問題時再展開查看。',
+          child: _OverviewHiddenDetails(data: data),
         ),
       ],
     );
@@ -1149,8 +1075,8 @@ class _OverviewBriefPanel extends StatelessWidget {
             const SizedBox(height: 10),
             _StatusWrap(
               labels: [
-                'frontend $_frontendDataMode',
-                data.operationsStatus.backendConnectionLabel,
+                _frontendDataModeLabel,
+                '資料 ${data.status.label}',
                 'NAV ${_dateTimeOrDash(nav?.dataTime)}',
                 data.aiAnalysis.disclaimer,
               ],
@@ -1158,6 +1084,126 @@ class _OverviewBriefPanel extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _OverviewComparisonPanel extends StatelessWidget {
+  const _OverviewComparisonPanel({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final nav = data.intradayNav;
+    final snapshot = data.snapshot;
+    final performance = data.priceHistory.performance;
+    final price = data.priceHistory.completenessSummary();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 680;
+        final groupWidth =
+            compact ? constraints.maxWidth : (constraints.maxWidth - 8) / 2;
+        return Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            SizedBox(
+              width: groupWidth,
+              child: _ComparisonGroup(
+                title: '行情 / NAV',
+                rows: [
+                  _ComparisonRowData(
+                    label: '市價',
+                    value: _price(nav?.marketPrice),
+                    caption: nav == null ? '盤中資料不可用' : nav.status.label,
+                  ),
+                  _ComparisonRowData(
+                    label: '預估淨值',
+                    value: _price(nav?.estimatedNav),
+                    caption: '需 live backend',
+                  ),
+                  _ComparisonRowData(
+                    label: '官方 NAV',
+                    value: _price(snapshot.navPerUnit),
+                    caption: formatTaiwanDate(snapshot.tradeDate),
+                  ),
+                  _ComparisonRowData(
+                    label: '折溢價',
+                    value: formatSignedNullablePercent(
+                      nav?.estimatedPremiumDiscountPct,
+                    ),
+                    caption: '價格偏離提示',
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: groupWidth,
+              child: _ComparisonGroup(
+                title: '規模 / 歷史',
+                rows: [
+                  _ComparisonRowData(
+                    label: '基金淨資產',
+                    value: formatNtdAmount(snapshot.fundNetAssetValue),
+                    caption: '官方每日資料',
+                  ),
+                  _ComparisonRowData(
+                    label: '發行單位數',
+                    value: formatInteger(snapshot.outstandingUnits),
+                    caption: '官方每日資料',
+                  ),
+                  _ComparisonRowData(
+                    label: '價格總報酬',
+                    value: formatSignedNullablePercent(
+                      performance.totalReturnPct,
+                    ),
+                    caption: price.rowCount < 2
+                        ? '尚無 price history'
+                        : '${formatInteger(price.rowCount)} rows',
+                  ),
+                  _ComparisonRowData(
+                    label: '歷史區間',
+                    value:
+                        '${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}',
+                    caption:
+                        price.isCompleteFromListing ? '已補齊到上市日起' : '目前為部分區間',
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _OverviewHiddenDetails extends StatelessWidget {
+  const _OverviewHiddenDetails({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final priceCompleteness = data.priceHistory.completenessSummary();
+    return Column(
+      children: [
+        _CompactExpansionPanel(
+          title: '資料覆蓋細節',
+          subtitle: '價格歷史、內容物 history、盤中 NAV 與 TX live 狀態。',
+          child: _DataCoveragePanel(data: data),
+        ),
+        const SizedBox(height: 8),
+        _CompactExpansionPanel(
+          title: '歷史資料完整度',
+          subtitle: 'rows、coverage、52 週區間與欄位覆蓋。',
+          child: _PriceCompletenessPanel(
+            priceHistory: data.priceHistory,
+            summary: priceCompleteness,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1214,225 +1260,6 @@ class _OverviewModeCards extends StatelessWidget {
           progressValue: null,
         ),
       ],
-    );
-  }
-}
-
-// ignore: unused_element
-class _MarketFocusBoard extends StatelessWidget {
-  const _MarketFocusBoard({required this.data});
-
-  final Etf00631LLabData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final price = data.priceHistory.completenessSummary();
-    final nav = data.intradayNav;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanel,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorder),
-      ),
-      child: Column(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFF2A2A2A),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: const Row(
-              children: [
-                SizedBox(width: 58, child: Text('類型')),
-                Expanded(flex: 3, child: Text('資料名稱')),
-                Expanded(flex: 2, child: Text('狀態')),
-                Expanded(flex: 3, child: Text('重點')),
-              ],
-            ),
-          ),
-          _MarketFocusRow(
-            marker: 'DAY',
-            markerColor: _marketGreen,
-            name: '官方內容物',
-            code: formatTaiwanDate(data.snapshot.tradeDate),
-            status: data.snapshot.status.label,
-            primary: 'NAV ${_price(data.snapshot.navPerUnit)}',
-            secondary: '淨資產 ${_compactNumber(data.snapshot.fundNetAssetValue)}',
-          ),
-          _MarketFocusRow(
-            marker: 'LIVE',
-            markerColor: _marketRed,
-            name: '盤中 NAV',
-            code: nav?.dataTime == null
-                ? 'unavailable'
-                : formatTimeSeconds(nav!.dataTime!),
-            status: nav?.status.label ?? 'unavailable',
-            primary: '市價 ${_price(nav?.marketPrice)}',
-            secondary:
-                '折溢價 ${formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct)}',
-          ),
-          _MarketFocusRow(
-            marker: 'HIS',
-            markerColor: _marketBlue,
-            name: '歷史價格',
-            code: '${price.rowCount} rows',
-            status: data.priceHistory.sourceStatusLabel,
-            primary:
-                '${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}',
-            secondary:
-                '52週 ${_price(price.trailingLowClose)} - ${_price(price.trailingHighClose)}',
-          ),
-          _MarketFocusRow(
-            marker: 'AI',
-            markerColor: const Color(0xFFC084FC),
-            name: '資料摘要',
-            code: data.aiAnalysis.source,
-            status: data.aiAnalysis.readinessLabel,
-            primary: 'bullets ${data.aiAnalysis.bullets.length}',
-            secondary: data.aiAnalysis.disclaimer,
-          ),
-          _MarketFocusRow(
-            marker: 'SYS',
-            markerColor: const Color(0xFFFBBF24),
-            name: '日常維護',
-            code: data.operationsStatus.dailyCycleStatus,
-            status: data.operationsStatus.reportOverallStatus,
-            primary:
-                'export ${data.operationsStatus.exportAvailable ? 'ready' : 'missing'}',
-            secondary:
-                'backup ${data.operationsStatus.backupAvailable ? 'ready' : 'missing'}',
-            showDivider: false,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MarketFocusRow extends StatelessWidget {
-  const _MarketFocusRow({
-    required this.marker,
-    required this.markerColor,
-    required this.name,
-    required this.code,
-    required this.status,
-    required this.primary,
-    required this.secondary,
-    this.showDivider = true,
-  });
-
-  final String marker;
-  final Color markerColor;
-  final String name;
-  final String code;
-  final String status;
-  final String primary;
-  final String secondary;
-  final bool showDivider;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: showDivider
-            ? const Border(bottom: BorderSide(color: _marketBorder))
-            : null,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 58,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: markerColor.withValues(alpha: 0.16),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: markerColor.withValues(alpha: 0.48),
-                    ),
-                  ),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
-                    child: Text(
-                      marker,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: markerColor,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: _marketText,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  Text(
-                    code,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: _marketMutedText,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: _MiniStatusBadge(label: status),
-            ),
-            Expanded(
-              flex: 3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    primary,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.right,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: _marketText,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  Text(
-                    secondary,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.right,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: _marketMutedText,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -2469,85 +2296,89 @@ class _SettingsSection extends StatelessWidget {
         _SectionBlock(
           title: '進階診斷',
           subtitle: '只有資料不可讀或部署排除問題時需要看。',
-          child: _StatusList(
-            items: [
-              _StatusItem(
-                label: 'backend',
-                status: status.sourceStatusLabel,
-                detail: status.backendConnectionCaption,
-                action: status.backendDisconnected
-                    ? '請啟動 backend 或檢查公開 backend URL。'
-                    : 'backend reachable。',
-              ),
-              _StatusItem(
-                label: 'official holdings',
-                status: status.holdingsHistoryStatus,
-                detail:
-                    'history count ${status.holdingsHistoryItemCount}，latest ${_dateOrDash(status.latestHoldingTradeDate)}。',
-                action: status.holdingsHistoryItemCount == 0
-                    ? '請執行 scripts\\00631l_daily_cycle.cmd。'
-                    : '每日資料已累積。',
-              ),
-              _StatusItem(
-                label: 'intraday NAV',
-                status: status.intradayHistoryStatus,
-                detail:
-                    'samples ${status.intradaySampleCount}，latest ${status.latestIntradayDataTime == null ? 'unavailable' : formatTaiwanDateTimeSeconds(status.latestIntradayDataTime!)}。',
-                action: status.intradaySampleCount == 0
-                    ? '請確認 TWSE URL、backend 與交易時段。'
-                    : '盤中估算資料已保存。',
-              ),
-              _StatusItem(
-                label: 'historical price',
-                status: status.priceHistoryStatus,
-                detail:
-                    'rows ${status.priceHistoryRows}，coverage ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}，generated ${_dateTimeOrDash(status.latestExportUpdatedAt)}。',
-                action: status.priceHistoryRows < 2
-                    ? '請執行 scripts\\00631l_update_price_history.cmd；GitHub Pages 請執行 scripts\\00631l_export_static_data.cmd --update。'
-                    : '歷史價格可供回測。',
-              ),
-              _StatusItem(
-                label: 'backtest',
-                status: status.backtestStatus,
-                detail: status.backtestAvailable
-                    ? 'price history available'
-                    : 'price history insufficient',
-                action: status.backtestAvailable ? '可在回測區使用。' : '請先更新歷史價格。',
-              ),
-              _StatusItem(
-                label: 'position local data',
-                status: status.positionStatus,
-                detail: '持倉資料保存在瀏覽器本機。',
-                action: '可在持倉區保存、匯出或清除。',
-              ),
-              _StatusItem(
-                label: 'daily cycle',
-                status: status.dailyCycleStatus,
-                detail:
-                    'warnings ${status.dailyCycleWarningCount}，failures ${status.dailyCycleFailureCount}。',
-                action: status.dailyCycleStatus == 'PASS'
-                    ? '最近 daily cycle 可讀。'
-                    : '請執行 scripts\\00631l_daily_cycle.cmd。',
-              ),
-              _StatusItem(
-                label: 'report / export / backup',
-                status: '${status.reportOverallStatus} / '
-                    '${status.exportAvailable ? 'ready' : 'missing'} / '
-                    '${status.backupAvailable ? 'ready' : 'missing'}',
-                detail:
-                    'report ${status.latestReportPath ?? 'missing'}，export ${status.latestExportPath ?? 'missing'}，backup ${status.latestBackupPath ?? 'missing'}。',
-                action: '必要時執行 report、export、backup scripts。',
-              ),
-              _StatusItem(
-                label: 'public deployment config',
-                status: status.dataPersistenceLabel,
-                detail:
-                    'API ${status.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : status.publicApiBaseUrl}，origins ${status.allowedOrigins.isEmpty ? 'local/LAN' : status.allowedOrigins.join(', ')}。',
-                action: status.dataPathPersistent
-                    ? 'persistent storage ready。'
-                    : '公開部署需設定 persistent volume。',
-              ),
-            ],
+          child: _CompactExpansionPanel(
+            title: '展開技術診斷',
+            subtitle: 'backend、history、report、export、backup 與部署設定。',
+            child: _StatusList(
+              items: [
+                _StatusItem(
+                  label: 'backend',
+                  status: status.sourceStatusLabel,
+                  detail: status.backendConnectionCaption,
+                  action: status.backendDisconnected
+                      ? '請啟動 backend 或檢查公開 backend URL。'
+                      : 'backend reachable。',
+                ),
+                _StatusItem(
+                  label: 'official holdings',
+                  status: status.holdingsHistoryStatus,
+                  detail:
+                      'history count ${status.holdingsHistoryItemCount}，latest ${_dateOrDash(status.latestHoldingTradeDate)}。',
+                  action: status.holdingsHistoryItemCount == 0
+                      ? '請執行 scripts\\00631l_daily_cycle.cmd。'
+                      : '每日資料已累積。',
+                ),
+                _StatusItem(
+                  label: 'intraday NAV',
+                  status: status.intradayHistoryStatus,
+                  detail:
+                      'samples ${status.intradaySampleCount}，latest ${status.latestIntradayDataTime == null ? 'unavailable' : formatTaiwanDateTimeSeconds(status.latestIntradayDataTime!)}。',
+                  action: status.intradaySampleCount == 0
+                      ? '請確認 TWSE URL、backend 與交易時段。'
+                      : '盤中估算資料已保存。',
+                ),
+                _StatusItem(
+                  label: 'historical price',
+                  status: status.priceHistoryStatus,
+                  detail:
+                      'rows ${status.priceHistoryRows}，coverage ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}，generated ${_dateTimeOrDash(status.latestExportUpdatedAt)}。',
+                  action: status.priceHistoryRows < 2
+                      ? '請執行 scripts\\00631l_update_price_history.cmd；GitHub Pages 請執行 scripts\\00631l_export_static_data.cmd --update。'
+                      : '歷史價格可供回測。',
+                ),
+                _StatusItem(
+                  label: 'backtest',
+                  status: status.backtestStatus,
+                  detail: status.backtestAvailable
+                      ? 'price history available'
+                      : 'price history insufficient',
+                  action: status.backtestAvailable ? '可在回測區使用。' : '請先更新歷史價格。',
+                ),
+                _StatusItem(
+                  label: 'position local data',
+                  status: status.positionStatus,
+                  detail: '持倉資料保存在瀏覽器本機。',
+                  action: '可在持倉區保存、匯出或清除。',
+                ),
+                _StatusItem(
+                  label: 'daily cycle',
+                  status: status.dailyCycleStatus,
+                  detail:
+                      'warnings ${status.dailyCycleWarningCount}，failures ${status.dailyCycleFailureCount}。',
+                  action: status.dailyCycleStatus == 'PASS'
+                      ? '最近 daily cycle 可讀。'
+                      : '請執行 scripts\\00631l_daily_cycle.cmd。',
+                ),
+                _StatusItem(
+                  label: 'report / export / backup',
+                  status: '${status.reportOverallStatus} / '
+                      '${status.exportAvailable ? 'ready' : 'missing'} / '
+                      '${status.backupAvailable ? 'ready' : 'missing'}',
+                  detail:
+                      'report ${status.latestReportPath ?? 'missing'}，export ${status.latestExportPath ?? 'missing'}，backup ${status.latestBackupPath ?? 'missing'}。',
+                  action: '必要時執行 report、export、backup scripts。',
+                ),
+                _StatusItem(
+                  label: 'public deployment config',
+                  status: status.dataPersistenceLabel,
+                  detail:
+                      'API ${status.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : status.publicApiBaseUrl}，origins ${status.allowedOrigins.isEmpty ? 'local/LAN' : status.allowedOrigins.join(', ')}。',
+                  action: status.dataPathPersistent
+                      ? 'persistent storage ready。'
+                      : '公開部署需設定 persistent volume。',
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -3318,6 +3149,160 @@ class _StatusPill extends StatelessWidget {
             color: foreground,
             fontWeight: FontWeight.w700,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ComparisonRowData {
+  const _ComparisonRowData({
+    required this.label,
+    required this.value,
+    required this.caption,
+  });
+
+  final String label;
+  final String value;
+  final String caption;
+}
+
+class _ComparisonGroup extends StatelessWidget {
+  const _ComparisonGroup({
+    required this.title,
+    required this.rows,
+  });
+
+  final String title;
+  final List<_ComparisonRowData> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color:
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.28),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 8),
+            for (var index = 0; index < rows.length; index += 1) ...[
+              if (index > 0)
+                Divider(
+                  height: 13,
+                  color: theme.colorScheme.outlineVariant,
+                ),
+              _ComparisonRow(row: rows[index]),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ComparisonRow extends StatelessWidget {
+  const _ComparisonRow({required this.row});
+
+  final _ComparisonRowData row;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                row.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                row.caption,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 10),
+        Flexible(
+          child: Text(
+            row.value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CompactExpansionPanel extends StatelessWidget {
+  const _CompactExpansionPanel({
+    required this.title,
+    required this.subtitle,
+    required this.child,
+  });
+
+  final String title;
+  final String subtitle;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Theme(
+        data: theme.copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+          childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          title: Text(
+            title,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          subtitle: Text(
+            subtitle,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          children: [child],
         ),
       ),
     );

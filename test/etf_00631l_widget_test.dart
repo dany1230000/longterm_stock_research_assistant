@@ -14,17 +14,17 @@ void main() {
     await _pumpLab(tester, Mock00631LRepository());
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
-    expect(find.text('市價'), findsOneWidget);
-    expect(find.text('預估淨值'), findsOneWidget);
-    expect(find.text('折溢價'), findsOneWidget);
+    expect(find.text('市價'), findsWidgets);
+    expect(find.text('預估淨值'), findsWidgets);
+    expect(find.text('折溢價'), findsWidgets);
     expect(find.text('今日快覽'), findsOneWidget);
-    expect(find.text('資料模式與更新'), findsOneWidget);
+    expect(find.text('核心數字比較'), findsOneWidget);
+    expect(find.text('資料來源比較'), findsOneWidget);
     expect(find.text('官方內容物'), findsWidgets);
-    expect(find.text('資料覆蓋狀態'), findsOneWidget);
-    expect(find.text('價格歷史'), findsWidgets);
-    expect(find.text('內容物歷史'), findsOneWidget);
-    expect(find.text('盤中 NAV / 折溢價'), findsOneWidget);
-    expect(find.text('TX live'), findsWidgets);
+    expect(find.text('更多資料狀態'), findsOneWidget);
+    expect(find.text('歷史價格'), findsWidgets);
+    expect(find.text('7 / 30 日內容物變化'), findsOneWidget);
+    expect(find.text('盤中 NAV'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('內容物'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
@@ -61,7 +61,8 @@ void main() {
     expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(find.textContaining('mock_default'), findsWidgets);
     expect(find.text('今日快覽'), findsOneWidget);
-    expect(find.text('資料模式與更新'), findsOneWidget);
+    expect(find.text('核心數字比較'), findsOneWidget);
+    expect(find.text('資料來源比較'), findsOneWidget);
     expect(find.text('00631L ▼'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);
@@ -200,9 +201,7 @@ void main() {
     expect(find.text('盤中 NAV / 折溢價'), findsOneWidget);
     expect(find.text('TX live'), findsOneWidget);
     expect(find.text('進階診斷'), findsOneWidget);
-    expect(find.text('backend'), findsOneWidget);
-    expect(find.text('historical price'), findsOneWidget);
-    expect(find.text('position local data'), findsOneWidget);
+    expect(find.text('展開技術診斷'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -220,7 +219,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('設定'), findsWidgets);
     expect(find.text('進階診斷'), findsOneWidget);
-    expect(find.text('backend'), findsOneWidget);
+    expect(find.text('展開技術診斷'), findsOneWidget);
     expect(find.textContaining('mock'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });

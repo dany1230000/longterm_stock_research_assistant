@@ -149,6 +149,12 @@ v3.16 overview first screen:
 - Detailed coverage and diagnostics remain available below the fold and in settings.
 - Summary: `docs\00631l_v3_16_overview_first_screen_summary.md`.
 
+v3.17 information hierarchy:
+
+- The overview page now groups related numbers together for comparison and hides lower-priority diagnostics behind expandable panels.
+- Settings keeps account/privacy and data completeness visible, while technical backend/report/export/backup diagnostics are collapsed by default.
+- Summary: `docs\00631l_v3_17_information_hierarchy_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
