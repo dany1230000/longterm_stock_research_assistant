@@ -179,6 +179,12 @@ v3.21 compact home:
 - Holdings change details are collapsed by default, while latest exposure remains visible in a concise row.
 - Summary: `docs\00631l_v3_21_compact_home_summary.md`.
 
+v3.22 fast startup:
+
+- The app now loads first-screen essentials through a fast data path before full history, AI, and operations data finish loading.
+- If full details fail, the quote and overview remain visible with a clear fallback state instead of a blank page.
+- Summary: `docs\00631l_v3_22_fast_startup_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

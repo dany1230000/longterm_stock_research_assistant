@@ -102,6 +102,42 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('fast startup renders first screen while details load',
+      (tester) async {
+    final repository = _FastStartupRepository();
+
+    await _pumpLab(tester, repository, settle: false);
+    await tester.pump();
+
+    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.text('今日一眼看'), findsOneWidget);
+    expect(find.textContaining('先顯示首屏資料'), findsOneWidget);
+    expect(find.text('完整數字比較'), findsOneWidget);
+    expect(find.text('7 / 30 日內容物變化'), findsOneWidget);
+    _expectNoTradingActionText();
+
+    await repository.complete();
+    await tester.pumpAndSettle();
+    expect(find.textContaining('先顯示首屏資料'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('full data failure keeps fast first screen visible',
+      (tester) async {
+    await _pumpLab(
+      tester,
+      _FastStartupRepository(completeWithError: true),
+      settle: false,
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 20));
+
+    expect(find.text('今日一眼看'), findsOneWidget);
+    expect(find.textContaining('完整資料暫時不可用'), findsOneWidget);
+    expect(find.text('00631L 正二研究室'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('history section shows price history when available',
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());
@@ -268,8 +304,9 @@ void main() {
 
 Future<void> _pumpLab(
   WidgetTester tester,
-  Official00631LRepository repository,
-) async {
+  Official00631LRepository repository, {
+  bool settle = true,
+}) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
@@ -280,7 +317,11 @@ Future<void> _pumpLab(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  if (settle) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump();
+  }
 }
 
 Future<void> _tapSection(WidgetTester tester, String sectionName) async {
@@ -354,12 +395,42 @@ class _PendingLabRepository extends Mock00631LRepository {
   final Completer<Etf00631LLabData> _completer = Completer<Etf00631LLabData>();
 
   @override
+  Future<Etf00631LLabData> fetchFastLabData() {
+    return _completer.future;
+  }
+
+  @override
   Future<Etf00631LLabData> fetchLabData() {
     return _completer.future;
   }
 
   Future<void> complete() async {
     _completer.complete(await Mock00631LRepository().fetchLabData());
+  }
+}
+
+class _FastStartupRepository extends Mock00631LRepository {
+  _FastStartupRepository({this.completeWithError = false});
+
+  final bool completeWithError;
+  final Completer<Etf00631LLabData> _fullCompleter =
+      Completer<Etf00631LLabData>();
+
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() {
+    return Mock00631LRepository().fetchFastLabData();
+  }
+
+  @override
+  Future<Etf00631LLabData> fetchLabData() {
+    if (completeWithError) {
+      throw const RepositoryFetchException('full fixture failure');
+    }
+    return _fullCompleter.future;
+  }
+
+  Future<void> complete() async {
+    _fullCompleter.complete(await Mock00631LRepository().fetchLabData());
   }
 }
 

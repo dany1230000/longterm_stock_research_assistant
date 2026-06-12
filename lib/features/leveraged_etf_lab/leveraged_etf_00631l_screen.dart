@@ -40,7 +40,7 @@ class _LeveragedEtf00631LScreenState
     super.initState();
     _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       if (mounted) {
-        ref.invalidate(etf00631LLabProvider);
+        _refreshLabData();
       }
     });
   }
@@ -53,24 +53,43 @@ class _LeveragedEtf00631LScreenState
 
   @override
   Widget build(BuildContext context) {
-    final labValue = ref.watch(etf00631LLabProvider);
+    final fastValue = ref.watch(etf00631LFastLabProvider);
+    final fullValue = ref.watch(etf00631LLabProvider);
+    final displayData = fullValue.valueOrNull ?? fastValue.valueOrNull;
+    final detailsLoading = !fullValue.hasValue && fullValue.isLoading;
+    final detailsError = fullValue.hasError && !fullValue.hasValue
+        ? fullValue.error.toString()
+        : null;
     return SafeArea(
-      child: labValue.when(
-        loading: () => _LabLoadingShell(
-          onRefresh: () => ref.invalidate(etf00631LLabProvider),
-        ),
-        error: (error, _) => _ErrorState(
-          error: error,
-          onRefresh: () => ref.invalidate(etf00631LLabProvider),
-        ),
-        data: (data) => _LabContent(
-          data: data,
-          selectedSection: _section,
-          onSectionChanged: (section) => setState(() => _section = section),
-          onRefresh: () => ref.invalidate(etf00631LLabProvider),
-        ),
-      ),
+      child: displayData == null
+          ? _buildInitialState(fastValue, fullValue)
+          : _LabContent(
+              data: displayData,
+              selectedSection: _section,
+              detailsLoading: detailsLoading,
+              detailsError: detailsError,
+              onSectionChanged: (section) => setState(() => _section = section),
+              onRefresh: _refreshLabData,
+            ),
     );
+  }
+
+  Widget _buildInitialState(
+    AsyncValue<Etf00631LLabData> fastValue,
+    AsyncValue<Etf00631LLabData> fullValue,
+  ) {
+    if (fastValue.hasError && fullValue.hasError) {
+      return _ErrorState(
+        error: fastValue.error ?? fullValue.error ?? 'Unknown loading error',
+        onRefresh: _refreshLabData,
+      );
+    }
+    return _LabLoadingShell(onRefresh: _refreshLabData);
+  }
+
+  void _refreshLabData() {
+    ref.invalidate(etf00631LFastLabProvider);
+    ref.invalidate(etf00631LLabProvider);
   }
 }
 
@@ -91,12 +110,16 @@ class _LabContent extends StatelessWidget {
   const _LabContent({
     required this.data,
     required this.selectedSection,
+    required this.detailsLoading,
+    required this.detailsError,
     required this.onSectionChanged,
     required this.onRefresh,
   });
 
   final Etf00631LLabData data;
   final _LabSection selectedSection;
+  final bool detailsLoading;
+  final String? detailsError;
   final ValueChanged<_LabSection> onSectionChanged;
   final VoidCallback onRefresh;
 
@@ -133,6 +156,13 @@ class _LabContent extends StatelessWidget {
                                 onRefresh: onRefresh,
                               ),
                               const SizedBox(height: 8),
+                              if (detailsLoading || detailsError != null) ...[
+                                _DetailsLoadStateStrip(
+                                  isLoading: detailsLoading,
+                                  errorMessage: detailsError,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
                               _sectionWidget(data),
                             ],
                           ),
@@ -168,6 +198,68 @@ class _LabContent extends StatelessWidget {
       case _LabSection.settings:
         return _SettingsSection(data: data);
     }
+  }
+}
+
+class _DetailsLoadStateStrip extends StatelessWidget {
+  const _DetailsLoadStateStrip({
+    required this.isLoading,
+    required this.errorMessage,
+  });
+
+  final bool isLoading;
+  final String? errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final hasError = errorMessage != null;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: hasError
+            ? theme.colorScheme.errorContainer.withValues(alpha: 0.24)
+            : _marketPanel,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: hasError
+              ? theme.colorScheme.error.withValues(alpha: 0.32)
+              : _marketBorder,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          children: [
+            if (isLoading)
+              const SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            else
+              Icon(
+                Icons.info_outline,
+                size: 16,
+                color: hasError ? theme.colorScheme.error : _marketMutedText,
+              ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                hasError
+                    ? '完整資料暫時不可用，已保留首屏資料與 fallback。'
+                    : '先顯示首屏資料，正在載入歷史、AI 與維護狀態。',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: hasError ? theme.colorScheme.error : _marketMutedText,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

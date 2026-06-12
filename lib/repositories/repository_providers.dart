@@ -198,3 +198,7 @@ final official00631LRepositoryProvider =
 final etf00631LLabProvider = FutureProvider<Etf00631LLabData>((ref) {
   return ref.watch(official00631LRepositoryProvider).fetchLabData();
 });
+
+final etf00631LFastLabProvider = FutureProvider<Etf00631LLabData>((ref) {
+  return ref.watch(official00631LRepositoryProvider).fetchFastLabData();
+});
