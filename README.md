@@ -215,6 +215,12 @@ v3.27 four-metric home:
 - Data mode remains in the top bar instead of taking another metric slot.
 - Summary: `docs\00631l_v3_27_four_metric_home_summary.md`.
 
+v3.28 home sparkline and exposure:
+
+- The overview first screen now includes a compact 60-day close sparkline and official stock/futures/cash exposure bars.
+- The panel uses existing price history and official daily holdings data; it does not add a new data source.
+- Summary: `docs\00631l_v3_28_home_sparkline_exposure_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

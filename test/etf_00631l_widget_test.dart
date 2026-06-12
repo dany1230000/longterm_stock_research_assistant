@@ -27,6 +27,8 @@ void main() {
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
     expect(find.text('內容物重點'), findsOneWidget);
     expect(find.text('歷史覆蓋'), findsOneWidget);
+    expect(find.text('近 60 日收盤'), findsOneWidget);
+    expect(find.text('官方曝險'), findsOneWidget);
     expect(find.text('官方 NAV'), findsWidgets);
     expect(find.textContaining('Mock 預設'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
@@ -63,6 +65,8 @@ void main() {
     expect(find.text('更多檢視'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('資料來源'), findsNothing);
+    expect(find.text('近 60 日收盤'), findsOneWidget);
+    expect(find.text('官方曝險'), findsOneWidget);
     expect(find.text('00631L ▼'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);

@@ -1588,6 +1588,8 @@ class _OverviewSection extends StatelessWidget {
         const SizedBox(height: 8),
         _OverviewAtAGlancePanel(data: data),
         const SizedBox(height: 8),
+        _OverviewSignalPanel(data: data),
+        const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '更多檢視',
           subtitle: '內容物變化、完整數字與資料來源需要時再展開。',
@@ -1745,6 +1747,299 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _OverviewSignalPanel extends StatelessWidget {
+  const _OverviewSignalPanel({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final wide = constraints.maxWidth >= 680;
+            final priceBlock = _OverviewSparklineBlock(
+              points: data.priceHistory.points,
+            );
+            final exposureBlock = _OverviewExposureBlock(
+              snapshot: data.snapshot,
+            );
+            if (wide) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: priceBlock),
+                  const SizedBox(width: 10),
+                  Expanded(child: exposureBlock),
+                ],
+              );
+            }
+            return Column(
+              children: [
+                priceBlock,
+                const SizedBox(height: 10),
+                exposureBlock,
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewSparklineBlock extends StatelessWidget {
+  const _OverviewSparklineBlock({required this.points});
+
+  final List<EtfPriceHistoryPoint> points;
+
+  @override
+  Widget build(BuildContext context) {
+    final ordered = [...points]..sort((a, b) => a.date.compareTo(b.date));
+    final recent =
+        ordered.length > 60 ? ordered.sublist(ordered.length - 60) : ordered;
+    final latest = recent.isEmpty ? null : recent.last;
+    final first = recent.isEmpty ? null : recent.first;
+    final changePct = latest == null || first == null || first.close <= 0
+        ? null
+        : (latest.close / first.close - 1) * 100;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const _MiniStatusBadge(label: 'HIS'),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '近 60 日收盤',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ),
+            Text(
+              formatSignedNullablePercent(changePct),
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: (changePct ?? 0) >= 0 ? _marketRed : _marketGreen,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Text(
+              _price(latest?.close),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: _marketText,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                latest == null ? '歷史資料暫無' : formatTaiwanDate(latest.date),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _marketMutedText,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        _SparklineChart(points: recent),
+      ],
+    );
+  }
+}
+
+class _SparklineChart extends StatelessWidget {
+  const _SparklineChart({required this.points});
+
+  final List<EtfPriceHistoryPoint> points;
+
+  @override
+  Widget build(BuildContext context) {
+    final spots = <FlSpot>[];
+    for (var index = 0; index < points.length; index += 1) {
+      final close = points[index].close;
+      if (close.isFinite) {
+        spots.add(FlSpot(index.toDouble(), close));
+      }
+    }
+    if (spots.length < 2) {
+      return SizedBox(
+        height: 72,
+        child: Center(
+          child: Text(
+            '尚無圖表資料',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: _marketMutedText,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 72,
+      child: LineChart(
+        LineChartData(
+          borderData: FlBorderData(show: false),
+          gridData: const FlGridData(show: false),
+          titlesData: const FlTitlesData(show: false),
+          lineTouchData: const LineTouchData(enabled: false),
+          lineBarsData: [
+            LineChartBarData(
+              spots: spots,
+              barWidth: 2.2,
+              isCurved: true,
+              color: _marketBlue,
+              dotData: const FlDotData(show: false),
+              belowBarData: BarAreaData(
+                show: true,
+                color: _marketBlue.withValues(alpha: 0.10),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewExposureBlock extends StatelessWidget {
+  const _OverviewExposureBlock({required this.snapshot});
+
+  final EtfDailyHoldingSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const _MiniStatusBadge(label: 'DAY'),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '官方曝險',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ),
+            Text(
+              formatTaiwanDate(snapshot.tradeDate),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: _marketMutedText,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        _OverviewExposureLine(
+          label: '股票',
+          valuePct: snapshot.assetWeightPct(EtfAssetClass.stock),
+          color: _marketGreen,
+        ),
+        _OverviewExposureLine(
+          label: '期貨',
+          valuePct: snapshot.assetWeightPct(EtfAssetClass.futures),
+          color: _marketRed,
+        ),
+        _OverviewExposureLine(
+          label: '現金 / 保證金',
+          valuePct: snapshot.cashAndMarginWeightPct,
+          color: _marketBlue,
+        ),
+      ],
+    );
+  }
+}
+
+class _OverviewExposureLine extends StatelessWidget {
+  const _OverviewExposureLine({
+    required this.label,
+    required this.valuePct,
+    required this.color,
+  });
+
+  final String label;
+  final double valuePct;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 72,
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: _marketMutedText,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+          ),
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: LinearProgressIndicator(
+                value: (valuePct.abs() / 220).clamp(0, 1).toDouble(),
+                minHeight: 7,
+                backgroundColor: _marketPanelAlt,
+                color: color,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 66,
+            child: Text(
+              formatNullablePercent(valuePct),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: _marketText,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ),
+        ],
       ),
     );
   }
