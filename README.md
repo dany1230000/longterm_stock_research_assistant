@@ -137,6 +137,12 @@ v3.14 holdings coverage:
 - Backend operations/status includes data integrity status so the UI can explain history gaps without acting like old official holdings were reconstructed.
 - Summary: `docs\00631l_v3_14_holdings_coverage_summary.md`.
 
+v3.15 holdings mobile cards:
+
+- The holdings tab now starts with asset mix cards and key holdings cards before the full detail tables.
+- Full stock/futures/cash details remain available, but the mobile-first view is easier to scan.
+- Summary: `docs\00631l_v3_15_holdings_mobile_cards_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

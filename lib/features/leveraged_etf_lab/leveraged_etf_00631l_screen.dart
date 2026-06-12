@@ -1452,7 +1452,10 @@ class _HoldingsSection extends StatelessWidget {
           subtitle:
               'tradeDate ${formatTaiwanDate(snapshot.tradeDate)}，每日揭露資料，不代表盤中即時變動。',
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _HoldingsCompositionCards(snapshot: snapshot),
+              const SizedBox(height: 12),
               _ExposureBars(snapshot: snapshot),
               const SizedBox(height: 12),
               _HorizontalTable(
@@ -1505,8 +1508,14 @@ class _HoldingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: '股票明細',
-          subtitle: '官方每日資料。',
+          title: '主要內容物',
+          subtitle: '先看主要股票、期貨與現金項目；下方保留完整明細。',
+          child: _KeyHoldingsCards(snapshot: snapshot),
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: '完整股票明細',
+          subtitle: '官方每日資料，手機版以卡片顯示。',
           child: _HorizontalTable(
             columns: const ['代碼', '名稱', '數量', '權重'],
             rows: [
@@ -1522,7 +1531,7 @@ class _HoldingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: '期貨明細',
+          title: '完整期貨明細',
           subtitle: 'TX live 尚未接入，這裡是官方每日內容物快照。',
           child: _HorizontalTable(
             columns: const ['代碼', '名稱', '數量', '權重', '年月'],
@@ -1540,8 +1549,8 @@ class _HoldingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: '現金 / 保證金明細',
-          subtitle: '官方每日資料。',
+          title: '完整現金 / 保證金明細',
+          subtitle: '官方每日資料，包含現金、保證金與其他應收應付。',
           child: _HorizontalTable(
             columns: const ['項目', '金額', '占基金淨資產'],
             rows: [
@@ -2499,6 +2508,264 @@ class _ExposureBars extends StatelessWidget {
       ],
     );
   }
+}
+
+class _HoldingsCompositionCards extends StatelessWidget {
+  const _HoldingsCompositionCards({required this.snapshot});
+
+  final EtfDailyHoldingSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      _CompositionItem(
+        badge: 'STK',
+        label: '股票資產',
+        amount: snapshot.assetSummary.stock,
+        weightPct: snapshot.assetWeightPct(EtfAssetClass.stock),
+        caption: '現股部位',
+      ),
+      _CompositionItem(
+        badge: 'FUT',
+        label: '期貨資產',
+        amount: snapshot.assetSummary.futures,
+        weightPct: snapshot.assetWeightPct(EtfAssetClass.futures),
+        caption: '官方內容物期貨曝險',
+      ),
+      _CompositionItem(
+        badge: 'CASH',
+        label: '現金與保證金',
+        amount: snapshot.cashAndMarginValue,
+        weightPct: snapshot.cashAndMarginWeightPct,
+        caption: '現金、保證金、附買回債券',
+      ),
+      _CompositionItem(
+        badge: 'OTHER',
+        label: '其他應收應付',
+        amount: snapshot.otherReceivablesPayablesValue,
+        weightPct: snapshot.otherReceivablesPayablesWeightPct,
+        caption: '應收、應付與利息項目',
+      ),
+    ];
+    return _InfoCardGrid(
+      children: [
+        for (final item in items)
+          _HoldingInfoCard(
+            badge: item.badge,
+            title: item.label,
+            primary: formatNullablePercent(item.weightPct),
+            secondary: formatNtdAmount(item.amount),
+            caption: item.caption,
+            progressValue: (item.weightPct.abs() / 220).clamp(0, 1).toDouble(),
+          ),
+      ],
+    );
+  }
+}
+
+class _KeyHoldingsCards extends StatelessWidget {
+  const _KeyHoldingsCards({required this.snapshot});
+
+  final EtfDailyHoldingSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final txLine = _primaryFuturesLine(snapshot);
+    final tsmcLine = _stockHoldingByCode(snapshot, '2330');
+    final topStock = tsmcLine ??
+        (snapshot.stockHoldings.isEmpty ? null : snapshot.stockHoldings.first);
+    final sortedCash = [...snapshot.cashHoldings]
+      ..sort((a, b) => b.amount.abs().compareTo(a.amount.abs()));
+    final topCashLine = sortedCash.isEmpty ? null : sortedCash.first;
+
+    return _InfoCardGrid(
+      children: [
+        _HoldingInfoCard(
+          badge: 'FUT',
+          title: txLine?.name ?? 'TX 期貨',
+          primary: txLine == null
+              ? 'unavailable'
+              : formatNullablePercent(txLine.weightPct),
+          secondary: txLine == null
+              ? '官方快照沒有期貨行'
+              : '${txLine.code} / ${txLine.contractMonth}',
+          caption: '官方每日內容物；不是 TX live quote',
+          progressValue: txLine == null
+              ? null
+              : (txLine.weightPct.abs() / 220).clamp(0, 1).toDouble(),
+        ),
+        _HoldingInfoCard(
+          badge: 'STK',
+          title: topStock?.name ?? '主要股票',
+          primary: topStock == null
+              ? 'unavailable'
+              : formatNullablePercent(topStock.weightPct),
+          secondary: topStock == null
+              ? '官方快照沒有股票行'
+              : '${topStock.code} / ${formatInteger(topStock.quantity)}',
+          caption: tsmcLine == null ? '官方每日股票明細' : '台積電現股權重',
+          progressValue: topStock == null
+              ? null
+              : (topStock.weightPct.abs() / 100).clamp(0, 1).toDouble(),
+        ),
+        _HoldingInfoCard(
+          badge: 'CASH',
+          title: topCashLine?.item ?? '現金項目',
+          primary: topCashLine == null
+              ? 'unavailable'
+              : formatNullablePercent(
+                  topCashLine.weightPct(snapshot.fundNetAssetValue),
+                ),
+          secondary: topCashLine == null
+              ? '官方快照沒有現金行'
+              : formatNtdAmount(topCashLine.amount),
+          caption: '官方每日現金 / 保證金明細',
+          progressValue: topCashLine == null
+              ? null
+              : (topCashLine.weightPct(snapshot.fundNetAssetValue).abs() / 100)
+                  .clamp(0, 1)
+                  .toDouble(),
+        ),
+      ],
+    );
+  }
+}
+
+class _InfoCardGrid extends StatelessWidget {
+  const _InfoCardGrid({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columnCount = constraints.maxWidth >= 720 ? 3 : 1;
+        final width = columnCount == 1
+            ? constraints.maxWidth
+            : (constraints.maxWidth - (columnCount - 1) * 8) / columnCount;
+        return Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final child in children)
+              SizedBox(
+                width: width,
+                child: child,
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _HoldingInfoCard extends StatelessWidget {
+  const _HoldingInfoCard({
+    required this.badge,
+    required this.title,
+    required this.primary,
+    required this.secondary,
+    required this.caption,
+    this.progressValue,
+  });
+
+  final String badge;
+  final String title;
+  final String primary;
+  final String secondary;
+  final String caption;
+  final double? progressValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color:
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.34),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                _MiniStatusBadge(label: badge),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              primary,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              secondary,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if (progressValue != null) ...[
+              const SizedBox(height: 10),
+              LinearProgressIndicator(
+                value: progressValue,
+                minHeight: 6,
+              ),
+            ],
+            const SizedBox(height: 8),
+            Text(
+              caption,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                height: 1.35,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CompositionItem {
+  const _CompositionItem({
+    required this.badge,
+    required this.label,
+    required this.amount,
+    required this.weightPct,
+    required this.caption,
+  });
+
+  final String badge;
+  final String label;
+  final double amount;
+  final double weightPct;
+  final String caption;
 }
 
 class _DataCoveragePanel extends StatelessWidget {

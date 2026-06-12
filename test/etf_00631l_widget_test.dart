@@ -155,6 +155,13 @@ void main() {
     expect(find.text('完整性檢查'), findsOneWidget);
     expect(find.textContaining('缺日尚未檢查'), findsWidgets);
     expect(find.text('官方每日內容物'), findsOneWidget);
+    expect(find.text('主要內容物'), findsOneWidget);
+    expect(find.text('完整股票明細'), findsOneWidget);
+    expect(find.text('完整期貨明細'), findsOneWidget);
+    expect(find.text('完整現金 / 保證金明細'), findsOneWidget);
+    expect(find.text('STK'), findsWidgets);
+    expect(find.text('FUT'), findsWidgets);
+    expect(find.text('CASH'), findsWidgets);
     expect(find.text('股票資產'), findsWidgets);
     expect(find.text('期貨資產'), findsWidgets);
     expect(find.byType(DataTable), findsNothing);
