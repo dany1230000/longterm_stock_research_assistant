@@ -224,6 +224,8 @@ class Proxy00631LRepository extends Official00631LRepository {
     final backup = _map(payload['backup']);
     final report = _map(payload['report']);
     final dailyCycle = _map(payload['dailyCycle']);
+    final integrity = _map(payload['integrity']);
+    final integrityHoldings = _map(integrity['holdings']);
     final priceHistory = _map(payload['priceHistory']);
     final backtest = _map(payload['backtest']);
     final position = _map(payload['position']);
@@ -334,6 +336,19 @@ class Proxy00631LRepository extends Official00631LRepository {
       dailyCycleFinishedAt: _wallClockDateTime(dailyCycle['finishedAt']),
       dailyCycleWarningCount: _int(dailyCycle['warningCount']),
       dailyCycleFailureCount: _int(dailyCycle['failureCount']),
+      integrityStatus: _string(
+        integrity['overallStatus'],
+        fallback: 'missing',
+      ),
+      integrityWarningCount: _int(integrity['warningCount']),
+      integrityFailureCount: _int(integrity['failureCount']),
+      holdingsIntegrityRecordCount: _int(integrityHoldings['recordCount']),
+      holdingsMissingWeekdayCount:
+          _stringList(integrityHoldings['missingWeekdays']).length,
+      holdingsMissingWeekdays: [
+        for (final value in _stringList(integrityHoldings['missingWeekdays']))
+          if (_nullableDate(value) != null) _nullableDate(value)!,
+      ],
       errorMessage: payload['errorMessage']?.toString(),
     );
   }

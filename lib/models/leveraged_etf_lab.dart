@@ -1150,6 +1150,12 @@ class EtfOperationsStatus {
     this.dailyCycleFinishedAt,
     this.dailyCycleWarningCount = 0,
     this.dailyCycleFailureCount = 0,
+    this.integrityStatus = 'missing',
+    this.integrityWarningCount = 0,
+    this.integrityFailureCount = 0,
+    this.holdingsIntegrityRecordCount = 0,
+    this.holdingsMissingWeekdayCount = 0,
+    this.holdingsMissingWeekdays = const [],
     this.errorMessage,
   });
 
@@ -1219,6 +1225,12 @@ class EtfOperationsStatus {
       dailyCycleFinishedAt: null,
       dailyCycleWarningCount: 0,
       dailyCycleFailureCount: 0,
+      integrityStatus: 'missing',
+      integrityWarningCount: 0,
+      integrityFailureCount: 0,
+      holdingsIntegrityRecordCount: 0,
+      holdingsMissingWeekdayCount: 0,
+      holdingsMissingWeekdays: const [],
       errorMessage: errorMessage,
     );
   }
@@ -1280,6 +1292,12 @@ class EtfOperationsStatus {
   final DateTime? dailyCycleFinishedAt;
   final int dailyCycleWarningCount;
   final int dailyCycleFailureCount;
+  final String integrityStatus;
+  final int integrityWarningCount;
+  final int integrityFailureCount;
+  final int holdingsIntegrityRecordCount;
+  final int holdingsMissingWeekdayCount;
+  final List<DateTime> holdingsMissingWeekdays;
   final String? errorMessage;
 
   bool get hasAnyHistory =>

@@ -147,6 +147,11 @@ void main() {
     expect(status.reportWarningCount, 2);
     expect(status.dailyCycleStatus, 'PASS');
     expect(status.dailyCycleWarningCount, 1);
+    expect(status.integrityStatus, 'WARN');
+    expect(status.integrityWarningCount, 2);
+    expect(status.holdingsIntegrityRecordCount, 3);
+    expect(status.holdingsMissingWeekdayCount, 2);
+    expect(status.holdingsMissingWeekdays.first, DateTime(2026, 6, 9));
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
     expect(status.publicApiBaseUrl, 'https://api.example.com');
     expect(status.allowedOrigins, ['https://00631l.example.com']);
@@ -618,6 +623,34 @@ Map<String, Object?> _operationsStatusPayload() {
       'failureCount': 0,
       'errorMessage': null,
     },
+    'integrity': {
+      'sourceStatus': 'cached',
+      'sourceContract': '00631l_data_integrity',
+      'checkedAt': '2026-06-08T13:38:00+08:00',
+      'overallStatus': 'WARN',
+      'warningCount': 2,
+      'failureCount': 0,
+      'warnings': [
+        'holdings has weekday gap 2026-06-09',
+        'holdings has weekday gap 2026-06-10',
+      ],
+      'failures': [],
+      'holdings': {
+        'recordCount': 3,
+        'latestTradeDate': '2026-06-11',
+        'duplicateTradeDates': [],
+        'missingRequiredFields': [],
+        'missingWeekdays': ['2026-06-09', '2026-06-10'],
+        'abnormalSourceRecords': [],
+      },
+      'intraday': {
+        'recordCount': 12,
+        'latestDataTime': '2026-06-08T13:31:00+08:00',
+        'duplicateKeys': [],
+        'missingRequiredFields': [],
+        'abnormalSourceRecords': [],
+      },
+    },
     'statusSummary': {
       'operations': 'cached',
       'holdingsHistory': 'cached',
@@ -626,6 +659,7 @@ Map<String, Object?> _operationsStatusPayload() {
       'backup': 'cached',
       'report': 'cached',
       'dailyCycle': 'cached',
+      'integrity': 'cached',
       'env': 'cached',
     },
     'collector': {

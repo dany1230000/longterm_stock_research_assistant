@@ -1442,6 +1442,12 @@ class _HoldingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _SectionBlock(
+          title: '內容物歷史覆蓋',
+          subtitle: '官方 ratio 是每日快照；本機 history 從 daily cycle 開始保存，不補假過去資料。',
+          child: _HoldingsCoveragePanel(data: data),
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
           title: '官方每日內容物',
           subtitle:
               'tradeDate ${formatTaiwanDate(snapshot.tradeDate)}，每日揭露資料，不代表盤中即時變動。',
@@ -2520,6 +2526,33 @@ class _DataCoveragePanel extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _StatusList(items: _dataCoverageItems(data)),
+      ],
+    );
+  }
+}
+
+class _HoldingsCoveragePanel extends StatelessWidget {
+  const _HoldingsCoveragePanel({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = data.operationsStatus;
+    final count = _holdingsHistoryCount(data);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _StatusWrap(
+          labels: [
+            'history count $count',
+            'latest ${_dateOrDash(_latestHoldingsDate(data))}',
+            'integrity ${status.integrityStatus}',
+            _holdingsGapText(data),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _StatusList(items: _holdingsCoverageItems(data)),
       ],
     );
   }
@@ -3859,13 +3892,11 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
     ),
     _StatusItem(
       label: '內容物歷史',
-      status: holdingsCount > 0
-          ? data.holdingsHistory.sourceStatusLabel
-          : 'not accumulated',
+      status: _holdingsCoverageStatus(data),
       detail:
-          'latest ${_dateOrDash(latestHoldingDate)}，history count $holdingsCount；官方 ratio 是每日快照，不是盤中即時內容物。',
+          'latest ${_dateOrDash(latestHoldingDate)}，history count $holdingsCount；${_holdingsGapText(data)}；官方 ratio 是每日快照。',
       action: holdingsCount > 0
-          ? '已從本機 daily cycle 開始累積；不補假過去內容物。'
+          ? _holdingsIntegrityAction(data)
           : '請執行 scripts\\00631l_daily_cycle.cmd 累積官方每日快照。',
     ),
     _StatusItem(
@@ -3888,6 +3919,39 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
   ];
 }
 
+List<_StatusItem> _holdingsCoverageItems(Etf00631LLabData data) {
+  final status = data.operationsStatus;
+  final snapshot = data.snapshot;
+  final count = _holdingsHistoryCount(data);
+  return [
+    _StatusItem(
+      label: '當日官方快照',
+      status: snapshot.status.label,
+      detail:
+          'tradeDate ${formatTaiwanDate(snapshot.tradeDate)}；這是 Yuanta official ratio 每日資料。',
+      action: snapshot.isStale(data.lastFetchedAt)
+          ? '請執行 daily cycle 並確認官方 ratio 來源。'
+          : '請以官方內容物日期為準。',
+    ),
+    _StatusItem(
+      label: 'history 累積',
+      status: _holdingsCoverageStatus(data),
+      detail:
+          'history count $count，latest ${_dateOrDash(_latestHoldingsDate(data))}；不是發行以來完整 holdings。',
+      action: count == 0
+          ? '請執行 scripts\\00631l_daily_cycle.cmd。'
+          : '後續每日執行 daily cycle 會繼續補新的官方快照。',
+    ),
+    _StatusItem(
+      label: '完整性檢查',
+      status: status.integrityStatus,
+      detail:
+          'warnings ${status.integrityWarningCount}，failures ${status.integrityFailureCount}，${_holdingsGapText(data)}。',
+      action: _holdingsIntegrityAction(data),
+    ),
+  ];
+}
+
 String _priceCoverageStatus(Etf00631LLabData data) {
   final price = data.priceHistory.completenessSummary();
   if (price.rowCount < 2) {
@@ -3897,6 +3961,58 @@ String _priceCoverageStatus(Etf00631LLabData data) {
     return '${data.priceHistory.sourceStatusLabel} complete';
   }
   return '${data.priceHistory.sourceStatusLabel} partial';
+}
+
+String _holdingsCoverageStatus(Etf00631LLabData data) {
+  final count = _holdingsHistoryCount(data);
+  final status = data.operationsStatus;
+  if (count == 0) {
+    return 'not accumulated';
+  }
+  if (status.integrityFailureCount > 0) {
+    return 'integrity fail';
+  }
+  if (status.holdingsMissingWeekdayCount > 0) {
+    return '${data.holdingsHistory.sourceStatusLabel} gap';
+  }
+  if (status.integrityStatus == 'missing') {
+    return '${data.holdingsHistory.sourceStatusLabel} unchecked';
+  }
+  return '${data.holdingsHistory.sourceStatusLabel} accumulated';
+}
+
+String _holdingsGapText(Etf00631LLabData data) {
+  final status = data.operationsStatus;
+  final count = status.holdingsMissingWeekdayCount;
+  if (count <= 0) {
+    return status.integrityStatus == 'missing' ? '缺日尚未檢查' : '未回報缺日';
+  }
+  return '缺日 $count 天：${_dateListPreview(status.holdingsMissingWeekdays)}';
+}
+
+String _holdingsIntegrityAction(Etf00631LLabData data) {
+  final status = data.operationsStatus;
+  if (status.integrityFailureCount > 0) {
+    return '請執行 scripts\\00631l_check_integrity.cmd 並修正資料檔。';
+  }
+  if (status.holdingsMissingWeekdayCount > 0) {
+    return '請檢查缺日是否為尚未執行 daily cycle；可重新執行 daily cycle 後再檢查。';
+  }
+  if (status.integrityStatus == 'missing') {
+    return '請執行 scripts\\00631l_check_integrity.cmd 產生完整性狀態。';
+  }
+  return '已從本機 daily cycle 開始累積；不補假過去內容物。';
+}
+
+String _dateListPreview(List<DateTime> dates, {int limit = 3}) {
+  if (dates.isEmpty) {
+    return 'none';
+  }
+  final preview = dates.take(limit).map(formatTaiwanDate).join(', ');
+  if (dates.length <= limit) {
+    return preview;
+  }
+  return '$preview ...';
 }
 
 int _holdingsHistoryCount(Etf00631LLabData data) {

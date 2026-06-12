@@ -150,6 +150,10 @@ void main() {
 
     expect(find.text('內容物快覽'), findsOneWidget);
     expect(find.textContaining('官方每日資料，不是盤中即時內容物'), findsOneWidget);
+    expect(find.text('內容物歷史覆蓋'), findsOneWidget);
+    expect(find.text('history 累積'), findsOneWidget);
+    expect(find.text('完整性檢查'), findsOneWidget);
+    expect(find.textContaining('缺日尚未檢查'), findsWidgets);
     expect(find.text('官方每日內容物'), findsOneWidget);
     expect(find.text('股票資產'), findsWidgets);
     expect(find.text('期貨資產'), findsWidgets);

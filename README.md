@@ -131,6 +131,12 @@ v3.13 data coverage status:
 - Settings uses the same data coverage rows, so static-public, live backend, and mock/fallback boundaries stay consistent.
 - Summary: `docs\00631l_v3_13_data_coverage_summary.md`.
 
+v3.14 holdings coverage:
+
+- The holdings tab now shows local holdings history coverage, integrity status, and missing weekday previews.
+- Backend operations/status includes data integrity status so the UI can explain history gaps without acting like old official holdings were reconstructed.
+- Summary: `docs\00631l_v3_14_holdings_coverage_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

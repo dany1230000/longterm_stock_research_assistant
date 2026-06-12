@@ -9,6 +9,7 @@ from typing import Any, Callable
 from .analysis import AnalysisProvider, RuleBasedAnalysisProvider
 from .cache import TimedMemoryCache
 from .config import Settings, settings
+from .data_integrity import integrity_status
 from .fetcher import FetchError, fetch_text
 from .backtest import default_backtest_payload, run_backtest
 from .daily_report import report_status
@@ -425,6 +426,7 @@ class Etf00631LService:
         backup_status = self._backup_status()
         report = report_status(self._config.report_dir)
         daily_cycle_status = self._daily_cycle_status()
+        integrity = integrity_status(self._config.integrity_status_path)
         env_status = self._env_status()
         data_directory_health = self._data_directory_health(
             backup_status=backup_status,
@@ -543,6 +545,7 @@ class Etf00631LService:
             "backup": backup_status,
             "report": report,
             "dailyCycle": daily_cycle_status,
+            "integrity": integrity,
             "backendHealth": self.health_status(server_time=now),
             "statusSummary": {
                 "operations": source_status,
@@ -553,6 +556,7 @@ class Etf00631LService:
                 "backup": backup_status["sourceStatus"],
                 "report": report["sourceStatus"],
                 "dailyCycle": daily_cycle_status["sourceStatus"],
+                "integrity": integrity.get("sourceStatus"),
                 "env": env_status["sourceStatus"],
             },
             "collector": {

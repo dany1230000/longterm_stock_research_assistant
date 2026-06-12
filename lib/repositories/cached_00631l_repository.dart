@@ -336,6 +336,12 @@ EtfOperationsStatus _cachedOperationsStatus(EtfOperationsStatus status) {
     dailyCycleFinishedAt: status.dailyCycleFinishedAt,
     dailyCycleWarningCount: status.dailyCycleWarningCount,
     dailyCycleFailureCount: status.dailyCycleFailureCount,
+    integrityStatus: status.integrityStatus,
+    integrityWarningCount: status.integrityWarningCount,
+    integrityFailureCount: status.integrityFailureCount,
+    holdingsIntegrityRecordCount: status.holdingsIntegrityRecordCount,
+    holdingsMissingWeekdayCount: status.holdingsMissingWeekdayCount,
+    holdingsMissingWeekdays: status.holdingsMissingWeekdays,
     errorMessage: status.errorMessage,
   );
 }
@@ -395,6 +401,12 @@ EtfOperationsStatus _backendDisconnectedOperationsStatus(
     dailyCycleFinishedAt: status.dailyCycleFinishedAt,
     dailyCycleWarningCount: status.dailyCycleWarningCount,
     dailyCycleFailureCount: status.dailyCycleFailureCount,
+    integrityStatus: status.integrityStatus,
+    integrityWarningCount: status.integrityWarningCount,
+    integrityFailureCount: status.integrityFailureCount,
+    holdingsIntegrityRecordCount: status.holdingsIntegrityRecordCount,
+    holdingsMissingWeekdayCount: status.holdingsMissingWeekdayCount,
+    holdingsMissingWeekdays: status.holdingsMissingWeekdays,
     errorMessage:
         'backend disconnected; showing mock/fallback operations status. $error',
   );
