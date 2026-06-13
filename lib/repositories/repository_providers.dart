@@ -173,7 +173,7 @@ final official00631LRepositoryProvider =
   );
   const proxyTimeoutMs = int.fromEnvironment(
     '00631L_PROXY_TIMEOUT_MS',
-    defaultValue: 3000,
+    defaultValue: 1200,
   );
   const proxyTimeout = Duration(milliseconds: proxyTimeoutMs);
 

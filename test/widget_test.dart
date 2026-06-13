@@ -18,6 +18,10 @@ void main() {
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI'), findsWidgets);
     expect(find.text('設定'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('00631l-section-etf')),
+      findsNothing,
+    );
     expect(find.text('研究工作台'), findsNothing);
     expect(find.text('中長線股票研究助理'), findsNothing);
   });
