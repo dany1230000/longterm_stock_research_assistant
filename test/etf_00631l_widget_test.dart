@@ -44,6 +44,10 @@ void main() {
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI'), findsWidgets);
     expect(find.text('設定'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-button')),
+      findsOneWidget,
+    );
     for (final section in const [
       'overview',
       'historyBacktest',
@@ -54,6 +58,44 @@ void main() {
     ]) {
       expect(find.byKey(ValueKey('00631l-section-$section')), findsOneWidget);
     }
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('top symbol pill opens ETF and stock search sheet',
+      (tester) async {
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
+    expect(find.textContaining('目前完整研究室為 00631L'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-result-00631L')),
+      findsOneWidget,
+    );
+
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '0050',
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
+      findsOneWidget,
+    );
+
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '2330',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('查無代號'), findsOneWidget);
+    expect(find.textContaining('股票資料源尚未接入'), findsOneWidget);
     _expectNoTradingActionText();
   });
 

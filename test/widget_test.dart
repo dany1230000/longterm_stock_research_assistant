@@ -44,7 +44,7 @@ void main() {
 
   testWidgets('primary and secondary routes render', (tester) async {
     final routes = <String, String>{
-      '/': 'ETF 研究室 · 00631L 正二研究室',
+      '/': '00631L 正二研究室',
       '/dashboard': '中長線股票研究助理',
       '/stocks/2330': '股票基本資訊',
       '/screener': '條件設定',
@@ -52,7 +52,7 @@ void main() {
       '/journal': '研究筆記',
       '/settings': '資料來源說明',
       '/etfs': 'ETF 比較',
-      '/00631l-lab': 'ETF 研究室 · 00631L 正二研究室',
+      '/00631l-lab': '00631L 正二研究室',
       '/portfolio': '投資組合',
       '/alerts': '提醒中心',
     };

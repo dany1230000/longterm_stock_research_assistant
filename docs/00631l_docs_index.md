@@ -189,6 +189,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Position/AI/settings and ETF catalog release: `docs\00631l_v4_3_position_ai_etf_catalog_summary.md`
 - ETF catalog explorer release: `docs\00631l_v4_4_etf_catalog_explorer_summary.md`
 - ETF comparison foundation release: `docs\00631l_v4_5_etf_comparison_foundation_summary.md`
+- Header symbol search release: `docs\00631l_v4_6_header_symbol_search_summary.md`
 
 ## Scope Boundary
 

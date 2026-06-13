@@ -147,6 +147,13 @@ v4.5 ETF comparison foundation:
 - Full multi-ETF performance/backtest comparison still requires verified historical data for each ETF and remains a later feature.
 - Summary: `docs\00631l_v4_5_etf_comparison_foundation_summary.md`.
 
+v4.6 header symbol search:
+
+- The top app bar now has a larger `ETF 研究室` title and a clearer `00631L 正二研究室` subtitle.
+- The left `00631L ▼` pill is tappable and opens an ETF / stock-code search sheet.
+- Search currently uses the ETF catalog. If a stock code is not in the loaded catalog, the UI says the stock data source is not connected yet.
+- Summary: `docs\00631l_v4_6_header_symbol_search_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.

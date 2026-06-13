@@ -159,6 +159,7 @@ class _LabContent extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   _MarketTopBar(
+                                    data: data,
                                     onRefresh: onRefresh,
                                   ),
                                   const SizedBox(height: 8),
@@ -418,33 +419,58 @@ class _LoadingBar extends StatelessWidget {
 
 class _MarketTopBar extends StatelessWidget {
   const _MarketTopBar({
+    this.data,
     required this.onRefresh,
   });
 
+  final Etf00631LLabData? data;
   final VoidCallback onRefresh;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SizedBox(
-      height: 36,
+      height: 50,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final showModeBadge = constraints.maxWidth >= 430;
+          final showModeBadge = constraints.maxWidth >= 500;
           return Row(
             children: [
-              const _MarketIndexPill(),
-              const SizedBox(width: 8),
+              _MarketIndexPill(
+                onTap: data == null
+                    ? null
+                    : () => _showSymbolSearchSheet(context, data!),
+              ),
+              const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  'ETF 研究室 · 00631L 正二研究室',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: _marketMutedTextColor(context),
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0,
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'ETF 研究室',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0,
+                        height: 1.05,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '00631L 正二研究室',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: _marketMutedTextColor(context),
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0,
+                        height: 1.05,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               if (showModeBadge) ...[
@@ -468,24 +494,277 @@ class _MarketTopBar extends StatelessWidget {
 }
 
 class _MarketIndexPill extends StatelessWidget {
-  const _MarketIndexPill();
+  const _MarketIndexPill({this.onTap});
+
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: const Color(0xFF2D6B4B),
+    return Semantics(
+      button: true,
+      label: '搜尋 ETF 或股票代號',
+      child: InkWell(
+        key: const ValueKey('00631l-symbol-search-button'),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0xFF67C58B)),
+        onTap: onTap,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0xFF2D6B4B),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: const Color(0xFF67C58B)),
+          ),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: Text(
+              '00631L ▼',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ),
       ),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 11, vertical: 6),
-        child: Text(
-          '00631L ▼',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 13,
-            fontWeight: FontWeight.w900,
+    );
+  }
+}
+
+Future<void> _showSymbolSearchSheet(
+  BuildContext context,
+  Etf00631LLabData data,
+) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: _marketPanelColor(context),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+    ),
+    builder: (sheetContext) {
+      return _SymbolSearchSheet(data: data);
+    },
+  );
+}
+
+class _SymbolSearchSheet extends StatefulWidget {
+  const _SymbolSearchSheet({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  State<_SymbolSearchSheet> createState() => _SymbolSearchSheetState();
+}
+
+class _SymbolSearchSheetState extends State<_SymbolSearchSheet> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = _controller.text.trim().toLowerCase();
+    final catalog = widget.data.etfCatalog;
+    final items = query.isEmpty
+        ? catalog.focusItems
+        : [
+            for (final item in catalog.items)
+              if (_catalogSearchText(item).contains(query)) item,
+          ];
+    final visibleItems = items.take(30).toList(growable: false);
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14, 12, 14, 14 + bottomInset),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 620),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '搜尋 ETF / 股票代號',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: _marketTextColor(context),
+                                  fontWeight: FontWeight.w900,
+                                ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '目前完整研究室為 00631L；其他代號先比對 ETF catalog。',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: _marketMutedTextColor(context),
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  tooltip: '關閉',
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              key: const ValueKey('00631l-symbol-search-field'),
+              controller: _controller,
+              autofocus: true,
+              onChanged: (_) => setState(() {}),
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: query.isEmpty
+                    ? null
+                    : IconButton(
+                        tooltip: '清除搜尋',
+                        onPressed: () {
+                          _controller.clear();
+                          setState(() {});
+                        },
+                        icon: const Icon(Icons.close),
+                      ),
+                labelText: '輸入代號或名稱',
+                hintText: '00631L、0050、00878',
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            _StatusWrap(
+              labels: [
+                'catalog ${catalog.sourceStatusLabel}',
+                'rows ${formatInteger(catalog.rowCount)}',
+                if (query.isEmpty) '常用代號' else '搜尋結果 ${visibleItems.length}',
+              ],
+            ),
+            const SizedBox(height: 10),
+            Flexible(
+              child: visibleItems.isEmpty
+                  ? _EmptyPanel(
+                      title: '查無代號',
+                      message: query.isEmpty
+                          ? 'ETF catalog 暫無明細。'
+                          : '目前只載入 ETF catalog；股票資料源尚未接入。',
+                    )
+                  : ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: visibleItems.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      itemBuilder: (context, index) {
+                        final item = visibleItems[index];
+                        return _SymbolSearchResultTile(
+                          item: item,
+                          selected: item.code == '00631L',
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SymbolSearchResultTile extends StatelessWidget {
+  const _SymbolSearchResultTile({
+    required this.item,
+    required this.selected,
+  });
+
+  final EtfCatalogItem item;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      key: ValueKey('00631l-symbol-search-result-${item.code}'),
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        final messenger = ScaffoldMessenger.of(context);
+        Navigator.of(context).pop();
+        final message = selected
+            ? '目前已開啟 00631L 正二研究室。'
+            : '${item.code} 已在 ETF catalog；完整研究室與比較頁後續接入。';
+        messenger.showSnackBar(SnackBar(content: Text(message)));
+      },
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: selected
+              ? _marketBlue.withValues(alpha: 0.16)
+              : _marketPanelAltColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? _marketBlue : _marketBorderColor(context),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              _MiniStatusBadge(label: item.code),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      item.targetType.isEmpty ? 'ETF catalog' : item.targetType,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: _marketMutedTextColor(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    _price(item.marketPrice),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  Text(
+                    selected ? '目前頁面' : 'catalog',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
