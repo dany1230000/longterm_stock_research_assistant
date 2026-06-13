@@ -318,6 +318,12 @@ v3.44 live/static history merge:
 - If the public backend has no price history rows, the app uses static public history so historical charts and backtest remain available.
 - Summary: `docs\00631l_v3_44_live_static_history_merge_summary.md`.
 
+v3.45 remote history chunk update:
+
+- Remote maintenance updates public backend price history in chunks instead of one large request.
+- The Render backend has been seeded to 2828 rows, covering 2014-10-31 to 2026-06-12.
+- Summary: `docs\00631l_v3_45_remote_history_chunk_update_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

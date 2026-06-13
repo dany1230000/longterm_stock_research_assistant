@@ -1,7 +1,9 @@
 import unittest
+from datetime import date
 
 from backend.scripts.remote_maintenance_00631l import (
     MaintenanceEndpoint,
+    _history_update_ranges,
     run_remote_maintenance,
 )
 
@@ -86,6 +88,28 @@ class RemoteMaintenanceTests(unittest.TestCase):
 
         self.assertEqual(payload["overallStatus"], "FAIL")
         self.assertGreater(len(payload["failures"]), 0)
+
+    def test_history_update_ranges_seed_from_listing_when_empty(self) -> None:
+        ranges = _history_update_ranges(
+            {"rowCount": 0, "isCompleteFromListing": False},
+            today=date(2016, 2, 3),
+        )
+
+        self.assertEqual(ranges[0], (date(2014, 10, 31), date(2014, 12, 31)))
+        self.assertEqual(ranges[1], (date(2015, 1, 1), date(2015, 12, 31)))
+        self.assertEqual(ranges[2], (date(2016, 1, 1), date(2016, 2, 3)))
+
+    def test_history_update_ranges_use_recent_window_when_complete(self) -> None:
+        ranges = _history_update_ranges(
+            {
+                "rowCount": 2800,
+                "coverageEnd": "2026-06-12",
+                "isCompleteFromListing": True,
+            },
+            today=date(2026, 6, 13),
+        )
+
+        self.assertEqual(ranges, [(date(2026, 4, 28), date(2026, 6, 13))])
 
 
 if __name__ == "__main__":

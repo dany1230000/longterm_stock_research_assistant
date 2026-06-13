@@ -63,6 +63,15 @@ GitHub Actions 使用 UTC cron，因此文件中的時間以 workflow 設定為�
 
 `all` mode 會執行以上全部。
 
+## Price history 分段更新
+
+`POST /api/etf/00631l/history/update` 由 remote maintenance script 分段呼叫，避免公開平台因單次全量更新太久而回 502。
+
+- 如果 backend 尚未有完整上市日 coverage，script 會從 `2014-10-31` 起依年度分段補資料。
+- 如果 backend 已有完整 coverage，script 只補最近 45 天。
+- 每個分段仍使用官方 TWSE STOCK_DAY 來源。
+- 分段結果會彙總成 `savedRows`、`chunkCount`、`coverageStart`、`coverageEnd`。
+
 ## 本機手動執行
 
 Dry-run，不連線：

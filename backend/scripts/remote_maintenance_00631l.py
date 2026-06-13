@@ -5,13 +5,15 @@ import json
 import os
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Callable
 
 
 DEFAULT_BACKEND_URL = "https://longterm-stock-research-assistant.onrender.com"
+LISTING_DATE = date(2014, 10, 31)
 
 
 @dataclass(frozen=True)
@@ -301,12 +303,23 @@ def _request_json(
     endpoint: MaintenanceEndpoint,
     timeout_seconds: int,
 ) -> dict[str, Any]:
-    url = f"{base_url}{endpoint.path}"
-    data = b"{}" if endpoint.method == "POST" else None
+    if endpoint.name == "history_update":
+        return _request_history_update(base_url, timeout_seconds)
+    return _request_once(base_url, endpoint.path, endpoint.method, timeout_seconds)
+
+
+def _request_once(
+    base_url: str,
+    path: str,
+    method: str,
+    timeout_seconds: int,
+) -> dict[str, Any]:
+    url = f"{base_url}{path}"
+    data = b"{}" if method == "POST" else None
     request = urllib.request.Request(
         url,
         data=data,
-        method=endpoint.method,
+        method=method,
         headers={
             "Accept": "application/json",
             "Content-Type": "application/json",
@@ -325,6 +338,120 @@ def _request_json(
         except json.JSONDecodeError:
             payload = {"errorMessage": body[:500]}
         return {"httpStatus": error.code, "payload": payload}
+
+
+def _request_history_update(base_url: str, timeout_seconds: int) -> dict[str, Any]:
+    today = datetime.now(timezone.utc).date()
+    status_response = _request_once(
+        base_url,
+        "/api/etf/00631l/history/status",
+        "GET",
+        timeout_seconds,
+    )
+    status_payload = (
+        status_response.get("payload")
+        if isinstance(status_response.get("payload"), dict)
+        else {}
+    )
+    ranges = _history_update_ranges(status_payload, today=today)
+    failures: list[str] = []
+    warnings: list[str] = []
+    total_saved = 0
+    chunks: list[dict[str, Any]] = []
+    http_status = 200
+
+    for start, end in ranges:
+        query = urllib.parse.urlencode(
+            {"startDate": start.isoformat(), "endDate": end.isoformat()}
+        )
+        response = _request_once(
+            base_url,
+            f"/api/etf/00631l/history/update?{query}",
+            "POST",
+            timeout_seconds,
+        )
+        payload = response.get("payload") if isinstance(response.get("payload"), dict) else {}
+        chunk_status = int(response.get("httpStatus") or 0)
+        http_status = chunk_status if chunk_status >= 400 else http_status
+        saved_rows = int(payload.get("savedRows") or 0)
+        total_saved += saved_rows
+        chunk_summary = {
+            "startDate": start.isoformat(),
+            "endDate": end.isoformat(),
+            "httpStatus": chunk_status,
+            "sourceStatus": payload.get("sourceStatus"),
+            "savedRows": saved_rows,
+            "errorMessage": payload.get("errorMessage"),
+        }
+        chunks.append(chunk_summary)
+        if chunk_status < 200 or chunk_status >= 300:
+            failures.append(f"{start.isoformat()}..{end.isoformat()}: HTTP {chunk_status}")
+        elif payload.get("sourceStatus") in {"error", "unavailable"}:
+            warnings.append(
+                f"{start.isoformat()}..{end.isoformat()}: sourceStatus={payload.get('sourceStatus')}"
+            )
+
+    final_status = _request_once(
+        base_url,
+        "/api/etf/00631l/history/status",
+        "GET",
+        timeout_seconds,
+    )
+    final_payload = (
+        final_status.get("payload")
+        if isinstance(final_status.get("payload"), dict)
+        else {}
+    )
+    source_status = "error" if failures else "official"
+    error_message = "; ".join(failures) if failures else None
+    return {
+        "httpStatus": http_status,
+        "payload": {
+            "sourceStatus": source_status,
+            "sourceContract": "00631l_remote_chunked_history_update",
+            "savedRows": total_saved,
+            "chunkCount": len(chunks),
+            "chunks": chunks,
+            "warnings": warnings,
+            "rowCount": final_payload.get("rowCount"),
+            "coverageStart": final_payload.get("coverageStart"),
+            "coverageEnd": final_payload.get("coverageEnd"),
+            "isCompleteFromListing": final_payload.get("isCompleteFromListing"),
+            "errorMessage": error_message,
+        },
+    }
+
+
+def _history_update_ranges(
+    status_payload: dict[str, Any],
+    *,
+    today: date,
+) -> list[tuple[date, date]]:
+    row_count = int(status_payload.get("rowCount") or 0)
+    complete_from_listing = status_payload.get("isCompleteFromListing") is True
+    coverage_end = _parse_iso_date(status_payload.get("coverageEnd"))
+    if row_count >= 2 and complete_from_listing and coverage_end is not None:
+        start = max(LISTING_DATE, coverage_end - timedelta(days=45))
+        return [(start, today)]
+
+    ranges: list[tuple[date, date]] = []
+    start = LISTING_DATE
+    while start <= today:
+        end = date(start.year, 12, 31)
+        if end > today:
+            end = today
+        ranges.append((start, end))
+        start = date(start.year + 1, 1, 1)
+    return ranges
+
+
+def _parse_iso_date(value: Any) -> date | None:
+    if not value:
+        return None
+    try:
+        return datetime.strptime(str(value), "%Y-%m-%d").date()
+    except ValueError:
+        return None
 
 
 def _selected_endpoints(mode: str) -> list[MaintenanceEndpoint]:
