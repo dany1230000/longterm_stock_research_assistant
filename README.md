@@ -258,6 +258,12 @@ v3.34 settings page cleanup:
 - Data coverage and maintenance diagnostics are still available, but hidden behind expandable panels.
 - Summary: `docs\00631l_v3_34_settings_page_cleanup_summary.md`.
 
+v3.35 compact section headers:
+
+- Feature page headers now use tighter spacing, smaller icons, and capped subtitles.
+- Contents, history/backtest, position, AI, and settings pages reach their primary content sooner on mobile.
+- Summary: `docs\00631l_v3_35_compact_section_headers_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

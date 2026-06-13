@@ -4717,11 +4717,11 @@ class _SectionHeaderCard extends StatelessWidget {
       elevation: 0,
       color: theme.colorScheme.surfaceContainerHighest,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         side: BorderSide(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -4731,14 +4731,14 @@ class _SectionHeaderCard extends StatelessWidget {
                 DecoratedBox(
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(9),
-                    child: Icon(icon, color: color, size: 22),
+                    padding: const EdgeInsets.all(7),
+                    child: Icon(icon, color: color, size: 18),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -4754,9 +4754,11 @@ class _SectionHeaderCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
-                          height: 1.4,
+                          height: 1.3,
                         ),
                       ),
                     ],
@@ -4764,10 +4766,10 @@ class _SectionHeaderCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 9),
             _StatusWrap(labels: badges),
             if (metrics.isNotEmpty) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 9),
               LayoutBuilder(
                 builder: (context, constraints) {
                   final compact = constraints.maxWidth < 520;
@@ -4809,7 +4811,7 @@ class _SectionHeaderMetricChip extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

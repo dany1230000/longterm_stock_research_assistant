@@ -37,6 +37,7 @@ This is the main entry point for 00631L lab documentation.
 - Mobile first-screen density v3.32 summary: `docs\00631l_v3_32_mobile_first_screen_density_summary.md`
 - Fast-first data load v3.33 summary: `docs\00631l_v3_33_fast_first_data_load_summary.md`
 - Settings page cleanup v3.34 summary: `docs\00631l_v3_34_settings_page_cleanup_summary.md`
+- Compact section headers v3.35 summary: `docs\00631l_v3_35_compact_section_headers_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -148,6 +149,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Mobile first-screen density release: `docs\00631l_v3_32_mobile_first_screen_density_summary.md`
 - Fast-first data load release: `docs\00631l_v3_33_fast_first_data_load_summary.md`
 - Settings page cleanup release: `docs\00631l_v3_34_settings_page_cleanup_summary.md`
+- Compact section headers release: `docs\00631l_v3_35_compact_section_headers_summary.md`
 
 ## Scope Boundary
 
