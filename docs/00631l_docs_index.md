@@ -46,6 +46,7 @@ This is the main entry point for 00631L lab documentation.
 - Holdings exposure compare v3.41 summary: `docs\00631l_v3_41_holdings_exposure_compare_summary.md`
 - Web loading shell v3.42 summary: `docs\00631l_v3_42_web_loading_shell_summary.md`
 - Yuanta maintenance detection v3.43 summary: `docs\00631l_v3_43_yuanta_maintenance_detection_summary.md`
+- Live/static history merge v3.44 summary: `docs\00631l_v3_44_live_static_history_merge_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -166,6 +167,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Holdings exposure compare release: `docs\00631l_v3_41_holdings_exposure_compare_summary.md`
 - Web loading shell release: `docs\00631l_v3_42_web_loading_shell_summary.md`
 - Yuanta maintenance detection release: `docs\00631l_v3_43_yuanta_maintenance_detection_summary.md`
+- Live/static history merge release: `docs\00631l_v3_44_live_static_history_merge_summary.md`
 
 ## Scope Boundary
 

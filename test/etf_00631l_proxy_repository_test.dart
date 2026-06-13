@@ -286,6 +286,30 @@ void main() {
     expect(data.aiAnalysis.sourceStatuses['intradayNav'], 'backend_required');
   });
 
+  test('live proxy empty price history uses static public history', () async {
+    final repository = Cached00631LRepository(
+      primary: _EmptyLivePriceHistoryRepository(),
+      fallback: Static00631LRepository(
+        client: _FakeProxyHttpClient({
+          '00631l-static-data/price_history.json':
+              jsonEncode(_staticPriceHistoryPayload()),
+          '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
+        }),
+      ),
+    );
+
+    final history = await repository.fetchPriceHistory();
+    final status = await repository.fetchOperationsStatus();
+
+    expect(history.sourceStatusLabel, 'static_official');
+    expect(history.points, hasLength(3));
+    expect(status.sourceStatusLabel, 'cached');
+    expect(status.priceHistoryStatus, 'static_official');
+    expect(status.priceHistoryRows, 3);
+    expect(status.backtestAvailable, isTrue);
+    expect(status.errorMessage, contains('static public price history'));
+  });
+
   test('cached fast startup falls back when primary is slow', () async {
     final repository = Cached00631LRepository(
       primary: _NeverCompletingFastRepository(),
@@ -394,6 +418,26 @@ class _NeverCompletingRepository extends Mock00631LRepository {
   @override
   Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) =>
       _never<EtfPriceHistory>();
+}
+
+class _EmptyLivePriceHistoryRepository extends Mock00631LRepository {
+  @override
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
+    return EtfPriceHistory.empty(
+      status: EtfDataStatus.error,
+      sourceStatusLabel: 'unavailable',
+      errorMessage: 'public backend price history has no rows',
+    );
+  }
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    return EtfOperationsStatus.empty(
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'cached',
+      errorMessage: 'public backend price history has no rows',
+    );
+  }
 }
 
 Map<String, Object?> _profilePayload() {

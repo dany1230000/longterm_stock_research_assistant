@@ -312,6 +312,12 @@ v3.43 Yuanta maintenance detection:
 - Holdings can use cached local history during Yuanta maintenance, with `sourceStatus=cached` and a clear maintenance message.
 - Summary: `docs\00631l_v3_43_yuanta_maintenance_detection_summary.md`.
 
+v3.44 live/static history merge:
+
+- Public live proxy remains the first source for live data.
+- If the public backend has no price history rows, the app uses static public history so historical charts and backtest remain available.
+- Summary: `docs\00631l_v3_44_live_static_history_merge_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

@@ -145,6 +145,20 @@ class Cached00631LRepository extends Official00631LRepository {
       final history = await _primary
           .fetchPriceHistory(limit: limit)
           .timeout(primaryTimeout);
+      if (!_isPriceHistoryUsable(history)) {
+        try {
+          final fallback =
+              await _fallback.fetchPriceHistory(limit: limit).timeout(
+                    primaryTimeout,
+                  );
+          if (_isPriceHistoryUsable(fallback)) {
+            _priceHistoryCache = fallback;
+            return fallback;
+          }
+        } catch (_) {
+          // Keep the primary response below; it still carries the live error.
+        }
+      }
       _priceHistoryCache = history;
       return history;
     } catch (_) {
@@ -161,8 +175,9 @@ class Cached00631LRepository extends Official00631LRepository {
     try {
       final status =
           await _primary.fetchOperationsStatus().timeout(primaryTimeout);
-      _operationsStatusCache = status;
-      return status;
+      final merged = await _operationsWithFallbackPriceHistory(status);
+      _operationsStatusCache = merged;
+      return merged;
     } catch (error) {
       final cached = _operationsStatusCache;
       if (cached != null) {
@@ -187,6 +202,27 @@ class Cached00631LRepository extends Official00631LRepository {
       }
       return _fallback.fetchAiAnalysisSummary();
     }
+  }
+
+  Future<EtfOperationsStatus> _operationsWithFallbackPriceHistory(
+    EtfOperationsStatus primaryStatus,
+  ) async {
+    if (!_needsPriceHistoryFallback(primaryStatus)) {
+      return primaryStatus;
+    }
+    try {
+      final fallbackStatus =
+          await _fallback.fetchOperationsStatus().timeout(primaryTimeout);
+      if (_operationsHasPriceHistory(fallbackStatus)) {
+        return _mergeOperationsPriceHistory(
+          primaryStatus,
+          fallbackStatus,
+        );
+      }
+    } catch (_) {
+      // Keep the live operations status if the fallback status is unavailable.
+    }
+    return primaryStatus;
   }
 }
 
@@ -325,6 +361,13 @@ EtfOperationsStatus _cachedOperationsStatus(EtfOperationsStatus status) {
     intradaySourceMode: status.intradaySourceMode,
     twseIntradayNavConfigured: status.twseIntradayNavConfigured,
     yuantaIntradayNavConfigured: status.yuantaIntradayNavConfigured,
+    publicApiBaseUrl: status.publicApiBaseUrl,
+    allowedOrigins: status.allowedOrigins,
+    dataRoot: status.dataRoot,
+    dataPersistenceMode: status.dataPersistenceMode,
+    dataPersistenceWarning: status.dataPersistenceWarning,
+    dataPathWritable: status.dataPathWritable,
+    dataPathPersistent: status.dataPathPersistent,
     holdingsHistoryStatus: status.holdingsHistoryStatus,
     holdingsHistoryItemCount: status.holdingsHistoryItemCount,
     latestHoldingTradeDate: status.latestHoldingTradeDate,
@@ -390,6 +433,13 @@ EtfOperationsStatus _backendDisconnectedOperationsStatus(
     intradaySourceMode: status.intradaySourceMode,
     twseIntradayNavConfigured: status.twseIntradayNavConfigured,
     yuantaIntradayNavConfigured: status.yuantaIntradayNavConfigured,
+    publicApiBaseUrl: status.publicApiBaseUrl,
+    allowedOrigins: status.allowedOrigins,
+    dataRoot: status.dataRoot,
+    dataPersistenceMode: status.dataPersistenceMode,
+    dataPersistenceWarning: status.dataPersistenceWarning,
+    dataPathWritable: status.dataPathWritable,
+    dataPathPersistent: status.dataPathPersistent,
     holdingsHistoryStatus: status.holdingsHistoryStatus,
     holdingsHistoryItemCount: status.holdingsHistoryItemCount,
     latestHoldingTradeDate: status.latestHoldingTradeDate,
@@ -438,5 +488,108 @@ EtfOperationsStatus _backendDisconnectedOperationsStatus(
     holdingsMissingWeekdays: status.holdingsMissingWeekdays,
     errorMessage:
         'backend disconnected; showing mock/fallback operations status. $error',
+  );
+}
+
+bool _isPriceHistoryUsable(EtfPriceHistory history) {
+  return history.points.length >= 2 &&
+      history.status != EtfDataStatus.error &&
+      !_isUnavailableLabel(history.sourceStatusLabel);
+}
+
+bool _needsPriceHistoryFallback(EtfOperationsStatus status) {
+  return status.priceHistoryRows < 2 ||
+      !status.backtestAvailable ||
+      _isUnavailableLabel(status.priceHistoryStatus);
+}
+
+bool _operationsHasPriceHistory(EtfOperationsStatus status) {
+  return status.priceHistoryRows >= 2 &&
+      status.backtestAvailable &&
+      !_isUnavailableLabel(status.priceHistoryStatus);
+}
+
+bool _isUnavailableLabel(String label) {
+  final normalized = label.trim().toLowerCase();
+  return normalized == 'error' ||
+      normalized == 'unavailable' ||
+      normalized == 'mock';
+}
+
+EtfOperationsStatus _mergeOperationsPriceHistory(
+  EtfOperationsStatus primary,
+  EtfOperationsStatus fallback,
+) {
+  const note =
+      'Backend price history unavailable; using static public price history.';
+  final errorMessage =
+      primary.errorMessage == null || primary.errorMessage!.trim().isEmpty
+          ? note
+          : '$note ${primary.errorMessage}';
+  return EtfOperationsStatus(
+    status: primary.status,
+    sourceStatusLabel: primary.sourceStatusLabel,
+    sourceContract: primary.sourceContract,
+    sourceUrl: primary.sourceUrl,
+    lastFetchedAt: primary.lastFetchedAt,
+    sourceUpdatedAt: primary.sourceUpdatedAt,
+    isStale: primary.isStale,
+    intradaySourceMode: primary.intradaySourceMode,
+    twseIntradayNavConfigured: primary.twseIntradayNavConfigured,
+    yuantaIntradayNavConfigured: primary.yuantaIntradayNavConfigured,
+    publicApiBaseUrl: primary.publicApiBaseUrl,
+    allowedOrigins: primary.allowedOrigins,
+    dataRoot: primary.dataRoot,
+    dataPersistenceMode: primary.dataPersistenceMode,
+    dataPersistenceWarning: primary.dataPersistenceWarning,
+    dataPathWritable: primary.dataPathWritable,
+    dataPathPersistent: primary.dataPathPersistent,
+    holdingsHistoryStatus: primary.holdingsHistoryStatus,
+    holdingsHistoryItemCount: primary.holdingsHistoryItemCount,
+    latestHoldingTradeDate: primary.latestHoldingTradeDate,
+    intradayHistoryStatus: primary.intradayHistoryStatus,
+    intradaySampleCount: primary.intradaySampleCount,
+    latestIntradayDataTime: primary.latestIntradayDataTime,
+    intradayHistoryDate: primary.intradayHistoryDate,
+    priceHistoryStatus: fallback.priceHistoryStatus,
+    priceHistoryRows: fallback.priceHistoryRows,
+    priceHistoryCoverageStart: fallback.priceHistoryCoverageStart,
+    priceHistoryCoverageEnd: fallback.priceHistoryCoverageEnd,
+    priceHistoryCompleteFromListing: fallback.priceHistoryCompleteFromListing,
+    backtestStatus: fallback.backtestStatus,
+    backtestAvailable: fallback.backtestAvailable,
+    positionStatus: primary.positionStatus,
+    collectorOneShotCommand: primary.collectorOneShotCommand,
+    collectorIntradayCommand: primary.collectorIntradayCommand,
+    envFileExists: primary.envFileExists,
+    missingEnvKeys: primary.missingEnvKeys,
+    optionalMissingEnvKeys: primary.optionalMissingEnvKeys,
+    dataDirReady: primary.dataDirReady,
+    exportDirReady: primary.exportDirReady,
+    backupDirReady: primary.backupDirReady,
+    exportAvailable: primary.exportAvailable,
+    latestExportPath: primary.latestExportPath,
+    latestExportUpdatedAt: primary.latestExportUpdatedAt,
+    backupAvailable: primary.backupAvailable,
+    latestBackupPath: primary.latestBackupPath,
+    latestBackupUpdatedAt: primary.latestBackupUpdatedAt,
+    reportAvailable: primary.reportAvailable,
+    latestReportPath: primary.latestReportPath,
+    latestReportGeneratedAt: primary.latestReportGeneratedAt,
+    reportOverallStatus: primary.reportOverallStatus,
+    reportWarningCount: primary.reportWarningCount,
+    reportFailureCount: primary.reportFailureCount,
+    dailyCycleStatus: primary.dailyCycleStatus,
+    dailyCycleStartedAt: primary.dailyCycleStartedAt,
+    dailyCycleFinishedAt: primary.dailyCycleFinishedAt,
+    dailyCycleWarningCount: primary.dailyCycleWarningCount,
+    dailyCycleFailureCount: primary.dailyCycleFailureCount,
+    integrityStatus: primary.integrityStatus,
+    integrityWarningCount: primary.integrityWarningCount,
+    integrityFailureCount: primary.integrityFailureCount,
+    holdingsIntegrityRecordCount: primary.holdingsIntegrityRecordCount,
+    holdingsMissingWeekdayCount: primary.holdingsMissingWeekdayCount,
+    holdingsMissingWeekdays: primary.holdingsMissingWeekdays,
+    errorMessage: errorMessage,
   );
 }
