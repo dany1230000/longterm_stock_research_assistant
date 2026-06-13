@@ -91,6 +91,6 @@ void main() {
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(find.textContaining('市價'), findsWidgets);
-    expect(find.text('更多檢視'), findsOneWidget);
+    expect(find.text('更多資料'), findsOneWidget);
   });
 }

@@ -1589,13 +1589,17 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data),
         const SizedBox(height: 8),
-        _OverviewSignalPanel(data: data),
-        const SizedBox(height: 8),
         _OverviewAtAGlancePanel(data: data),
         const SizedBox(height: 8),
         _CompactExpansionPanel(
-          title: '更多檢視',
-          subtitle: '內容物變化、完整數字與資料來源需要時再展開。',
+          title: '圖表與曝險',
+          subtitle: '近 60 日收盤與官方每日曝險；需要比較時再展開。',
+          child: _OverviewSignalPanel(data: data),
+        ),
+        const SizedBox(height: 8),
+        _CompactExpansionPanel(
+          title: '更多資料',
+          subtitle: '完整數字、資料來源與內容物變化需要時再展開。',
           child: _OverviewMorePanel(data: data, history: history),
         ),
       ],

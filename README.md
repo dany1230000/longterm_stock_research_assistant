@@ -240,6 +240,12 @@ v3.31 mobile quote trim:
 - Backend holdings and live smoke now use local cached official holdings history when the live Yuanta ratio page cannot be parsed, and clearly mark that state as cached fallback.
 - Summary: `docs\00631l_v3_31_mobile_quote_trim_summary.md`.
 
+v3.32 mobile first-screen density:
+
+- The overview first screen now shows quote data and compact data readiness first.
+- The 60-day chart and official exposure bars are available under `圖表與曝險`, so they no longer push key status below the first mobile viewport.
+- Summary: `docs\00631l_v3_32_mobile_first_screen_density_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
