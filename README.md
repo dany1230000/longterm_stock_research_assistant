@@ -132,6 +132,14 @@ v4.3 position, AI, settings, and ETF catalog:
 - Frontend repository mapping now reads `/api/etf/catalog`; ETF comparison remains a later feature.
 - Summary: `docs\00631l_v4_3_position_ai_etf_catalog_summary.md`.
 
+v4.4 ETF catalog explorer:
+
+- Bottom navigation now includes a dedicated `ETF` section instead of hiding ETF data inside settings.
+- The ETF page shows catalog status, row count, data time, local search, and simple filters for common groups.
+- Settings now keeps only ETF data status and comparison readiness, so account/theme/local data controls stay easier to scan.
+- The theme toggle now labels the current state as `日間模式` or `夜間模式`.
+- Summary: `docs\00631l_v4_4_etf_catalog_explorer_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.

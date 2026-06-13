@@ -98,6 +98,7 @@ class _LeveragedEtf00631LScreenState
 enum _LabSection {
   overview('總覽', Icons.dashboard_outlined),
   historyBacktest('歷史回測', Icons.query_stats_outlined),
+  etf('ETF', Icons.dataset_outlined),
   position('持倉', Icons.account_balance_wallet_outlined),
   ai('AI', Icons.psychology_alt_outlined),
   settings('設定', Icons.manage_accounts_outlined);
@@ -197,6 +198,8 @@ class _LabContent extends StatelessWidget {
         return _OverviewSection(data: data);
       case _LabSection.historyBacktest:
         return _HistoryBacktestSection(data: data);
+      case _LabSection.etf:
+        return _EtfCatalogSection(data: data);
       case _LabSection.position:
         return _PositionSection(data: data);
       case _LabSection.ai:
@@ -1484,7 +1487,7 @@ class _ThemeToggleButton extends StatelessWidget {
       builder: (context, mode, _) {
         final isDark = mode == ThemeMode.dark;
         final nextMode = isDark ? ThemeMode.light : ThemeMode.dark;
-        final label = isDark ? '夜間' : '日間';
+        final label = isDark ? '夜間模式' : '日間模式';
         return Tooltip(
           message: isDark ? '切換到日間模式' : '切換到夜間模式',
           child: InkWell(
@@ -1513,6 +1516,11 @@ class _ThemeToggleButton extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       label,
+                      key: ValueKey(
+                        isDark
+                            ? '00631l-theme-dark-label'
+                            : '00631l-theme-light-label',
+                      ),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             color: _marketTextColor(context),
                             fontWeight: FontWeight.w900,
@@ -4157,6 +4165,235 @@ class _AiSignalGrid extends StatelessWidget {
   }
 }
 
+enum _EtfCatalogFilter {
+  focus('常用', Icons.star_border_outlined),
+  taiwanEquity('台股', Icons.stacked_line_chart_outlined),
+  dividend('高股息', Icons.payments_outlined),
+  leveraged('槓桿/反向', Icons.compare_arrows_outlined),
+  all('全部', Icons.dataset_outlined);
+
+  const _EtfCatalogFilter(this.label, this.icon);
+
+  final String label;
+  final IconData icon;
+}
+
+class _EtfCatalogSection extends StatefulWidget {
+  const _EtfCatalogSection({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  State<_EtfCatalogSection> createState() => _EtfCatalogSectionState();
+}
+
+class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
+  final _queryController = TextEditingController();
+  _EtfCatalogFilter _filter = _EtfCatalogFilter.focus;
+
+  @override
+  void dispose() {
+    _queryController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final catalog = widget.data.etfCatalog;
+    final status = widget.data.operationsStatus;
+    final rowCount =
+        catalog.hasData ? catalog.rowCount : status.etfCatalogRowCount;
+    final dataTime = catalog.dataTime ?? status.etfCatalogDataTime;
+    final filteredItems = _filteredItems(catalog);
+    final visibleItems = filteredItems.take(60).toList(growable: false);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeaderCard(
+          title: 'ETF 資料庫',
+          subtitle:
+              '先整理 TWSE all-ETF catalog；ETF 比較會沿用這份資料，不會把 fallback 說成 official。',
+          icon: Icons.dataset_outlined,
+          badges: [
+            'ETF',
+            'catalog ${catalog.sourceStatusLabel}',
+            _frontendDataMode,
+          ],
+          metrics: [
+            _SectionHeaderMetric(
+              label: 'ETF 筆數',
+              value: formatInteger(rowCount),
+            ),
+            _SectionHeaderMetric(
+              label: '資料時間',
+              value: dataTime == null
+                  ? 'unavailable'
+                  : formatTaiwanDateTimeSeconds(dataTime),
+            ),
+            _SectionHeaderMetric(
+              label: '目前篩選',
+              value: _filter.label,
+            ),
+            _SectionHeaderMetric(
+              label: '顯示筆數',
+              value: formatInteger(visibleItems.length),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: 'ETF 查詢',
+          subtitle: '可用代號、名稱或商品類型搜尋；目前先做資料整理，下一步再做比較視圖。',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                key: const ValueKey('00631l-etf-catalog-search'),
+                controller: _queryController,
+                onChanged: (_) => setState(() {}),
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _queryController.text.trim().isEmpty
+                      ? null
+                      : IconButton(
+                          tooltip: '清除搜尋',
+                          onPressed: () {
+                            _queryController.clear();
+                            setState(() {});
+                          },
+                          icon: const Icon(Icons.close),
+                        ),
+                  labelText: '搜尋 ETF',
+                  hintText: '例如 0050、00631L、高股息',
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final filter in _EtfCatalogFilter.values)
+                    ChoiceChip(
+                      key: ValueKey('00631l-etf-filter-${filter.name}'),
+                      selected: _filter == filter,
+                      avatar: Icon(filter.icon, size: 16),
+                      label: Text(filter.label),
+                      onSelected: (_) => setState(() => _filter = filter),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              _StatusWrap(
+                labels: [
+                  'source ${catalog.sourceStatusLabel}',
+                  catalog.sourceContract,
+                  if (catalog.errorMessage != null)
+                    'error ${catalog.errorMessage}',
+                  '顯示 ${visibleItems.length} / ${filteredItems.length}',
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: 'ETF 清單',
+          subtitle: '重點是代號、名稱、狀態、價格與折溢價；不使用無意義裝飾圖示。',
+          child: catalog.hasData
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (visibleItems.isEmpty)
+                      const _EmptyPanel(
+                        title: '查無符合 ETF',
+                        message: '請調整搜尋文字或切換分類。',
+                      )
+                    else ...[
+                      for (final item in visibleItems) ...[
+                        _EtfCatalogItemTile(item: item),
+                        const SizedBox(height: 8),
+                      ],
+                      if (filteredItems.length > visibleItems.length)
+                        _StatusWrap(
+                          labels: [
+                            '已先顯示前 ${visibleItems.length} 筆',
+                            '可輸入代號或名稱縮小範圍',
+                          ],
+                        ),
+                    ],
+                  ],
+                )
+              : const _EmptyPanel(
+                  title: 'ETF catalog 暫不可用',
+                  message:
+                      'live backend 可提供 ETF catalog；static public mode 仍保留 00631L 歷史與回測。',
+                ),
+        ),
+        const SizedBox(height: 12),
+        const _SectionBlock(
+          title: '比較功能準備',
+          subtitle: '這裡先建立 ETF catalog 與資料狀態基礎；完整 ETF 比較會在後續版本加入。',
+          child: _StatusList(
+            items: [
+              _StatusItem(
+                label: '資料來源',
+                status: 'ready',
+                detail: '前端已可讀取 ETF catalog，並保留 source status。',
+                action: '下一步可加入 ETF 比較資料模型與比較頁。',
+              ),
+              _StatusItem(
+                label: '00631L',
+                status: 'focus',
+                detail: '00631L 正二研究室仍是目前核心頁面。',
+                action: '其他 ETF 先作為 catalog 與比較候選資料。',
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<EtfCatalogItem> _filteredItems(EtfCatalog catalog) {
+    final query = _queryController.text.trim().toLowerCase();
+    final base = _baseItems(catalog);
+    if (query.isEmpty) {
+      return base;
+    }
+    return [
+      for (final item in base)
+        if (_catalogSearchText(item).contains(query)) item,
+    ];
+  }
+
+  List<EtfCatalogItem> _baseItems(EtfCatalog catalog) {
+    switch (_filter) {
+      case _EtfCatalogFilter.focus:
+        return catalog.focusItems;
+      case _EtfCatalogFilter.taiwanEquity:
+        return [
+          for (final item in catalog.items)
+            if (_isTaiwanEquityEtf(item)) item,
+        ];
+      case _EtfCatalogFilter.dividend:
+        return [
+          for (final item in catalog.items)
+            if (_isDividendEtf(item)) item,
+        ];
+      case _EtfCatalogFilter.leveraged:
+        return [
+          for (final item in catalog.items)
+            if (_isLeveragedOrInverseEtf(item)) item,
+        ];
+      case _EtfCatalogFilter.all:
+        return catalog.items;
+    }
+  }
+}
+
 class _SettingsSection extends StatelessWidget {
   const _SettingsSection({required this.data});
 
@@ -4203,11 +4440,26 @@ class _SettingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         _SectionBlock(
-          title: 'ETF 資料庫',
-          subtitle: 'TWSE all-ETF catalog，先做資料整理；ETF 比較會接這份資料。',
-          child: _EtfCatalogPanel(
-            catalog: data.etfCatalog,
-            operationsStatus: status,
+          title: 'ETF 資料狀態',
+          subtitle: '完整 ETF 清單已移到 ETF 分頁；設定頁只保留狀態摘要。',
+          child: _StatusList(
+            items: [
+              _StatusItem(
+                label: 'catalog',
+                status: data.etfCatalog.hasData
+                    ? data.etfCatalog.sourceStatusLabel
+                    : status.etfCatalogStatus,
+                detail:
+                    'rows ${data.etfCatalog.hasData ? data.etfCatalog.rowCount : status.etfCatalogRowCount}，dataTime ${_dateTimeOrDash(data.etfCatalog.dataTime ?? status.etfCatalogDataTime)}。',
+                action: '切到 ETF 分頁可搜尋代號、名稱與分類。',
+              ),
+              const _StatusItem(
+                label: 'ETF comparison',
+                status: 'planned',
+                detail: '目前先整理 ETF catalog；比較視圖會在後續版本加入。',
+                action: '下一步建立 ETF 比較資料模型與 UI。',
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 10),
@@ -4345,87 +4597,6 @@ class _SettingsSection extends StatelessWidget {
             ],
           ),
         ),
-      ],
-    );
-  }
-}
-
-class _EtfCatalogPanel extends StatelessWidget {
-  const _EtfCatalogPanel({
-    required this.catalog,
-    required this.operationsStatus,
-  });
-
-  final EtfCatalog catalog;
-  final EtfOperationsStatus operationsStatus;
-
-  @override
-  Widget build(BuildContext context) {
-    final rowCount = catalog.hasData
-        ? catalog.rowCount
-        : operationsStatus.etfCatalogRowCount;
-    final status = catalog.hasData
-        ? catalog.sourceStatusLabel
-        : operationsStatus.etfCatalogStatus;
-    final dataTime = catalog.dataTime ?? operationsStatus.etfCatalogDataTime;
-    final items = catalog.focusItems;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _ResponsiveMetricGrid(
-          cards: [
-            _MetricCard(
-              label: 'ETF 筆數',
-              value: formatInteger(rowCount),
-              caption: status,
-              icon: Icons.dataset_outlined,
-            ),
-            _MetricCard(
-              label: '資料時間',
-              value: dataTime == null
-                  ? 'unavailable'
-                  : formatTaiwanDateTimeSeconds(dataTime),
-              caption: catalog.sourceContract,
-              icon: Icons.schedule_outlined,
-            ),
-            const _MetricCard(
-              label: '目前範圍',
-              value: 'catalog',
-              caption: '尚未啟用 ETF 比較',
-              icon: Icons.compare_arrows_outlined,
-            ),
-            _MetricCard(
-              label: '00631L',
-              value: dataTime == null ? '待同步' : '可對照',
-              caption: '正二研究室仍為主頁',
-              icon: Icons.push_pin_outlined,
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        if (items.isEmpty)
-          const _EmptyPanel(
-            title: '尚無 ETF catalog 明細',
-            message:
-                '若使用 live backend，請執行 scripts\\00631l_import_etf_catalog.cmd。static public mode 目前只內建 00631L 歷史資料。',
-          )
-        else
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'ETF 資料預覽',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              for (final item in items) ...[
-                _EtfCatalogItemTile(item: item),
-                const SizedBox(height: 8),
-              ],
-            ],
-          ),
       ],
     );
   }
@@ -6568,6 +6739,39 @@ DateTime? _historyFirstDate(EtfPriceHistory history) {
   }
   final sorted = [...history.points]..sort((a, b) => a.date.compareTo(b.date));
   return sorted.first.date;
+}
+
+String _catalogSearchText(EtfCatalogItem item) {
+  return '${item.code} ${item.name} ${item.targetType}'.toLowerCase();
+}
+
+bool _isTaiwanEquityEtf(EtfCatalogItem item) {
+  final text = _catalogSearchText(item);
+  return text.contains('台灣') ||
+      text.contains('臺灣') ||
+      text.contains('twse') ||
+      text.contains('上市') ||
+      text.contains('加權') ||
+      text.contains('0050') ||
+      text.contains('006208');
+}
+
+bool _isDividendEtf(EtfCatalogItem item) {
+  final text = _catalogSearchText(item);
+  return text.contains('高股息') ||
+      text.contains('股利') ||
+      text.contains('收益') ||
+      text.contains('00878') ||
+      text.contains('00919');
+}
+
+bool _isLeveragedOrInverseEtf(EtfCatalogItem item) {
+  final text = _catalogSearchText(item);
+  return text.contains('槓桿') ||
+      text.contains('正2') ||
+      text.contains('正 2') ||
+      text.contains('反向') ||
+      text.contains('00631l');
 }
 
 DateTime? _historyLastDate(EtfPriceHistory history) {

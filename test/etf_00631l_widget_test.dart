@@ -40,12 +40,14 @@ void main() {
     expect(find.textContaining('Mock 預設'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
+    expect(find.text('ETF'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI'), findsWidgets);
     expect(find.text('設定'), findsWidgets);
     for (final section in const [
       'overview',
       'historyBacktest',
+      'etf',
       'position',
       'ai',
       'settings',
@@ -104,6 +106,7 @@ void main() {
     for (final section in const [
       'overview',
       'historyBacktest',
+      'etf',
       'position',
       'ai',
       'settings',
@@ -234,6 +237,40 @@ void main() {
     expect(find.textContaining('local-only'), findsWidgets);
   });
 
+  testWidgets('ETF section renders catalog search and clean item list',
+      (tester) async {
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _tapSection(tester, 'etf');
+    await tester.pumpAndSettle();
+
+    expect(find.text('ETF 資料庫'), findsWidgets);
+    expect(find.text('ETF 查詢'), findsOneWidget);
+    expect(find.text('ETF 清單'), findsOneWidget);
+    expect(find.text('比較功能準備'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-etf-catalog-search')),
+      findsOneWidget,
+    );
+    expect(find.text('常用'), findsWidgets);
+    expect(find.text('台股'), findsOneWidget);
+    expect(find.text('高股息'), findsOneWidget);
+    expect(find.text('槓桿/反向'), findsOneWidget);
+    expect(find.text('全部'), findsOneWidget);
+    expect(find.text('元大台灣50正2'), findsOneWidget);
+    expect(find.text('元大台灣50'), findsOneWidget);
+
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-etf-catalog-search')),
+      '0050',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('元大台灣50'), findsOneWidget);
+    expect(find.text('元大台灣50正2'), findsNothing);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('overview includes official holdings digest on phone',
       (tester) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -258,6 +295,7 @@ void main() {
     for (final section in const [
       'overview',
       'historyBacktest',
+      'etf',
       'position',
       'ai',
       'settings',
@@ -287,9 +325,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('設定'), findsWidgets);
     expect(find.text('帳戶與偏好'), findsOneWidget);
-    expect(find.text('ETF 資料庫'), findsOneWidget);
-    expect(find.text('ETF 資料預覽'), findsOneWidget);
-    expect(find.text('元大台灣50正2'), findsOneWidget);
+    expect(find.text('ETF 資料狀態'), findsOneWidget);
+    expect(find.text('catalog'), findsWidgets);
+    expect(find.text('ETF comparison'), findsOneWidget);
+    expect(find.text('ETF 資料預覽'), findsNothing);
+    expect(find.text('元大台灣50正2'), findsNothing);
     expect(find.text('App 上架準備'), findsOneWidget);
     expect(find.text('資料模式與完整度'), findsOneWidget);
     expect(find.text('進階維護診斷'), findsOneWidget);
@@ -351,7 +391,7 @@ void main() {
     final initialBox =
         tester.widget<DecoratedBox>(find.byType(DecoratedBox).first);
     final initialColor = (initialBox.decoration as BoxDecoration).color;
-    expect(find.text('日間'), findsOneWidget);
+    expect(find.text('日間模式'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('00631l-theme-toggle')));
     await tester.pumpAndSettle();
 
@@ -359,7 +399,7 @@ void main() {
         tester.widget<DecoratedBox>(find.byType(DecoratedBox).first);
     final changedColor = (changedBox.decoration as BoxDecoration).color;
     expect(changedColor, isNot(initialColor));
-    expect(find.text('夜間'), findsOneWidget);
+    expect(find.text('夜間模式'), findsOneWidget);
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(tester.takeException(), isNull);
   });

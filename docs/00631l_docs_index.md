@@ -187,6 +187,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF research room IA release: `docs\00631l_v3_49_etf_research_room_ia_summary.md`
 - History/theme fix release: `docs\00631l_v4_2_history_theme_fix_summary.md`
 - Position/AI/settings and ETF catalog release: `docs\00631l_v4_3_position_ai_etf_catalog_summary.md`
+- ETF catalog explorer release: `docs\00631l_v4_4_etf_catalog_explorer_summary.md`
 
 ## Scope Boundary
 
