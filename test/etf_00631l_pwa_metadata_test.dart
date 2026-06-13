@@ -17,6 +17,9 @@ void main() {
     expect(manifest['description'], contains('PWA'));
 
     expect(index, contains('<title>00631L 正二研究室</title>'));
+    expect(index, contains('id="app-loading"'));
+    expect(index, contains('flutter-first-frame'));
+    expect(index, contains('static public data'));
     expect(index, contains('name="application-name" content="00631L 正二研究室"'));
     expect(index,
         contains('name="apple-mobile-web-app-title" content="00631L 正二研究室"'));

@@ -300,6 +300,12 @@ v3.41 holdings exposure compare:
 - TX futures, TSMC stock, stock assets, futures assets, and cash/margin are grouped on the same visual scale.
 - Summary: `docs\00631l_v3_41_holdings_exposure_compare_summary.md`.
 
+v3.42 web loading shell:
+
+- `web/index.html` now shows a lightweight 00631L loading shell before Flutter finishes booting.
+- The shell is removed on `flutter-first-frame`, reducing the blank-page feeling on mobile web/PWA startup.
+- Summary: `docs\00631l_v3_42_web_loading_shell_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
