@@ -423,7 +423,7 @@ class _MarketTopBar extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  '00631L 正二研究室',
+                  'ETF 研究室 · 00631L 正二研究室',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelLarge?.copyWith(
@@ -1003,13 +1003,26 @@ class _QuoteHeader extends StatelessWidget {
                         runSpacing: 8,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Text(
-                            '00631L 正二研究室',
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              color: headerForeground,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0,
-                            ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ETF 研究室',
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  color: headerForeground,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0,
+                                ),
+                              ),
+                              Text(
+                                '00631L 正二研究室',
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  color: mutedForeground,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0,
+                                ),
+                              ),
+                            ],
                           ),
                           _HeaderPill(
                             label: _frontendDataMode,
@@ -1019,7 +1032,7 @@ class _QuoteHeader extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        '官方內容物、盤中預估淨值、歷史回測、持倉與 AI 摘要。',
+                        '00631L 是第一個完整研究室；公開 PWA、歷史回測、持倉與 AI 摘要已可日常使用。',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: mutedForeground,
                           height: 1.35,
@@ -3074,13 +3087,9 @@ class _HistoryBacktestSection extends StatelessWidget {
           data: data,
         ),
         const SizedBox(height: 10),
-        _CompactExpansionPanel(
-          title: '回測工具',
-          subtitle: '與歷史資料放在同一頁；需要調整參數時再展開。',
-          child: _BacktestSection(
-            key: const ValueKey('00631l-backtest-view'),
-            data: data,
-          ),
+        _BacktestSection(
+          key: const ValueKey('00631l-backtest-view'),
+          data: data,
         ),
       ],
     );
@@ -3826,6 +3835,50 @@ class _SettingsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
+        const _SectionBlock(
+          title: 'App 上架準備',
+          subtitle: '目前是 PWA 完成版；原生 Android / iOS 還需要平台打包、簽章與商店資料。',
+          child: _StatusList(
+            items: [
+              _StatusItem(
+                label: 'PWA',
+                status: 'ready',
+                detail:
+                    '公開 GitHub Pages root 可直接開啟 ETF 研究室，並保留 static history fallback。',
+                action: '可先用 PWA 日常使用與收集 store 截圖素材。',
+              ),
+              _StatusItem(
+                label: 'Android',
+                status: 'planned',
+                detail:
+                    '目前 repo 尚未加入 Android 原生 scaffold 與 release signing 設定。',
+                action: '下一階段建立 Android shell、app id、icon、簽章與 store build 流程。',
+              ),
+              _StatusItem(
+                label: 'iOS',
+                status: 'planned',
+                detail:
+                    'iOS 上架需要 macOS、Xcode、Apple Developer 與 App Store Connect。',
+                action: '下一階段準備 bundle id、簽章、隱私資訊與 TestFlight 流程。',
+              ),
+              _StatusItem(
+                label: '隱私與支援',
+                status: 'needed',
+                detail:
+                    '正式商店頁需要 privacy policy、support URL、app icon、截圖與資料使用說明。',
+                action: '先整理 policy 草稿與上架素材清單；不把任何 key 放進 repo。',
+              ),
+              _StatusItem(
+                label: 'Live backend',
+                status: 'ready template',
+                detail:
+                    'public backend 已有 Docker / Render / CORS / persistent data 設計。',
+                action: '正式上架前確認 backend uptime、persistent volume 與公開 API URL。',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
         _CompactExpansionPanel(
           title: '資料模式與完整度',
           subtitle: 'static 歷史資料、live backend 與內容物狀態需要時再看。',
@@ -3966,7 +4019,7 @@ class _SettingsHeaderStrip extends StatelessWidget {
             ),
             const SizedBox(height: 7),
             Text(
-              '帳戶、外觀與本機資料放在前面；資料診斷需要時再展開。',
+              '帳戶、外觀、上架準備與本機資料放在前面；資料診斷需要時再展開。',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodySmall?.copyWith(

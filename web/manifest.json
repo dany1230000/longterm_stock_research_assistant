@@ -1,12 +1,12 @@
 {
-    "name": "00631L 正二研究室",
-    "short_name": "00631L",
+    "name": "ETF 研究室 · 00631L 正二研究室",
+    "short_name": "ETF研究室",
     "start_url": "./",
     "scope": "./",
     "display": "standalone",
     "background_color": "#F8FAFC",
     "theme_color": "#0F766E",
-    "description": "00631L 正二研究室：官方內容物、歷史資料、回測、折溢價與資料狀態 PWA。",
+    "description": "ETF 研究室：00631L 正二研究室是第一個完整研究室，提供官方內容物、歷史資料、回測、折溢價與資料狀態 PWA。",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

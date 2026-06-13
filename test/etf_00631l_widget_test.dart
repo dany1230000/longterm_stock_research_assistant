@@ -15,7 +15,8 @@ void main() {
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 
-    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('ETF 研究室'), findsWidgets);
+    expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.textContaining('市價'), findsWidgets);
     expect(find.textContaining('預估淨值'), findsWidgets);
     expect(find.text('折溢價'), findsWidgets);
@@ -63,7 +64,7 @@ void main() {
 
     await _pumpLab(tester, Mock00631LRepository());
 
-    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.text('核心資料'), findsOneWidget);
     expect(find.text('資料完整度'), findsNothing);
     expect(find.text('累積報酬'), findsOneWidget);
@@ -94,7 +95,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.text('今日狀態'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -121,7 +122,7 @@ void main() {
     await _pumpLab(tester, repository, settle: false);
     await tester.pump();
 
-    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.text('核心資料'), findsOneWidget);
     expect(find.textContaining('先顯示首屏資料'), findsOneWidget);
     expect(find.text('圖表與曝險'), findsNothing);
@@ -148,7 +149,7 @@ void main() {
 
     expect(find.text('核心資料'), findsOneWidget);
     expect(find.textContaining('完整資料暫時不可用'), findsOneWidget);
-    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     _expectNoTradingActionText();
   });
 
@@ -167,8 +168,10 @@ void main() {
     expect(find.text('累積報酬'), findsWidgets);
     expect(find.text('最近 30 筆價格表'), findsOneWidget);
     expect(find.text('每日 holdings history'), findsOneWidget);
-    expect(find.text('回測快覽'), findsNothing);
-    expect(find.text('回測工具'), findsOneWidget);
+    expect(find.text('回測快覽'), findsOneWidget);
+    expect(find.text('回測工具'), findsNothing);
+    expect(find.text('開始日期'), findsOneWidget);
+    expect(find.text('結束日期'), findsOneWidget);
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     _expectNoTradingActionText();
   });
@@ -189,11 +192,6 @@ void main() {
     await _pumpLab(tester, _PriceHistoryRepository());
 
     await _tapSection(tester, 'historyBacktest');
-    await tester.pumpAndSettle();
-
-    await tester.ensureVisible(find.text('回測工具'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('回測工具'));
     await tester.pumpAndSettle();
 
     expect(find.text('回測快覽'), findsOneWidget);
@@ -275,13 +273,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('設定'), findsWidgets);
     expect(find.text('帳戶與偏好'), findsOneWidget);
+    expect(find.text('App 上架準備'), findsOneWidget);
     expect(find.text('資料模式與完整度'), findsOneWidget);
     expect(find.text('進階維護診斷'), findsOneWidget);
+    expect(find.text('Android'), findsOneWidget);
+    expect(find.text('iOS'), findsOneWidget);
+    expect(find.text('隱私與支援'), findsOneWidget);
     expect(find.text('內容物歷史'), findsNothing);
     expect(find.text('盤中 NAV / 折溢價'), findsNothing);
     expect(find.text('TX live'), findsNothing);
 
-    await tester.drag(find.byType(ListView), const Offset(0, -220));
+    await tester.scrollUntilVisible(
+      find.text('資料模式與完整度'),
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('資料模式與完整度'));
     await tester.pumpAndSettle();
@@ -300,7 +306,7 @@ void main() {
       ),
     );
 
-    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
     expect(find.text('設定'), findsWidgets);
@@ -317,7 +323,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.dark_mode));
     await tester.pumpAndSettle();
 
-    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 }

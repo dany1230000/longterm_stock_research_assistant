@@ -11,7 +11,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('ETF 研究室'), findsWidgets);
+    expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);
@@ -43,7 +44,7 @@ void main() {
 
   testWidgets('primary and secondary routes render', (tester) async {
     final routes = <String, String>{
-      '/': '00631L 正二研究室',
+      '/': 'ETF 研究室 · 00631L 正二研究室',
       '/dashboard': '中長線股票研究助理',
       '/stocks/2330': '股票基本資訊',
       '/screener': '條件設定',
@@ -51,7 +52,7 @@ void main() {
       '/journal': '研究筆記',
       '/settings': '資料來源說明',
       '/etfs': 'ETF 比較',
-      '/00631l-lab': '00631L 正二研究室',
+      '/00631l-lab': 'ETF 研究室 · 00631L 正二研究室',
       '/portfolio': '投資組合',
       '/alerts': '提醒中心',
     };
@@ -65,7 +66,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text(entry.value), findsWidgets);
+      expect(find.textContaining(entry.value), findsWidgets);
     }
   });
 
@@ -89,7 +90,7 @@ void main() {
     await tester.tap(find.text('進入 00631L 正二研究室'));
     await tester.pumpAndSettle();
 
-    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.textContaining('市價'), findsWidgets);
     expect(find.text('更多資料'), findsOneWidget);
   });

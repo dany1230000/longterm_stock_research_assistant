@@ -127,6 +127,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_public_deployment.md",
         "docs/00631l_pwa_usage.md",
         "docs/00631l_app_store_path.md",
+        "docs/00631l_app_store_release_plan.md",
         "docs/00631l_v2_2_public_deploy_ready_summary.md",
         "docs/00631l_backtest_guide.md",
         "docs/00631l_position_tracking.md",
@@ -182,6 +183,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v3_47_split_adjusted_history_summary.md",
         "docs/00631l_v3_48_home_chart_visible_summary.md",
         "docs/00631l_v3_49_etf_research_room_ia_summary.md",
+        "docs/00631l_v4_0_app_store_foundation_summary.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
@@ -251,16 +253,18 @@ def _pwa_metadata_check() -> dict[str, Any]:
             "stdoutTail": "",
             "stderrTail": str(error),
         }
-    if manifest.get("name") != "00631L 正二研究室":
-        failures.append("manifest name is not 00631L dedicated")
-    if manifest.get("short_name") != "00631L":
-        failures.append("manifest short_name is not 00631L")
+    manifest_name = str(manifest.get("name") or "")
+    manifest_short_name = str(manifest.get("short_name") or "")
+    if "ETF 研究室" not in manifest_name or "00631L 正二研究室" not in manifest_name:
+        failures.append("manifest name is not ETF/00631L dedicated")
+    if manifest_short_name not in {"ETF研究室", "00631L"}:
+        failures.append("manifest short_name is not ETF/00631L")
     if manifest.get("start_url") != "./":
         failures.append("manifest start_url does not open root")
     if manifest.get("scope") != "./":
         failures.append("manifest scope is not root")
-    if "00631L 正二研究室" not in index:
-        failures.append("index title/app metadata missing 00631L")
+    if "ETF 研究室" not in index or "00631L 正二研究室" not in index:
+        failures.append("index title/app metadata missing ETF/00631L")
     if "LongTerm Stock Research Assistant" in index:
         failures.append("index still exposes generic app title")
     return {

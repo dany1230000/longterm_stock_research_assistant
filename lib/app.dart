@@ -28,7 +28,7 @@ class _LongTermStockResearchAppState extends State<LongTermStockResearchApp> {
       valueListenable: appThemeModeNotifier,
       builder: (context, themeMode, _) {
         return MaterialApp.router(
-          title: '00631L 正二研究室',
+          title: 'ETF 研究室 · 00631L',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,

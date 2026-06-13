@@ -1,8 +1,8 @@
-# 00631L 正二研究室
+# ETF 研究室 · 00631L 正二研究室
 
 ## 00631L lab status
 
-00631L lab v3.2 is a standalone 00631L PWA. The public root URL opens the 00631L app directly, without first showing the old general research dashboard.
+v4.0 is the App Store foundation release. The app is now framed as `ETF 研究室`, with `00631L 正二研究室` as the first complete research room. The public root URL opens the 00631L app directly, without first showing the old general research dashboard.
 
 Public root URL:
 
@@ -16,7 +16,7 @@ Compatibility route:
 https://dany1230000.github.io/longterm_stock_research_assistant/#/00631l-lab
 ```
 
-Start from `docs/00631l_docs_index.md`, `docs/00631l_v3_2_standalone_pwa_summary.md`, or `docs/00631l_v3_3_live_public_summary.md`.
+Start from `docs/00631l_docs_index.md`, `docs/00631l_v4_0_app_store_foundation_summary.md`, or `docs/00631l_app_store_release_plan.md`.
 
 Daily helper:
 
@@ -100,6 +100,15 @@ v3.49 ETF research room information architecture:
 - Backtest inputs now include start/end date selectors.
 - AI analysis is framed around today's data status and price-deviation context.
 - Summary: `docs\00631l_v3_49_etf_research_room_ia_summary.md`.
+
+v4.0 App Store foundation:
+
+- PWA metadata now uses the `ETF 研究室 · 00631L 正二研究室` product name.
+- History/backtest opens with the backtest form visible instead of hiding it behind an expansion panel.
+- Settings includes an `App 上架準備` checklist for PWA, Android, iOS, privacy/support, and live backend readiness.
+- Native Android / iOS packaging is planned next and requires platform signing and store accounts.
+- Summary: `docs\00631l_v4_0_app_store_foundation_summary.md`.
+- Plan: `docs\00631l_app_store_release_plan.md`.
 
 v3.6 UI refresh:
 

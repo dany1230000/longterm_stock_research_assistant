@@ -52,6 +52,9 @@ This is the main entry point for 00631L lab documentation.
 - Split-adjusted history v3.47 summary: `docs\00631l_v3_47_split_adjusted_history_summary.md`
 - Home chart visible v3.48 summary: `docs\00631l_v3_48_home_chart_visible_summary.md`
 - ETF research room IA v3.49 summary: `docs\00631l_v3_49_etf_research_room_ia_summary.md`
+- App Store foundation release: `docs\00631l_v4_0_app_store_foundation_summary.md`
+- App Store foundation v4.0 summary: `docs\00631l_v4_0_app_store_foundation_summary.md`
+- App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -64,6 +67,7 @@ This is the main entry point for 00631L lab documentation.
 - Position tracking guide: `docs\00631l_position_tracking.md`
 - AI analysis: `docs\00631l_ai_analysis.md`
 - Future App Store path: `docs\00631l_app_store_path.md`
+- App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Troubleshooting: `docs\00631l_troubleshooting.md`
 - Maintenance index: `docs\00631l_maintenance_index.md`
 - Remote maintenance: `docs\00631l_remote_maintenance.md`
@@ -111,6 +115,7 @@ This is the main entry point for 00631L lab documentation.
 - Live backend deployment guide: `docs\00631l_live_backend_deployment.md`
 - PWA usage guide: `docs\00631l_pwa_usage.md`
 - App Store path: `docs\00631l_app_store_path.md`
+- App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Deployment bootstrap: `scripts\00631l_bootstrap_deploy.cmd`
 - Deployment precheck: `scripts\00631l_deploy_precheck.cmd`
 - Public config check: `scripts\00631l_check_public_config.cmd`
