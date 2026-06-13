@@ -54,7 +54,9 @@ class _LeveragedEtf00631LScreenState
   @override
   Widget build(BuildContext context) {
     final fastValue = ref.watch(etf00631LFastLabProvider);
-    final fullValue = ref.watch(etf00631LLabProvider);
+    final fullValue = fastValue.hasValue || fastValue.hasError
+        ? ref.watch(etf00631LLabProvider)
+        : const AsyncValue<Etf00631LLabData>.loading();
     final displayData = fullValue.valueOrNull ?? fastValue.valueOrNull;
     final detailsLoading = !fullValue.hasValue && fullValue.isLoading;
     final detailsError = fullValue.hasError && !fullValue.hasValue

@@ -98,6 +98,7 @@ void main() {
     expect(find.text('今日狀態'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(repository.fullRequested, isFalse);
     for (final section in const [
       'overview',
       'holdings',
@@ -415,6 +416,7 @@ class _NoHistoryRepository extends Mock00631LRepository {
 
 class _PendingLabRepository extends Mock00631LRepository {
   final Completer<Etf00631LLabData> _completer = Completer<Etf00631LLabData>();
+  bool fullRequested = false;
 
   @override
   Future<Etf00631LLabData> fetchFastLabData() {
@@ -423,6 +425,7 @@ class _PendingLabRepository extends Mock00631LRepository {
 
   @override
   Future<Etf00631LLabData> fetchLabData() {
+    fullRequested = true;
     return _completer.future;
   }
 
