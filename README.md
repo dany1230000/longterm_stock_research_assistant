@@ -93,6 +93,14 @@ v3.48 home chart visibility:
 - Deeper comparison and technical details remain collapsed below.
 - Summary: `docs\00631l_v3_48_home_chart_visible_summary.md`.
 
+v3.49 ETF research room information architecture:
+
+- Bottom navigation now focuses on overview, history/backtest, position, AI, and settings.
+- Official holdings highlights are merged into the overview so the first screen stays concise.
+- Backtest inputs now include start/end date selectors.
+- AI analysis is framed around today's data status and price-deviation context.
+- Summary: `docs\00631l_v3_49_etf_research_room_ia_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.

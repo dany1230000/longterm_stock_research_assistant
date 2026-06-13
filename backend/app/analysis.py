@@ -150,31 +150,32 @@ def _bullets(
     daily_cycle: dict[str, Any],
 ) -> list[str]:
     bullets = [
-        f"今日資料狀態為 {_readiness_label(readiness_level)}；本摘要只描述資料狀態與歷史變化。",
+        f"今日資料狀態：{_readiness_label(readiness_level)}。本摘要只描述資料狀態、內容物變化與價格偏離。",
     ]
 
     latest_holding = _nested(operations, "holdingsHistory", "latestTradeDate")
     holding_status = _nested(operations, "holdingsHistory", "sourceStatus") or holdings.get("sourceStatus")
     if latest_holding:
         bullets.append(
-            f"official holdings 最新日期為 {latest_holding}，sourceStatus {holding_status}。"
+            f"今日使用的 official holdings 日期為 {latest_holding}，sourceStatus {holding_status}；這是每日快照，不是盤中即時內容物。"
         )
     else:
-        bullets.append("official holdings history 尚無本機紀錄，請先執行 daily cycle。")
+        bullets.append("今日尚無 official holdings history 紀錄；請先執行 daily cycle 建立每日快照。")
 
     latest_intraday = _nested(operations, "intradayNavHistory", "latestDataTime") or intraday.get("lastDataTime")
     intraday_status = _nested(operations, "intradayNavHistory", "sourceStatus") or intraday.get("sourceStatus")
+    premium = intraday.get("averagePremiumDiscountPct")
     if latest_intraday:
         bullets.append(
-            f"intraday NAV 最新資料時間為 {latest_intraday}，sourceStatus {intraday_status}。"
+            f"盤中 NAV 最新資料時間為 {latest_intraday}，sourceStatus {intraday_status}；平均折溢價 {_signed_pct(premium)}，狀態 {_premium_state_label(premium)}。"
         )
     else:
-        bullets.append("intraday NAV 尚無可用紀錄，折溢價狀態可能無法判斷。")
+        bullets.append("今日盤中 NAV 尚無可用紀錄，折溢價狀態暫時無法判斷。")
 
     latest_point = _latest_holding_point(holdings)
     if latest_point:
         bullets.append(
-            "最新 holdings 摘要："
+            "今日內容物重點："
             f"TX 權重 {_pct(latest_point.get('txWeightPct'))}，"
             f"台積電權重 {_pct(latest_point.get('tsmcWeightPct'))}，"
             f"股票/期貨/現金保證金 {_pct(latest_point.get('stockExposurePct'))} / "
@@ -182,24 +183,23 @@ def _bullets(
             f"{_pct(latest_point.get('cashAndMarginPct'))}。"
         )
 
-    premium = intraday.get("averagePremiumDiscountPct")
     if premium is not None:
         bullets.append(
-            f"今日 intraday NAV 平均折溢價為 {_signed_pct(premium)}；這是價格偏離提示。"
+            f"今日折溢價偏離為 {_signed_pct(premium)}，屬於 {_premium_state_label(premium)}；這是價格偏離提示。"
         )
 
     if price_history.get("rowCount", 0):
         bullets.append(
-            "歷史價格 coverage "
+            "歷史價格背景：coverage "
             f"{price_history.get('coverageStart')} - {price_history.get('coverageEnd')}，"
             f"累積報酬 {_signed_pct(price_history.get('totalReturnPct'))}，"
             f"最大回撤 {_signed_pct(price_history.get('maxDrawdownPct'))}。"
         )
     else:
-        bullets.append("歷史價格尚未建立 official cache，回測區會顯示資料不足。")
+        bullets.append("歷史價格尚未建立 official cache，歷史回測區會顯示資料不足。")
 
     bullets.append(
-        "daily report/export/backup 狀態："
+        "維護狀態："
         f"report {report.get('sourceStatus', 'unknown')}，"
         f"export {export.get('sourceStatus', 'unknown')}，"
         f"backup {backup.get('sourceStatus', 'unknown')}。"
@@ -305,6 +305,20 @@ def _readiness_label(level: str) -> str:
         "attention": "需要觀察",
         "action_needed": "需要處理",
     }.get(level, "資料不足")
+
+
+def _premium_state_label(value: Any) -> str:
+    number = _number(value)
+    if number is None:
+        return "資料不足"
+    absolute = abs(number)
+    if absolute <= 0.20:
+        return "正常"
+    if absolute <= 0.50:
+        return "觀察"
+    if absolute <= 1.00:
+        return "折價偏深" if number < 0 else "溢價偏高"
+    return "折價極端" if number < 0 else "溢價極端"
 
 
 def _pct(value: Any) -> str:

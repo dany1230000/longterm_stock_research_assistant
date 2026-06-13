@@ -51,6 +51,7 @@ This is the main entry point for 00631L lab documentation.
 - First-screen/live-data clarity v3.46 summary: `docs\00631l_v3_46_first_screen_live_clarity_summary.md`
 - Split-adjusted history v3.47 summary: `docs\00631l_v3_47_split_adjusted_history_summary.md`
 - Home chart visible v3.48 summary: `docs\00631l_v3_48_home_chart_visible_summary.md`
+- ETF research room IA v3.49 summary: `docs\00631l_v3_49_etf_research_room_ia_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -176,6 +177,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - First-screen/live-data clarity release: `docs\00631l_v3_46_first_screen_live_clarity_summary.md`
 - Split-adjusted history release: `docs\00631l_v3_47_split_adjusted_history_summary.md`
 - Home chart visible release: `docs\00631l_v3_48_home_chart_visible_summary.md`
+- ETF research room IA release: `docs\00631l_v3_49_etf_research_room_ia_summary.md`
 
 ## Scope Boundary
 

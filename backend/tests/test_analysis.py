@@ -13,6 +13,12 @@ class RuleBasedAnalysisTests(unittest.TestCase):
         self.assertEqual(payload["readinessLevel"], "ready")
         self.assertEqual(payload["disclaimer"], "非買賣建議")
         self.assertGreaterEqual(len(payload["bullets"]), 3)
+        self.assertTrue(
+            any("今日折溢價偏離" in item for item in payload["bullets"])
+        )
+        self.assertTrue(
+            any("今日內容物重點" in item for item in payload["bullets"])
+        )
         self.assertIn("official", payload["sourceStatuses"]["holdingsHistory"])
         self.assertEqual(payload["actionItems"], ["目前沒有必要的程式操作；請持續確認官方資料時間。"])
 

@@ -37,14 +37,12 @@ void main() {
     expect(find.text('官方 NAV'), findsNothing);
     expect(find.textContaining('Mock 預設'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
-    expect(find.text('內容物'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);
-    expect(find.text('AI 分析'), findsWidgets);
+    expect(find.text('AI'), findsWidgets);
     expect(find.text('設定'), findsWidgets);
     for (final section in const [
       'overview',
-      'holdings',
       'historyBacktest',
       'position',
       'ai',
@@ -103,7 +101,6 @@ void main() {
     expect(repository.fullRequested, isFalse);
     for (final section in const [
       'overview',
-      'holdings',
       'historyBacktest',
       'position',
       'ai',
@@ -202,6 +199,8 @@ void main() {
     expect(find.text('回測快覽'), findsOneWidget);
     expect(find.textContaining('回測不代表未來表現'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
+    expect(find.text('開始日期'), findsOneWidget);
+    expect(find.text('結束日期'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
     expect(find.text('一次投入'), findsOneWidget);
     expect(find.text('定期定額'), findsWidgets);
@@ -227,7 +226,8 @@ void main() {
     expect(find.textContaining('local-only'), findsWidgets);
   });
 
-  testWidgets('phone holdings tables render as readable cards', (tester) async {
+  testWidgets('overview includes official holdings digest on phone',
+      (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(() {
@@ -237,30 +237,18 @@ void main() {
 
     await _pumpLab(tester, Mock00631LRepository());
 
-    await _tapSection(tester, 'holdings');
-    await tester.pumpAndSettle();
-
-    expect(find.text('內容物快覽'), findsOneWidget);
-    expect(find.textContaining('官方每日資料，不是盤中即時內容物'), findsOneWidget);
-    expect(find.text('曝險比較'), findsOneWidget);
+    expect(find.byKey(const ValueKey('00631l-section-holdings')), findsNothing);
+    expect(find.text('官方內容物重點'), findsOneWidget);
+    expect(find.textContaining('每日官方快照'), findsOneWidget);
     expect(find.text('TX 期貨'), findsWidgets);
     expect(find.text('台積電現股'), findsOneWidget);
-    expect(find.text('內容物歷史覆蓋'), findsOneWidget);
-    expect(find.text('官方每日內容物'), findsOneWidget);
-    expect(find.text('主要內容物'), findsOneWidget);
-    expect(find.text('完整明細'), findsOneWidget);
-    expect(find.text('完整股票明細'), findsOneWidget);
-    expect(find.text('完整期貨明細'), findsOneWidget);
-    expect(find.text('完整現金 / 保證金明細'), findsOneWidget);
-    expect(find.text('STK'), findsWidgets);
-    expect(find.text('FUT'), findsWidgets);
-    expect(find.text('CASH'), findsWidgets);
-    expect(find.text('股票資產'), findsWidgets);
-    expect(find.text('期貨資產'), findsWidgets);
+    expect(find.text('股票 / 期貨 / 現金'), findsOneWidget);
+    expect(find.text('TX'), findsWidgets);
+    expect(find.text('2330'), findsOneWidget);
+    expect(find.text('MIX'), findsOneWidget);
     expect(find.byType(DataTable), findsNothing);
     for (final section in const [
       'overview',
-      'holdings',
       'historyBacktest',
       'position',
       'ai',
@@ -277,8 +265,8 @@ void main() {
 
     await _tapSection(tester, 'ai');
     await tester.pumpAndSettle();
-    expect(find.text('AI 快覽'), findsOneWidget);
-    expect(find.text('AI 分析摘要'), findsOneWidget);
+    expect(find.text('今日 AI 快覽'), findsOneWidget);
+    expect(find.text('今日 AI 分析摘要'), findsOneWidget);
     expect(find.text('完整資料日報'), findsOneWidget);
     expect(find.textContaining('rule_based'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);

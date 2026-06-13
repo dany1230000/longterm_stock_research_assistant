@@ -97,10 +97,9 @@ class _LeveragedEtf00631LScreenState
 
 enum _LabSection {
   overview('總覽', Icons.dashboard_outlined),
-  holdings('內容物', Icons.inventory_2_outlined),
   historyBacktest('歷史回測', Icons.query_stats_outlined),
   position('持倉', Icons.account_balance_wallet_outlined),
-  ai('AI 分析', Icons.psychology_alt_outlined),
+  ai('AI', Icons.psychology_alt_outlined),
   settings('設定', Icons.manage_accounts_outlined);
 
   const _LabSection(this.label, this.icon);
@@ -189,8 +188,6 @@ class _LabContent extends StatelessWidget {
     switch (selectedSection) {
       case _LabSection.overview:
         return _OverviewSection(data: data);
-      case _LabSection.holdings:
-        return _HoldingsSection(data: data);
       case _LabSection.historyBacktest:
         return _HistoryBacktestSection(data: data);
       case _LabSection.position:
@@ -1607,6 +1604,8 @@ class _OverviewSection extends StatelessWidget {
         const SizedBox(height: 8),
         _OverviewAtAGlancePanel(data: data),
         const SizedBox(height: 8),
+        _OverviewHoldingsDigestPanel(data: data),
+        const SizedBox(height: 8),
         _AlwaysExpandedPanel(
           title: '圖表與曝險',
           subtitle: '近 60 日收盤與官方每日曝險；需要比較時再展開。',
@@ -1742,6 +1741,109 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             _AtAGlanceMetricGrid(metrics: metrics),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewHoldingsDigestPanel extends StatelessWidget {
+  const _OverviewHoldingsDigestPanel({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final snapshot = data.snapshot;
+    final txLine = _primaryFuturesLine(snapshot);
+    final tsmcLine = _stockHoldingByCode(snapshot, '2330');
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'DAY'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '官方內容物重點',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                _CompactTextBadge(
+                  label: formatTaiwanDate(snapshot.tradeDate),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '每日官方快照，不是盤中即時內容物；盤中狀態看 NAV 與折溢價。',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketMutedText,
+                fontWeight: FontWeight.w700,
+                height: 1.35,
+              ),
+            ),
+            const SizedBox(height: 10),
+            _InfoCardGrid(
+              children: [
+                _HoldingInfoCard(
+                  badge: 'TX',
+                  title: 'TX 期貨',
+                  primary: txLine == null
+                      ? 'unavailable'
+                      : formatNullablePercent(txLine.weightPct),
+                  secondary: txLine == null
+                      ? '官方快照未列 TX'
+                      : '${txLine.code} / ${txLine.contractMonth}',
+                  caption: '官方每日期貨權重',
+                  progressValue: txLine == null
+                      ? null
+                      : (txLine.weightPct.abs() / 220).clamp(0, 1).toDouble(),
+                ),
+                _HoldingInfoCard(
+                  badge: '2330',
+                  title: '台積電現股',
+                  primary: tsmcLine == null
+                      ? 'unavailable'
+                      : formatNullablePercent(tsmcLine.weightPct),
+                  secondary: tsmcLine == null
+                      ? '官方快照未列 2330'
+                      : formatInteger(tsmcLine.quantity),
+                  caption: '官方每日股票權重',
+                  progressValue: tsmcLine == null
+                      ? null
+                      : (tsmcLine.weightPct.abs() / 100).clamp(0, 1).toDouble(),
+                ),
+                _HoldingInfoCard(
+                  badge: 'MIX',
+                  title: '股票 / 期貨 / 現金',
+                  primary:
+                      '${formatNullablePercent(snapshot.stockExposureWeightPct)} / ${formatNullablePercent(snapshot.futuresExposureWeightPct)}',
+                  secondary:
+                      '現金 ${formatNullablePercent(snapshot.cashAndMarginWeightPct)}',
+                  caption: '官方資產結構',
+                  progressValue: (snapshot.futuresExposureWeightPct.abs() / 220)
+                      .clamp(0, 1)
+                      .toDouble(),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -2561,6 +2663,7 @@ class _MiniStatusBadge extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _HoldingsSection extends StatelessWidget {
   const _HoldingsSection({required this.data});
 
@@ -3096,6 +3199,15 @@ class _BacktestSectionState extends State<_BacktestSection> {
                       ],
                     ),
                     const SizedBox(height: 12),
+                    _BacktestDateRangeControls(
+                      startDate: _startDate,
+                      endDate: _endDate,
+                      firstDate: history.coverageStart,
+                      lastDate: history.coverageEnd,
+                      onStartTap: _selectStartDate,
+                      onEndTap: _selectEndDate,
+                    ),
+                    const SizedBox(height: 12),
                     _InputGrid(
                       children: [
                         _NumberField(
@@ -3168,6 +3280,173 @@ class _BacktestSectionState extends State<_BacktestSection> {
                 ),
         ),
       ],
+    );
+  }
+
+  Future<void> _selectStartDate() async {
+    final history = widget.data.priceHistory;
+    final picked = await _pickBacktestDate(
+      context: context,
+      initialDate: _startDate ?? history.coverageStart ?? DateTime.now(),
+      firstDate: history.coverageStart,
+      lastDate: history.coverageEnd,
+      helpText: '選擇開始日期',
+    );
+    if (picked == null) {
+      return;
+    }
+    setState(() {
+      _startDate = picked;
+      if (_endDate != null && _endDate!.isBefore(picked)) {
+        _endDate = picked;
+      }
+    });
+  }
+
+  Future<void> _selectEndDate() async {
+    final history = widget.data.priceHistory;
+    final picked = await _pickBacktestDate(
+      context: context,
+      initialDate: _endDate ?? history.coverageEnd ?? DateTime.now(),
+      firstDate: history.coverageStart,
+      lastDate: history.coverageEnd,
+      helpText: '選擇結束日期',
+    );
+    if (picked == null) {
+      return;
+    }
+    setState(() {
+      _endDate = picked;
+      if (_startDate != null && _startDate!.isAfter(picked)) {
+        _startDate = picked;
+      }
+    });
+  }
+}
+
+class _BacktestDateRangeControls extends StatelessWidget {
+  const _BacktestDateRangeControls({
+    required this.startDate,
+    required this.endDate,
+    required this.firstDate,
+    required this.lastDate,
+    required this.onStartTap,
+    required this.onEndTap,
+  });
+
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
+  final VoidCallback onStartTap;
+  final VoidCallback onEndTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 520;
+        final children = [
+          _BacktestDateButton(
+            label: '開始日期',
+            value: _dateOrDash(startDate),
+            caption: firstDate == null ? 'history start unavailable' : '可選起點',
+            onTap: onStartTap,
+          ),
+          _BacktestDateButton(
+            label: '結束日期',
+            value: _dateOrDash(endDate),
+            caption: lastDate == null ? 'history end unavailable' : '可選終點',
+            onTap: onEndTap,
+          ),
+        ];
+        if (compact) {
+          return Column(
+            children: [
+              for (var index = 0; index < children.length; index += 1) ...[
+                if (index > 0) const SizedBox(height: 8),
+                children[index],
+              ],
+            ],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: children[0]),
+            const SizedBox(width: 8),
+            Expanded(child: children[1]),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _BacktestDateButton extends StatelessWidget {
+  const _BacktestDateButton({
+    required this.label,
+    required this.value,
+    required this.caption,
+    required this.onTap,
+  });
+
+  final String label;
+  final String value;
+  final String caption;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: onTap,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: theme.colorScheme.outlineVariant),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: [
+              Icon(
+                Icons.calendar_today_outlined,
+                size: 18,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      value,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    Text(
+                      caption,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -3419,8 +3698,8 @@ class _AiSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionHeaderCard(
-          title: 'AI 快覽',
-          subtitle: 'rule_based 分析；只解釋資料狀態、歷史變化與風險暴露。',
+          title: '今日 AI 快覽',
+          subtitle: 'rule_based 分析；聚焦今日資料時間、內容物、折溢價偏離與維護狀態。',
           icon: Icons.psychology_alt_outlined,
           badges: [
             'AI',
@@ -3451,8 +3730,8 @@ class _AiSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: 'AI 分析摘要',
-          subtitle: '預設 rule_based，不需要 API key。只解釋資料狀態、歷史變化與風險暴露。',
+          title: '今日 AI 分析摘要',
+          subtitle: '預設 rule_based，不需要 API key。只解釋今日資料狀態、內容物變化與價格偏離。',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -5687,6 +5966,29 @@ String _dateTimeOrDash(DateTime? dateTime) {
   return dateTime == null
       ? 'unavailable'
       : formatTaiwanDateTimeSeconds(dateTime);
+}
+
+Future<DateTime?> _pickBacktestDate({
+  required BuildContext context,
+  required DateTime initialDate,
+  required DateTime? firstDate,
+  required DateTime? lastDate,
+  required String helpText,
+}) {
+  final earliest = firstDate ?? DateTime(2014, 10, 31);
+  final latest = lastDate ?? DateTime.now();
+  final boundedInitial = initialDate.isBefore(earliest)
+      ? earliest
+      : initialDate.isAfter(latest)
+          ? latest
+          : initialDate;
+  return showDatePicker(
+    context: context,
+    firstDate: earliest,
+    lastDate: latest,
+    initialDate: boundedInitial,
+    helpText: helpText,
+  );
 }
 
 String _monthDay(DateTime date) {
