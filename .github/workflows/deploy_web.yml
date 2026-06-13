@@ -45,7 +45,7 @@ jobs:
         run: flutter test
 
       - name: Export static 00631L data
-        run: python backend/scripts/export_static_00631l_data.py --update --strict --min-row-count 1000 --seed-price-history-path backend/seeds/00631l_price_history_seed.jsonl --output-dir web/00631l-static-data
+        run: python backend/scripts/export_static_00631l_data.py --update --strict --min-row-count 2800 --seed-price-history-path backend/seeds/00631l_price_history_seed.jsonl --output-dir web/00631l-static-data
 
       - name: Build web
         shell: bash

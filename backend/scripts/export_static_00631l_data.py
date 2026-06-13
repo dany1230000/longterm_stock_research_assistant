@@ -35,7 +35,7 @@ def main() -> int:
         "--seed-price-history-path",
         default=str(ROOT / "backend" / "seeds" / "00631l_price_history_seed.jsonl"),
     )
-    parser.add_argument("--min-row-count", type=int, default=1000)
+    parser.add_argument("--min-row-count", type=int, default=2800)
     parser.add_argument("--update", action="store_true")
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--status-only", action="store_true")
