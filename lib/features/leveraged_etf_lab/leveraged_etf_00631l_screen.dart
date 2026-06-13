@@ -1672,6 +1672,39 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
     final exposureText = latestHoldings == null
         ? 'history 尚未累積'
         : 'TX ${formatNullablePercent(latestHoldings.txWeightPct)} / 台積電 ${formatNullablePercent(latestHoldings.tsmcWeightPct)}';
+    final metrics = [
+      _AtAGlanceMetricData(
+        label: '官方內容物',
+        value: formatTaiwanDate(data.snapshot.tradeDate),
+        caption: data.snapshot.status.label,
+      ),
+      _AtAGlanceMetricData(
+        label: '盤中 NAV',
+        value: _price(nav?.estimatedNav),
+        caption: nav?.dataTime == null
+            ? '盤中資料暫無'
+            : formatTimeSeconds(nav!.dataTime!),
+      ),
+      _AtAGlanceMetricData(
+        label: '內容物重點',
+        value: exposureText,
+        caption: '官方 history',
+      ),
+      _AtAGlanceMetricData(
+        label: '歷史覆蓋',
+        value: '${formatInteger(history.rowCount)} 筆',
+        caption:
+            '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
+      ),
+      _AtAGlanceMetricData(
+        label: '歷史績效',
+        value: formatSignedNullablePercent(
+          performance.totalReturnPct,
+        ),
+        caption:
+            '最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}',
+      ),
+    ];
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -1716,54 +1749,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
             const SizedBox(height: 7),
             _OverviewDataReadinessStrip(data: data),
             const SizedBox(height: 7),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Row(
-                children: [
-                  _AtAGlanceMetric(
-                    width: 136,
-                    label: '官方內容物',
-                    value: formatTaiwanDate(data.snapshot.tradeDate),
-                    caption: data.snapshot.status.label,
-                  ),
-                  const SizedBox(width: 8),
-                  _AtAGlanceMetric(
-                    width: 132,
-                    label: '盤中 NAV',
-                    value: _price(nav?.estimatedNav),
-                    caption: nav?.dataTime == null
-                        ? '盤中資料暫無'
-                        : formatTimeSeconds(nav!.dataTime!),
-                  ),
-                  const SizedBox(width: 8),
-                  _AtAGlanceMetric(
-                    width: 184,
-                    label: '內容物重點',
-                    value: exposureText,
-                    caption: '官方 history',
-                  ),
-                  const SizedBox(width: 8),
-                  _AtAGlanceMetric(
-                    width: 164,
-                    label: '歷史覆蓋',
-                    value: '${formatInteger(history.rowCount)} 筆',
-                    caption:
-                        '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
-                  ),
-                  const SizedBox(width: 8),
-                  _AtAGlanceMetric(
-                    width: 150,
-                    label: '歷史績效',
-                    value: formatSignedNullablePercent(
-                      performance.totalReturnPct,
-                    ),
-                    caption:
-                        '最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}',
-                  ),
-                ],
-              ),
-            ),
+            _AtAGlanceMetricGrid(metrics: metrics),
           ],
         ),
       ),
@@ -2242,6 +2228,54 @@ class _AtAGlanceMetric extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AtAGlanceMetricData {
+  const _AtAGlanceMetricData({
+    required this.label,
+    required this.value,
+    required this.caption,
+  });
+
+  final String label;
+  final String value;
+  final String caption;
+}
+
+class _AtAGlanceMetricGrid extends StatelessWidget {
+  const _AtAGlanceMetricGrid({required this.metrics});
+
+  final List<_AtAGlanceMetricData> metrics;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth =
+            constraints.hasBoundedWidth ? constraints.maxWidth : 360.0;
+        final columns = maxWidth >= 760
+            ? 5
+            : maxWidth >= 520
+                ? 3
+                : 2;
+        const gap = 6.0;
+        final width = (maxWidth - gap * (columns - 1)) / columns;
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: [
+            for (final metric in metrics)
+              _AtAGlanceMetric(
+                width: width,
+                label: metric.label,
+                value: metric.value,
+                caption: metric.caption,
+              ),
+          ],
+        );
+      },
     );
   }
 }

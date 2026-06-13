@@ -270,6 +270,12 @@ v3.36 overview history performance:
 - This makes the completed price history dataset visible from the first app screen without opening history/backtest.
 - Summary: `docs\00631l_v3_36_overview_history_performance_summary.md`.
 
+v3.37 overview metric grid:
+
+- The overview first-screen metrics now use a responsive grid instead of a horizontal strip.
+- Phone widths show official holdings, intraday NAV, holdings focus, history coverage, and historical performance without requiring sideways scrolling.
+- Summary: `docs\00631l_v3_37_overview_metric_grid_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:
