@@ -264,6 +264,12 @@ v3.35 compact section headers:
 - Contents, history/backtest, position, AI, and settings pages reach their primary content sooner on mobile.
 - Summary: `docs\00631l_v3_35_compact_section_headers_summary.md`.
 
+v3.36 overview history performance:
+
+- The overview `今日一眼看` strip now includes historical cumulative return and maximum drawdown.
+- This makes the completed price history dataset visible from the first app screen without opening history/backtest.
+- Summary: `docs\00631l_v3_36_overview_history_performance_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

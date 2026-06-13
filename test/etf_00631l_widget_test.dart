@@ -31,6 +31,7 @@ void main() {
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
     expect(find.text('內容物重點'), findsOneWidget);
     expect(find.text('歷史覆蓋'), findsOneWidget);
+    expect(find.text('歷史績效'), findsOneWidget);
     expect(find.text('近 60 日收盤'), findsNothing);
     expect(find.text('官方曝險'), findsNothing);
     expect(find.text('官方 NAV'), findsNothing);
@@ -67,6 +68,7 @@ void main() {
     expect(find.text('00631L 正二研究室'), findsNothing);
     expect(find.text('今日一眼看'), findsOneWidget);
     expect(find.text('資料完整度'), findsOneWidget);
+    expect(find.text('歷史績效'), findsOneWidget);
     expect(find.text('圖表與曝險'), findsOneWidget);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);

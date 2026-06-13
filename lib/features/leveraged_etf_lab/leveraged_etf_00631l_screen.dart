@@ -1667,6 +1667,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
     final theme = Theme.of(context);
     final nav = data.intradayNav;
     final history = data.priceHistory.completenessSummary();
+    final performance = data.priceHistory.performance;
     final latestHoldings = data.holdingsHistory.trendSummary().latest;
     final exposureText = latestHoldings == null
         ? 'history 尚未累積'
@@ -1749,6 +1750,16 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                     value: '${formatInteger(history.rowCount)} 筆',
                     caption:
                         '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
+                  ),
+                  const SizedBox(width: 8),
+                  _AtAGlanceMetric(
+                    width: 150,
+                    label: '歷史績效',
+                    value: formatSignedNullablePercent(
+                      performance.totalReturnPct,
+                    ),
+                    caption:
+                        '最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}',
                   ),
                 ],
               ),
