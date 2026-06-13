@@ -1550,7 +1550,7 @@ class _QuoteHeader extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: _StatusWrap(
                 labels: [
-                  'page ${data.status.label}',
+                  'core ${_coreDataStatusLabel(data)}',
                   'holdings ${data.snapshot.status.label}',
                   'intraday ${nav?.status.label ?? 'unavailable'}',
                   'history ${data.priceHistory.sourceStatusLabel}',
@@ -1633,6 +1633,34 @@ String get _frontendDataModeDisplay {
     return '公開靜態';
   }
   return 'Mock 預設';
+}
+
+String _coreDataStatusLabel(Etf00631LLabData data) {
+  final snapshotLabel = data.snapshot.status.label;
+  if (!_isMockOrErrorStatus(snapshotLabel)) {
+    return snapshotLabel;
+  }
+  final navLabel = data.intradayNav?.status.label;
+  if (navLabel != null && !_isMockOrErrorStatus(navLabel)) {
+    return navLabel;
+  }
+  final historyLabel = data.priceHistory.sourceStatusLabel;
+  if (data.priceHistory.points.length >= 2 &&
+      !_isMockOrErrorStatus(historyLabel)) {
+    return historyLabel;
+  }
+  return data.status.label;
+}
+
+String _coreDataStatusDisplay(Etf00631LLabData data) {
+  return _statusDisplay(_coreDataStatusLabel(data));
+}
+
+bool _isMockOrErrorStatus(String label) {
+  final normalized = label.trim().toLowerCase();
+  return normalized == 'mock' ||
+      normalized == 'error' ||
+      normalized == 'unavailable';
 }
 
 String _statusDisplay(String? rawStatus) {
@@ -2088,7 +2116,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                     ),
                   ),
                 ),
-                _CompactTextBadge(label: _statusDisplay(data.status.label)),
+                _CompactTextBadge(label: _coreDataStatusDisplay(data)),
               ],
             ),
             const SizedBox(height: 6),
