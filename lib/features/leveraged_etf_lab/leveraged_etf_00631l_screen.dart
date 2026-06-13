@@ -2527,6 +2527,8 @@ class _HoldingsSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
+        _HoldingsExposureCompare(snapshot: snapshot),
+        const SizedBox(height: 12),
         _SectionBlock(
           title: '官方每日內容物',
           subtitle:
@@ -3661,6 +3663,165 @@ class _ExposureBars extends StatelessWidget {
               ],
             ),
           ),
+      ],
+    );
+  }
+}
+
+class _HoldingsExposureCompare extends StatelessWidget {
+  const _HoldingsExposureCompare({required this.snapshot});
+
+  final EtfDailyHoldingSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final txLine = _primaryFuturesLine(snapshot);
+    final tsmcLine = _stockHoldingByCode(snapshot, '2330');
+    final rows = [
+      _HoldingsCompareItem(
+        label: 'TX 期貨',
+        valuePct: txLine?.weightPct,
+        detail: txLine == null
+            ? '官方快照未列 TX 期貨'
+            : '${txLine.code} / ${txLine.contractMonth}',
+      ),
+      _HoldingsCompareItem(
+        label: '台積電現股',
+        valuePct: tsmcLine?.weightPct,
+        detail: tsmcLine == null
+            ? '官方快照未列 2330'
+            : '${tsmcLine.code} / ${formatInteger(tsmcLine.quantity)}',
+      ),
+      _HoldingsCompareItem(
+        label: '股票資產',
+        valuePct: snapshot.stockExposureWeightPct,
+        detail: '官方資產結構',
+      ),
+      _HoldingsCompareItem(
+        label: '期貨資產',
+        valuePct: snapshot.futuresExposureWeightPct,
+        detail: '官方資產結構',
+      ),
+      _HoldingsCompareItem(
+        label: '現金/保證金',
+        valuePct: snapshot.cashAndMarginWeightPct,
+        detail: '現金、保證金與附買回債券',
+      ),
+    ];
+    final theme = Theme.of(context);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'DAY'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '曝險比較',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                _CompactTextBadge(
+                  label: formatTaiwanDate(snapshot.tradeDate),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '同一張官方每日內容物快照；盤中變化請看 intraday NAV。',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                height: 1.35,
+              ),
+            ),
+            const SizedBox(height: 10),
+            for (final row in rows)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _HoldingsCompareRow(item: row),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HoldingsCompareItem {
+  const _HoldingsCompareItem({
+    required this.label,
+    required this.valuePct,
+    required this.detail,
+  });
+
+  final String label;
+  final double? valuePct;
+  final String detail;
+}
+
+class _HoldingsCompareRow extends StatelessWidget {
+  const _HoldingsCompareRow({required this.item});
+
+  final _HoldingsCompareItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final normalized =
+        ((item.valuePct ?? 0).abs() / 220).clamp(0, 1).toDouble();
+    return Row(
+      children: [
+        SizedBox(
+          width: 92,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              Text(
+                item.detail,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: LinearProgressIndicator(
+            value: normalized,
+            minHeight: 7,
+            borderRadius: BorderRadius.circular(99),
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 62,
+          child: Text(
+            formatNullablePercent(item.valuePct),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ),
       ],
     );
   }

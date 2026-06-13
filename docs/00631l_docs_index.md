@@ -43,6 +43,7 @@ This is the main entry point for 00631L lab documentation.
 - History/backtest merge v3.38 summary: `docs\00631l_v3_38_history_backtest_merge_summary.md`
 - Compact quote NAV line v3.39 summary: `docs\00631l_v3_39_compact_quote_nav_line_summary.md`
 - Live timeout static fallback v3.40 summary: `docs\00631l_v3_40_live_timeout_static_fallback_summary.md`
+- Holdings exposure compare v3.41 summary: `docs\00631l_v3_41_holdings_exposure_compare_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -160,6 +161,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - History/backtest merge release: `docs\00631l_v3_38_history_backtest_merge_summary.md`
 - Compact quote NAV line release: `docs\00631l_v3_39_compact_quote_nav_line_summary.md`
 - Live timeout static fallback release: `docs\00631l_v3_40_live_timeout_static_fallback_summary.md`
+- Holdings exposure compare release: `docs\00631l_v3_41_holdings_exposure_compare_summary.md`
 
 ## Scope Boundary
 

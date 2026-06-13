@@ -294,6 +294,12 @@ v3.40 live timeout static fallback:
 - When the live backend is slow or waking up, the app falls back to static public data faster so history/backtest remain usable.
 - Summary: `docs\00631l_v3_40_live_timeout_static_fallback_summary.md`.
 
+v3.41 holdings exposure compare:
+
+- The holdings page now shows a compact `曝險比較` card near the top.
+- TX futures, TSMC stock, stock assets, futures assets, and cash/margin are grouped on the same visual scale.
+- Summary: `docs\00631l_v3_41_holdings_exposure_compare_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

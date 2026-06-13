@@ -242,6 +242,9 @@ void main() {
 
     expect(find.text('內容物快覽'), findsOneWidget);
     expect(find.textContaining('官方每日資料，不是盤中即時內容物'), findsOneWidget);
+    expect(find.text('曝險比較'), findsOneWidget);
+    expect(find.text('TX 期貨'), findsWidgets);
+    expect(find.text('台積電現股'), findsOneWidget);
     expect(find.text('內容物歷史覆蓋'), findsOneWidget);
     expect(find.text('官方每日內容物'), findsOneWidget);
     expect(find.text('主要內容物'), findsOneWidget);
