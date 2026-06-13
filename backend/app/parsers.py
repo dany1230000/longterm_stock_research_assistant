@@ -581,6 +581,9 @@ def parse_profile(
     error_message: str | None = None,
 ) -> dict[str, Any]:
     text = normalize_text(source)
+    maintenance_message = _yuanta_maintenance_message(source)
+    resolved_status = "unavailable" if maintenance_message else source_status
+    resolved_error = error_message or maintenance_message
     title_fund_name = _regex_text(source, r"<title>\(00631L\)(.*?)\s+-")
     fund_name = (
         _clean_inline(title_fund_name)
@@ -618,14 +621,14 @@ def parse_profile(
         "leverageObjective": "追蹤臺灣50指數單日正向2倍報酬之績效表現。",
         "exposurePolicy": "主要投資國內上市股票及證券相關商品，整體曝險約為基金淨資產價值180%-220%。",
         "primaryTradingMethod": "以做多期貨為主要交易，搭配上市股票與現金/保證金部位。",
-        "sourceStatus": source_status,
-        "sourceContract": None,
+        "sourceStatus": resolved_status,
+        "sourceContract": "yuanta_maintenance" if maintenance_message else None,
         "sourceUrl": source_url,
         "fetchedAt": fetched_at,
         "sourceUpdatedAt": None,
         "dataTime": None,
-        "isStale": False,
-        "errorMessage": error_message,
+        "isStale": bool(maintenance_message),
+        "errorMessage": resolved_error,
     }
 
 
@@ -638,6 +641,18 @@ def parse_holdings(
     error_message: str | None = None,
 ) -> dict[str, Any]:
     text = normalize_text(source)
+    maintenance_message = _yuanta_maintenance_message(source)
+    if maintenance_message:
+        payload = empty_holdings_response(
+            source_url=source_url,
+            fetched_at=fetched_at,
+            error_message=error_message or maintenance_message,
+        )
+        payload["sourceStatus"] = "unavailable"
+        payload["sourceContract"] = "yuanta_maintenance"
+        payload["sourceHash"] = source_hash(source)
+        return payload
+
     live_asset_section = _section_between_any(text, ["資產金額"], ["非商品資產"])
     live_cash_section = _section_between_any(text, ["非商品資產"], ["基金權重-股票", "基金權重-ETF", "基金權重-期貨"])
     live_stock_section = _section_between_any(text, ["基金權重-股票"], ["基金權重-ETF", "基金權重-債券", "基金權重-期貨"])
@@ -707,6 +722,22 @@ def _line_containing(text: str, needle: str) -> str | None:
         if needle in line:
             return line
     return None
+
+
+def _yuanta_maintenance_message(source: str) -> str | None:
+    text = normalize_text(source)
+    raw_has_route = 'layout:"maintenance"' in source or 'routePath:"\\u002Fmaintenance"' in source
+    text_has_notice = "停機公告" in text or ("主機系統維護" in text and "暫停服務" in text)
+    if not raw_has_route and not text_has_notice:
+        return None
+
+    notice = (
+        _line_containing(text, "公告：")
+        or _line_containing(text, "主機系統維護")
+        or _line_containing(text, "暫停服務")
+        or "official maintenance page returned"
+    )
+    return f"Yuanta official page is in maintenance mode: {_clean_inline(notice)}"
 
 
 def _section_between_any(text: str, starts: list[str], ends: list[str]) -> str:

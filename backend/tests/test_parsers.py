@@ -1,7 +1,7 @@
 from pathlib import Path
 import unittest
 
-from backend.app.parsers import parse_holdings, parse_intraday_nav, parse_yuanta_intraday_nav
+from backend.app.parsers import parse_holdings, parse_intraday_nav, parse_profile, parse_yuanta_intraday_nav
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -130,6 +130,40 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(snapshot["sourceStatus"], "error")
         self.assertIsNotNone(snapshot["errorMessage"])
         self.assertEqual(snapshot["stockHoldings"], [])
+
+    def test_yuanta_profile_maintenance_page_is_unavailable(self) -> None:
+        source = (
+            "<title>元大投信 Yuanta ETFs | 停機公告</title>"
+            "<script>window.__NUXT__={layout:\"maintenance\",routePath:\"\\u002Fmaintenance\"}</script>"
+            "<main>公告： 2026/06/13(六)08:00~20:00 止將進行主機系統維護，作業期間將暫停服務。</main>"
+        )
+        profile = parse_profile(
+            source,
+            source_url="fixture://yuanta/basic",
+            fetched_at="2026-06-13T00:00:00+00:00",
+        )
+
+        self.assertEqual(profile["sourceStatus"], "unavailable")
+        self.assertEqual(profile["sourceContract"], "yuanta_maintenance")
+        self.assertTrue(profile["isStale"])
+        self.assertIn("maintenance", profile["errorMessage"])
+
+    def test_yuanta_holdings_maintenance_page_is_unavailable(self) -> None:
+        source = (
+            "<title>元大投信 Yuanta ETFs | 停機公告</title>"
+            "<script>window.__NUXT__={layout:\"maintenance\",routePath:\"\\u002Fmaintenance\"}</script>"
+            "<main>公告： 2026/06/13(六)08:00~20:00 止將進行主機系統維護，作業期間將暫停服務。</main>"
+        )
+        snapshot = parse_holdings(
+            source,
+            source_url="fixture://yuanta/ratio",
+            fetched_at="2026-06-13T00:00:00+00:00",
+        )
+
+        self.assertEqual(snapshot["sourceStatus"], "unavailable")
+        self.assertEqual(snapshot["sourceContract"], "yuanta_maintenance")
+        self.assertEqual(snapshot["stockHoldings"], [])
+        self.assertIn("maintenance", snapshot["errorMessage"])
 
 
 if __name__ == "__main__":

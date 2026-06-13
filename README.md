@@ -306,6 +306,12 @@ v3.42 web loading shell:
 - The shell is removed on `flutter-first-frame`, reducing the blank-page feeling on mobile web/PWA startup.
 - Summary: `docs\00631l_v3_42_web_loading_shell_summary.md`.
 
+v3.43 Yuanta maintenance detection:
+
+- Yuanta Basic/ratio maintenance pages are now detected instead of being parsed as normal official data.
+- Holdings can use cached local history during Yuanta maintenance, with `sourceStatus=cached` and a clear maintenance message.
+- Summary: `docs\00631l_v3_43_yuanta_maintenance_detection_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

@@ -77,16 +77,16 @@ def _smoke_holdings(url: str) -> dict[str, Any]:
 
     try:
         payload = parse_holdings(result["body"], source_url=url, fetched_at=fetched_at)
-        if payload.get("sourceStatus") == "error":
+        if payload.get("sourceStatus") in {"error", "unavailable"}:
             cached = _cached_holdings_summary(
                 fetched_at=fetched_at,
-                error_message=f"holdings parse failed; using cached local history: {payload.get('errorMessage')}",
+                error_message=f"holdings live source unavailable; using cached local history: {payload.get('errorMessage')}",
             )
             if cached is not None:
                 return {**_base_summary(url, result, source_status="cached"), **cached}
         return {
             **_base_summary(url, result, source_status=payload.get("sourceStatus")),
-            "parseSuccess": payload.get("sourceStatus") != "error",
+            "parseSuccess": payload.get("sourceStatus") not in {"error", "unavailable"},
             "parsedTradeDate": payload.get("tradeDate"),
             "fundNetAssetValue": payload.get("fundNetAssetValue"),
             "navPerUnit": payload.get("navPerUnit"),
@@ -345,8 +345,10 @@ def _assess_overall(results: dict[str, dict[str, Any]]) -> dict[str, Any]:
     ratio = results["yuanta_ratio"]
     intraday = results["intraday_nav"]
 
-    if not basic.get("parseSuccess") or basic.get("sourceStatus") == "error":
+    if basic.get("sourceStatus") == "error":
         failures.append(f"Basic source failed: {basic.get('errorMessage')}")
+    elif not basic.get("parseSuccess") or basic.get("sourceStatus") == "unavailable":
+        warnings.append(f"Basic source unavailable: {basic.get('errorMessage')}")
     if not ratio.get("parseSuccess") or ratio.get("sourceStatus") == "error":
         failures.append(f"Ratio source failed: {ratio.get('errorMessage')}")
     elif ratio.get("sourceStatus") == "cached" and ratio.get("errorMessage"):

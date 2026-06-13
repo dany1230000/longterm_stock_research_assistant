@@ -323,7 +323,7 @@ Custodian Fee
             self.assertEqual(payload["sourceContract"], "local_jsonl_history")
             self.assertEqual(payload["sourceUrl"], "local://00631l-holdings-history")
             self.assertEqual(payload["tradeDate"], "2026-06-05")
-            self.assertIn("Live holdings parse failed", payload["errorMessage"])
+            self.assertIn("Live holdings unavailable", payload["errorMessage"])
 
     def test_intraday_nav_history_endpoints_return_saved_samples(self) -> None:
         intraday_fixture = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(encoding="utf-8")

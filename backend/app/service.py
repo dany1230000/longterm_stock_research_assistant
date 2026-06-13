@@ -177,7 +177,8 @@ class Etf00631LService:
                 source_url=self._config.yuanta_profile_url,
                 fetched_at=now,
             )
-            self._cache.set("profile", payload)
+            if payload["sourceStatus"] not in {"error", "unavailable"}:
+                self._cache.set("profile", payload)
             return payload
         except (FetchError, OSError, RuntimeError) as error:
             stale = self._cache.get_any("profile")
@@ -204,7 +205,7 @@ class Etf00631LService:
                 source_url=self._config.yuanta_holdings_url,
                 fetched_at=now,
             )
-            if payload["sourceStatus"] != "error":
+            if payload["sourceStatus"] not in {"error", "unavailable"}:
                 self._cache.set("holdings", payload)
                 if payload["sourceStatus"] == "official":
                     try:
@@ -214,7 +215,7 @@ class Etf00631LService:
             else:
                 fallback = self._holdings_history_fallback(
                     now=now,
-                    error_message=f"Live holdings parse failed: {payload.get('errorMessage')}",
+                    error_message=f"Live holdings unavailable: {payload.get('errorMessage')}",
                 )
                 if fallback is not None:
                     return fallback

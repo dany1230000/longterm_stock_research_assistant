@@ -45,6 +45,7 @@ This is the main entry point for 00631L lab documentation.
 - Live timeout static fallback v3.40 summary: `docs\00631l_v3_40_live_timeout_static_fallback_summary.md`
 - Holdings exposure compare v3.41 summary: `docs\00631l_v3_41_holdings_exposure_compare_summary.md`
 - Web loading shell v3.42 summary: `docs\00631l_v3_42_web_loading_shell_summary.md`
+- Yuanta maintenance detection v3.43 summary: `docs\00631l_v3_43_yuanta_maintenance_detection_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -164,6 +165,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Live timeout static fallback release: `docs\00631l_v3_40_live_timeout_static_fallback_summary.md`
 - Holdings exposure compare release: `docs\00631l_v3_41_holdings_exposure_compare_summary.md`
 - Web loading shell release: `docs\00631l_v3_42_web_loading_shell_summary.md`
+- Yuanta maintenance detection release: `docs\00631l_v3_43_yuanta_maintenance_detection_summary.md`
 
 ## Scope Boundary
 
