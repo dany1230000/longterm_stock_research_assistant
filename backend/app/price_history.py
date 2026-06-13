@@ -9,9 +9,39 @@ from typing import Any, Callable
 
 FetchText = Callable[[str, float], str]
 
+PRICE_ADJUSTMENT_FIELD = "adjustedClose"
+PRICE_ADJUSTMENT_METHOD = "known_00631l_split_events"
+PRICE_ADJUSTMENT_EVENTS = [
+    {
+        "effectiveDate": "2026-03-31",
+        "ratio": 22.0,
+        "description": "00631L beneficial certificate split, 1 old unit to 22 new units.",
+    },
+]
+
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def price_adjustment_metadata() -> dict[str, Any]:
+    return {
+        "method": PRICE_ADJUSTMENT_METHOD,
+        "priceFieldForReturns": PRICE_ADJUSTMENT_FIELD,
+        "events": PRICE_ADJUSTMENT_EVENTS,
+        "note": (
+            "Raw TWSE OHLC prices are preserved. Performance and backtest "
+            "calculations use split-adjusted prices."
+        ),
+    }
+
+
+def normalize_price_record(point: dict[str, Any]) -> dict[str, Any]:
+    return _price_record(point)
+
+
+def apply_00631l_split_adjustments(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [_price_record(record) for record in records]
 
 
 class PriceHistoryStore:
@@ -65,6 +95,8 @@ class PriceHistoryStore:
             "coverageEnd": status["coverageEnd"],
             "isCompleteFromListing": status["isCompleteFromListing"],
             "isStale": status["isStale"],
+            "priceField": PRICE_ADJUSTMENT_FIELD,
+            "priceAdjustment": price_adjustment_metadata(),
             "errorMessage": status["errorMessage"],
         }
 
@@ -84,6 +116,8 @@ class PriceHistoryStore:
             "coverageEnd": status["coverageEnd"],
             "isCompleteFromListing": status["isCompleteFromListing"],
             "isStale": status["isStale"],
+            "priceField": PRICE_ADJUSTMENT_FIELD,
+            "priceAdjustment": price_adjustment_metadata(),
             "errorMessage": status["errorMessage"],
         }
 
@@ -102,6 +136,8 @@ class PriceHistoryStore:
                 "rowCount": 0,
                 "isCompleteFromListing": False,
                 "isStale": True,
+                "priceField": PRICE_ADJUSTMENT_FIELD,
+                "priceAdjustment": price_adjustment_metadata(),
                 "errorMessage": (
                     "No official price history is saved yet. Run the history "
                     "update script to populate local cache."
@@ -124,6 +160,8 @@ class PriceHistoryStore:
             "rowCount": len(records),
             "isCompleteFromListing": coverage_start <= "2014-10-31",
             "isStale": is_stale,
+            "priceField": PRICE_ADJUSTMENT_FIELD,
+            "priceAdjustment": price_adjustment_metadata(),
             "errorMessage": None,
         }
 
@@ -140,7 +178,7 @@ class PriceHistoryStore:
                 continue
             if isinstance(decoded, dict):
                 records.append(decoded)
-        return records
+        return apply_00631l_split_adjustments(records)
 
     def _write_records(self, records: list[dict[str, Any]]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -227,12 +265,12 @@ def parse_twse_stock_day(source: str, *, source_url: str) -> list[dict[str, Any]
                 "sourceUrl": source_url,
             }
         )
-    return points
+    return apply_00631l_split_adjustments(points)
 
 
 def performance_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     points = sorted(
-        [record for record in records if _float(record.get("close")) is not None],
+        [record for record in records if _price_for_returns(record) is not None],
         key=lambda item: str(item.get("date") or ""),
     )
     if len(points) < 2:
@@ -244,9 +282,10 @@ def performance_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
             "bestDailyReturnPct": None,
             "worstDailyReturnPct": None,
             "rowCount": len(points),
+            "priceField": PRICE_ADJUSTMENT_FIELD,
         }
-    first_close = _float(points[0].get("close")) or 0
-    last_close = _float(points[-1].get("close")) or 0
+    first_close = _price_for_returns(points[0]) or 0
+    last_close = _price_for_returns(points[-1]) or 0
     first_date = _parse_iso_date(str(points[0].get("date")))
     last_date = _parse_iso_date(str(points[-1].get("date")))
     total_return = None if first_close <= 0 else (last_close / first_close - 1) * 100
@@ -260,8 +299,8 @@ def performance_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     peak = first_close
     max_drawdown = 0.0
     for index in range(1, len(points)):
-        previous = _float(points[index - 1].get("close")) or 0
-        current = _float(points[index].get("close")) or 0
+        previous = _price_for_returns(points[index - 1]) or 0
+        current = _price_for_returns(points[index]) or 0
         if previous > 0:
             returns.append((current / previous - 1) * 100)
         if current > peak:
@@ -278,6 +317,7 @@ def performance_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
         "bestDailyReturnPct": max(returns) if returns else None,
         "worstDailyReturnPct": min(returns) if returns else None,
         "rowCount": len(points),
+        "priceField": PRICE_ADJUSTMENT_FIELD,
     }
 
 
@@ -285,12 +325,12 @@ def _with_performance_fields(records: list[dict[str, Any]]) -> list[dict[str, An
     ordered = sorted(records, key=lambda item: str(item.get("date") or ""))
     if not ordered:
         return []
-    first_close = _float(ordered[0].get("close")) or 0
+    first_close = _price_for_returns(ordered[0]) or 0
     peak = first_close
     previous_close: float | None = None
     enriched: list[dict[str, Any]] = []
     for record in ordered:
-        close = _float(record.get("close")) or 0
+        close = _price_for_returns(record) or 0
         peak = max(peak, close)
         daily_return = None
         if previous_close and previous_close > 0:
@@ -310,12 +350,23 @@ def _with_performance_fields(records: list[dict[str, Any]]) -> list[dict[str, An
 
 
 def _price_record(point: dict[str, Any]) -> dict[str, Any]:
+    record_date = str(point.get("date") or "")
+    factor = _adjustment_factor_for_date(record_date)
+    open_price = _float(point.get("open"))
+    high_price = _float(point.get("high"))
+    low_price = _float(point.get("low"))
+    close_price = _float(point.get("close")) or 0.0
     return {
-        "date": str(point.get("date") or ""),
-        "open": _float(point.get("open")),
-        "high": _float(point.get("high")),
-        "low": _float(point.get("low")),
-        "close": _float(point.get("close")) or 0.0,
+        "date": record_date,
+        "open": open_price,
+        "high": high_price,
+        "low": low_price,
+        "close": close_price,
+        "adjustedOpen": _adjust_price(open_price, factor),
+        "adjustedHigh": _adjust_price(high_price, factor),
+        "adjustedLow": _adjust_price(low_price, factor),
+        "adjustedClose": _adjust_price(close_price, factor) or 0.0,
+        "adjustmentFactor": factor,
         "volume": _int(point.get("volume")),
         "nav": _float(point.get("nav")),
         "premiumDiscountPct": _float(point.get("premiumDiscountPct")),
@@ -323,6 +374,36 @@ def _price_record(point: dict[str, Any]) -> dict[str, Any]:
         "sourceContract": str(point.get("sourceContract") or "twse_stock_day_json"),
         "sourceUrl": str(point.get("sourceUrl") or ""),
     }
+
+
+def _price_for_returns(record: dict[str, Any]) -> float | None:
+    adjusted = _float(record.get(PRICE_ADJUSTMENT_FIELD))
+    if adjusted is not None:
+        return adjusted
+    close = _float(record.get("close"))
+    if close is None:
+        return None
+    factor = _adjustment_factor_for_date(str(record.get("date") or ""))
+    return _adjust_price(close, factor)
+
+
+def _adjustment_factor_for_date(date_text: str) -> float:
+    parsed = _parse_iso_date(date_text)
+    if parsed is None:
+        return 1.0
+    factor = 1.0
+    for event in PRICE_ADJUSTMENT_EVENTS:
+        event_date = _parse_iso_date(str(event.get("effectiveDate") or ""))
+        ratio = _float(event.get("ratio")) or 1.0
+        if event_date is not None and parsed < event_date and ratio > 0:
+            factor /= ratio
+    return factor
+
+
+def _adjust_price(value: float | None, factor: float) -> float | None:
+    if value is None:
+        return None
+    return round(value * factor, 6)
 
 
 def _month_starts(start_date: date, end_date: date) -> list[date]:

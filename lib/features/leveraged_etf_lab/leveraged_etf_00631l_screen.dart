@@ -1927,9 +1927,10 @@ class _OverviewSparklineBlock extends StatelessWidget {
         ordered.length > 60 ? ordered.sublist(ordered.length - 60) : ordered;
     final latest = recent.isEmpty ? null : recent.last;
     final first = recent.isEmpty ? null : recent.first;
-    final changePct = latest == null || first == null || first.close <= 0
-        ? null
-        : (latest.close / first.close - 1) * 100;
+    final changePct =
+        latest == null || first == null || first.performanceClose <= 0
+            ? null
+            : (latest.performanceClose / first.performanceClose - 1) * 100;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1998,7 +1999,7 @@ class _SparklineChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final spots = <FlSpot>[];
     for (var index = 0; index < points.length; index += 1) {
-      final close = points[index].close;
+      final close = points[index].performanceClose;
       if (close.isFinite) {
         spots.add(FlSpot(index.toDouble(), close));
       }
@@ -2842,6 +2843,13 @@ class _HistorySection extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     _PriceTrendCharts(priceHistory: priceHistory),
+                    const SizedBox(height: 8),
+                    const _StatusWrap(
+                      labels: [
+                        '績效 / 回測使用分割調整收盤價',
+                        '原始 TWSE OHLC 保留',
+                      ],
+                    ),
                     const SizedBox(height: 12),
                     _CompactExpansionPanel(
                       title: '歷史資料完整度',
@@ -4328,7 +4336,7 @@ class _PriceTrendCharts extends StatelessWidget {
           title: '收盤價',
           caption: '完整 price history',
           points: priceHistory.points,
-          valueOf: (point) => point.close,
+          valueOf: (point) => point.performanceClose,
         ),
         _MiniChartCard(
           title: '累積報酬',
@@ -5240,16 +5248,17 @@ class _DerivedPriceSeries {
     if (ordered.isEmpty) {
       return;
     }
-    final firstClose = ordered.first.close;
+    final firstClose = ordered.first.performanceClose;
     var peak = firstClose;
     for (final point in ordered) {
-      if (point.close > peak) {
-        peak = point.close;
+      final close = point.performanceClose;
+      if (close > peak) {
+        peak = close;
       }
       _cumulativeByDate[_dateKey(point.date)] =
-          firstClose <= 0 ? 0 : (point.close / firstClose - 1) * 100;
+          firstClose <= 0 ? 0 : (close / firstClose - 1) * 100;
       _drawdownByDate[_dateKey(point.date)] =
-          peak <= 0 ? 0 : (point.close / peak - 1) * 100;
+          peak <= 0 ? 0 : (close / peak - 1) * 100;
     }
   }
 

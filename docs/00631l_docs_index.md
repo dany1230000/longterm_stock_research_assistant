@@ -49,6 +49,7 @@ This is the main entry point for 00631L lab documentation.
 - Live/static history merge v3.44 summary: `docs\00631l_v3_44_live_static_history_merge_summary.md`
 - Remote history chunk update v3.45 summary: `docs\00631l_v3_45_remote_history_chunk_update_summary.md`
 - First-screen/live-data clarity v3.46 summary: `docs\00631l_v3_46_first_screen_live_clarity_summary.md`
+- Split-adjusted history v3.47 summary: `docs\00631l_v3_47_split_adjusted_history_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -172,6 +173,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Live/static history merge release: `docs\00631l_v3_44_live_static_history_merge_summary.md`
 - Remote history chunk update release: `docs\00631l_v3_45_remote_history_chunk_update_summary.md`
 - First-screen/live-data clarity release: `docs\00631l_v3_46_first_screen_live_clarity_summary.md`
+- Split-adjusted history release: `docs\00631l_v3_47_split_adjusted_history_summary.md`
 
 ## Scope Boundary
 

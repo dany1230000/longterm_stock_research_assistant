@@ -184,6 +184,8 @@ void main() {
     expect(history.coverageEnd, DateTime(2026, 6, 3));
     expect(history.points, hasLength(3));
     expect(history.points.first.close, 30.5);
+    expect(history.points.first.adjustedClose, 30.5);
+    expect(history.points.first.adjustmentFactor, 1.0);
     expect(history.points.last.drawdownPct, -3.23);
   });
 
@@ -810,6 +812,11 @@ Map<String, Object?> _priceHistoryPayload() {
         'high': 31.0,
         'low': 29.5,
         'close': 30.5,
+        'adjustedOpen': 30.0,
+        'adjustedHigh': 31.0,
+        'adjustedLow': 29.5,
+        'adjustedClose': 30.5,
+        'adjustmentFactor': 1.0,
         'volume': 1000000,
         'dailyReturnPct': null,
         'cumulativeReturnPct': 0.0,
@@ -821,6 +828,11 @@ Map<String, Object?> _priceHistoryPayload() {
         'high': 32.0,
         'low': 30.5,
         'close': 31.0,
+        'adjustedOpen': 31.0,
+        'adjustedHigh': 32.0,
+        'adjustedLow': 30.5,
+        'adjustedClose': 31.0,
+        'adjustmentFactor': 1.0,
         'volume': 1100000,
         'dailyReturnPct': 1.64,
         'cumulativeReturnPct': 1.64,
@@ -832,6 +844,11 @@ Map<String, Object?> _priceHistoryPayload() {
         'high': 31.0,
         'low': 29.8,
         'close': 30.0,
+        'adjustedOpen': 30.5,
+        'adjustedHigh': 31.0,
+        'adjustedLow': 29.8,
+        'adjustedClose': 30.0,
+        'adjustmentFactor': 1.0,
         'volume': 1200000,
         'dailyReturnPct': -3.23,
         'cumulativeReturnPct': -1.64,
@@ -848,6 +865,7 @@ Map<String, Object?> _priceHistoryPayload() {
     'coverageEnd': '2026-06-03',
     'isCompleteFromListing': false,
     'isStale': false,
+    'priceField': 'adjustedClose',
     'errorMessage': null,
   };
 }

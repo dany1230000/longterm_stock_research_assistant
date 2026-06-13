@@ -612,10 +612,13 @@ Custodian Fee
             self.assertEqual(price_payload["sourceStatus"], "cached")
             self.assertEqual(price_payload["coverageStart"], "2026-06-01")
             self.assertEqual(len(price_payload["items"]), 3)
+            self.assertEqual(price_payload["priceField"], "adjustedClose")
+            self.assertEqual(price_payload["items"][0]["adjustedClose"], 30.5)
 
             performance = self.client.get("/api/etf/00631l/history/performance").json()
             self.assertEqual(performance["sourceStatus"], "cached")
             self.assertEqual(performance["rowCount"], 3)
+            self.assertEqual(performance["priceField"], "adjustedClose")
 
             defaults = self.client.get("/api/etf/00631l/backtest/defaults").json()
             self.assertEqual(defaults["defaultStrategy"], "monthly_contribution")

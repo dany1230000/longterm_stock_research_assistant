@@ -72,6 +72,39 @@ void main() {
     expect(result.drawdownCurve.last.value, lessThan(0));
   });
 
+  test('split adjusted prices drive performance and backtest calculations', () {
+    final history = EtfPriceHistory(
+      points: _splitAdjustedPoints,
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'cached',
+      sourceUrl: 'local://00631l-price-history',
+      lastFetchedAt: DateTime(2026, 3, 31),
+      coverageStart: DateTime(2026, 3, 24),
+      coverageEnd: DateTime(2026, 3, 31),
+      isCompleteFromListing: false,
+    );
+
+    final performance = history.performance;
+    final result = const EtfBacktestEngine().run(
+      request: EtfBacktestRequest(
+        strategy: EtfBacktestStrategy.lumpSum,
+        startDate: DateTime(2026, 3, 24),
+        endDate: DateTime(2026, 3, 31),
+        initialAmount: 22000,
+        monthlyAmount: 0,
+        monthlyDay: 5,
+        feeRatePct: 0,
+      ),
+      history: _splitAdjustedPoints,
+    );
+
+    expect(_splitAdjustedPoints.first.close, 443.15);
+    expect(_splitAdjustedPoints.first.adjustedClose, closeTo(20.14318, 0.0001));
+    expect(performance.totalReturnPct, greaterThan(-10));
+    expect(performance.maxDrawdownPct, greaterThan(-10));
+    expect(result.totalReturnPct, greaterThan(-10));
+  });
+
   test('position tracking calculates local-only summary', () {
     final summary = EtfPositionSummary.evaluate(
       input: const EtfPositionInput(
@@ -138,5 +171,20 @@ final _richPricePoints = [
     volume: 1300000,
     nav: 31.9,
     premiumDiscountPct: 0.31,
+  ),
+];
+
+final _splitAdjustedPoints = [
+  EtfPriceHistoryPoint(
+    date: DateTime(2026, 3, 24),
+    close: 443.15,
+    adjustedClose: 20.143182,
+    adjustmentFactor: 1 / 22,
+  ),
+  EtfPriceHistoryPoint(
+    date: DateTime(2026, 3, 31),
+    close: 19.26,
+    adjustedClose: 19.26,
+    adjustmentFactor: 1,
   ),
 ];

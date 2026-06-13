@@ -19,9 +19,11 @@ from .intraday_nav_history import (
     empty_intraday_history_response,
 )
 from .price_history import (
+    PRICE_ADJUSTMENT_FIELD,
     PriceHistoryStore,
     fetch_twse_stock_day_range,
     performance_summary,
+    price_adjustment_metadata,
 )
 from .parsers import (
     empty_holdings_response,
@@ -1048,6 +1050,8 @@ def _empty_price_history_response(
         "coverageEnd": None,
         "isCompleteFromListing": False,
         "isStale": True,
+        "priceField": PRICE_ADJUSTMENT_FIELD,
+        "priceAdjustment": price_adjustment_metadata(),
         "errorMessage": error_message,
     }
 
@@ -1070,6 +1074,8 @@ def _empty_performance_response(
         "rowCount": 0,
         "isCompleteFromListing": False,
         "isStale": True,
+        "priceField": PRICE_ADJUSTMENT_FIELD,
+        "priceAdjustment": price_adjustment_metadata(),
         "errorMessage": error_message,
     }
 

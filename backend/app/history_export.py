@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .price_history import normalize_price_record
+
 
 HOLDINGS_EXPORT_COLUMNS = [
     "tradeDate",
@@ -48,6 +50,11 @@ PRICE_EXPORT_COLUMNS = [
     "high",
     "low",
     "close",
+    "adjustedOpen",
+    "adjustedHigh",
+    "adjustedLow",
+    "adjustedClose",
+    "adjustmentFactor",
     "volume",
     "nav",
     "premiumDiscountPct",
@@ -196,18 +203,24 @@ def _intraday_row(record: dict[str, Any]) -> dict[str, Any]:
 
 
 def _price_row(record: dict[str, Any]) -> dict[str, Any]:
+    normalized = normalize_price_record(record)
     return {
-        "date": record.get("date"),
-        "open": record.get("open"),
-        "high": record.get("high"),
-        "low": record.get("low"),
-        "close": record.get("close"),
-        "volume": record.get("volume"),
-        "nav": record.get("nav"),
-        "premiumDiscountPct": record.get("premiumDiscountPct"),
-        "sourceStatus": record.get("sourceStatus"),
-        "sourceContract": record.get("sourceContract"),
-        "sourceUrl": record.get("sourceUrl"),
+        "date": normalized.get("date"),
+        "open": normalized.get("open"),
+        "high": normalized.get("high"),
+        "low": normalized.get("low"),
+        "close": normalized.get("close"),
+        "adjustedOpen": normalized.get("adjustedOpen"),
+        "adjustedHigh": normalized.get("adjustedHigh"),
+        "adjustedLow": normalized.get("adjustedLow"),
+        "adjustedClose": normalized.get("adjustedClose"),
+        "adjustmentFactor": normalized.get("adjustmentFactor"),
+        "volume": normalized.get("volume"),
+        "nav": normalized.get("nav"),
+        "premiumDiscountPct": normalized.get("premiumDiscountPct"),
+        "sourceStatus": normalized.get("sourceStatus"),
+        "sourceContract": normalized.get("sourceContract"),
+        "sourceUrl": normalized.get("sourceUrl"),
     }
 
 

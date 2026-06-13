@@ -77,6 +77,8 @@ def export_static_00631l_data(
         "coverageStart": status.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd"),
         "isCompleteFromListing": status.get("isCompleteFromListing"),
+        "priceField": status.get("priceField"),
+        "priceAdjustment": status.get("priceAdjustment"),
         "warnings": warnings,
         "failures": failures,
     }

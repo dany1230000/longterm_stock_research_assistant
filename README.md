@@ -80,6 +80,13 @@ scripts\00631l_remote_maintenance.cmd --mode all
 
 GitHub Actions also runs `.github/workflows/00631l_backend_maintenance.yml` to wake the public backend, collect intraday status, update official price history, and verify key public endpoints. Details: `docs\00631l_remote_maintenance.md`.
 
+v3.47 split-adjusted history:
+
+- TWSE raw OHLC prices are preserved.
+- Historical performance, charts, static public data, CSV export, and backtest calculations use `adjustedClose`.
+- The 00631L 2026 split is handled with a 1/22 adjustment before 2026-03-31.
+- Summary: `docs\00631l_v3_47_split_adjusted_history_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.

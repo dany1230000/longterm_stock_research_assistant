@@ -1,6 +1,6 @@
 # 00631L historical backtest guide
 
-The backtest section uses saved 00631L historical closing prices. It is a history calculator, not a future forecast.
+The backtest section uses saved 00631L split-adjusted historical closing prices. It is a history calculator, not a future forecast.
 
 ## Data Requirement
 
@@ -18,6 +18,8 @@ scripts\00631l_update_price_history.cmd --status-only
 
 The app shows coverage start, coverage end, row count, and whether the local cache is complete from the listing date. If the cache is empty, the backtest section shows an unavailable state.
 
+TWSE raw OHLC is preserved in the price history cache. Return, drawdown, charts, CSV export, and backtest calculations use `adjustedClose`. The 2026 00631L split is normalized with a 1/22 adjustment before 2026-03-31.
+
 ## Supported Backtest Inputs
 
 - One-time historical allocation.
@@ -27,7 +29,7 @@ The app shows coverage start, coverage end, row count, and whether the local cac
 - Monthly amount.
 - Monthly contribution day.
 - Fee rate, default `0`.
-- Closing price basis.
+- Split-adjusted closing price basis.
 
 ## Results
 

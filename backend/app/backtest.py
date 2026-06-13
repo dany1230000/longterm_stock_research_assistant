@@ -4,6 +4,8 @@ import math
 from datetime import datetime
 from typing import Any
 
+BACKTEST_PRICE_FIELD = "adjustedClose"
+
 
 def default_backtest_payload() -> dict[str, Any]:
     return {
@@ -15,7 +17,7 @@ def default_backtest_payload() -> dict[str, Any]:
         "defaultMonthlyAmount": 5000,
         "defaultMonthlyDay": 5,
         "defaultFeeRatePct": 0,
-        "priceField": "close",
+        "priceField": BACKTEST_PRICE_FIELD,
         "disclaimer": "回測不代表未來表現，非買賣建議",
     }
 
@@ -48,7 +50,7 @@ def run_backtest(
     peak = 0.0
 
     for index, point in enumerate(points):
-        close = _float(point.get("close")) or 0.0
+        close = _price_for_backtest(point) or 0.0
         if close <= 0:
             continue
         parsed_date = _parse_date(str(point.get("date") or ""))
@@ -95,6 +97,7 @@ def run_backtest(
     return {
         "sourceStatus": "calculated",
         "sourceContract": "00631l_backtest_engine",
+        "priceField": BACKTEST_PRICE_FIELD,
         "strategy": strategy,
         "startDate": equity_curve[0]["date"],
         "endDate": equity_curve[-1]["date"],
@@ -130,7 +133,7 @@ def _filtered_points(
             continue
         if parsed_end is not None and parsed > parsed_end:
             continue
-        if _float(point.get("close")) is None:
+        if _price_for_backtest(point) is None:
             continue
         points.append(point)
     return sorted(points, key=lambda item: str(item.get("date") or ""))
@@ -140,6 +143,7 @@ def _unavailable_result(message: str) -> dict[str, Any]:
     return {
         "sourceStatus": "unavailable",
         "sourceContract": "00631l_backtest_engine",
+        "priceField": BACKTEST_PRICE_FIELD,
         "totalInvested": 0,
         "finalValue": 0,
         "totalReturnPct": None,
@@ -153,6 +157,10 @@ def _unavailable_result(message: str) -> dict[str, Any]:
         "disclaimer": "回測不代表未來表現，非買賣建議",
         "errorMessage": message,
     }
+
+
+def _price_for_backtest(point: dict[str, Any]) -> float | None:
+    return _float(point.get(BACKTEST_PRICE_FIELD)) or _float(point.get("close"))
 
 
 def _float(value: Any) -> float | None:

@@ -1771,6 +1771,11 @@ class EtfPriceHistoryPoint {
     this.open,
     this.high,
     this.low,
+    this.adjustedOpen,
+    this.adjustedHigh,
+    this.adjustedLow,
+    this.adjustedClose,
+    this.adjustmentFactor,
     this.volume,
     this.nav,
     this.premiumDiscountPct,
@@ -1784,12 +1789,19 @@ class EtfPriceHistoryPoint {
   final double? open;
   final double? high;
   final double? low;
+  final double? adjustedOpen;
+  final double? adjustedHigh;
+  final double? adjustedLow;
+  final double? adjustedClose;
+  final double? adjustmentFactor;
   final int? volume;
   final double? nav;
   final double? premiumDiscountPct;
   final double? dailyReturnPct;
   final double? cumulativeReturnPct;
   final double? drawdownPct;
+
+  double get performanceClose => adjustedClose ?? close;
 }
 
 class EtfPriceHistory {
@@ -1887,17 +1899,19 @@ class EtfPriceHistoryCompletenessSummary {
     EtfPriceHistoryPoint? highPoint;
     EtfPriceHistoryPoint? lowPoint;
     for (final point in trailing) {
-      if (highPoint == null || point.close > highPoint.close) {
+      if (highPoint == null ||
+          point.performanceClose > highPoint.performanceClose) {
         highPoint = point;
       }
-      if (lowPoint == null || point.close < lowPoint.close) {
+      if (lowPoint == null ||
+          point.performanceClose < lowPoint.performanceClose) {
         lowPoint = point;
       }
     }
     final latestDailyReturn = latest?.dailyReturnPct ??
-        (latest == null || previous == null || previous.close <= 0
+        (latest == null || previous == null || previous.performanceClose <= 0
             ? null
-            : (latest.close / previous.close - 1) * 100);
+            : (latest.performanceClose / previous.performanceClose - 1) * 100);
     return EtfPriceHistoryCompletenessSummary(
       rowCount: ordered.length,
       coverageStart: history.coverageStart ?? first?.date,
@@ -1909,9 +1923,9 @@ class EtfPriceHistoryCompletenessSummary {
       latestDailyReturnPct: latestDailyReturn,
       latestCloseChange: latest == null || previous == null
           ? null
-          : latest.close - previous.close,
-      trailingHighClose: highPoint?.close,
-      trailingLowClose: lowPoint?.close,
+          : latest.performanceClose - previous.performanceClose,
+      trailingHighClose: highPoint?.performanceClose,
+      trailingLowClose: lowPoint?.performanceClose,
       trailingHighDate: highPoint?.date,
       trailingLowDate: lowPoint?.date,
       hasOhlc: ordered.any((point) =>
@@ -1968,8 +1982,8 @@ class EtfPerformanceSummary {
       return EtfPerformanceSummary.empty();
     }
     final ordered = [...points]..sort((a, b) => a.date.compareTo(b.date));
-    final first = ordered.first.close;
-    final last = ordered.last.close;
+    final first = ordered.first.performanceClose;
+    final last = ordered.last.performanceClose;
     final totalReturn = first == 0 ? null : (last / first - 1) * 100;
     final days = ordered.last.date.difference(ordered.first.date).inDays;
     final annualizedReturn = totalReturn == null || days <= 0
@@ -1979,8 +1993,8 @@ class EtfPerformanceSummary {
     var peak = first;
     var maxDrawdown = 0.0;
     for (var index = 1; index < ordered.length; index += 1) {
-      final previous = ordered[index - 1].close;
-      final current = ordered[index].close;
+      final previous = ordered[index - 1].performanceClose;
+      final current = ordered[index].performanceClose;
       if (previous > 0) {
         returns.add((current / previous - 1) * 100);
       }
@@ -2140,12 +2154,12 @@ class EtfBacktestEngine {
         contribution += request.monthlyAmount;
         lastContributionMonth = monthKey;
       }
-      if (contribution > 0 && point.close > 0) {
+      if (contribution > 0 && point.performanceClose > 0) {
         final fee = contribution * request.feeRatePct / 100;
-        units += (contribution - fee) / point.close;
+        units += (contribution - fee) / point.performanceClose;
         cashInvested += contribution;
       }
-      final value = units * point.close;
+      final value = units * point.performanceClose;
       if (value > peak) {
         peak = value;
       }
