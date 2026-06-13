@@ -223,6 +223,12 @@ def _assess_response(
         source_status = str(payload.get("sourceStatus") or "")
         if source_status in {"unavailable", "error"}:
             warnings.append("price history update did not return official data")
+    elif endpoint.name == "holdings":
+        source_status = str(payload.get("sourceStatus") or "")
+        if source_status in {"unavailable", "error"}:
+            warnings.append(
+                "official holdings are unavailable; check Yuanta source status"
+            )
     else:
         source_status = str(payload.get("sourceStatus") or "")
         if source_status == "error":

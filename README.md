@@ -324,6 +324,13 @@ v3.45 remote history chunk update:
 - The Render backend has been seeded to 2828 rows, covering 2014-10-31 to 2026-06-12.
 - Summary: `docs\00631l_v3_45_remote_history_chunk_update_summary.md`.
 
+v3.46 first-screen and live-data clarity:
+
+- The overview first screen is more compact: quote, premium/discount, intraday time, NAV, history row count, and frontend mode are grouped in one board.
+- The top summary now uses `核心資料`; lower-priority AI/detail text stays below the first screen.
+- Remote maintenance reports official holdings `unavailable` as WARN instead of PASS, while price history can still be complete.
+- Summary: `docs\00631l_v3_46_first_screen_live_clarity_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

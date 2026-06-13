@@ -19,10 +19,10 @@ void main() {
     expect(find.textContaining('市價'), findsWidgets);
     expect(find.textContaining('預估淨值'), findsWidgets);
     expect(find.text('折溢價'), findsWidgets);
-    expect(find.text('今日一眼看'), findsOneWidget);
-    expect(find.text('資料完整度'), findsOneWidget);
-    expect(find.text('回測'), findsWidgets);
-    expect(find.text('可用'), findsWidgets);
+    expect(find.text('核心資料'), findsOneWidget);
+    expect(find.text('資料完整度'), findsNothing);
+    expect(find.text('回測'), findsNothing);
+    expect(find.text('可用'), findsNothing);
     expect(find.text('圖表與曝險'), findsOneWidget);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
@@ -30,8 +30,8 @@ void main() {
     expect(find.text('更多資料狀態'), findsNothing);
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
     expect(find.text('內容物重點'), findsOneWidget);
-    expect(find.text('歷史覆蓋'), findsOneWidget);
-    expect(find.text('歷史績效'), findsOneWidget);
+    expect(find.textContaining('歷史資料'), findsWidgets);
+    expect(find.text('累積報酬'), findsOneWidget);
     expect(find.text('近 60 日收盤'), findsNothing);
     expect(find.text('官方曝險'), findsNothing);
     expect(find.text('官方 NAV'), findsNothing);
@@ -65,10 +65,10 @@ void main() {
 
     await _pumpLab(tester, Mock00631LRepository());
 
-    expect(find.text('00631L 正二研究室'), findsNothing);
-    expect(find.text('今日一眼看'), findsOneWidget);
-    expect(find.text('資料完整度'), findsOneWidget);
-    expect(find.text('歷史績效'), findsOneWidget);
+    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.text('核心資料'), findsOneWidget);
+    expect(find.text('資料完整度'), findsNothing);
+    expect(find.text('累積報酬'), findsOneWidget);
     expect(find.text('圖表與曝險'), findsOneWidget);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
@@ -125,7 +125,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
-    expect(find.text('今日一眼看'), findsOneWidget);
+    expect(find.text('核心資料'), findsOneWidget);
     expect(find.textContaining('先顯示首屏資料'), findsOneWidget);
     expect(find.text('圖表與曝險'), findsOneWidget);
     expect(find.text('更多資料'), findsOneWidget);
@@ -149,7 +149,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 20));
 
-    expect(find.text('今日一眼看'), findsOneWidget);
+    expect(find.text('核心資料'), findsOneWidget);
     expect(find.textContaining('完整資料暫時不可用'), findsOneWidget);
     expect(find.text('00631L 正二研究室'), findsWidgets);
     _expectNoTradingActionText();

@@ -416,30 +416,26 @@ class _MarketTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SizedBox(
-      height: 40,
+      height: 36,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 430;
-          final showFullTitle = constraints.maxWidth >= 520;
           return Row(
             children: [
               const _MarketIndexPill(),
-              if (showFullTitle) ...[
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '00631L 正二研究室',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: _marketText,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0,
-                    ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '00631L 正二研究室',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: _marketMutedText,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
                   ),
                 ),
-              ] else
-                const Spacer(),
+              ),
               if (showModeBadge) ...[
                 _CompactTextBadge(label: _frontendDataModeDisplay),
                 const SizedBox(width: 4),
@@ -631,22 +627,21 @@ class _CompactQuoteHeader extends StatelessWidget {
       theme.colorScheme,
       premiumAssessment.level,
     );
+    final history = data.priceHistory.completenessSummary();
+    final backendLabel = data.operationsStatus.backendDisconnected
+        ? '後端未連線'
+        : data.operationsStatus.backendConnectionLabel;
+    final navTime =
+        nav?.dataTime == null ? '暫無' : formatTimeSeconds(nav!.dataTime!);
 
     return DecoratedBox(
       decoration: BoxDecoration(
         color: _marketPanel,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _marketBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.18),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -676,21 +671,21 @@ class _CompactQuoteHeader extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 3),
                       Text(
                         _price(nav?.marketPrice),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.headlineMedium?.copyWith(
+                        style: theme.textTheme.headlineSmall?.copyWith(
                           color: _marketText,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0,
-                          height: 0.95,
+                          height: 0.96,
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 2),
                       Text(
-                        '市價 | ${nav?.dataTime == null ? '資料時間暫無' : formatTaiwanDateTimeSeconds(nav!.dataTime!)}',
+                        '市價 · 盤中時間 $navTime',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -712,16 +707,122 @@ class _CompactQuoteHeader extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 5),
+            _QuoteMetaStrip(
+              items: [
+                _QuoteMetaItem(
+                  label: '預估淨值',
+                  value: _price(nav?.estimatedNav),
+                ),
+                _QuoteMetaItem(
+                  label: '前日淨值',
+                  value: _price(nav?.previousBusinessDayNav),
+                ),
+                _QuoteMetaItem(
+                  label: '歷史資料',
+                  value: history.rowCount >= 2
+                      ? '${formatInteger(history.rowCount)} 筆'
+                      : '尚無',
+                ),
+                _QuoteMetaItem(
+                  label: '模式',
+                  value: _frontendDataModeDisplay,
+                  caption: backendLabel,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuoteMetaItem {
+  const _QuoteMetaItem({
+    required this.label,
+    required this.value,
+    this.caption,
+  });
+
+  final String label;
+  final String value;
+  final String? caption;
+}
+
+class _QuoteMetaStrip extends StatelessWidget {
+  const _QuoteMetaStrip({required this.items});
+
+  final List<_QuoteMetaItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          for (var index = 0; index < items.length; index += 1) ...[
+            if (index > 0) const SizedBox(width: 6),
+            _QuoteMetaPill(item: items[index]),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _QuoteMetaPill extends StatelessWidget {
+  const _QuoteMetaPill({required this.item});
+
+  final _QuoteMetaItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAlt,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 5,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             Text(
-              '預估淨值 ${_price(nav?.estimatedNav)} · 前日淨值 ${_price(nav?.previousBusinessDayNav)}',
+              '${item.label} ',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: _marketMutedText,
-                fontWeight: FontWeight.w800,
-                height: 1.1,
-              ),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: _marketMutedText,
+                    fontWeight: FontWeight.w800,
+                  ),
             ),
+            const SizedBox(height: 1),
+            Text(
+              item.value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: _marketText,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+            if (item.caption != null) ...[
+              const SizedBox(width: 5),
+              Text(
+                item.caption!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _marketMutedText,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ],
           ],
         ),
       ),
@@ -1579,7 +1680,6 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final nav = data.intradayNav;
-    final history = data.priceHistory.completenessSummary();
     final performance = data.priceHistory.performance;
     final latestHoldings = data.holdingsHistory.trendSummary().latest;
     final exposureText = latestHoldings == null
@@ -1604,13 +1704,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
         caption: '官方 history',
       ),
       _AtAGlanceMetricData(
-        label: '歷史覆蓋',
-        value: '${formatInteger(history.rowCount)} 筆',
-        caption:
-            '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
-      ),
-      _AtAGlanceMetricData(
-        label: '歷史績效',
+        label: '累積報酬',
         value: formatSignedNullablePercent(
           performance.totalReturnPct,
         ),
@@ -1626,17 +1720,15 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
         border: Border.all(color: _marketBorder),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 9, 10, 9),
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const _MiniStatusBadge(label: 'TODAY'),
-                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '今日一眼看',
+                    '核心資料',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
@@ -1649,19 +1741,6 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
-            Text(
-              _overviewAiBrief(data),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                height: 1.25,
-                color: _marketText,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 7),
-            _OverviewDataReadinessStrip(data: data),
-            const SizedBox(height: 7),
             _AtAGlanceMetricGrid(metrics: metrics),
           ],
         ),
@@ -1670,6 +1749,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _OverviewDataReadinessStrip extends StatelessWidget {
   const _OverviewDataReadinessStrip({required this.data});
 

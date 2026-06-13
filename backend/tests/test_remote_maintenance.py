@@ -72,6 +72,33 @@ class RemoteMaintenanceTests(unittest.TestCase):
         self.assertEqual(payload["failures"], [])
         self.assertTrue(any("history_status" in item for item in payload["warnings"]))
 
+    def test_daily_warns_when_holdings_unavailable(self) -> None:
+        def requester(
+            base_url: str,
+            endpoint: MaintenanceEndpoint,
+            timeout_seconds: int,
+        ) -> dict:
+            if endpoint.name == "ready":
+                return {"httpStatus": 200, "payload": {"overallStatus": "PASS"}}
+            if endpoint.name == "holdings":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"sourceStatus": "unavailable"},
+                }
+            if endpoint.name == "history_status":
+                return {"httpStatus": 200, "payload": {"rowCount": 2800}}
+            return {"httpStatus": 200, "payload": {"sourceStatus": "official"}}
+
+        payload = run_remote_maintenance(
+            base_url="https://example.com",
+            mode="daily",
+            requester=requester,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["failures"], [])
+        self.assertTrue(any("holdings" in item for item in payload["warnings"]))
+
     def test_http_error_is_failure(self) -> None:
         def requester(
             base_url: str,
