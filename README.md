@@ -276,6 +276,12 @@ v3.37 overview metric grid:
 - Phone widths show official holdings, intraday NAV, holdings focus, history coverage, and historical performance without requiring sideways scrolling.
 - Summary: `docs\00631l_v3_37_overview_metric_grid_summary.md`.
 
+v3.38 history/backtest merge:
+
+- The `歷史回測` page no longer has a second in-page switch.
+- Historical coverage and metrics are first; the backtest tool stays on the same page behind a compact expansion panel.
+- Summary: `docs\00631l_v3_38_history_backtest_merge_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

@@ -108,15 +108,6 @@ enum _LabSection {
   final IconData icon;
 }
 
-enum _HistoryBacktestView {
-  history('歷史', Icons.show_chart_outlined),
-  backtest('回測', Icons.query_stats_outlined);
-
-  const _HistoryBacktestView(this.label, this.icon);
-  final String label;
-  final IconData icon;
-}
-
 class _LabContent extends StatelessWidget {
   const _LabContent({
     required this.data,
@@ -2953,124 +2944,30 @@ class _HistorySection extends StatelessWidget {
   }
 }
 
-class _HistoryBacktestSection extends StatefulWidget {
+class _HistoryBacktestSection extends StatelessWidget {
   const _HistoryBacktestSection({required this.data});
 
   final Etf00631LLabData data;
-
-  @override
-  State<_HistoryBacktestSection> createState() =>
-      _HistoryBacktestSectionState();
-}
-
-class _HistoryBacktestSectionState extends State<_HistoryBacktestSection> {
-  _HistoryBacktestView _view = _HistoryBacktestView.history;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HistoryBacktestSwitcher(
-          selected: _view,
-          onChanged: (view) => setState(() => _view = view),
+        _HistorySection(
+          key: const ValueKey('00631l-history-view'),
+          data: data,
         ),
         const SizedBox(height: 10),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 180),
-          child: _view == _HistoryBacktestView.history
-              ? _HistorySection(
-                  key: const ValueKey('00631l-history-view'),
-                  data: widget.data,
-                )
-              : _BacktestSection(
-                  key: const ValueKey('00631l-backtest-view'),
-                  data: widget.data,
-                ),
+        _CompactExpansionPanel(
+          title: '回測工具',
+          subtitle: '與歷史資料放在同一頁；需要調整參數時再展開。',
+          child: _BacktestSection(
+            key: const ValueKey('00631l-backtest-view'),
+            data: data,
+          ),
         ),
       ],
-    );
-  }
-}
-
-class _HistoryBacktestSwitcher extends StatelessWidget {
-  const _HistoryBacktestSwitcher({
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final _HistoryBacktestView selected;
-  final ValueChanged<_HistoryBacktestView> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanel,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorder),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(5),
-        child: Row(
-          children: [
-            for (final view in _HistoryBacktestView.values)
-              Expanded(
-                child: _HistoryBacktestSwitchButton(
-                  view: view,
-                  selected: selected == view,
-                  onTap: () => onChanged(view),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HistoryBacktestSwitchButton extends StatelessWidget {
-  const _HistoryBacktestSwitchButton({
-    required this.view,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final _HistoryBacktestView view;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = selected ? _marketBlue : _marketMutedText;
-    return InkWell(
-      key: ValueKey('00631l-history-backtest-${view.name}'),
-      borderRadius: BorderRadius.circular(9),
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
-        decoration: BoxDecoration(
-          color: selected
-              ? _marketBlue.withValues(alpha: 0.18)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(9),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(view.icon, size: 17, color: color),
-            const SizedBox(width: 6),
-            Text(
-              view.label,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: color,
-                    fontWeight: selected ? FontWeight.w900 : FontWeight.w800,
-                  ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

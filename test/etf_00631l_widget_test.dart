@@ -171,10 +171,8 @@ void main() {
     expect(find.text('最近 30 筆價格表'), findsOneWidget);
     expect(find.text('每日 holdings history'), findsOneWidget);
     expect(find.text('回測快覽'), findsNothing);
-    expect(find.byKey(const ValueKey('00631l-history-backtest-history')),
-        findsOneWidget);
-    expect(find.byKey(const ValueKey('00631l-history-backtest-backtest')),
-        findsOneWidget);
+    expect(find.text('回測工具'), findsOneWidget);
+    expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -196,9 +194,9 @@ void main() {
     await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
 
-    await tester.tap(
-      find.byKey(const ValueKey('00631l-history-backtest-backtest')),
-    );
+    await tester.ensureVisible(find.text('回測工具'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('回測工具'));
     await tester.pumpAndSettle();
 
     expect(find.text('回測快覽'), findsOneWidget);
