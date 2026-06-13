@@ -252,6 +252,12 @@ v3.33 fast-first data load:
 - This keeps large historical/static data requests from competing with the first visible quote/status screen.
 - Summary: `docs\00631l_v3_33_fast_first_data_load_summary.md`.
 
+v3.34 settings page cleanup:
+
+- The bottom-right settings page now prioritizes account/privacy, appearance, and local-only position data.
+- Data coverage and maintenance diagnostics are still available, but hidden behind expandable panels.
+- Summary: `docs\00631l_v3_34_settings_page_cleanup_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

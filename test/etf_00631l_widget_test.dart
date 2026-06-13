@@ -283,13 +283,20 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
     expect(find.text('設定'), findsWidgets);
-    expect(find.text('帳戶與隱私'), findsOneWidget);
-    expect(find.text('資料完整度'), findsOneWidget);
+    expect(find.text('帳戶與偏好'), findsOneWidget);
+    expect(find.text('資料模式與完整度'), findsOneWidget);
+    expect(find.text('進階維護診斷'), findsOneWidget);
+    expect(find.text('內容物歷史'), findsNothing);
+    expect(find.text('盤中 NAV / 折溢價'), findsNothing);
+    expect(find.text('TX live'), findsNothing);
+
+    await tester.drag(find.byType(ListView), const Offset(0, -220));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('資料模式與完整度'));
+    await tester.pumpAndSettle();
     expect(find.text('內容物歷史'), findsOneWidget);
     expect(find.text('盤中 NAV / 折溢價'), findsOneWidget);
     expect(find.text('TX live'), findsOneWidget);
-    expect(find.text('進階診斷'), findsOneWidget);
-    expect(find.text('展開技術診斷'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -306,8 +313,7 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
     expect(find.text('設定'), findsWidgets);
-    expect(find.text('進階診斷'), findsOneWidget);
-    expect(find.text('展開技術診斷'), findsOneWidget);
+    expect(find.text('進階維護診斷'), findsOneWidget);
     expect(find.textContaining('mock'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });

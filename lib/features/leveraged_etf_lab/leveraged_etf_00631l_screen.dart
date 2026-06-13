@@ -3557,41 +3557,17 @@ class _SettingsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = data.operationsStatus;
     final readiness = status.dailyReadinessSummary;
-    final price = data.priceHistory.completenessSummary();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeaderCard(
-          title: '設定',
-          subtitle: '帳戶、外觀、資料模式與維護狀態。一般使用只需要確認資料是不是可讀。',
-          icon: Icons.manage_accounts_outlined,
-          badges: [
-            'APP',
-            'frontend $_frontendDataMode',
-            status.backendConnectionLabel,
-          ],
-          metrics: [
-            _SectionHeaderMetric(
-              label: '資料狀態',
-              value: readiness.label,
-            ),
-            _SectionHeaderMetric(
-              label: 'price rows',
-              value: formatInteger(price.rowCount),
-            ),
-            _SectionHeaderMetric(
-              label: 'coverage end',
-              value: _dateOrDash(price.coverageEnd),
-            ),
-            _SectionHeaderMetric(
-              label: '儲存模式',
-              value: status.dataPersistenceLabel,
-            ),
-          ],
+        _SettingsHeaderStrip(
+          readinessLabel: readiness.label,
+          backendLabel: status.backendConnectionLabel,
+          persistenceLabel: status.dataPersistenceLabel,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         _SectionBlock(
-          title: '帳戶與隱私',
+          title: '帳戶與偏好',
           subtitle: '目前不需要登入。持倉資料預設只保存在本機瀏覽器。',
           child: _StatusList(
             items: [
@@ -3616,104 +3592,167 @@ class _SettingsSection extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        _SectionBlock(
-          title: '資料完整度',
-          subtitle: '這裡只說明資料是否齊全；static 歷史資料不是 live intraday。',
-          child: _StatusList(
-            items: _dataCoverageItems(data),
-          ),
+        const SizedBox(height: 10),
+        _CompactExpansionPanel(
+          title: '資料模式與完整度',
+          subtitle: 'static 歷史資料、live backend 與內容物狀態需要時再看。',
+          child: _StatusList(items: _dataCoverageItems(data)),
         ),
-        const SizedBox(height: 12),
-        _SectionBlock(
-          title: '進階診斷',
-          subtitle: '只有資料不可讀或部署排除問題時需要看。',
-          child: _CompactExpansionPanel(
-            title: '展開技術診斷',
-            subtitle: 'backend、history、report、export、backup 與部署設定。',
-            child: _StatusList(
-              items: [
-                _StatusItem(
-                  label: 'backend',
-                  status: status.sourceStatusLabel,
-                  detail: status.backendConnectionCaption,
-                  action: status.backendDisconnected
-                      ? '請啟動 backend 或檢查公開 backend URL。'
-                      : 'backend reachable。',
-                ),
-                _StatusItem(
-                  label: 'official holdings',
-                  status: status.holdingsHistoryStatus,
-                  detail:
-                      'history count ${status.holdingsHistoryItemCount}，latest ${_dateOrDash(status.latestHoldingTradeDate)}。',
-                  action: status.holdingsHistoryItemCount == 0
-                      ? '請執行 scripts\\00631l_daily_cycle.cmd。'
-                      : '每日資料已累積。',
-                ),
-                _StatusItem(
-                  label: 'intraday NAV',
-                  status: status.intradayHistoryStatus,
-                  detail:
-                      'samples ${status.intradaySampleCount}，latest ${status.latestIntradayDataTime == null ? 'unavailable' : formatTaiwanDateTimeSeconds(status.latestIntradayDataTime!)}。',
-                  action: status.intradaySampleCount == 0
-                      ? '請確認 TWSE URL、backend 與交易時段。'
-                      : '盤中估算資料已保存。',
-                ),
-                _StatusItem(
-                  label: 'historical price',
-                  status: status.priceHistoryStatus,
-                  detail:
-                      'rows ${status.priceHistoryRows}，coverage ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}，generated ${_dateTimeOrDash(status.latestExportUpdatedAt)}。',
-                  action: status.priceHistoryRows < 2
-                      ? '請執行 scripts\\00631l_update_price_history.cmd；GitHub Pages 請執行 scripts\\00631l_export_static_data.cmd --update。'
-                      : '歷史價格可供回測。',
-                ),
-                _StatusItem(
-                  label: 'backtest',
-                  status: status.backtestStatus,
-                  detail: status.backtestAvailable
-                      ? 'price history available'
-                      : 'price history insufficient',
-                  action: status.backtestAvailable ? '可在回測區使用。' : '請先更新歷史價格。',
-                ),
-                _StatusItem(
-                  label: 'position local data',
-                  status: status.positionStatus,
-                  detail: '持倉資料保存在瀏覽器本機。',
-                  action: '可在持倉區保存、匯出或清除。',
-                ),
-                _StatusItem(
-                  label: 'daily cycle',
-                  status: status.dailyCycleStatus,
-                  detail:
-                      'warnings ${status.dailyCycleWarningCount}，failures ${status.dailyCycleFailureCount}。',
-                  action: status.dailyCycleStatus == 'PASS'
-                      ? '最近 daily cycle 可讀。'
-                      : '請執行 scripts\\00631l_daily_cycle.cmd。',
-                ),
-                _StatusItem(
-                  label: 'report / export / backup',
-                  status: '${status.reportOverallStatus} / '
-                      '${status.exportAvailable ? 'ready' : 'missing'} / '
-                      '${status.backupAvailable ? 'ready' : 'missing'}',
-                  detail:
-                      'report ${status.latestReportPath ?? 'missing'}，export ${status.latestExportPath ?? 'missing'}，backup ${status.latestBackupPath ?? 'missing'}。',
-                  action: '必要時執行 report、export、backup scripts。',
-                ),
-                _StatusItem(
-                  label: 'public deployment config',
-                  status: status.dataPersistenceLabel,
-                  detail:
-                      'API ${status.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : status.publicApiBaseUrl}，origins ${status.allowedOrigins.isEmpty ? 'local/LAN' : status.allowedOrigins.join(', ')}。',
-                  action: status.dataPathPersistent
-                      ? 'persistent storage ready。'
-                      : '公開部署需設定 persistent volume。',
-                ),
-              ],
-            ),
+        const SizedBox(height: 10),
+        _CompactExpansionPanel(
+          title: '進階維護診斷',
+          subtitle: 'backend、history、report、export、backup 與部署設定。',
+          child: _StatusList(
+            items: [
+              _StatusItem(
+                label: 'backend',
+                status: status.sourceStatusLabel,
+                detail: status.backendConnectionCaption,
+                action: status.backendDisconnected
+                    ? '請啟動 backend 或檢查公開 backend URL。'
+                    : 'backend reachable。',
+              ),
+              _StatusItem(
+                label: 'official holdings',
+                status: status.holdingsHistoryStatus,
+                detail:
+                    'history count ${status.holdingsHistoryItemCount}，latest ${_dateOrDash(status.latestHoldingTradeDate)}。',
+                action: status.holdingsHistoryItemCount == 0
+                    ? '請執行 scripts\\00631l_daily_cycle.cmd。'
+                    : '每日資料已累積。',
+              ),
+              _StatusItem(
+                label: 'intraday NAV',
+                status: status.intradayHistoryStatus,
+                detail:
+                    'samples ${status.intradaySampleCount}，latest ${status.latestIntradayDataTime == null ? 'unavailable' : formatTaiwanDateTimeSeconds(status.latestIntradayDataTime!)}。',
+                action: status.intradaySampleCount == 0
+                    ? '請確認 TWSE URL、backend 與交易時段。'
+                    : '盤中估算資料已保存。',
+              ),
+              _StatusItem(
+                label: 'historical price',
+                status: status.priceHistoryStatus,
+                detail:
+                    'rows ${status.priceHistoryRows}，coverage ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}，generated ${_dateTimeOrDash(status.latestExportUpdatedAt)}。',
+                action: status.priceHistoryRows < 2
+                    ? '請執行 scripts\\00631l_update_price_history.cmd；GitHub Pages 請執行 scripts\\00631l_export_static_data.cmd --update。'
+                    : '歷史價格可供回測。',
+              ),
+              _StatusItem(
+                label: 'backtest',
+                status: status.backtestStatus,
+                detail: status.backtestAvailable
+                    ? 'price history available'
+                    : 'price history insufficient',
+                action: status.backtestAvailable ? '可在回測區使用。' : '請先更新歷史價格。',
+              ),
+              _StatusItem(
+                label: 'position local data',
+                status: status.positionStatus,
+                detail: '持倉資料保存在瀏覽器本機。',
+                action: '可在持倉區保存、匯出或清除。',
+              ),
+              _StatusItem(
+                label: 'daily cycle',
+                status: status.dailyCycleStatus,
+                detail:
+                    'warnings ${status.dailyCycleWarningCount}，failures ${status.dailyCycleFailureCount}。',
+                action: status.dailyCycleStatus == 'PASS'
+                    ? '最近 daily cycle 可讀。'
+                    : '請執行 scripts\\00631l_daily_cycle.cmd。',
+              ),
+              _StatusItem(
+                label: 'report / export / backup',
+                status: '${status.reportOverallStatus} / '
+                    '${status.exportAvailable ? 'ready' : 'missing'} / '
+                    '${status.backupAvailable ? 'ready' : 'missing'}',
+                detail:
+                    'report ${status.latestReportPath ?? 'missing'}，export ${status.latestExportPath ?? 'missing'}，backup ${status.latestBackupPath ?? 'missing'}。',
+                action: '必要時執行 report、export、backup scripts。',
+              ),
+              _StatusItem(
+                label: 'public deployment config',
+                status: status.dataPersistenceLabel,
+                detail:
+                    'API ${status.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : status.publicApiBaseUrl}，origins ${status.allowedOrigins.isEmpty ? 'local/LAN' : status.allowedOrigins.join(', ')}。',
+                action: status.dataPathPersistent
+                    ? 'persistent storage ready。'
+                    : '公開部署需設定 persistent volume。',
+              ),
+            ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SettingsHeaderStrip extends StatelessWidget {
+  const _SettingsHeaderStrip({
+    required this.readinessLabel,
+    required this.backendLabel,
+    required this.persistenceLabel,
+  });
+
+  final String readinessLabel;
+  final String backendLabel;
+  final String persistenceLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanel,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'APP'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '設定',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                _CompactTextBadge(label: readinessLabel),
+              ],
+            ),
+            const SizedBox(height: 7),
+            Text(
+              '帳戶、外觀與本機資料放在前面；資料診斷需要時再展開。',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketMutedText,
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _StatusWrap(
+              labels: [
+                _frontendDataModeLabel,
+                backendLabel,
+                persistenceLabel,
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
