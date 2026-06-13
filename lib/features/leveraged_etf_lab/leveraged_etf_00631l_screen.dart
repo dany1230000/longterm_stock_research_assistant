@@ -933,11 +933,23 @@ class _CompactQuoteHeader extends StatelessWidget {
       premiumAssessment.level,
     );
     final history = data.priceHistory.completenessSummary();
+    final latestHistoryPoint = history.latest;
+    final quoteValue = nav?.marketPrice ?? latestHistoryPoint?.close;
+    final quoteStatus = nav?.status.label ??
+        (latestHistoryPoint == null
+            ? 'unavailable'
+            : data.priceHistory.sourceStatusLabel);
+    final quoteStatusDisplay = nav == null && latestHistoryPoint != null
+        ? '歷史收盤'
+        : _statusDisplay(quoteStatus);
+    final quoteCaption = nav?.dataTime == null
+        ? latestHistoryPoint == null
+            ? '市價 · 盤中資料暫無'
+            : '市價參考 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
+        : '市價 · 盤中時間 ${formatTimeSeconds(nav!.dataTime!)}';
     final backendLabel = data.operationsStatus.backendDisconnected
         ? '後端未連線'
         : data.operationsStatus.backendConnectionLabel;
-    final navTime =
-        nav?.dataTime == null ? '暫無' : formatTimeSeconds(nav!.dataTime!);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -972,13 +984,13 @@ class _CompactQuoteHeader extends StatelessWidget {
                             ),
                           ),
                           _CompactTextBadge(
-                            label: _statusDisplay(nav?.status.label),
+                            label: quoteStatusDisplay,
                           ),
                         ],
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        _price(nav?.marketPrice),
+                        _price(quoteValue),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.headlineSmall?.copyWith(
@@ -990,7 +1002,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '市價 · 盤中時間 $navTime',
+                        quoteCaption,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodySmall?.copyWith(

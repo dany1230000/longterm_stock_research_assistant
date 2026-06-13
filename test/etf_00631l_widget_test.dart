@@ -126,6 +126,22 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('quote header uses latest history close when live NAV is absent',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _StaticHistoryOnlyRepository());
+
+    expect(find.text('30.00'), findsWidgets);
+    expect(find.textContaining('歷史收盤'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('loading state shows app shell skeleton instead of blank spinner',
       (tester) async {
     final repository = _PendingLabRepository();
@@ -562,6 +578,13 @@ class _PriceHistoryRepository extends Mock00631LRepository {
       coverageEnd: points.last.date,
       isCompleteFromListing: false,
     );
+  }
+}
+
+class _StaticHistoryOnlyRepository extends _PriceHistoryRepository {
+  @override
+  Future<EtfIntradayNav?> fetchIntradayNav() async {
+    return null;
   }
 }
 
