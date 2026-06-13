@@ -427,22 +427,26 @@ class _MarketTopBar extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 430;
+          final showFullTitle = constraints.maxWidth >= 520;
           return Row(
             children: [
               const _MarketIndexPill(),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  '00631L 正二研究室',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: _marketText,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0,
+              if (showFullTitle) ...[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '00631L 正二研究室',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: _marketText,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
                   ),
                 ),
-              ),
+              ] else
+                const Spacer(),
               if (showModeBadge) ...[
                 _CompactTextBadge(label: _frontendDataModeDisplay),
                 const SizedBox(width: 4),
@@ -724,16 +728,6 @@ class _CompactQuoteHeader extends StatelessWidget {
                 _QuoteFact(
                   label: '前日淨值',
                   value: _price(nav?.previousBusinessDayNav),
-                ),
-                _QuoteFact(
-                  label: '官方 NAV',
-                  value: _price(data.snapshot.navPerUnit),
-                ),
-                _QuoteFact(
-                  label: '單位',
-                  value: nav?.outstandingUnits == null
-                      ? _compactNumber(data.snapshot.outstandingUnits)
-                      : _compactNumber(nav!.outstandingUnits!),
                 ),
               ],
             ),

@@ -211,16 +211,49 @@ class Etf00631LService:
                         self._history_store.save_official_snapshot(payload)
                     except OSError:
                         pass
+            else:
+                fallback = self._holdings_history_fallback(
+                    now=now,
+                    error_message=f"Live holdings parse failed: {payload.get('errorMessage')}",
+                )
+                if fallback is not None:
+                    return fallback
             return payload
         except (FetchError, OSError, RuntimeError) as error:
             stale = self._cache.get_any("holdings")
             if stale is not None:
                 return mark_cached(stale, fetched_at=now, error_message=f"Live holdings fetch failed: {error}")
+            fallback = self._holdings_history_fallback(
+                now=now,
+                error_message=f"Live holdings fetch failed: {error}",
+            )
+            if fallback is not None:
+                return fallback
             return empty_holdings_response(
                 source_url=self._config.yuanta_holdings_url,
                 fetched_at=now,
                 error_message=f"Live holdings fetch failed and no cached snapshot is available: {error}",
             )
+
+    def _holdings_history_fallback(self, *, now: str, error_message: str) -> dict[str, Any] | None:
+        try:
+            records = self._history_store.recent(1)
+        except (OSError, RuntimeError):
+            return None
+        if not records:
+            return None
+
+        cached = dict(records[0])
+        cached["sourceStatus"] = "cached"
+        cached["sourceContract"] = "local_jsonl_history"
+        cached["sourceUrl"] = "local://00631l-holdings-history"
+        cached["fetchedAt"] = now
+        cached["dataTime"] = cached.get("dataTime") or cached.get("sourceUpdatedAt")
+        cached["sourceUpdatedAt"] = cached.get("sourceUpdatedAt") or cached.get("dataTime")
+        cached["isStale"] = bool(cached.get("isStale", False))
+        cached["errorMessage"] = error_message
+        self._cache.set("holdings", cached)
+        return cached
 
     def holdings_history(self, *, limit: int = 30) -> dict[str, Any]:
         now = utc_now_iso()

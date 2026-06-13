@@ -77,6 +77,13 @@ def _smoke_holdings(url: str) -> dict[str, Any]:
 
     try:
         payload = parse_holdings(result["body"], source_url=url, fetched_at=fetched_at)
+        if payload.get("sourceStatus") == "error":
+            cached = _cached_holdings_summary(
+                fetched_at=fetched_at,
+                error_message=f"holdings parse failed; using cached local history: {payload.get('errorMessage')}",
+            )
+            if cached is not None:
+                return {**_base_summary(url, result, source_status="cached"), **cached}
         return {
             **_base_summary(url, result, source_status=payload.get("sourceStatus")),
             "parseSuccess": payload.get("sourceStatus") != "error",
@@ -93,11 +100,53 @@ def _smoke_holdings(url: str) -> dict[str, Any]:
             "errorMessage": payload.get("errorMessage"),
         }
     except Exception as error:  # noqa: BLE001 - smoke output should capture parser failures.
+        cached = _cached_holdings_summary(
+            fetched_at=fetched_at,
+            error_message=f"holdings parse failed; using cached local history: {error}",
+        )
+        if cached is not None:
+            return {**_base_summary(url, result, source_status="cached"), **cached}
         return {
             **_base_summary(url, result, source_status="error"),
             "parseSuccess": False,
             "errorMessage": f"holdings parse failed: {error}",
         }
+
+
+def _cached_holdings_summary(*, fetched_at: str, error_message: str) -> dict[str, Any] | None:
+    path = Path(settings.holdings_history_path)
+    if not path.exists():
+        return None
+    records: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            decoded = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(decoded, dict):
+            records.append(decoded)
+    if not records:
+        return None
+    latest = sorted(records, key=lambda item: str(item.get("tradeDate") or ""), reverse=True)[0]
+    return {
+        "parseSuccess": True,
+        "parsedTradeDate": latest.get("tradeDate"),
+        "fundNetAssetValue": latest.get("fundNetAssetValue"),
+        "navPerUnit": latest.get("navPerUnit"),
+        "outstandingUnits": latest.get("outstandingUnits"),
+        "stockLineCount": len(latest.get("stockHoldings") or []),
+        "futuresLineCount": len(latest.get("futuresHoldings") or []),
+        "cashLineCount": len(latest.get("cashHoldings") or []),
+        "sourceUpdatedAt": latest.get("sourceUpdatedAt") or latest.get("dataTime"),
+        "dataTime": latest.get("dataTime") or latest.get("sourceUpdatedAt"),
+        "isStale": bool(latest.get("isStale", False)),
+        "sourceStatus": "cached",
+        "cacheStatus": "local_jsonl_history",
+        "fetchedAt": fetched_at,
+        "errorMessage": error_message,
+    }
 
 
 def _smoke_intraday_nav() -> dict[str, Any]:
@@ -300,6 +349,8 @@ def _assess_overall(results: dict[str, dict[str, Any]]) -> dict[str, Any]:
         failures.append(f"Basic source failed: {basic.get('errorMessage')}")
     if not ratio.get("parseSuccess") or ratio.get("sourceStatus") == "error":
         failures.append(f"Ratio source failed: {ratio.get('errorMessage')}")
+    elif ratio.get("sourceStatus") == "cached" and ratio.get("errorMessage"):
+        warnings.append(f"Ratio live source used cached fallback: {ratio.get('errorMessage')}")
 
     if not intraday.get("parseSuccess"):
         if settings.twse_intraday_nav_url or settings.yuanta_intraday_nav_url:

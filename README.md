@@ -233,6 +233,13 @@ v3.30 home data readiness:
 - The strip answers whether data is usable without sending users to settings or technical diagnostics.
 - Summary: `docs\00631l_v3_30_home_data_readiness_summary.md`.
 
+v3.31 mobile quote trim:
+
+- Mobile top chrome now keeps only the 00631L pill and app controls, avoiding a repeated full title.
+- The first quote card keeps market price, premium/discount, estimated NAV, and previous NAV; lower-priority reference numbers live deeper in the app.
+- Backend holdings and live smoke now use local cached official holdings history when the live Yuanta ratio page cannot be parsed, and clearly mark that state as cached fallback.
+- Summary: `docs\00631l_v3_31_mobile_quote_trim_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

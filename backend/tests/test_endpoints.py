@@ -294,6 +294,37 @@ Custodian Fee
             self.assertEqual(summary["tsmcWeightPct"], 37.44)
             self.assertGreater(summary["cashAndMarginPct"], 0)
 
+    def test_holdings_endpoint_uses_local_history_when_live_parse_fails(self) -> None:
+        holdings_fixture = (FIXTURES / "00631l_yuanta_ratio_fixture.txt").read_text(encoding="utf-8")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            history_store = HoldingsHistoryStore(Path(temp_dir) / "history.jsonl")
+            saved_service = Etf00631LService(
+                config=Settings(yuanta_holdings_url="fixture://holdings"),
+                fetcher=lambda url, timeout_seconds: holdings_fixture,
+                cache=TimedMemoryCache(),
+                history_store=history_store,
+            )
+            saved = saved_service.holdings()
+            self.assertEqual(saved["sourceStatus"], "official")
+
+            fallback_service = Etf00631LService(
+                config=Settings(yuanta_holdings_url="fixture://changed-holdings"),
+                fetcher=lambda url, timeout_seconds: "<html>temporarily changed</html>",
+                cache=TimedMemoryCache(),
+                history_store=history_store,
+            )
+            client = TestClient(main_module.create_app(app_service=fallback_service))
+
+            response = client.get("/api/etf/00631l/holdings")
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+            self.assertEqual(payload["sourceStatus"], "cached")
+            self.assertEqual(payload["sourceContract"], "local_jsonl_history")
+            self.assertEqual(payload["sourceUrl"], "local://00631l-holdings-history")
+            self.assertEqual(payload["tradeDate"], "2026-06-05")
+            self.assertIn("Live holdings parse failed", payload["errorMessage"])
+
     def test_intraday_nav_history_endpoints_return_saved_samples(self) -> None:
         intraday_fixture = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(encoding="utf-8")
 

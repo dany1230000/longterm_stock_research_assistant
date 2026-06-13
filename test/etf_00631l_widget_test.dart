@@ -32,7 +32,7 @@ void main() {
     expect(find.text('歷史覆蓋'), findsOneWidget);
     expect(find.text('近 60 日收盤'), findsOneWidget);
     expect(find.text('官方曝險'), findsOneWidget);
-    expect(find.text('官方 NAV'), findsWidgets);
+    expect(find.text('官方 NAV'), findsNothing);
     expect(find.textContaining('Mock 預設'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('內容物'), findsWidgets);
@@ -63,7 +63,7 @@ void main() {
 
     await _pumpLab(tester, Mock00631LRepository());
 
-    expect(find.text('00631L 正二研究室'), findsWidgets);
+    expect(find.text('00631L 正二研究室'), findsNothing);
     expect(find.text('今日一眼看'), findsOneWidget);
     expect(find.text('資料完整度'), findsOneWidget);
     expect(find.text('更多檢視'), findsOneWidget);
