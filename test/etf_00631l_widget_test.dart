@@ -295,8 +295,7 @@ void main() {
     expect(find.textContaining('local-only'), findsWidgets);
   });
 
-  testWidgets('top symbol search renders catalog result list',
-      (tester) async {
+  testWidgets('top symbol search renders catalog result list', (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 
     await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
