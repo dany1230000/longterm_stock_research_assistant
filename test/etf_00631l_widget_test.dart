@@ -223,8 +223,10 @@ void main() {
     await _tapSection(tester, 'position');
     await tester.pumpAndSettle();
 
-    expect(find.text('持倉快覽'), findsOneWidget);
-    expect(find.text('持倉追蹤'), findsOneWidget);
+    expect(find.text('本機持倉'), findsOneWidget);
+    expect(find.text('持倉狀態'), findsOneWidget);
+    expect(find.text('尚未輸入持倉'), findsWidgets);
+    expect(find.text('輸入持倉資料'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
     expect(find.text('保存本機資料'), findsOneWidget);
     expect(find.text('匯出 JSON'), findsOneWidget);
@@ -273,6 +275,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('今日 AI 快覽'), findsOneWidget);
     expect(find.text('今日 AI 分析摘要'), findsOneWidget);
+    expect(find.text('資料狀態'), findsWidgets);
+    expect(find.text('內容物重點'), findsOneWidget);
+    expect(find.text('折溢價'), findsWidgets);
+    expect(find.text('今日重點'), findsOneWidget);
     expect(find.text('完整資料日報'), findsOneWidget);
     expect(find.textContaining('rule_based'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);
@@ -281,15 +287,30 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('設定'), findsWidgets);
     expect(find.text('帳戶與偏好'), findsOneWidget);
+    expect(find.text('ETF 資料庫'), findsOneWidget);
+    expect(find.text('ETF 資料預覽'), findsOneWidget);
+    expect(find.text('元大台灣50正2'), findsOneWidget);
     expect(find.text('App 上架準備'), findsOneWidget);
     expect(find.text('資料模式與完整度'), findsOneWidget);
     expect(find.text('進階維護診斷'), findsOneWidget);
-    expect(find.text('Android'), findsOneWidget);
-    expect(find.text('iOS'), findsOneWidget);
-    expect(find.text('隱私與支援'), findsOneWidget);
+    expect(find.text('Android'), findsNothing);
+    expect(find.text('iOS'), findsNothing);
+    expect(find.text('隱私與支援'), findsNothing);
     expect(find.text('內容物歷史'), findsNothing);
     expect(find.text('盤中 NAV / 折溢價'), findsNothing);
     expect(find.text('TX live'), findsNothing);
+
+    await tester.scrollUntilVisible(
+      find.text('App 上架準備'),
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('App 上架準備'));
+    await tester.pumpAndSettle();
+    expect(find.text('Android'), findsOneWidget);
+    expect(find.text('iOS'), findsOneWidget);
+    expect(find.text('隱私與支援'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('資料模式與完整度'),

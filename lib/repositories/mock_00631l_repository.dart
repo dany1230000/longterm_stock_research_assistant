@@ -133,6 +133,59 @@ class Mock00631LRepository extends Official00631LRepository {
   }
 
   @override
+  Future<EtfCatalog> fetchEtfCatalog() async {
+    final now = _clock();
+    return EtfCatalog(
+      items: [
+        EtfCatalogItem(
+          code: '00631L',
+          name: '元大台灣50正2',
+          marketPrice: 35.2,
+          estimatedNav: 35.1,
+          premiumDiscountPct: 0.28,
+          dataTime: now,
+          targetType: '槓桿 ETF',
+        ),
+        EtfCatalogItem(
+          code: '0050',
+          name: '元大台灣50',
+          marketPrice: 185.4,
+          estimatedNav: 185.3,
+          premiumDiscountPct: 0.05,
+          dataTime: now,
+          targetType: '台股 ETF',
+        ),
+        EtfCatalogItem(
+          code: '006208',
+          name: '富邦台50',
+          marketPrice: 112.3,
+          estimatedNav: 112.4,
+          premiumDiscountPct: -0.09,
+          dataTime: now,
+          targetType: '台股 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00878',
+          name: '國泰永續高股息',
+          marketPrice: 22.4,
+          estimatedNav: 22.42,
+          premiumDiscountPct: -0.08,
+          dataTime: now,
+          targetType: '高股息 ETF',
+        ),
+      ],
+      status: EtfDataStatus.mock,
+      sourceStatusLabel: 'mock',
+      sourceContract: 'mock_twse_all_etf_catalog',
+      sourceUrl: 'mock://twse-etf-catalog',
+      lastFetchedAt: now,
+      sourceUpdatedAt: now,
+      dataTime: now,
+      isStale: false,
+    );
+  }
+
+  @override
   Future<Etf00631LLabData> fetchLabData() async {
     final profile = await fetchProfile();
     final snapshot = await fetchDailySnapshot();
@@ -143,6 +196,7 @@ class Mock00631LRepository extends Official00631LRepository {
     final operationsStatus = await fetchOperationsStatus();
     final aiAnalysis = await fetchAiAnalysisSummary();
     final priceHistory = await fetchPriceHistory();
+    final etfCatalog = await fetchEtfCatalog();
     final now = _clock();
 
     return Etf00631LLabData(
@@ -160,6 +214,7 @@ class Mock00631LRepository extends Official00631LRepository {
         now: now,
       ),
       aiAnalysis: aiAnalysis,
+      etfCatalog: etfCatalog,
       lastFetchedAt: now,
     );
   }

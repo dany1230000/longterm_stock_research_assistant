@@ -220,6 +220,19 @@ class Static00631LRepository extends Mock00631LRepository {
     );
   }
 
+  @override
+  Future<EtfCatalog> fetchEtfCatalog() async {
+    return EtfCatalog.empty(
+      lastFetchedAt: DateTime.now(),
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'backend_required',
+      sourceContract: 'twse_all_etf_catalog',
+      sourceUrl: 'public backend required for ETF catalog',
+      errorMessage:
+          'Static public mode does not include the TWSE all-ETF catalog yet.',
+    );
+  }
+
   Future<Map<String, dynamic>> _getJson(String filename) async {
     final body = await _client.getString(_resolve(filename), timeout: timeout);
     final decoded = jsonDecode(body);

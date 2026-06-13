@@ -395,6 +395,32 @@ class Proxy00631LRepository extends Official00631LRepository {
     );
   }
 
+  @override
+  Future<EtfCatalog> fetchEtfCatalog() async {
+    final payload = await _getJson('/api/etf/catalog');
+    return EtfCatalog(
+      items: [
+        for (final rawItem in _list(payload['items']))
+          _catalogItemFromPayload(_map(rawItem)),
+      ],
+      status: _status(payload),
+      sourceStatusLabel: _rawStatus(payload).isEmpty
+          ? _status(payload).label
+          : _rawStatus(payload),
+      sourceContract: _string(
+        payload['sourceContract'],
+        fallback: 'twse_all_etf_catalog',
+      ),
+      sourceUrl: _string(payload['sourceUrl']),
+      lastFetchedAt: _dateTime(payload['fetchedAt']) ?? DateTime.now(),
+      sourceUpdatedAt: _wallClockDateTime(payload['sourceUpdatedAt']),
+      dataTime: _wallClockDateTime(payload['dataTime']),
+      isStale: payload['isStale'] == true,
+      userDelayMs: _int(payload['userDelayMs'], fallback: 15000),
+      errorMessage: payload['errorMessage']?.toString(),
+    );
+  }
+
   Future<Map<String, dynamic>> _getJson(String path) async {
     final body = await _client.getString(_resolve(path), timeout: timeout);
     final decoded = jsonDecode(body);
@@ -411,6 +437,21 @@ class Proxy00631LRepository extends Official00631LRepository {
     final normalizedPath = path.startsWith('/') ? path : '/$path';
     return Uri.parse('$base$normalizedPath');
   }
+}
+
+EtfCatalogItem _catalogItemFromPayload(Map<String, dynamic> payload) {
+  return EtfCatalogItem(
+    code: _string(payload['code']),
+    name: _string(payload['name']),
+    marketPrice: _nullableDouble(payload['marketPrice']),
+    estimatedNav: _nullableDouble(payload['estimatedNav']),
+    premiumDiscountPct: _nullableDouble(payload['premiumDiscountPct']),
+    previousNav: _nullableDouble(payload['previousNav']),
+    outstandingUnits: _nullableInt(payload['outstandingUnits']),
+    outstandingUnitsDelta: _nullableInt(payload['outstandingUnitsDelta']),
+    dataTime: _wallClockDateTime(payload['dataTime']),
+    targetType: _string(payload['targetType']),
+  );
 }
 
 EtfPriceHistoryPoint _priceHistoryPointFromPayload(

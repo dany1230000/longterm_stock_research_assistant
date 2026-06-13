@@ -2234,6 +2234,8 @@ class EtfPositionInput {
   final double? totalAssets;
   final double feeAndTax;
   final String note;
+
+  bool get hasPosition => shares > 0 && averageCost > 0;
 }
 
 class EtfPositionSummary {
@@ -2275,6 +2277,98 @@ class EtfPositionSummary {
   final DateTime? dataTime;
 }
 
+class EtfCatalogItem {
+  const EtfCatalogItem({
+    required this.code,
+    required this.name,
+    this.marketPrice,
+    this.estimatedNav,
+    this.premiumDiscountPct,
+    this.previousNav,
+    this.outstandingUnits,
+    this.outstandingUnitsDelta,
+    this.dataTime,
+    this.targetType = '',
+  });
+
+  final String code;
+  final String name;
+  final double? marketPrice;
+  final double? estimatedNav;
+  final double? premiumDiscountPct;
+  final double? previousNav;
+  final int? outstandingUnits;
+  final int? outstandingUnitsDelta;
+  final DateTime? dataTime;
+  final String targetType;
+
+  String get displayName => name.trim().isEmpty ? code : name;
+}
+
+class EtfCatalog {
+  const EtfCatalog({
+    required this.items,
+    required this.status,
+    required this.sourceStatusLabel,
+    required this.sourceContract,
+    required this.sourceUrl,
+    required this.lastFetchedAt,
+    this.sourceUpdatedAt,
+    this.dataTime,
+    this.isStale = true,
+    this.userDelayMs = 15000,
+    this.errorMessage,
+  });
+
+  factory EtfCatalog.empty({
+    DateTime? lastFetchedAt,
+    EtfDataStatus status = EtfDataStatus.error,
+    String sourceStatusLabel = 'unavailable',
+    String sourceContract = 'twse_all_etf_catalog',
+    String sourceUrl = '',
+    String? errorMessage,
+  }) {
+    return EtfCatalog(
+      items: const [],
+      status: status,
+      sourceStatusLabel: sourceStatusLabel,
+      sourceContract: sourceContract,
+      sourceUrl: sourceUrl,
+      lastFetchedAt: lastFetchedAt ?? DateTime.now(),
+      isStale: true,
+      errorMessage: errorMessage,
+    );
+  }
+
+  final List<EtfCatalogItem> items;
+  final EtfDataStatus status;
+  final String sourceStatusLabel;
+  final String sourceContract;
+  final String sourceUrl;
+  final DateTime lastFetchedAt;
+  final DateTime? sourceUpdatedAt;
+  final DateTime? dataTime;
+  final bool isStale;
+  final int userDelayMs;
+  final String? errorMessage;
+
+  bool get hasData => items.isNotEmpty;
+  int get rowCount => items.length;
+
+  List<EtfCatalogItem> get focusItems {
+    final preferredCodes = {'00631L', '0050', '006208', '00878', '00919'};
+    final preferred = [
+      for (final item in items)
+        if (preferredCodes.contains(item.code)) item,
+    ];
+    final remaining = [
+      for (final item in items)
+        if (!preferredCodes.contains(item.code)) item,
+    ];
+    return [...preferred, ...remaining].take(8).toList(growable: false);
+  }
+}
+
 class Etf00631LLabData {
   const Etf00631LLabData({
     required this.profile,
@@ -2287,6 +2381,7 @@ class Etf00631LLabData {
     required this.operationsStatus,
     required this.analysis,
     required this.aiAnalysis,
+    required this.etfCatalog,
     required this.lastFetchedAt,
   });
 
@@ -2300,6 +2395,7 @@ class Etf00631LLabData {
   final EtfOperationsStatus operationsStatus;
   final EtfAnalysisSummary analysis;
   final EtfAiAnalysisSummary aiAnalysis;
+  final EtfCatalog etfCatalog;
   final DateTime lastFetchedAt;
 
   HoldingsChangeAssessment get holdingsChangeAssessment {

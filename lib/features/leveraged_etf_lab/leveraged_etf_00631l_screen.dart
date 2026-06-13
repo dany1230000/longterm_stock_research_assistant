@@ -3756,8 +3756,10 @@ class _PositionSectionState extends State<_PositionSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionHeaderCard(
-          title: '持倉快覽',
-          subtitle: 'local-only；資料保存在本機瀏覽器，不需要登入，也不會上傳個人持倉。',
+          title: '本機持倉',
+          subtitle: input.hasPosition
+              ? '依目前市價估算；資料只保存在本機瀏覽器。'
+              : '先輸入股數與平均成本，就能在本機估算持倉狀態。',
           icon: Icons.account_balance_wallet_outlined,
           badges: const ['local-only', 'browser storage', '00631L'],
           metrics: [
@@ -3782,13 +3784,27 @@ class _PositionSectionState extends State<_PositionSection> {
           ],
         ),
         const SizedBox(height: 12),
+        _PositionStatePanel(
+          input: input,
+          summary: summary,
+          marketPrice: widget.data.intradayNav?.marketPrice,
+          sourceLabel: widget.data.intradayNav?.status.label ?? 'unavailable',
+        ),
+        const SizedBox(height: 12),
         _SectionBlock(
-          title: '持倉追蹤',
-          subtitle: 'local-only，本機瀏覽器資料，不需要登入，也不會上傳到外部服務。',
+          title: '輸入持倉資料',
+          subtitle: 'local-only，本機瀏覽器保存。清除資料後不會保留副本。',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!_loaded) const LinearProgressIndicator(),
+              if (!input.hasPosition) ...[
+                const _EmptyPanel(
+                  title: '尚未輸入持倉',
+                  message: '填入持有股數與平均成本後，這裡會顯示目前市值、未實現損益與部位比例。',
+                ),
+                const SizedBox(height: 12),
+              ],
               _InputGrid(
                 children: [
                   _NumberField(
@@ -3822,35 +3838,7 @@ class _PositionSectionState extends State<_PositionSection> {
                 onChanged: (_) => setState(() {}),
               ),
               const SizedBox(height: 12),
-              _ResponsiveMetricGrid(
-                cards: [
-                  _MetricCard(
-                    label: '目前市值',
-                    value: formatNtdAmount(summary.marketValue),
-                    caption: '依 intraday 市價估算',
-                    icon: Icons.account_balance_wallet_outlined,
-                  ),
-                  _MetricCard(
-                    label: '成本',
-                    value: formatNtdAmount(summary.cost),
-                    caption: '股數 x 平均成本 + 費用',
-                    icon: Icons.receipt_long_outlined,
-                  ),
-                  _MetricCard(
-                    label: '未實現損益',
-                    value: formatNtdAmount(summary.unrealizedPnl),
-                    caption:
-                        formatSignedNullablePercent(summary.unrealizedPnlPct),
-                    icon: Icons.insights_outlined,
-                  ),
-                  _MetricCard(
-                    label: '部位比例',
-                    value: formatNullablePercent(summary.assetWeightPct),
-                    caption: '需輸入總資產',
-                    icon: Icons.pie_chart_outline,
-                  ),
-                ],
-              ),
+              _PositionResultGrid(summary: summary),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
@@ -3931,6 +3919,93 @@ class _PositionSectionState extends State<_PositionSection> {
   }
 }
 
+class _PositionStatePanel extends StatelessWidget {
+  const _PositionStatePanel({
+    required this.input,
+    required this.summary,
+    required this.marketPrice,
+    required this.sourceLabel,
+  });
+
+  final EtfPositionInput input;
+  final EtfPositionSummary summary;
+  final double? marketPrice;
+  final String sourceLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final title = input.hasPosition ? '持倉資料已輸入' : '尚未輸入持倉';
+    final description = input.hasPosition
+        ? '目前使用 ${_price(marketPrice)} 估算市值，資料來源 $sourceLabel。'
+        : '本頁不需要登入。輸入資料只會存在目前瀏覽器。';
+    return _SectionBlock(
+      title: '持倉狀態',
+      subtitle: description,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _StatusWrap(
+            labels: [
+              title,
+              'local-only',
+              '市價 ${_price(marketPrice)}',
+              summary.dataTime == null
+                  ? '資料時間 unavailable'
+                  : '資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}',
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '此區只做本機持倉試算與資料狀態顯示，非買賣建議。',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PositionResultGrid extends StatelessWidget {
+  const _PositionResultGrid({required this.summary});
+
+  final EtfPositionSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    return _ResponsiveMetricGrid(
+      cards: [
+        _MetricCard(
+          label: '目前市值',
+          value: formatNtdAmount(summary.marketValue),
+          caption: '依 intraday 市價估算',
+          icon: Icons.account_balance_wallet_outlined,
+        ),
+        _MetricCard(
+          label: '成本',
+          value: formatNtdAmount(summary.cost),
+          caption: '股數 x 平均成本 + 費用',
+          icon: Icons.receipt_long_outlined,
+        ),
+        _MetricCard(
+          label: '未實現損益',
+          value: formatNtdAmount(summary.unrealizedPnl),
+          caption: formatSignedNullablePercent(summary.unrealizedPnlPct),
+          icon: Icons.insights_outlined,
+        ),
+        _MetricCard(
+          label: '部位比例',
+          value: formatNullablePercent(summary.assetWeightPct),
+          caption: '需輸入總資產',
+          icon: Icons.pie_chart_outline,
+        ),
+      ],
+    );
+  }
+}
+
 class _AiSection extends StatelessWidget {
   const _AiSection({required this.data});
 
@@ -3989,11 +4064,20 @@ class _AiSection extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
+              _AiSignalGrid(data: data, summary: summary),
+              const SizedBox(height: 12),
               Text(
                 '產生時間 ${formatTaiwanDateTimeSeconds(summary.generatedAt)}'
                 '${summary.dataTime == null ? '' : '，資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}'}',
               ),
               const SizedBox(height: 12),
+              Text(
+                '今日重點',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(height: 8),
               for (final bullet in summary.bullets)
                 _BulletLine(text: bullet, icon: Icons.insights_outlined),
               const SizedBox(height: 8),
@@ -4020,6 +4104,53 @@ class _AiSection extends StatelessWidget {
               const Text('非買賣建議。'),
             ],
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AiSignalGrid extends StatelessWidget {
+  const _AiSignalGrid({required this.data, required this.summary});
+
+  final Etf00631LLabData data;
+  final EtfAiAnalysisSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final nav = data.intradayNav;
+    final snapshot = data.snapshot;
+    final txLine = snapshot.futuresHoldings
+        .where((line) => line.code.toUpperCase().contains('TX'))
+        .fold<double>(0, (sum, line) => sum + line.weightPct);
+    final tsmcLine = snapshot.stockHoldings
+        .where((line) => line.code == '2330')
+        .fold<double>(0, (sum, line) => sum + line.weightPct);
+    return _ResponsiveMetricGrid(
+      cards: [
+        _MetricCard(
+          label: '資料狀態',
+          value: summary.readinessLabel,
+          caption: 'source ${summary.sourceStatusLabel}',
+          icon: Icons.verified_outlined,
+        ),
+        _MetricCard(
+          label: '內容物重點',
+          value: 'TX ${formatNullablePercent(txLine)}',
+          caption: '台積電 ${formatNullablePercent(tsmcLine)}',
+          icon: Icons.account_tree_outlined,
+        ),
+        _MetricCard(
+          label: '折溢價',
+          value: formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct),
+          caption: nav?.premiumDiscountAssessment.label ?? '資料不足',
+          icon: Icons.price_change_outlined,
+        ),
+        _MetricCard(
+          label: '程式操作',
+          value: '${summary.actionItems.length} 項',
+          caption: data.operationsStatus.dailyCycleStatus,
+          icon: Icons.task_alt_outlined,
         ),
       ],
     );
@@ -4071,7 +4202,16 @@ class _SettingsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        const _SectionBlock(
+        _SectionBlock(
+          title: 'ETF 資料庫',
+          subtitle: 'TWSE all-ETF catalog，先做資料整理；ETF 比較會接這份資料。',
+          child: _EtfCatalogPanel(
+            catalog: data.etfCatalog,
+            operationsStatus: status,
+          ),
+        ),
+        const SizedBox(height: 10),
+        const _CompactExpansionPanel(
           title: 'App 上架準備',
           subtitle: '目前是 PWA 完成版；原生 Android / iOS 還需要平台打包、簽章與商店資料。',
           child: _StatusList(
@@ -4206,6 +4346,158 @@ class _SettingsSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _EtfCatalogPanel extends StatelessWidget {
+  const _EtfCatalogPanel({
+    required this.catalog,
+    required this.operationsStatus,
+  });
+
+  final EtfCatalog catalog;
+  final EtfOperationsStatus operationsStatus;
+
+  @override
+  Widget build(BuildContext context) {
+    final rowCount = catalog.hasData
+        ? catalog.rowCount
+        : operationsStatus.etfCatalogRowCount;
+    final status = catalog.hasData
+        ? catalog.sourceStatusLabel
+        : operationsStatus.etfCatalogStatus;
+    final dataTime = catalog.dataTime ?? operationsStatus.etfCatalogDataTime;
+    final items = catalog.focusItems;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _ResponsiveMetricGrid(
+          cards: [
+            _MetricCard(
+              label: 'ETF 筆數',
+              value: formatInteger(rowCount),
+              caption: status,
+              icon: Icons.dataset_outlined,
+            ),
+            _MetricCard(
+              label: '資料時間',
+              value: dataTime == null
+                  ? 'unavailable'
+                  : formatTaiwanDateTimeSeconds(dataTime),
+              caption: catalog.sourceContract,
+              icon: Icons.schedule_outlined,
+            ),
+            const _MetricCard(
+              label: '目前範圍',
+              value: 'catalog',
+              caption: '尚未啟用 ETF 比較',
+              icon: Icons.compare_arrows_outlined,
+            ),
+            _MetricCard(
+              label: '00631L',
+              value: dataTime == null ? '待同步' : '可對照',
+              caption: '正二研究室仍為主頁',
+              icon: Icons.push_pin_outlined,
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (items.isEmpty)
+          const _EmptyPanel(
+            title: '尚無 ETF catalog 明細',
+            message:
+                '若使用 live backend，請執行 scripts\\00631l_import_etf_catalog.cmd。static public mode 目前只內建 00631L 歷史資料。',
+          )
+        else
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'ETF 資料預覽',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              for (final item in items) ...[
+                _EtfCatalogItemTile(item: item),
+                const SizedBox(height: 8),
+              ],
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class _EtfCatalogItemTile extends StatelessWidget {
+  const _EtfCatalogItemTile({required this.item});
+
+  final EtfCatalogItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          children: [
+            _MiniStatusBadge(label: item.code),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: _marketTextColor(context),
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    item.targetType.isEmpty ? 'ETF' : item.targetType,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  _price(item.marketPrice),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: _marketTextColor(context),
+                  ),
+                ),
+                Text(
+                  formatSignedNullablePercent(item.premiumDiscountPct),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

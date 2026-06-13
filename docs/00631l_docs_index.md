@@ -185,6 +185,8 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Split-adjusted history release: `docs\00631l_v3_47_split_adjusted_history_summary.md`
 - Home chart visible release: `docs\00631l_v3_48_home_chart_visible_summary.md`
 - ETF research room IA release: `docs\00631l_v3_49_etf_research_room_ia_summary.md`
+- History/theme fix release: `docs\00631l_v4_2_history_theme_fix_summary.md`
+- Position/AI/settings and ETF catalog release: `docs\00631l_v4_3_position_ai_etf_catalog_summary.md`
 
 ## Scope Boundary
 

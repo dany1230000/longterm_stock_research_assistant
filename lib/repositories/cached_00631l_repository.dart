@@ -25,6 +25,7 @@ class Cached00631LRepository extends Official00631LRepository {
   EtfPriceHistory? _priceHistoryCache;
   EtfOperationsStatus? _operationsStatusCache;
   EtfAiAnalysisSummary? _aiAnalysisCache;
+  EtfCatalog? _etfCatalogCache;
 
   @override
   Future<Etf00631LLabData> fetchFastLabData() async {
@@ -204,6 +205,21 @@ class Cached00631LRepository extends Official00631LRepository {
     }
   }
 
+  @override
+  Future<EtfCatalog> fetchEtfCatalog() async {
+    try {
+      final catalog = await _primary.fetchEtfCatalog().timeout(primaryTimeout);
+      _etfCatalogCache = catalog;
+      return catalog;
+    } catch (_) {
+      final cached = _etfCatalogCache;
+      if (cached != null) {
+        return _cachedEtfCatalog(cached);
+      }
+      return _fallback.fetchEtfCatalog();
+    }
+  }
+
   Future<EtfOperationsStatus> _operationsWithFallbackPriceHistory(
     EtfOperationsStatus primaryStatus,
   ) async {
@@ -224,6 +240,22 @@ class Cached00631LRepository extends Official00631LRepository {
     }
     return primaryStatus;
   }
+}
+
+EtfCatalog _cachedEtfCatalog(EtfCatalog catalog) {
+  return EtfCatalog(
+    items: catalog.items,
+    status: EtfDataStatus.cached,
+    sourceStatusLabel: 'cached',
+    sourceContract: catalog.sourceContract,
+    sourceUrl: catalog.sourceUrl,
+    lastFetchedAt: catalog.lastFetchedAt,
+    sourceUpdatedAt: catalog.sourceUpdatedAt,
+    dataTime: catalog.dataTime,
+    isStale: catalog.isStale,
+    userDelayMs: catalog.userDelayMs,
+    errorMessage: catalog.errorMessage,
+  );
 }
 
 LeveragedEtfProfile _cachedProfile(LeveragedEtfProfile profile) {

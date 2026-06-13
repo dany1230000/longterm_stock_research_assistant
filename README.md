@@ -118,6 +118,20 @@ v4.1 TX live, history controls, and ETF catalog:
 - TWSE all-ETF catalog can be imported with `scripts\00631l_import_etf_catalog.cmd`; it is a data foundation and does not change the app into an all-ETF product.
 - Summary: `docs\00631l_v4_1_tx_live_history_controls_summary.md`.
 
+v4.2 history range and theme fix:
+
+- The history/backtest page clearly defaults to the latest one-year range.
+- Start/end date controls and quick ranges update charts, metrics, and the price table.
+- The light/dark toggle is a visible `日間` / `夜間` control and rebuilds the 00631L market palette.
+
+v4.3 position, AI, settings, and ETF catalog:
+
+- Position tracking now starts with local-only status, an empty state, and grouped result cards.
+- AI analysis now separates source/readiness, daily signals, action items, and full-data briefing.
+- Settings prioritizes account/privacy, appearance, local position data, and ETF catalog preview.
+- Frontend repository mapping now reads `/api/etf/catalog`; ETF comparison remains a later feature.
+- Summary: `docs\00631l_v4_3_position_ai_etf_catalog_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.

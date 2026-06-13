@@ -212,6 +212,26 @@ void main() {
     expect(history.points.last.drawdownPct, -3.23);
   });
 
+  test('proxy repository maps ETF catalog payload', () async {
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/catalog': jsonEncode(_etfCatalogPayload()),
+      }),
+    );
+
+    final catalog = await repository.fetchEtfCatalog();
+
+    expect(catalog.status, EtfDataStatus.cached);
+    expect(catalog.sourceStatusLabel, 'cached');
+    expect(catalog.sourceContract, 'twse_all_etf_catalog');
+    expect(catalog.rowCount, 3);
+    expect(catalog.dataTime, DateTime(2026, 6, 12, 13, 31));
+    expect(catalog.focusItems.first.code, '00631L');
+    expect(catalog.focusItems.first.displayName, '元大台灣50正2');
+    expect(catalog.focusItems.first.marketPrice, 34.83);
+    expect(catalog.focusItems.first.premiumDiscountPct, -0.4);
+  });
+
   test('static repository reads static public price history and status',
       () async {
     final repository = Static00631LRepository(
@@ -280,6 +300,8 @@ void main() {
     expect(data.operationsStatus.errorMessage, contains('backend down'));
     expect(data.aiAnalysis.source, 'rule_based');
     expect(data.aiAnalysis.sourceStatusLabel, 'mock');
+    expect(data.etfCatalog.sourceStatusLabel, 'mock');
+    expect(data.etfCatalog.items.first.code, '00631L');
   });
 
   test('live proxy failure can fall back to static public data before mock',
@@ -919,6 +941,54 @@ Map<String, Object?> _priceHistoryPayload() {
     'isCompleteFromListing': false,
     'isStale': false,
     'priceField': 'adjustedClose',
+    'errorMessage': null,
+  };
+}
+
+Map<String, Object?> _etfCatalogPayload() {
+  return {
+    'sourceStatus': 'cached',
+    'sourceContract': 'twse_all_etf_catalog',
+    'sourceUrl': 'local://twse_etf_catalog.json',
+    'fetchedAt': '2026-06-12T13:32:00+08:00',
+    'sourceUpdatedAt': '2026-06-12T13:31:00+08:00',
+    'dataTime': '2026-06-12T13:31:00+08:00',
+    'isStale': false,
+    'userDelayMs': 15000,
+    'rowCount': 3,
+    'items': [
+      {
+        'code': '00631L',
+        'name': '元大台灣50正2',
+        'outstandingUnits': 5270000000,
+        'outstandingUnitsDelta': 0,
+        'marketPrice': 34.83,
+        'estimatedNav': 34.97,
+        'premiumDiscountPct': -0.4,
+        'previousNav': 34.6,
+        'dataDate': '2026-06-12',
+        'dataTime': '2026-06-12T13:31:00+08:00',
+        'targetType': '槓桿 ETF',
+      },
+      {
+        'code': '0050',
+        'name': '元大台灣50',
+        'marketPrice': 185.4,
+        'estimatedNav': 185.3,
+        'premiumDiscountPct': 0.05,
+        'dataTime': '2026-06-12T13:31:00+08:00',
+        'targetType': '台股 ETF',
+      },
+      {
+        'code': '00878',
+        'name': '國泰永續高股息',
+        'marketPrice': 22.4,
+        'estimatedNav': 22.42,
+        'premiumDiscountPct': -0.08,
+        'dataTime': '2026-06-12T13:31:00+08:00',
+        'targetType': '高股息 ETF',
+      },
+    ],
     'errorMessage': null,
   };
 }

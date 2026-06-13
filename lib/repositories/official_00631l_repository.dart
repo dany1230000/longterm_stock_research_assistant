@@ -43,6 +43,13 @@ abstract class Official00631LRepository {
     );
   }
 
+  Future<EtfCatalog> fetchEtfCatalog() async {
+    return EtfCatalog.empty(
+      sourceStatusLabel: 'unavailable',
+      status: EtfDataStatus.error,
+    );
+  }
+
   Future<Etf00631LLabData> fetchFastLabData() async {
     final profileFuture = fetchProfile();
     final snapshotFuture = fetchDailySnapshot();
@@ -86,6 +93,11 @@ abstract class Official00631LRepository {
         now: now,
       ),
       aiAnalysis: EtfAiAnalysisSummary.mockFallback(now: now).asCached(),
+      etfCatalog: EtfCatalog.empty(
+        lastFetchedAt: now,
+        status: EtfDataStatus.cached,
+        sourceStatusLabel: 'deferred',
+      ),
       lastFetchedAt: now,
     );
   }
@@ -100,6 +112,7 @@ abstract class Official00631LRepository {
     final operationsStatusFuture = _fetchOperationsStatusSafely();
     final aiAnalysisFuture = _fetchAiAnalysisSafely();
     final priceHistoryFuture = _fetchPriceHistorySafely();
+    final etfCatalogFuture = _fetchEtfCatalogSafely();
 
     final profile = await profileFuture;
     final snapshot = await snapshotFuture;
@@ -110,6 +123,7 @@ abstract class Official00631LRepository {
     final operationsStatus = await operationsStatusFuture;
     final aiAnalysis = await aiAnalysisFuture;
     final priceHistory = await priceHistoryFuture;
+    final etfCatalog = await etfCatalogFuture;
     final now = DateTime.now();
 
     return Etf00631LLabData(
@@ -127,6 +141,7 @@ abstract class Official00631LRepository {
         now: now,
       ),
       aiAnalysis: aiAnalysis,
+      etfCatalog: etfCatalog,
       lastFetchedAt: now,
     );
   }
@@ -188,6 +203,18 @@ abstract class Official00631LRepository {
       return await fetchPriceHistory();
     } catch (error) {
       return EtfPriceHistory.empty(
+        sourceStatusLabel: 'error',
+        status: EtfDataStatus.error,
+        errorMessage: error.toString(),
+      );
+    }
+  }
+
+  Future<EtfCatalog> _fetchEtfCatalogSafely() async {
+    try {
+      return await fetchEtfCatalog();
+    } catch (error) {
+      return EtfCatalog.empty(
         sourceStatusLabel: 'error',
         status: EtfDataStatus.error,
         errorMessage: error.toString(),
