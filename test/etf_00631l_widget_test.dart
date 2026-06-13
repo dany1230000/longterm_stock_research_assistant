@@ -23,7 +23,7 @@ void main() {
     expect(find.text('資料完整度'), findsNothing);
     expect(find.text('回測'), findsNothing);
     expect(find.text('可用'), findsNothing);
-    expect(find.text('圖表與曝險'), findsOneWidget);
+    expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('資料來源'), findsNothing);
@@ -32,8 +32,8 @@ void main() {
     expect(find.text('內容物重點'), findsOneWidget);
     expect(find.textContaining('歷史資料'), findsWidgets);
     expect(find.text('累積報酬'), findsOneWidget);
-    expect(find.text('近 60 日收盤'), findsNothing);
-    expect(find.text('官方曝險'), findsNothing);
+    expect(find.text('近 60 日收盤'), findsOneWidget);
+    expect(find.text('官方曝險'), findsOneWidget);
     expect(find.text('官方 NAV'), findsNothing);
     expect(find.textContaining('Mock 預設'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
@@ -69,12 +69,12 @@ void main() {
     expect(find.text('核心資料'), findsOneWidget);
     expect(find.text('資料完整度'), findsNothing);
     expect(find.text('累積報酬'), findsOneWidget);
-    expect(find.text('圖表與曝險'), findsOneWidget);
+    expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('資料來源'), findsNothing);
-    expect(find.text('近 60 日收盤'), findsNothing);
-    expect(find.text('官方曝險'), findsNothing);
+    expect(find.text('近 60 日收盤'), findsOneWidget);
+    expect(find.text('官方曝險'), findsOneWidget);
     expect(find.text('00631L ▼'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);
@@ -127,7 +127,7 @@ void main() {
     expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(find.text('核心資料'), findsOneWidget);
     expect(find.textContaining('先顯示首屏資料'), findsOneWidget);
-    expect(find.text('圖表與曝險'), findsOneWidget);
+    expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('7 / 30 日內容物變化'), findsNothing);

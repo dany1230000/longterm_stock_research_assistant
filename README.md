@@ -87,6 +87,12 @@ v3.47 split-adjusted history:
 - The 00631L 2026 split is handled with a 1/22 adjustment before 2026-03-31.
 - Summary: `docs\00631l_v3_47_split_adjusted_history_summary.md`.
 
+v3.48 home chart visibility:
+
+- The overview price chart and official exposure summary are visible on the home screen without expanding a panel.
+- Deeper comparison and technical details remain collapsed below.
+- Summary: `docs\00631l_v3_48_home_chart_visible_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.

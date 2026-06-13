@@ -1607,7 +1607,7 @@ class _OverviewSection extends StatelessWidget {
         const SizedBox(height: 8),
         _OverviewAtAGlancePanel(data: data),
         const SizedBox(height: 8),
-        _CompactExpansionPanel(
+        _AlwaysExpandedPanel(
           title: '圖表與曝險',
           subtitle: '近 60 日收盤與官方每日曝險；需要比較時再展開。',
           child: _OverviewSignalPanel(data: data),
@@ -4746,6 +4746,26 @@ class _ComparisonRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AlwaysExpandedPanel extends StatelessWidget {
+  const _AlwaysExpandedPanel({
+    required this.title,
+    required this.subtitle,
+    required this.child,
+  });
+
+  final String title;
+  final String subtitle;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: '$title $subtitle',
+      child: child,
     );
   }
 }
