@@ -46,6 +46,10 @@ class Mock00631LRepository extends Official00631LRepository {
       nightSessionChange: 0.35,
       status: EtfDataStatus.mock,
       lastFetchedAt: _clock(),
+      sourceContract: 'mock_tx_quote',
+      sourceUrl: 'mock://tx-quote',
+      dataTime: _clock(),
+      isStale: false,
     );
   }
 

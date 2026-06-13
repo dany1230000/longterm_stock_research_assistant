@@ -54,6 +54,7 @@ This is the main entry point for 00631L lab documentation.
 - ETF research room IA v3.49 summary: `docs\00631l_v3_49_etf_research_room_ia_summary.md`
 - App Store foundation release: `docs\00631l_v4_0_app_store_foundation_summary.md`
 - App Store foundation v4.0 summary: `docs\00631l_v4_0_app_store_foundation_summary.md`
+- TX live and history controls v4.1 summary: `docs\00631l_v4_1_tx_live_history_controls_summary.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
@@ -83,6 +84,7 @@ This is the main entry point for 00631L lab documentation.
 - Frontend LAN startup: `scripts\00631l_start_frontend_lan.cmd`
 - Daily cycle: `scripts\00631l_daily_cycle.cmd`
 - Price history update: `scripts\00631l_update_price_history.cmd`
+- TWSE ETF catalog import: `scripts\00631l_import_etf_catalog.cmd`
 - Release check: `scripts\00631l_release_check.cmd`
 - Remote public backend maintenance: `scripts\00631l_remote_maintenance.cmd --mode all`
 - Public config check: `scripts\00631l_check_public_config.cmd`
@@ -186,4 +188,4 @@ Release summaries remain available for audit history. For daily use, prefer the 
 
 ## Scope Boundary
 
-This project remains scoped to 00631L. TX live, all-leveraged-ETF expansion, notifications, automated trading, and investment guidance are outside the current scope.
+This project remains centered on the 00631L research room. TAIFEX TX live quote is now available through the backend as a data-status input. TWSE all-ETF catalog import is a foundation for future ETF rooms, but the app has not expanded into full all-ETF research pages. Notifications, automated trading, and investment guidance remain outside the current scope.

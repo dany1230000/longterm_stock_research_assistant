@@ -30,6 +30,11 @@ Important env vars:
 - `00631L_PROFILE_CACHE_SECONDS=86400`
 - `00631L_HOLDINGS_CACHE_SECONDS=600`
 - `00631L_INTRADAY_NAV_CACHE_SECONDS=15`
+- `00631L_TX_QUOTE_CACHE_SECONDS=15`
+- `TAIFEX_TX_SOCKJS_URL=https://mis.taifex.com.tw/futures/rt`
+- `TAIFEX_TX_FUTURES_SYMBOL=TXF-P`
+- `TAIFEX_TX_SPOT_SYMBOL=TXF-S`
+- `ETF_CATALOG_PATH=<local data dir>\twse_etf_catalog.json`
 
 `sourceContract` definitions:
 
@@ -43,7 +48,8 @@ Fallback rules:
 - TWSE fails and Yuanta succeeds in `auto`: return official/cached intraday NAV with `sourceContract: yuanta_inav`.
 - No configured URL or no live/cached intraday data: return `sourceStatus: unavailable` or `error`.
 - Frontend live proxy failure: use cached data or mock fallback, clearly labeled; never present fallback as official.
-- TX remains mock/fallback in v1.0.
+- TAIFEX TX quote is fetched through `/api/etf/00631l/tx-quote` when backend is available. Non-session or source failures return unavailable/error metadata.
+- TWSE all-ETF catalog can be imported for future ETF-room expansion. It is not labeled as 00631L official holdings.
 
 Daily holdings are official daily snapshots. Intraday NAV is only market price, estimated NAV, premium/discount, and timestamps.
 
@@ -195,10 +201,18 @@ GET /health
 GET /api/etf/00631l/profile
 GET /api/etf/00631l/holdings
 GET /api/etf/00631l/intraday-nav
+GET /api/etf/00631l/tx-quote
 GET /api/etf/00631l/operations/status
+GET /api/etf/catalog
+GET /api/etf/catalog/status
+POST /api/etf/catalog/import
 ```
 
 `/api/etf/00631l/operations/status` only reads local config and JSONL history summaries for collection status. It does not trigger live source fetch.
+
+`/api/etf/00631l/tx-quote` reads TAIFEX MIS quote data. It returns TXF-P quote fields, TXF-S weighted-index reference fields, computed basis, source metadata, and unavailable/error state when TAIFEX has no active last price.
+
+`/api/etf/catalog/import` imports TWSE `all_etf.txt` into local `ETF_CATALOG_PATH`. This creates an all-ETF catalog for future research-room expansion, not a replacement for 00631L holdings.
 
 `/api/etf/00631l/holdings` 是官方每日內容物快照，不是盤中即時內容物。盤中即時的是市價、預估淨值與折溢價。
 

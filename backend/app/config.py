@@ -83,6 +83,13 @@ class Settings:
     profile_cache_seconds: int = _env_int("00631L_PROFILE_CACHE_SECONDS", 24 * 60 * 60)
     holdings_cache_seconds: int = _env_int("00631L_HOLDINGS_CACHE_SECONDS", 10 * 60)
     intraday_cache_seconds: int = _env_int("00631L_INTRADAY_NAV_CACHE_SECONDS", 15)
+    tx_quote_cache_seconds: int = _env_int("00631L_TX_QUOTE_CACHE_SECONDS", 15)
+    taifex_tx_sockjs_url: str = os.getenv(
+        "TAIFEX_TX_SOCKJS_URL",
+        "https://mis.taifex.com.tw/futures/rt",
+    )
+    taifex_tx_futures_symbol: str = os.getenv("TAIFEX_TX_FUTURES_SYMBOL", "TXF-P")
+    taifex_tx_spot_symbol: str = os.getenv("TAIFEX_TX_SPOT_SYMBOL", "TXF-S")
     holdings_history_path: str = os.getenv(
         "00631L_HOLDINGS_HISTORY_PATH",
         _data_path("00631L_HOLDINGS_HISTORY_PATH", "00631l_holdings_history.jsonl"),
@@ -97,6 +104,10 @@ class Settings:
     price_history_path: str = os.getenv(
         "00631L_PRICE_HISTORY_PATH",
         _data_path("00631L_PRICE_HISTORY_PATH", "00631l_price_history.jsonl"),
+    )
+    etf_catalog_path: str = os.getenv(
+        "ETF_CATALOG_PATH",
+        _data_path("ETF_CATALOG_PATH", "twse_etf_catalog.json"),
     )
     history_export_dir: str = os.getenv(
         "00631L_HISTORY_EXPORT_DIR",

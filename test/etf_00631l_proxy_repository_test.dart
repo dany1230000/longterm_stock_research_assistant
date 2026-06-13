@@ -73,6 +73,26 @@ void main() {
     expect(await repository.fetchIntradayNav(), isNull);
   });
 
+  test('proxy repository maps TAIFEX TX quote payload', () async {
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/00631l/tx-quote': jsonEncode(_txQuotePayload()),
+      }),
+    );
+
+    final quote = await repository.fetchFuturesQuote();
+
+    expect(quote.symbol, 'TX');
+    expect(quote.contractMonth, 'front_month');
+    expect(quote.txPrice, 27125);
+    expect(quote.weightedIndex, 27080.5);
+    expect(quote.futuresBasisPoints, closeTo(44.5, 0.001));
+    expect(quote.futuresBasisPct, closeTo(0.1643, 0.001));
+    expect(quote.status, EtfDataStatus.proxy);
+    expect(quote.sourceContract, 'taifex_sockjs_quote');
+    expect(quote.dataTime, DateTime(2026, 6, 12, 13, 31, 15));
+  });
+
   test('proxy repository maps holdings history summary payload', () async {
     final repository = Proxy00631LRepository(
       client: _FakeProxyHttpClient({
@@ -153,6 +173,9 @@ void main() {
     expect(status.holdingsIntegrityRecordCount, 3);
     expect(status.holdingsMissingWeekdayCount, 2);
     expect(status.holdingsMissingWeekdays.first, DateTime(2026, 6, 9));
+    expect(status.etfCatalogStatus, 'cached');
+    expect(status.etfCatalogRowCount, 128);
+    expect(status.etfCatalogDataTime, DateTime(2026, 6, 8, 13, 31));
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
     expect(status.publicApiBaseUrl, 'https://api.example.com');
     expect(status.allowedOrigins, ['https://00631l.example.com']);
@@ -536,6 +559,28 @@ Map<String, Object?> _intradayPayload() {
   };
 }
 
+Map<String, Object?> _txQuotePayload() {
+  return {
+    'symbol': 'TX',
+    'contractMonth': 'front_month',
+    'txSymbol': 'TXF-P',
+    'spotSymbol': 'TXF-S',
+    'txPrice': 27125.0,
+    'weightedIndex': 27080.5,
+    'futuresBasisPoints': 44.5,
+    'futuresBasisPct': 0.1643,
+    'nightSessionChange': 0.18,
+    'sourceStatus': 'official',
+    'sourceContract': 'taifex_sockjs_quote',
+    'sourceUrl': 'https://mis.taifex.com.tw/futures/rt',
+    'fetchedAt': '2026-06-12T13:31:20+08:00',
+    'sourceUpdatedAt': '2026-06-12T13:31:15+08:00',
+    'dataTime': '2026-06-12T13:31:15+08:00',
+    'isStale': false,
+    'errorMessage': null,
+  };
+}
+
 Map<String, Object?> _holdingsHistorySummaryPayload() {
   return {
     'items': [
@@ -689,6 +734,14 @@ Map<String, Object?> _operationsStatusPayload() {
       'coverageStart': '2026-06-01',
       'coverageEnd': '2026-06-03',
       'isCompleteFromListing': false,
+      'isStale': false,
+      'errorMessage': null,
+    },
+    'etfCatalog': {
+      'sourceStatus': 'cached',
+      'sourceContract': 'twse_all_etf_catalog',
+      'rowCount': 128,
+      'dataTime': '2026-06-08T13:31:00+08:00',
       'isStale': false,
       'errorMessage': null,
     },

@@ -486,8 +486,10 @@ Custodian Fee
             )
             self.assertEqual(
                 payload["dataUpdateFrequencies"][2]["frequency"],
-                "not_connected",
+                "taifex_realtime_when_backend_ready",
             )
+            self.assertIn("txQuote", payload)
+            self.assertIn(payload["txQuote"]["sourceStatus"], {"unavailable", "cached", "official"})
             self.assertEqual(payload["statusSummary"]["export"], "cached")
             self.assertEqual(payload["statusSummary"]["report"], "cached")
             self.assertIn("integrity", payload)
@@ -639,6 +641,33 @@ Custodian Fee
             self.assertEqual(result["sourceStatus"], "calculated")
             self.assertEqual(result["totalInvested"], 100000)
             self.assertGreater(len(result["equityCurve"]), 1)
+
+    def test_etf_catalog_import_and_status_endpoints(self) -> None:
+        fixture = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(
+            encoding="utf-8"
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            data_dir = Path(temp_dir) / "data"
+            main_module.service = Etf00631LService(
+                config=Settings(
+                    twse_intraday_nav_url="fixture://twse/all_etf",
+                    etf_catalog_path=str(data_dir / "twse_etf_catalog.json"),
+                ),
+                fetcher=lambda url, timeout_seconds: fixture,
+                cache=TimedMemoryCache(),
+            )
+
+            imported = self.client.post("/api/etf/catalog/import").json()
+            self.assertEqual(imported["sourceStatus"], "official")
+            self.assertGreaterEqual(imported["rowCount"], 1)
+
+            status = self.client.get("/api/etf/catalog/status").json()
+            self.assertEqual(status["sourceStatus"], "cached")
+            self.assertGreaterEqual(status["rowCount"], 1)
+
+            catalog = self.client.get("/api/etf/catalog").json()
+            self.assertEqual(catalog["sourceStatus"], "cached")
+            self.assertTrue(any(item["code"] == "00631L" for item in catalog["items"]))
 
 
 if __name__ == "__main__":

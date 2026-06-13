@@ -9,6 +9,7 @@ import 'package:longterm_stock_research_assistant/repositories/cached_00631l_rep
 import 'package:longterm_stock_research_assistant/repositories/mock_00631l_repository.dart';
 import 'package:longterm_stock_research_assistant/repositories/official_00631l_repository.dart';
 import 'package:longterm_stock_research_assistant/repositories/repository_providers.dart';
+import 'package:longterm_stock_research_assistant/services/app_theme_controller.dart';
 
 void main() {
   testWidgets('00631L lab renders stock-app style quote header',
@@ -166,12 +167,13 @@ void main() {
     expect(find.text('市價'), findsNothing);
     expect(find.text('歷史資料完整度'), findsWidgets);
     expect(find.text('累積報酬'), findsWidgets);
-    expect(find.text('最近 30 筆價格表'), findsOneWidget);
+    expect(find.text('目前區間價格表'), findsOneWidget);
+    expect(find.text('最近一年'), findsOneWidget);
     expect(find.text('每日 holdings history'), findsOneWidget);
     expect(find.text('回測快覽'), findsOneWidget);
     expect(find.text('回測工具'), findsNothing);
-    expect(find.text('開始日期'), findsOneWidget);
-    expect(find.text('結束日期'), findsOneWidget);
+    expect(find.text('開始日期'), findsWidgets);
+    expect(find.text('結束日期'), findsWidgets);
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     _expectNoTradingActionText();
   });
@@ -197,8 +199,8 @@ void main() {
     expect(find.text('回測快覽'), findsOneWidget);
     expect(find.textContaining('回測不代表未來表現'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
-    expect(find.text('開始日期'), findsOneWidget);
-    expect(find.text('結束日期'), findsOneWidget);
+    expect(find.text('開始日期'), findsWidgets);
+    expect(find.text('結束日期'), findsWidgets);
     expect(find.text('市價'), findsNothing);
     expect(find.text('一次投入'), findsOneWidget);
     expect(find.text('定期定額'), findsWidgets);
@@ -315,14 +317,21 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
-  testWidgets('dark mode toggle is available and does not crash',
+  testWidgets('day and night mode toggle changes the market palette',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 
+    final initialBox =
+        tester.widget<DecoratedBox>(find.byType(DecoratedBox).first);
+    final initialColor = (initialBox.decoration as BoxDecoration).color;
     expect(find.byIcon(Icons.dark_mode), findsOneWidget);
     await tester.tap(find.byIcon(Icons.dark_mode));
     await tester.pumpAndSettle();
 
+    final changedBox =
+        tester.widget<DecoratedBox>(find.byType(DecoratedBox).first);
+    final changedColor = (changedBox.decoration as BoxDecoration).color;
+    expect(changedColor, isNot(initialColor));
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
@@ -333,13 +342,22 @@ Future<void> _pumpLab(
   Official00631LRepository repository, {
   bool settle = true,
 }) async {
+  appThemeModeNotifier.value = ThemeMode.light;
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         official00631LRepositoryProvider.overrideWithValue(repository),
       ],
-      child: const MaterialApp(
-        home: Scaffold(body: LeveragedEtf00631LScreen()),
+      child: ValueListenableBuilder<ThemeMode>(
+        valueListenable: appThemeModeNotifier,
+        builder: (context, mode, _) {
+          return MaterialApp(
+            theme: ThemeData.light(),
+            darkTheme: ThemeData.dark(),
+            themeMode: mode,
+            home: const Scaffold(body: LeveragedEtf00631LScreen()),
+          );
+        },
       ),
     ),
   );

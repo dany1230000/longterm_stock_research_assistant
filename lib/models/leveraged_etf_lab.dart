@@ -847,6 +847,10 @@ class FuturesQuote {
     required this.nightSessionChange,
     required this.status,
     required this.lastFetchedAt,
+    this.sourceContract,
+    this.sourceUrl = '',
+    this.dataTime,
+    this.isStale = false,
     this.errorMessage,
   });
 
@@ -857,6 +861,10 @@ class FuturesQuote {
   final double? nightSessionChange;
   final EtfDataStatus status;
   final DateTime lastFetchedAt;
+  final String? sourceContract;
+  final String sourceUrl;
+  final DateTime? dataTime;
+  final bool isStale;
   final String? errorMessage;
 
   double? get txContractValue {
@@ -1122,6 +1130,9 @@ class EtfOperationsStatus {
     this.priceHistoryCoverageStart,
     this.priceHistoryCoverageEnd,
     this.priceHistoryCompleteFromListing = false,
+    this.etfCatalogStatus = 'unavailable',
+    this.etfCatalogRowCount = 0,
+    this.etfCatalogDataTime,
     this.backtestStatus = 'unavailable',
     this.backtestAvailable = false,
     this.positionStatus = 'local_only',
@@ -1195,6 +1206,9 @@ class EtfOperationsStatus {
       priceHistoryCoverageStart: null,
       priceHistoryCoverageEnd: null,
       priceHistoryCompleteFromListing: false,
+      etfCatalogStatus: sourceStatusLabel,
+      etfCatalogRowCount: 0,
+      etfCatalogDataTime: null,
       backtestStatus: sourceStatusLabel,
       backtestAvailable: false,
       positionStatus: 'local_only',
@@ -1264,6 +1278,9 @@ class EtfOperationsStatus {
   final DateTime? priceHistoryCoverageStart;
   final DateTime? priceHistoryCoverageEnd;
   final bool priceHistoryCompleteFromListing;
+  final String etfCatalogStatus;
+  final int etfCatalogRowCount;
+  final DateTime? etfCatalogDataTime;
   final String backtestStatus;
   final bool backtestAvailable;
   final String positionStatus;

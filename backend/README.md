@@ -131,8 +131,13 @@ See `backend/.env.example` for the deployable template.
 - `00631L_PROFILE_CACHE_SECONDS`: default `86400`.
 - `00631L_HOLDINGS_CACHE_SECONDS`: default `600`.
 - `00631L_INTRADAY_NAV_CACHE_SECONDS`: default `15`.
+- `00631L_TX_QUOTE_CACHE_SECONDS`: default `15`.
+- `TAIFEX_TX_SOCKJS_URL`: TAIFEX MIS quote stream root, default `https://mis.taifex.com.tw/futures/rt`.
+- `TAIFEX_TX_FUTURES_SYMBOL`: default `TXF-P`.
+- `TAIFEX_TX_SPOT_SYMBOL`: default `TXF-S`.
 - `00631L_HOLDINGS_HISTORY_PATH`: local JSONL path for daily holdings history, default `backend/data/00631l_holdings_history.jsonl`.
 - `00631L_INTRADAY_NAV_HISTORY_PATH`: local JSONL path for intraday NAV history, default `backend/data/00631l_intraday_nav_history.jsonl`.
+- `ETF_CATALOG_PATH`: local normalized TWSE all-ETF catalog JSON path, default `backend/data/twse_etf_catalog.json`.
 - `00631L_BACKUP_DIR`: local backup output directory, default `backend/backups`.
 - `00631L_BACKUP_RETENTION_COUNT`: number of local backup archives to keep, default `30`.
 - `00631L_REPORT_DIR`: local daily Markdown report directory, default `backend/reports`.
@@ -156,7 +161,7 @@ All three 00631L endpoints include:
 - `isStale`
 - `errorMessage`
 
-Yuanta Basic and Yuanta ratio are daily official sources. Intraday NAV is only market price, estimated NAV, premium/discount, and data time. TX remains mock/fallback in v1.0.
+Yuanta Basic and Yuanta ratio are daily official sources. Intraday NAV is market price, estimated NAV, premium/discount, and data time. TAIFEX TX quote is exposed separately at `/api/etf/00631l/tx-quote`; off-hours can return unavailable or stale. TWSE all-ETF catalog can be imported for future ETF-room work and is not treated as 00631L official holdings.
 
 Manual live smoke:
 
@@ -229,6 +234,33 @@ GET /api/etf/00631l/intraday-nav/history/summary?date=YYYY-MM-DD
 The summary endpoint returns the sample count, highest premium, lowest discount, average premium/discount, first data time, last data time, latest market price, and latest estimated NAV.
 
 If no intraday history exists yet, the endpoints return `sourceStatus: unavailable` with an empty `items` list. They do not fabricate official intraday history from mock data.
+
+## v4.1 TX quote and ETF catalog
+
+TX quote endpoint:
+
+```text
+GET /api/etf/00631l/tx-quote
+```
+
+The endpoint uses the TAIFEX MIS quote stream with `sourceContract: taifex_sockjs_quote`. It reports TXF-P price, TXF-S weighted-index reference, basis points, basis percent, data time, and clear unavailable/error metadata. TAIFEX can omit a last price outside active sessions, so the backend does not convert that into mock official data.
+
+TWSE ETF catalog endpoints:
+
+```text
+GET /api/etf/catalog
+GET /api/etf/catalog/status
+POST /api/etf/catalog/import
+```
+
+Manual import:
+
+```cmd
+scripts\00631l_import_etf_catalog.cmd
+scripts\00631l_import_etf_catalog.cmd --status-only
+```
+
+The catalog is normalized from TWSE `all_etf.txt` and saved under `ETF_CATALOG_PATH`. It is local operational data and should not be committed.
 
 ## v1.10 operations status
 

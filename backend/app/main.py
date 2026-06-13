@@ -94,6 +94,22 @@ def create_app(
     def intraday_nav_history_summary(date: str | None = None) -> dict:
         return current_service().intraday_nav_history_summary(date=date)
 
+    @fastapi_app.get("/api/etf/00631l/tx-quote")
+    def tx_quote() -> dict:
+        return current_service().tx_quote()
+
+    @fastapi_app.get("/api/etf/catalog")
+    def etf_catalog() -> dict:
+        return current_service().etf_catalog()
+
+    @fastapi_app.get("/api/etf/catalog/status")
+    def etf_catalog_status() -> dict:
+        return current_service().etf_catalog_status()
+
+    @fastapi_app.post("/api/etf/catalog/import")
+    def etf_catalog_import() -> dict:
+        return current_service().etf_catalog_import()
+
     @fastapi_app.get("/api/etf/00631l/operations/status")
     def operations_status() -> dict:
         return current_service().operations_status()

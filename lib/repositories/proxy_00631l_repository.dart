@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import '../models/leveraged_etf_lab.dart';
-import 'mock_00631l_repository.dart';
 import 'official_00631l_repository.dart';
 import 'proxy_http_client.dart';
 
@@ -16,7 +15,6 @@ class Proxy00631LRepository extends Official00631LRepository {
   final Uri baseUri;
   final ProxyHttpClient _client;
   final Duration timeout;
-  final Mock00631LRepository _mockFallback = Mock00631LRepository();
 
   @override
   Future<LeveragedEtfProfile> fetchProfile() async {
@@ -129,8 +127,22 @@ class Proxy00631LRepository extends Official00631LRepository {
   }
 
   @override
-  Future<FuturesQuote> fetchFuturesQuote() {
-    return _mockFallback.fetchFuturesQuote();
+  Future<FuturesQuote> fetchFuturesQuote() async {
+    final payload = await _getJson('/api/etf/00631l/tx-quote');
+    return FuturesQuote(
+      symbol: _string(payload['symbol'], fallback: 'TX'),
+      contractMonth: _string(payload['contractMonth'], fallback: 'front_month'),
+      txPrice: _nullableDouble(payload['txPrice']),
+      weightedIndex: _nullableDouble(payload['weightedIndex']),
+      nightSessionChange: _nullableDouble(payload['nightSessionChange']),
+      status: _status(payload),
+      lastFetchedAt: _dateTime(payload['fetchedAt']) ?? DateTime.now(),
+      sourceContract: payload['sourceContract']?.toString(),
+      sourceUrl: _string(payload['sourceUrl']),
+      dataTime: _wallClockDateTime(payload['dataTime']),
+      isStale: payload['isStale'] == true,
+      errorMessage: payload['errorMessage']?.toString(),
+    );
   }
 
   @override
@@ -227,6 +239,7 @@ class Proxy00631LRepository extends Official00631LRepository {
     final integrity = _map(payload['integrity']);
     final integrityHoldings = _map(integrity['holdings']);
     final priceHistory = _map(payload['priceHistory']);
+    final etfCatalog = _map(payload['etfCatalog']);
     final backtest = _map(payload['backtest']);
     final position = _map(payload['position']);
     final backendHealth = _map(payload['backendHealth']);
@@ -289,6 +302,12 @@ class Proxy00631LRepository extends Official00631LRepository {
       priceHistoryCoverageEnd: _nullableDate(priceHistory['coverageEnd']),
       priceHistoryCompleteFromListing:
           priceHistory['isCompleteFromListing'] == true,
+      etfCatalogStatus: _string(
+        etfCatalog['sourceStatus'],
+        fallback: 'unavailable',
+      ),
+      etfCatalogRowCount: _int(etfCatalog['rowCount']),
+      etfCatalogDataTime: _wallClockDateTime(etfCatalog['dataTime']),
       backtestStatus: _string(
         backtest['sourceStatus'],
         fallback: 'unavailable',

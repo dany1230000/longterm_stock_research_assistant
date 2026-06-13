@@ -217,12 +217,12 @@ class _DetailsLoadStateStrip extends StatelessWidget {
       decoration: BoxDecoration(
         color: hasError
             ? theme.colorScheme.errorContainer.withValues(alpha: 0.24)
-            : _marketPanel,
+            : _marketPanelColor(context),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: hasError
               ? theme.colorScheme.error.withValues(alpha: 0.32)
-              : _marketBorder,
+              : _marketBorderColor(context),
         ),
       ),
       child: Padding(
@@ -239,7 +239,9 @@ class _DetailsLoadStateStrip extends StatelessWidget {
               Icon(
                 Icons.info_outline,
                 size: 16,
-                color: hasError ? theme.colorScheme.error : _marketMutedText,
+                color: hasError
+                    ? theme.colorScheme.error
+                    : _marketMutedTextColor(context),
               ),
             const SizedBox(width: 8),
             Expanded(
@@ -250,7 +252,9 @@ class _DetailsLoadStateStrip extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: hasError ? theme.colorScheme.error : _marketMutedText,
+                  color: hasError
+                      ? theme.colorScheme.error
+                      : _marketMutedTextColor(context),
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -272,7 +276,7 @@ class _LabLoadingShell extends StatelessWidget {
     return Theme(
       data: _marketTheme(context),
       child: DecoratedBox(
-        decoration: const BoxDecoration(color: _marketBackgroundColor),
+        decoration: BoxDecoration(color: _marketBackground(context)),
         child: Column(
           children: [
             Expanded(
@@ -316,9 +320,9 @@ class _LoadingQuoteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanel,
+        color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: const Padding(
         padding: EdgeInsets.all(14),
@@ -354,9 +358,9 @@ class _LoadingSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanel,
+        color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -366,7 +370,7 @@ class _LoadingSectionCard extends StatelessWidget {
             Text(
               title,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: _marketText,
+                    color: _marketTextColor(context),
                     fontWeight: FontWeight.w900,
                   ),
             ),
@@ -394,7 +398,7 @@ class _LoadingBar extends StatelessWidget {
       height: height,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: _marketMutedText.withValues(alpha: 0.22),
+          color: _marketMutedTextColor(context).withValues(alpha: 0.22),
           borderRadius: BorderRadius.circular(999),
         ),
       ),
@@ -427,7 +431,7 @@ class _MarketTopBar extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelLarge?.copyWith(
-                    color: _marketMutedText,
+                    color: _marketMutedTextColor(context),
                     fontWeight: FontWeight.w900,
                     letterSpacing: 0,
                   ),
@@ -440,7 +444,7 @@ class _MarketTopBar extends StatelessWidget {
               IconButton(
                 tooltip: '重新整理',
                 onPressed: onRefresh,
-                color: _marketText,
+                color: _marketTextColor(context),
                 visualDensity: VisualDensity.compact,
                 icon: const Icon(Icons.refresh, size: 21),
               ),
@@ -488,9 +492,9 @@ class _CompactTextBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanelAlt,
+        color: _marketPanelAltColor(context),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
@@ -499,7 +503,7 @@ class _CompactTextBadge extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: _marketMutedText,
+                color: _marketMutedTextColor(context),
                 fontWeight: FontWeight.w900,
               ),
         ),
@@ -525,9 +529,9 @@ class _MarketSentimentStrip extends StatelessWidget {
     final statusSummary = data.statusSummary;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanel,
+        color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -539,7 +543,7 @@ class _MarketSentimentStrip extends StatelessWidget {
             Text(
               '市場資料',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: _marketText,
+                    color: _marketTextColor(context),
                     fontWeight: FontWeight.w900,
                   ),
             ),
@@ -633,9 +637,9 @@ class _CompactQuoteHeader extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanel,
+        color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
@@ -657,7 +661,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.labelMedium?.copyWith(
-                                color: _marketMutedText,
+                                color: _marketMutedTextColor(context),
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 0,
                               ),
@@ -674,7 +678,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.headlineSmall?.copyWith(
-                          color: _marketText,
+                          color: _marketTextColor(context),
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0,
                           height: 0.96,
@@ -686,7 +690,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: _marketMutedText,
+                          color: _marketMutedTextColor(context),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -777,9 +781,9 @@ class _QuoteMetaPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanelAlt,
+        color: _marketPanelAltColor(context),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -794,7 +798,7 @@ class _QuoteMetaPill extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: _marketMutedText,
+                    color: _marketMutedTextColor(context),
                     fontWeight: FontWeight.w800,
                   ),
             ),
@@ -804,7 +808,7 @@ class _QuoteMetaPill extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: _marketText,
+                    color: _marketTextColor(context),
                     fontWeight: FontWeight.w900,
                   ),
             ),
@@ -815,7 +819,7 @@ class _QuoteMetaPill extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: _marketMutedText,
+                      color: _marketMutedTextColor(context),
                       fontWeight: FontWeight.w700,
                     ),
               ),
@@ -856,7 +860,7 @@ class _CompactPremiumBox extends StatelessWidget {
               Text(
                 '折溢價',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: _marketMutedText,
+                      color: _marketMutedTextColor(context),
                       fontWeight: FontWeight.w900,
                     ),
               ),
@@ -866,7 +870,7 @@ class _CompactPremiumBox extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: _marketText,
+                      color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
                     ),
               ),
@@ -902,9 +906,9 @@ class _OverviewActionRow extends StatelessWidget {
         : 'holdings ${formatTaiwanDate(latest.tradeDate)} | TX ${formatNullablePercent(latest.txWeightPct)} | 台積電 ${formatNullablePercent(latest.tsmcWeightPct)}';
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanelAlt,
+        color: _marketPanelAltColor(context),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -918,7 +922,7 @@ class _OverviewActionRow extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: _marketText,
+                      color: _marketTextColor(context),
                       fontWeight: FontWeight.w800,
                     ),
               ),
@@ -1472,7 +1476,6 @@ class _ThemeToggleButton extends StatelessWidget {
       valueListenable: appThemeModeNotifier,
       builder: (context, mode, _) {
         final isDark = mode == ThemeMode.dark;
-        final theme = Theme.of(context);
         return IconButton(
           tooltip: isDark ? '切換淺色模式' : '切換夜間模式',
           onPressed: () {
@@ -1480,12 +1483,8 @@ class _ThemeToggleButton extends StatelessWidget {
           },
           style: compact
               ? IconButton.styleFrom(
-                  backgroundColor:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.10),
-                  foregroundColor:
-                      theme.colorScheme.brightness == Brightness.light
-                          ? Colors.white
-                          : theme.colorScheme.onSurface,
+                  backgroundColor: _marketPanelAltColor(context),
+                  foregroundColor: _marketTextColor(context),
                 )
               : null,
           icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode),
@@ -1512,9 +1511,11 @@ class _MarketBottomNav extends StatelessWidget {
             .clamp(48.0, 96.0)
             .toDouble();
         return DecoratedBox(
-          decoration: const BoxDecoration(
-            color: _marketNav,
-            border: Border(top: BorderSide(color: _marketBorder)),
+          decoration: BoxDecoration(
+            color: _marketNavColor(context),
+            border: Border(
+              top: BorderSide(color: _marketBorderColor(context)),
+            ),
           ),
           child: SafeArea(
             top: false,
@@ -1555,7 +1556,7 @@ class _MarketBottomNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? _marketBlue : _marketMutedText;
+    final color = selected ? _marketBlue : _marketMutedTextColor(context);
     return InkWell(
       key: ValueKey('00631l-section-${section.name}'),
       borderRadius: BorderRadius.circular(10),
@@ -1727,9 +1728,9 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanel,
+        color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
@@ -1744,7 +1745,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: _marketText,
+                      color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -1774,9 +1775,9 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
     final theme = Theme.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanel,
+        color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -1793,7 +1794,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: _marketText,
+                      color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -1807,7 +1808,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
             Text(
               '每日官方快照，不是盤中即時內容物；盤中狀態看 NAV 與折溢價。',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: _marketMutedText,
+                color: _marketMutedTextColor(context),
                 fontWeight: FontWeight.w700,
                 height: 1.35,
               ),
@@ -1914,7 +1915,7 @@ class _OverviewDataReadinessStrip extends StatelessWidget {
           Text(
             '資料完整度',
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: _marketMutedText,
+                  color: _marketMutedTextColor(context),
                   fontWeight: FontWeight.w900,
                 ),
           ),
@@ -1963,7 +1964,7 @@ class _ReadinessPill extends StatelessWidget {
             Text(
               item.label,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: _marketMutedText,
+                    color: _marketMutedTextColor(context),
                     fontWeight: FontWeight.w800,
                   ),
             ),
@@ -1971,7 +1972,7 @@ class _ReadinessPill extends StatelessWidget {
             Text(
               item.value,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: _marketText,
+                    color: _marketTextColor(context),
                     fontWeight: FontWeight.w900,
                   ),
             ),
@@ -1991,9 +1992,9 @@ class _OverviewSignalPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanel,
+        color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -2060,7 +2061,7 @@ class _OverviewSparklineBlock extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: _marketText,
+                      color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
                     ),
               ),
@@ -2080,7 +2081,7 @@ class _OverviewSparklineBlock extends StatelessWidget {
             Text(
               _price(latest?.close),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: _marketText,
+                    color: _marketTextColor(context),
                     fontWeight: FontWeight.w900,
                   ),
             ),
@@ -2091,7 +2092,7 @@ class _OverviewSparklineBlock extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: _marketMutedText,
+                      color: _marketMutedTextColor(context),
                       fontWeight: FontWeight.w800,
                     ),
               ),
@@ -2126,7 +2127,7 @@ class _SparklineChart extends StatelessWidget {
           child: Text(
             '尚無圖表資料',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: _marketMutedText,
+                  color: _marketMutedTextColor(context),
                   fontWeight: FontWeight.w700,
                 ),
           ),
@@ -2181,7 +2182,7 @@ class _OverviewExposureBlock extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: _marketText,
+                      color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
                     ),
               ),
@@ -2189,7 +2190,7 @@ class _OverviewExposureBlock extends StatelessWidget {
             Text(
               formatTaiwanDate(snapshot.tradeDate),
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: _marketMutedText,
+                    color: _marketMutedTextColor(context),
                     fontWeight: FontWeight.w800,
                   ),
             ),
@@ -2240,7 +2241,7 @@ class _OverviewExposureLine extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: _marketMutedText,
+                    color: _marketMutedTextColor(context),
                     fontWeight: FontWeight.w800,
                   ),
             ),
@@ -2251,7 +2252,7 @@ class _OverviewExposureLine extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: (valuePct.abs() / 220).clamp(0, 1).toDouble(),
                 minHeight: 7,
-                backgroundColor: _marketPanelAlt,
+                backgroundColor: _marketPanelAltColor(context),
                 color: color,
               ),
             ),
@@ -2265,7 +2266,7 @@ class _OverviewExposureLine extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.right,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: _marketText,
+                    color: _marketTextColor(context),
                     fontWeight: FontWeight.w900,
                   ),
             ),
@@ -2295,9 +2296,9 @@ class _AtAGlanceMetric extends StatelessWidget {
       width: width,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: _marketPanelAlt,
+          color: _marketPanelAltColor(context),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: _marketBorder),
+          border: Border.all(color: _marketBorderColor(context)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
@@ -2309,7 +2310,7 @@ class _AtAGlanceMetric extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: _marketMutedText,
+                      color: _marketMutedTextColor(context),
                       fontWeight: FontWeight.w800,
                     ),
               ),
@@ -2319,7 +2320,7 @@ class _AtAGlanceMetric extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: _marketText,
+                      color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
                     ),
               ),
@@ -2329,7 +2330,7 @@ class _AtAGlanceMetric extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: _marketMutedText,
+                      color: _marketMutedTextColor(context),
                       fontWeight: FontWeight.w700,
                     ),
               ),
@@ -2401,9 +2402,9 @@ class _OverviewBriefPanel extends StatelessWidget {
     final nav = data.intradayNav;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanel,
+        color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -2582,6 +2583,7 @@ class _OverviewModeCards extends StatelessWidget {
   Widget build(BuildContext context) {
     final price = data.priceHistory.completenessSummary();
     final nav = data.intradayNav;
+    final tx = data.futuresQuote;
     return _InfoCardGrid(
       children: [
         _HoldingInfoCard(
@@ -2615,6 +2617,18 @@ class _OverviewModeCards extends StatelessWidget {
           progressValue: price.rowCount < 2
               ? null
               : (price.rowCount / 3000).clamp(0, 1).toDouble(),
+        ),
+        _HoldingInfoCard(
+          badge: 'TX',
+          title: 'TX live',
+          primary: _price(tx.txPrice),
+          secondary: '基差 ${formatSignedNullablePercent(tx.futuresBasisPct)}',
+          caption: tx.status == EtfDataStatus.mock
+              ? 'mock fallback；不是 TAIFEX live'
+              : '${tx.status.label} · ${tx.sourceContract ?? 'taifex'}',
+          progressValue: tx.txPrice == null
+              ? null
+              : ((tx.futuresBasisPct?.abs() ?? 0) / 2).clamp(0, 1).toDouble(),
         ),
         _HoldingInfoCard(
           badge: 'AI',
@@ -2820,7 +2834,7 @@ class _HoldingsSection extends StatelessWidget {
               const SizedBox(height: 8),
               _CompactExpansionPanel(
                 title: '完整期貨明細',
-                subtitle: 'TX live 尚未接入，這裡是官方每日內容物快照。',
+                subtitle: '這裡是官方每日內容物快照；TX live quote 請看總覽與資料狀態。',
                 child: _HorizontalTable(
                   columns: const ['代碼', '名稱', '數量', '權重', '年月'],
                   rows: [
@@ -2918,102 +2932,7 @@ class _HistorySection extends StatelessWidget {
               ? 'coverage ${_dateOrDash(priceHistory.coverageStart)} - ${_dateOrDash(priceHistory.coverageEnd)}，sourceStatus ${priceHistory.sourceStatusLabel}'
               : '尚無 official price history。請執行 scripts\\00631l_update_price_history.cmd。',
           child: priceHistory.hasData
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _ResponsiveMetricGrid(
-                      cards: [
-                        _MetricCard(
-                          label: '累積報酬',
-                          value: formatSignedNullablePercent(
-                            performance.totalReturnPct,
-                          ),
-                          caption: '歷史價格計算',
-                          icon: Icons.trending_up_outlined,
-                        ),
-                        _MetricCard(
-                          label: '年化報酬',
-                          value: formatSignedNullablePercent(
-                            performance.annualizedReturnPct,
-                          ),
-                          caption: '歷史估算',
-                          icon: Icons.functions_outlined,
-                        ),
-                        _MetricCard(
-                          label: '最大回撤',
-                          value: formatSignedNullablePercent(
-                            performance.maxDrawdownPct,
-                          ),
-                          caption: '歷史區間',
-                          icon: Icons.trending_down_outlined,
-                        ),
-                        _MetricCard(
-                          label: '年化波動',
-                          value: formatNullablePercent(
-                            performance.annualizedVolatilityPct,
-                          ),
-                          caption: '收盤價日報酬',
-                          icon: Icons.multiline_chart_outlined,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    _PriceTrendCharts(priceHistory: priceHistory),
-                    const SizedBox(height: 8),
-                    const _StatusWrap(
-                      labels: [
-                        '績效 / 回測使用分割調整收盤價',
-                        '原始 TWSE OHLC 保留',
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    _CompactExpansionPanel(
-                      title: '歷史資料完整度',
-                      subtitle: 'rows、coverage、52 週區間與欄位覆蓋。',
-                      child: _PriceCompletenessPanel(
-                        priceHistory: priceHistory,
-                        summary: completeness,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    _CompactExpansionPanel(
-                      title: '最近 30 筆價格表',
-                      subtitle: '開高低收、NAV、折溢價、成交量與回撤。',
-                      child: _HorizontalTable(
-                        columns: const [
-                          '日期',
-                          '開',
-                          '高',
-                          '低',
-                          '收',
-                          'NAV',
-                          '折溢價',
-                          '量',
-                          '日報酬',
-                          '回撤',
-                        ],
-                        rows: [
-                          for (final point
-                              in priceHistory.points.reversed.take(30))
-                            [
-                              formatTaiwanDate(point.date),
-                              _price(point.open),
-                              _price(point.high),
-                              _price(point.low),
-                              _price(point.close),
-                              _price(point.nav),
-                              formatSignedNullablePercent(
-                                point.premiumDiscountPct,
-                              ),
-                              formatInteger(point.volume),
-                              formatSignedNullablePercent(point.dailyReturnPct),
-                              formatSignedNullablePercent(point.drawdownPct),
-                            ],
-                        ],
-                      ),
-                    ),
-                  ],
-                )
+              ? _FilterablePriceHistoryBlock(priceHistory: priceHistory)
               : const _EmptyPanel(
                   title: '尚無 official price history',
                   message: '歷史價格需要手動更新後才會顯示。本頁不會用 mock 偽裝 official。',
@@ -3072,6 +2991,276 @@ class _HistorySection extends StatelessWidget {
   }
 }
 
+class _FilterablePriceHistoryBlock extends StatefulWidget {
+  const _FilterablePriceHistoryBlock({required this.priceHistory});
+
+  final EtfPriceHistory priceHistory;
+
+  @override
+  State<_FilterablePriceHistoryBlock> createState() =>
+      _FilterablePriceHistoryBlockState();
+}
+
+class _FilterablePriceHistoryBlockState
+    extends State<_FilterablePriceHistoryBlock> {
+  DateTime? _startDate;
+  DateTime? _endDate;
+  DateTime? _syncedCoverageEnd;
+
+  @override
+  void initState() {
+    super.initState();
+    _syncDefaultRange();
+  }
+
+  @override
+  void didUpdateWidget(covariant _FilterablePriceHistoryBlock oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final currentEnd = _historyLastDate(widget.priceHistory);
+    if (currentEnd != _syncedCoverageEnd) {
+      _syncDefaultRange();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fullHistory = widget.priceHistory;
+    final filteredHistory = _filteredPriceHistory(
+      fullHistory,
+      startDate: _startDate,
+      endDate: _endDate,
+    );
+    final performance = filteredHistory.performance;
+    final selectedSummary = filteredHistory.completenessSummary();
+    final fullSummary = fullHistory.completenessSummary();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _BacktestDateRangeControls(
+          startDate: _startDate,
+          endDate: _endDate,
+          firstDate: _historyFirstDate(fullHistory),
+          lastDate: _historyLastDate(fullHistory),
+          onStartTap: _selectStartDate,
+          onEndTap: _selectEndDate,
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _RangeActionChip(
+              label: '最近一年',
+              onTap: () => _setTrailingYears(1),
+            ),
+            _RangeActionChip(
+              label: '最近三年',
+              onTap: () => _setTrailingYears(3),
+            ),
+            _RangeActionChip(
+              label: '全部資料',
+              onTap: _setAllRange,
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        _StatusWrap(
+          labels: [
+            '目前區間 ${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}',
+            '顯示 ${formatInteger(selectedSummary.rowCount)} 筆',
+            '完整 ${formatInteger(fullSummary.rowCount)} 筆',
+          ],
+        ),
+        const SizedBox(height: 12),
+        _ResponsiveMetricGrid(
+          cards: [
+            _MetricCard(
+              label: '區間報酬',
+              value: formatSignedNullablePercent(
+                performance.totalReturnPct,
+              ),
+              caption: '目前日期區間',
+              icon: Icons.trending_up_outlined,
+            ),
+            _MetricCard(
+              label: '年化報酬',
+              value: formatSignedNullablePercent(
+                performance.annualizedReturnPct,
+              ),
+              caption: '歷史估算',
+              icon: Icons.functions_outlined,
+            ),
+            _MetricCard(
+              label: '最大回撤',
+              value: formatSignedNullablePercent(
+                performance.maxDrawdownPct,
+              ),
+              caption: '目前日期區間',
+              icon: Icons.trending_down_outlined,
+            ),
+            _MetricCard(
+              label: '年化波動',
+              value: formatNullablePercent(
+                performance.annualizedVolatilityPct,
+              ),
+              caption: '收盤價日報酬',
+              icon: Icons.multiline_chart_outlined,
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _PriceTrendCharts(priceHistory: filteredHistory),
+        const SizedBox(height: 8),
+        const _StatusWrap(
+          labels: [
+            '績效 / 回測使用分割調整收盤價',
+            '原始 TWSE OHLC 保留',
+          ],
+        ),
+        const SizedBox(height: 12),
+        _CompactExpansionPanel(
+          title: '歷史資料完整度',
+          subtitle: 'rows、coverage、52 週區間與欄位覆蓋。',
+          child: _PriceCompletenessPanel(
+            priceHistory: fullHistory,
+            summary: fullSummary,
+          ),
+        ),
+        const SizedBox(height: 8),
+        _CompactExpansionPanel(
+          title: '目前區間價格表',
+          subtitle: '開高低收、NAV、折溢價、成交量與回撤。',
+          child: _HorizontalTable(
+            columns: const [
+              '日期',
+              '開',
+              '高',
+              '低',
+              '收',
+              'NAV',
+              '折溢價',
+              '量',
+              '日報酬',
+              '回撤',
+            ],
+            rows: [
+              for (final point in filteredHistory.points.reversed.take(30))
+                [
+                  formatTaiwanDate(point.date),
+                  _price(point.open),
+                  _price(point.high),
+                  _price(point.low),
+                  _price(point.close),
+                  _price(point.nav),
+                  formatSignedNullablePercent(
+                    point.premiumDiscountPct,
+                  ),
+                  formatInteger(point.volume),
+                  formatSignedNullablePercent(point.dailyReturnPct),
+                  formatSignedNullablePercent(point.drawdownPct),
+                ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _syncDefaultRange() {
+    final last = _historyLastDate(widget.priceHistory);
+    if (last == null) {
+      _startDate = null;
+      _endDate = null;
+      _syncedCoverageEnd = null;
+      return;
+    }
+    final first = _historyFirstDate(widget.priceHistory);
+    _endDate = last;
+    _startDate = _defaultTrailingStart(first: first, end: last, years: 1);
+    _syncedCoverageEnd = last;
+  }
+
+  Future<void> _selectStartDate() async {
+    final history = widget.priceHistory;
+    final picked = await _pickBacktestDate(
+      context: context,
+      initialDate: _startDate ?? _historyFirstDate(history) ?? DateTime.now(),
+      firstDate: _historyFirstDate(history),
+      lastDate: _historyLastDate(history),
+      helpText: '選擇歷史開始日期',
+    );
+    if (picked == null) {
+      return;
+    }
+    setState(() {
+      _startDate = picked;
+      if (_endDate != null && _endDate!.isBefore(picked)) {
+        _endDate = picked;
+      }
+    });
+  }
+
+  Future<void> _selectEndDate() async {
+    final history = widget.priceHistory;
+    final picked = await _pickBacktestDate(
+      context: context,
+      initialDate: _endDate ?? _historyLastDate(history) ?? DateTime.now(),
+      firstDate: _historyFirstDate(history),
+      lastDate: _historyLastDate(history),
+      helpText: '選擇歷史結束日期',
+    );
+    if (picked == null) {
+      return;
+    }
+    setState(() {
+      _endDate = picked;
+      if (_startDate != null && _startDate!.isAfter(picked)) {
+        _startDate = picked;
+      }
+    });
+  }
+
+  void _setTrailingYears(int years) {
+    final last = _historyLastDate(widget.priceHistory);
+    if (last == null) {
+      return;
+    }
+    setState(() {
+      _endDate = last;
+      _startDate = _defaultTrailingStart(
+        first: _historyFirstDate(widget.priceHistory),
+        end: last,
+        years: years,
+      );
+    });
+  }
+
+  void _setAllRange() {
+    setState(() {
+      _startDate = _historyFirstDate(widget.priceHistory);
+      _endDate = _historyLastDate(widget.priceHistory);
+    });
+  }
+}
+
+class _RangeActionChip extends StatelessWidget {
+  const _RangeActionChip({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ActionChip(
+      label: Text(label),
+      avatar: const Icon(Icons.date_range_outlined, size: 16),
+      visualDensity: VisualDensity.compact,
+      onPressed: onTap,
+    );
+  }
+}
+
 class _HistoryBacktestSection extends StatelessWidget {
   const _HistoryBacktestSection({required this.data});
 
@@ -3117,8 +3306,16 @@ class _BacktestSectionState extends State<_BacktestSection> {
   @override
   void initState() {
     super.initState();
-    _startDate = widget.data.priceHistory.coverageStart;
-    _endDate = widget.data.priceHistory.coverageEnd;
+    final history = widget.data.priceHistory;
+    final end = _historyLastDate(history);
+    _endDate = end;
+    _startDate = end == null
+        ? _historyFirstDate(history)
+        : _defaultTrailingStart(
+            first: _historyFirstDate(history),
+            end: end,
+            years: 1,
+          );
   }
 
   @override
@@ -3990,9 +4187,9 @@ class _SettingsHeaderStrip extends StatelessWidget {
     final theme = Theme.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _marketPanel,
+        color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorder),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
@@ -4009,7 +4206,7 @@ class _SettingsHeaderStrip extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: _marketText,
+                      color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -4023,7 +4220,7 @@ class _SettingsHeaderStrip extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: _marketMutedText,
+                color: _marketMutedTextColor(context),
                 height: 1.35,
                 fontWeight: FontWeight.w700,
               ),
@@ -5920,48 +6117,65 @@ const _marketRed = Color(0xFFFF5A5F);
 const _marketGreen = Color(0xFF67C58B);
 const _marketBlue = Color(0xFF7DD3FC);
 
+const _marketLightBackgroundColor = Color(0xFFF4F7FA);
+const _marketLightPanel = Color(0xFFFFFFFF);
+const _marketLightPanelAlt = Color(0xFFF0F5F8);
+const _marketLightNav = Color(0xFFFFFFFF);
+const _marketLightBorder = Color(0xFFD7E0E7);
+const _marketLightText = Color(0xFF14202B);
+const _marketLightMutedText = Color(0xFF5C6B78);
+
 ThemeData _marketTheme(BuildContext context) {
   final base = Theme.of(context);
+  final dark = base.brightness == Brightness.dark;
+  final background =
+      dark ? _marketBackgroundColor : _marketLightBackgroundColor;
+  final panel = dark ? _marketPanel : _marketLightPanel;
+  final panelAlt = dark ? _marketPanelAlt : _marketLightPanelAlt;
+  final border = dark ? _marketBorder : _marketLightBorder;
+  final text = dark ? _marketText : _marketLightText;
+  final mutedText = dark ? _marketMutedText : _marketLightMutedText;
+  final headingRow = dark ? const Color(0xFF282828) : const Color(0xFFE8F0F5);
   final scheme = ColorScheme.fromSeed(
     seedColor: _marketBlue,
-    brightness: Brightness.dark,
+    brightness: dark ? Brightness.dark : Brightness.light,
   ).copyWith(
     primary: _marketBlue,
     onPrimary: Colors.black,
     secondary: _marketGreen,
     tertiary: _marketRed,
-    surface: _marketPanel,
-    surfaceContainerHighest: _marketPanelAlt,
-    onSurface: _marketText,
-    onSurfaceVariant: _marketMutedText,
-    outlineVariant: _marketBorder,
-    error: const Color(0xFFFF7777),
+    surface: panel,
+    surfaceContainerHighest: panelAlt,
+    onSurface: text,
+    onSurfaceVariant: mutedText,
+    outlineVariant: border,
+    error: dark ? const Color(0xFFFF7777) : const Color(0xFFB42318),
   );
   return base.copyWith(
-    brightness: Brightness.dark,
+    brightness: dark ? Brightness.dark : Brightness.light,
     colorScheme: scheme,
-    scaffoldBackgroundColor: _marketBackgroundColor,
+    scaffoldBackgroundColor: background,
     cardTheme: CardThemeData(
       elevation: 0,
-      color: _marketPanel,
+      color: panel,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: const BorderSide(color: _marketBorder),
+        side: BorderSide(color: border),
       ),
     ),
-    dividerColor: _marketBorder,
+    dividerColor: border,
     textTheme: base.textTheme.apply(
-      bodyColor: _marketText,
-      displayColor: _marketText,
+      bodyColor: text,
+      displayColor: text,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: _marketPanelAlt,
-      labelStyle: const TextStyle(color: _marketMutedText),
+      fillColor: panelAlt,
+      labelStyle: TextStyle(color: mutedText),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: _marketBorder),
+        borderSide: BorderSide(color: border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
@@ -5969,23 +6183,105 @@ ThemeData _marketTheme(BuildContext context) {
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: _marketBorder),
+        borderSide: BorderSide(color: border),
       ),
     ),
-    dataTableTheme: const DataTableThemeData(
-      headingRowColor: WidgetStatePropertyAll(Color(0xFF282828)),
-      dataRowColor: WidgetStatePropertyAll(_marketPanel),
+    dataTableTheme: DataTableThemeData(
+      headingRowColor: WidgetStatePropertyAll(headingRow),
+      dataRowColor: WidgetStatePropertyAll(panel),
       dividerThickness: 0.8,
       headingTextStyle: TextStyle(
-        color: _marketMutedText,
+        color: mutedText,
         fontWeight: FontWeight.w900,
       ),
-      dataTextStyle: TextStyle(color: _marketText),
+      dataTextStyle: TextStyle(color: text),
     ),
   );
 }
 
-Color _marketBackground(BuildContext context) => _marketBackgroundColor;
+bool _marketIsDark(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark;
+
+Color _marketBackground(BuildContext context) => _marketIsDark(context)
+    ? _marketBackgroundColor
+    : _marketLightBackgroundColor;
+
+Color _marketPanelColor(BuildContext context) =>
+    _marketIsDark(context) ? _marketPanel : _marketLightPanel;
+
+Color _marketPanelAltColor(BuildContext context) =>
+    _marketIsDark(context) ? _marketPanelAlt : _marketLightPanelAlt;
+
+Color _marketNavColor(BuildContext context) =>
+    _marketIsDark(context) ? _marketNav : _marketLightNav;
+
+Color _marketBorderColor(BuildContext context) =>
+    _marketIsDark(context) ? _marketBorder : _marketLightBorder;
+
+Color _marketTextColor(BuildContext context) =>
+    _marketIsDark(context) ? _marketText : _marketLightText;
+
+Color _marketMutedTextColor(BuildContext context) =>
+    _marketIsDark(context) ? _marketMutedText : _marketLightMutedText;
+
+DateTime? _historyFirstDate(EtfPriceHistory history) {
+  if (history.coverageStart != null) {
+    return history.coverageStart;
+  }
+  if (history.points.isEmpty) {
+    return null;
+  }
+  final sorted = [...history.points]..sort((a, b) => a.date.compareTo(b.date));
+  return sorted.first.date;
+}
+
+DateTime? _historyLastDate(EtfPriceHistory history) {
+  if (history.coverageEnd != null) {
+    return history.coverageEnd;
+  }
+  if (history.points.isEmpty) {
+    return null;
+  }
+  final sorted = [...history.points]..sort((a, b) => a.date.compareTo(b.date));
+  return sorted.last.date;
+}
+
+DateTime _defaultTrailingStart({
+  required DateTime? first,
+  required DateTime end,
+  required int years,
+}) {
+  final candidate = DateTime(end.year - years, end.month, end.day);
+  if (first != null && candidate.isBefore(first)) {
+    return first;
+  }
+  return candidate;
+}
+
+EtfPriceHistory _filteredPriceHistory(
+  EtfPriceHistory history, {
+  required DateTime? startDate,
+  required DateTime? endDate,
+}) {
+  final filteredPoints = [
+    for (final point in history.points)
+      if ((startDate == null || !point.date.isBefore(startDate)) &&
+          (endDate == null || !point.date.isAfter(endDate)))
+        point,
+  ]..sort((a, b) => a.date.compareTo(b.date));
+
+  return EtfPriceHistory(
+    points: filteredPoints,
+    status: history.status,
+    sourceStatusLabel: history.sourceStatusLabel,
+    sourceUrl: history.sourceUrl,
+    lastFetchedAt: history.lastFetchedAt,
+    coverageStart: filteredPoints.isEmpty ? null : filteredPoints.first.date,
+    coverageEnd: filteredPoints.isEmpty ? null : filteredPoints.last.date,
+    isCompleteFromListing: false,
+    errorMessage: history.errorMessage,
+  );
+}
 
 String _price(num? value) {
   if (value == null) {
@@ -6083,6 +6379,10 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
   final latestHoldingDate = _latestHoldingsDate(data);
   final intradayTime = _intradayDataTimeText(data.intradayNav);
   final txLine = _primaryFuturesLine(data.snapshot);
+  final txQuote = data.futuresQuote;
+  final txTime = txQuote.dataTime == null
+      ? '-'
+      : '${formatTaiwanDate(txQuote.dataTime!)} ${formatTimeSeconds(txQuote.dataTime!)}';
 
   return [
     _StatusItem(
@@ -6116,11 +6416,21 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
     ),
     _StatusItem(
       label: 'TX live',
-      status: 'not connected',
-      detail: txLine == null
-          ? '目前沒有接 TX live quote；也沒有可顯示的官方 TX 權重行。'
-          : '目前沒有接 TX live quote；只顯示官方 holdings 裡的 TX 權重 ${formatNullablePercent(txLine.weightPct)}。',
-      action: '本版不需要設定 TX live；資料只用於內容物透明化。',
+      status: txQuote.status.label,
+      detail:
+          'TAIFEX ${txQuote.sourceContract ?? 'quote'}；TX ${_price(txQuote.txPrice)}，加權指數 ${_price(txQuote.weightedIndex)}，基差 ${formatSignedNullablePercent(txQuote.futuresBasisPct)}，dataTime $txTime。官方 holdings TX 權重 ${txLine == null ? 'unavailable' : formatNullablePercent(txLine.weightPct)}。',
+      action: txQuote.txPrice == null
+          ? '請確認 TAIFEX 交易時段、backend 連線與 TAIFEX_TX_SOCKJS_URL 設定。'
+          : '請以 TAIFEX dataTime 與官方 holdings tradeDate 分別判讀。',
+    ),
+    _StatusItem(
+      label: 'ETF catalog',
+      status: data.operationsStatus.etfCatalogStatus,
+      detail:
+          'TWSE all_etf rows ${formatInteger(data.operationsStatus.etfCatalogRowCount)}; dataTime ${_dateTimeOrDash(data.operationsStatus.etfCatalogDataTime)}.',
+      action: data.operationsStatus.etfCatalogRowCount > 0
+          ? 'ETF catalog already imported; 00631L stays as the focused research room.'
+          : 'Run scripts\\00631l_import_etf_catalog.cmd to import TWSE all_etf catalog.',
     ),
   ];
 }

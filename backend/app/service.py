@@ -10,6 +10,12 @@ from .analysis import AnalysisProvider, RuleBasedAnalysisProvider
 from .cache import TimedMemoryCache
 from .config import Settings, settings
 from .data_integrity import integrity_status
+from .etf_catalog import (
+    etf_catalog_status,
+    load_etf_catalog,
+    parse_twse_etf_catalog,
+    save_etf_catalog,
+)
 from .fetcher import FetchError, fetch_text
 from .backtest import default_backtest_payload, run_backtest
 from .daily_report import report_status
@@ -24,6 +30,11 @@ from .price_history import (
     fetch_twse_stock_day_range,
     performance_summary,
     price_adjustment_metadata,
+)
+from .taifex_tx import (
+    TaifexQuoteFetchConfig,
+    fetch_taifex_tx_quote,
+    unavailable_tx_quote,
 )
 from .parsers import (
     empty_holdings_response,
@@ -84,6 +95,8 @@ class Etf00631LService:
                 "yuantaProfile": bool(self._config.yuanta_profile_url),
                 "yuantaHoldings": bool(self._config.yuanta_holdings_url),
                 "twsePriceHistory": bool(self._config.twse_price_history_url_template),
+                "taifexTxQuote": bool(self._config.taifex_tx_sockjs_url),
+                "twseEtfCatalog": bool(self._config.twse_intraday_nav_url),
             },
             "localState": {
                 "envFileExists": env_status["envFileExists"],
@@ -105,6 +118,8 @@ class Etf00631LService:
                 "analysisSummary": "/api/etf/00631l/analysis/summary",
                 "priceHistory": "/api/etf/00631l/history/price",
                 "pricePerformance": "/api/etf/00631l/history/performance",
+                "txQuote": "/api/etf/00631l/tx-quote",
+                "etfCatalog": "/api/etf/catalog",
                 "backtestDefaults": "/api/etf/00631l/backtest/defaults",
                 "backtestRun": "/api/etf/00631l/backtest/run",
             },
@@ -131,6 +146,11 @@ class Etf00631LService:
                 "twse_price_history_url_template",
                 self._config.twse_price_history_url_template,
                 required=True,
+            ),
+            self._readiness_url_check(
+                "taifex_tx_sockjs_url",
+                self._config.taifex_tx_sockjs_url,
+                required=False,
             ),
             self._readiness_live_source_check(),
         ]
@@ -323,6 +343,93 @@ class Etf00631LService:
             source_status="error",
         )
 
+    def tx_quote(self) -> dict[str, Any]:
+        now = utc_now_iso()
+        source_url = self._config.taifex_tx_sockjs_url
+        if not source_url:
+            return unavailable_tx_quote(
+                "",
+                now,
+                "TAIFEX TX quote URL is not configured.",
+            )
+        cached = self._cache.get("tx_quote", self._config.tx_quote_cache_seconds)
+        if cached is not None:
+            return mark_cached(cached, fetched_at=now)
+        try:
+            payload = fetch_taifex_tx_quote(
+                TaifexQuoteFetchConfig(
+                    sockjs_url=source_url,
+                    futures_symbol=self._config.taifex_tx_futures_symbol,
+                    spot_symbol=self._config.taifex_tx_spot_symbol,
+                    timeout_seconds=self._config.request_timeout_seconds,
+                ),
+                fetched_at=now,
+            )
+        except (OSError, RuntimeError, ValueError) as error:
+            stale = self._cache.get_any("tx_quote")
+            if stale is not None:
+                return mark_cached(
+                    stale,
+                    fetched_at=now,
+                    error_message=f"Live TAIFEX TX quote fetch failed: {error}",
+                )
+            return unavailable_tx_quote(
+                source_url,
+                now,
+                f"Live TAIFEX TX quote fetch failed: {error}",
+            )
+        if payload["sourceStatus"] == "official":
+            self._cache.set("tx_quote", payload)
+        return payload
+
+    def etf_catalog(self) -> dict[str, Any]:
+        now = utc_now_iso()
+        return load_etf_catalog(self._config.etf_catalog_path, fetched_at=now)
+
+    def etf_catalog_status(self) -> dict[str, Any]:
+        now = utc_now_iso()
+        return etf_catalog_status(self._config.etf_catalog_path, fetched_at=now)
+
+    def etf_catalog_import(self) -> dict[str, Any]:
+        now = utc_now_iso()
+        if not self._config.twse_intraday_nav_url:
+            return {
+                "sourceStatus": "unavailable",
+                "sourceContract": "twse_all_etf_catalog_import",
+                "sourceUrl": "",
+                "fetchedAt": now,
+                "rowCount": 0,
+                "outputPath": self._config.etf_catalog_path,
+                "errorMessage": "TWSE_00631L_INTRADAY_NAV_URL is required for ETF catalog import.",
+            }
+        try:
+            source = self._fetcher(
+                self._config.twse_intraday_nav_url,
+                self._config.request_timeout_seconds,
+            )
+            payload = parse_twse_etf_catalog(
+                source,
+                source_url=self._config.twse_intraday_nav_url,
+                fetched_at=now,
+            )
+            if payload.get("sourceStatus") == "official":
+                save_etf_catalog(payload, self._config.etf_catalog_path)
+            return {
+                **payload,
+                "sourceContract": "twse_all_etf_catalog_import",
+                "outputPath": self._config.etf_catalog_path,
+            }
+        except (FetchError, OSError, RuntimeError, ValueError) as error:
+            return {
+                "sourceStatus": "error",
+                "sourceContract": "twse_all_etf_catalog_import",
+                "sourceUrl": self._config.twse_intraday_nav_url,
+                "fetchedAt": now,
+                "rowCount": 0,
+                "outputPath": self._config.etf_catalog_path,
+                "errorMessage": f"ETF catalog import failed: {error}",
+            }
+
     def intraday_nav_history(
         self,
         *,
@@ -457,6 +564,12 @@ class Etf00631LService:
         now = utc_now_iso()
         holdings = self.holdings_history_summary(limit=1)
         intraday = self.intraday_nav_history_summary()
+        tx_quote = self._cache.get_any("tx_quote") or unavailable_tx_quote(
+            self._config.taifex_tx_sockjs_url,
+            now,
+            "TAIFEX TX quote has not been fetched in this backend process yet.",
+        )
+        catalog_status = self.etf_catalog_status()
         price_history_status = self.price_history_status()
         export_status = self._export_status()
         backup_status = self._backup_status()
@@ -474,7 +587,7 @@ class Etf00631LService:
         latest_intraday = intraday_items[0] if intraday_items else {}
         errors = [
             value.get("errorMessage")
-            for value in (holdings, intraday)
+            for value in (holdings, intraday, tx_quote)
             if value.get("sourceStatus") == "error" and value.get("errorMessage")
         ]
         source_status = (
@@ -517,9 +630,14 @@ class Etf00631LService:
                 "profileCacheSeconds": self._config.profile_cache_seconds,
                 "holdingsCacheSeconds": self._config.holdings_cache_seconds,
                 "intradayNavCacheSeconds": self._config.intraday_cache_seconds,
+                "txQuoteCacheSeconds": self._config.tx_quote_cache_seconds,
+                "taifexTxQuoteConfigured": bool(self._config.taifex_tx_sockjs_url),
+                "taifexTxFuturesSymbol": self._config.taifex_tx_futures_symbol,
+                "taifexTxSpotSymbol": self._config.taifex_tx_spot_symbol,
                 "holdingsHistoryPathConfigured": bool(self._config.holdings_history_path),
                 "intradayNavHistoryPathConfigured": bool(self._config.intraday_nav_history_path),
                 "priceHistoryPathConfigured": bool(self._config.price_history_path),
+                "etfCatalogPathConfigured": bool(self._config.etf_catalog_path),
                 "twsePriceHistoryUrlTemplateConfigured": bool(self._config.twse_price_history_url_template),
                 "historyExportDir": self._config.history_export_dir,
                 "dailyCycleStatusPath": self._config.daily_cycle_status_path,
@@ -559,6 +677,27 @@ class Etf00631LService:
                 "isStale": price_history_status.get("isStale"),
                 "errorMessage": price_history_status.get("errorMessage"),
             },
+            "txQuote": {
+                "sourceStatus": tx_quote.get("sourceStatus"),
+                "sourceContract": tx_quote.get("sourceContract"),
+                "txSymbol": tx_quote.get("txSymbol"),
+                "spotSymbol": tx_quote.get("spotSymbol"),
+                "txPrice": tx_quote.get("txPrice"),
+                "weightedIndex": tx_quote.get("weightedIndex"),
+                "futuresBasisPct": tx_quote.get("futuresBasisPct"),
+                "dataTime": tx_quote.get("dataTime"),
+                "isStale": tx_quote.get("isStale"),
+                "errorMessage": tx_quote.get("errorMessage"),
+            },
+            "etfCatalog": {
+                "sourceStatus": catalog_status.get("sourceStatus"),
+                "sourceContract": catalog_status.get("sourceContract"),
+                "rowCount": catalog_status.get("rowCount", 0),
+                "sourceUpdatedAt": catalog_status.get("sourceUpdatedAt"),
+                "dataTime": catalog_status.get("dataTime"),
+                "isStale": catalog_status.get("isStale"),
+                "errorMessage": catalog_status.get("errorMessage"),
+            },
             "backtest": {
                 "sourceStatus": "cached"
                 if price_history_status.get("sourceStatus") == "cached"
@@ -587,6 +726,8 @@ class Etf00631LService:
                 "operations": source_status,
                 "holdingsHistory": holdings.get("sourceStatus"),
                 "intradayHistory": intraday.get("sourceStatus"),
+                "txQuote": tx_quote.get("sourceStatus"),
+                "etfCatalog": catalog_status.get("sourceStatus"),
                 "priceHistory": price_history_status.get("sourceStatus"),
                 "export": export_status["sourceStatus"],
                 "backup": backup_status["sourceStatus"],
@@ -823,9 +964,12 @@ class Etf00631LService:
             Path(self._config.data_dir),
             mode=self._config.data_persistence_mode,
         )
-        data_dir_ready = _path_parent_ready(self._config.holdings_history_path) and _path_parent_ready(
-            self._config.intraday_nav_history_path
-        ) and _path_parent_ready(self._config.price_history_path)
+        data_dir_ready = (
+            _path_parent_ready(self._config.holdings_history_path)
+            and _path_parent_ready(self._config.intraday_nav_history_path)
+            and _path_parent_ready(self._config.price_history_path)
+            and _path_parent_ready(self._config.etf_catalog_path)
+        )
         export_dir = Path(self._config.history_export_dir)
         export_dir_ready = export_dir.exists() or export_dir.parent.exists()
         backup_dir = Path(self._config.backup_dir)
@@ -1175,9 +1319,9 @@ def _data_update_frequencies(*, intraday_cache_seconds: int) -> list[dict[str, A
         {
             "key": "tx_live",
             "label": "TX live quote",
-            "frequency": "not_connected",
-            "description": "TX live 尚未接入；目前只保留 mock/fallback 顯示，不會標示為 official。",
-            "sourceStatus": "mock_fallback",
+            "frequency": "taifex_realtime_when_backend_ready",
+            "description": "TAIFEX quote stream 可提供 TXF-P 與 TXF-S；非交易時段可能回 unavailable 或 stale。",
+            "sourceStatus": "official_cached_stale_or_unavailable",
         },
     ]
 

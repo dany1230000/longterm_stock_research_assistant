@@ -110,6 +110,14 @@ v4.0 App Store foundation:
 - Summary: `docs\00631l_v4_0_app_store_foundation_summary.md`.
 - Plan: `docs\00631l_app_store_release_plan.md`.
 
+v4.1 TX live, history controls, and ETF catalog:
+
+- The history/backtest tab now opens on a one-year default range and lets the user adjust start/end dates.
+- The light/dark toggle now changes the 00631L market shell palette instead of only changing the app theme mode.
+- Backend exposes TAIFEX TX live quote at `/api/etf/00631l/tx-quote`; off-hours can return unavailable/stale instead of mock official data.
+- TWSE all-ETF catalog can be imported with `scripts\00631l_import_etf_catalog.cmd`; it is a data foundation and does not change the app into an all-ETF product.
+- Summary: `docs\00631l_v4_1_tx_live_history_controls_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.
@@ -382,7 +390,8 @@ Current source timing:
 - TWSE intraday NAV is the fast-updating market price, estimated NAV, premium/discount, and data-time source.
 - TWSE price history is cached locally after running the update script.
 - Static public mode reads `00631l-static-data` generated from official TWSE price history.
-- TX live remains out of scope and is still mock/fallback by design.
+- TAIFEX TX live quote is available through the backend and is shown separately from daily Yuanta holdings.
+- TWSE all-ETF catalog import is available for future ETF-room work; 00631L remains the focused app.
 
 ## 00631L lab v1.0 completed
 
