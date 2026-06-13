@@ -288,6 +288,12 @@ v3.39 compact quote NAV line:
 - This reduces the first-screen height while keeping market price, premium/discount state, estimated NAV, previous NAV, and data time visible.
 - Summary: `docs\00631l_v3_39_compact_quote_nav_line_summary.md`.
 
+v3.40 live timeout static fallback:
+
+- Public live proxy builds can set `00631L_PROXY_TIMEOUT_MS`; default is 3000 ms.
+- When the live backend is slow or waking up, the app falls back to static public data faster so history/backtest remain usable.
+- Summary: `docs\00631l_v3_40_live_timeout_static_fallback_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

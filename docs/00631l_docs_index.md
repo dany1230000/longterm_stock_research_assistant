@@ -42,6 +42,7 @@ This is the main entry point for 00631L lab documentation.
 - Overview metric grid v3.37 summary: `docs\00631l_v3_37_overview_metric_grid_summary.md`
 - History/backtest merge v3.38 summary: `docs\00631l_v3_38_history_backtest_merge_summary.md`
 - Compact quote NAV line v3.39 summary: `docs\00631l_v3_39_compact_quote_nav_line_summary.md`
+- Live timeout static fallback v3.40 summary: `docs\00631l_v3_40_live_timeout_static_fallback_summary.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
 - Daily usage: `docs\00631l_daily_usage.md`
@@ -158,6 +159,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Overview metric grid release: `docs\00631l_v3_37_overview_metric_grid_summary.md`
 - History/backtest merge release: `docs\00631l_v3_38_history_backtest_merge_summary.md`
 - Compact quote NAV line release: `docs\00631l_v3_39_compact_quote_nav_line_summary.md`
+- Live timeout static fallback release: `docs\00631l_v3_40_live_timeout_static_fallback_summary.md`
 
 ## Scope Boundary
 

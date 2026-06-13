@@ -302,6 +302,24 @@ void main() {
     expect(data.snapshot.status, EtfDataStatus.mock);
     expect(data.priceHistory.sourceStatusLabel, 'deferred');
   });
+
+  test('cached full data falls back when primary is slow', () async {
+    final repository = Cached00631LRepository(
+      primary: _NeverCompletingRepository(),
+      fallback: Mock00631LRepository(),
+      primaryTimeout: const Duration(milliseconds: 5),
+    );
+
+    final stopwatch = Stopwatch()..start();
+    final data = await repository.fetchLabData();
+    stopwatch.stop();
+
+    expect(stopwatch.elapsed, lessThan(const Duration(seconds: 1)));
+    expect(data.profile.status, EtfDataStatus.mock);
+    expect(data.snapshot.status, EtfDataStatus.mock);
+    expect(data.priceHistory.sourceStatusLabel, 'mock');
+    expect(data.aiAnalysis.sourceStatusLabel, 'mock');
+  });
 }
 
 class _FakeProxyHttpClient implements ProxyHttpClient {
@@ -339,6 +357,43 @@ class _NeverCompletingFastRepository extends Mock00631LRepository {
   Future<Etf00631LLabData> fetchFastLabData() {
     return _completer.future;
   }
+}
+
+class _NeverCompletingRepository extends Mock00631LRepository {
+  Future<T> _never<T>() => Completer<T>().future;
+
+  @override
+  Future<LeveragedEtfProfile> fetchProfile() => _never<LeveragedEtfProfile>();
+
+  @override
+  Future<EtfDailyHoldingSnapshot> fetchDailySnapshot() =>
+      _never<EtfDailyHoldingSnapshot>();
+
+  @override
+  Future<EtfIntradayNav?> fetchIntradayNav() => _never<EtfIntradayNav?>();
+
+  @override
+  Future<FuturesQuote> fetchFuturesQuote() => _never<FuturesQuote>();
+
+  @override
+  Future<EtfHoldingsHistory> fetchHoldingsHistorySummary({int limit = 30}) =>
+      _never<EtfHoldingsHistory>();
+
+  @override
+  Future<EtfIntradayNavHistorySummary> fetchIntradayNavHistorySummary() =>
+      _never<EtfIntradayNavHistorySummary>();
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() =>
+      _never<EtfOperationsStatus>();
+
+  @override
+  Future<EtfAiAnalysisSummary> fetchAiAnalysisSummary() =>
+      _never<EtfAiAnalysisSummary>();
+
+  @override
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) =>
+      _never<EtfPriceHistory>();
 }
 
 Map<String, Object?> _profilePayload() {

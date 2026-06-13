@@ -171,6 +171,11 @@ final official00631LRepositoryProvider =
     '00631L_STATIC_DATA_BASE_URL',
     defaultValue: '00631l-static-data',
   );
+  const proxyTimeoutMs = int.fromEnvironment(
+    '00631L_PROXY_TIMEOUT_MS',
+    defaultValue: 3000,
+  );
+  const proxyTimeout = Duration(milliseconds: proxyTimeoutMs);
 
   if (useLiveProxy) {
     final fallback = useStaticData
@@ -180,8 +185,12 @@ final official00631LRepositoryProvider =
           )
         : Mock00631LRepository();
     return Cached00631LRepository(
-      primary: Proxy00631LRepository(baseUri: Uri.parse(proxyBaseUrl)),
+      primary: Proxy00631LRepository(
+        baseUri: Uri.parse(proxyBaseUrl),
+        timeout: proxyTimeout,
+      ),
       fallback: fallback,
+      primaryTimeout: proxyTimeout,
     );
   }
 

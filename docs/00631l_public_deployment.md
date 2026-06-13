@@ -216,12 +216,23 @@ docker run --rm -p 8000:8000 --env-file backend\.env -v 00631l-data:/data/00631l
 flutter build web --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_PROXY_BASE_URL=https://your-backend.example.com
 ```
 
+建議公開版同時開啟 static fallback，並給 backend 一個短 timeout，避免
+free-tier backend 冷啟動時拖住前端：
+
+```cmd
+flutter build web --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=USE_00631L_STATIC_DATA=true --dart-define=00631L_PROXY_BASE_URL=https://your-backend.example.com --dart-define=00631L_PROXY_TIMEOUT_MS=3000
+```
+
 或用 helper：
 
 ```cmd
 set PUBLIC_BACKEND_URL=https://your-backend.example.com
+set PUBLIC_PROXY_TIMEOUT_MS=3000
 scripts\00631l_build_web_public.cmd
 ```
+
+`00631L_PROXY_TIMEOUT_MS` 是前端等待 public backend 的毫秒數。超時後會先回
+static public data；static fallback 不是 live intraday NAV。
 
 完成後部署 `build\web` 到靜態 hosting。手機開：
 

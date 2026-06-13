@@ -7,12 +7,14 @@ class Cached00631LRepository extends Official00631LRepository {
     required Official00631LRepository primary,
     Official00631LRepository? fallback,
     this.fastPrimaryTimeout = const Duration(milliseconds: 900),
+    this.primaryTimeout = const Duration(seconds: 4),
   })  : _primary = primary,
         _fallback = fallback ?? Mock00631LRepository();
 
   final Official00631LRepository _primary;
   final Official00631LRepository _fallback;
   final Duration fastPrimaryTimeout;
+  final Duration primaryTimeout;
 
   LeveragedEtfProfile? _profileCache;
   EtfDailyHoldingSnapshot? _snapshotCache;
@@ -42,7 +44,7 @@ class Cached00631LRepository extends Official00631LRepository {
   @override
   Future<LeveragedEtfProfile> fetchProfile() async {
     try {
-      final profile = await _primary.fetchProfile();
+      final profile = await _primary.fetchProfile().timeout(primaryTimeout);
       _profileCache = profile;
       return profile;
     } catch (_) {
@@ -57,7 +59,8 @@ class Cached00631LRepository extends Official00631LRepository {
   @override
   Future<EtfDailyHoldingSnapshot> fetchDailySnapshot() async {
     try {
-      final snapshot = await _primary.fetchDailySnapshot();
+      final snapshot =
+          await _primary.fetchDailySnapshot().timeout(primaryTimeout);
       _snapshotCache = snapshot;
       return snapshot;
     } catch (_) {
@@ -72,7 +75,8 @@ class Cached00631LRepository extends Official00631LRepository {
   @override
   Future<EtfIntradayNav?> fetchIntradayNav() async {
     try {
-      final intradayNav = await _primary.fetchIntradayNav();
+      final intradayNav =
+          await _primary.fetchIntradayNav().timeout(primaryTimeout);
       _intradayNavCache = intradayNav;
       return intradayNav;
     } catch (_) {
@@ -87,7 +91,7 @@ class Cached00631LRepository extends Official00631LRepository {
   @override
   Future<FuturesQuote> fetchFuturesQuote() async {
     try {
-      final quote = await _primary.fetchFuturesQuote();
+      final quote = await _primary.fetchFuturesQuote().timeout(primaryTimeout);
       _futuresQuoteCache = quote;
       return quote;
     } catch (_) {
@@ -104,7 +108,9 @@ class Cached00631LRepository extends Official00631LRepository {
     int limit = 30,
   }) async {
     try {
-      final history = await _primary.fetchHoldingsHistorySummary(limit: limit);
+      final history = await _primary
+          .fetchHoldingsHistorySummary(limit: limit)
+          .timeout(primaryTimeout);
       _holdingsHistoryCache = history;
       return history;
     } catch (_) {
@@ -119,7 +125,9 @@ class Cached00631LRepository extends Official00631LRepository {
   @override
   Future<EtfIntradayNavHistorySummary> fetchIntradayNavHistorySummary() async {
     try {
-      final history = await _primary.fetchIntradayNavHistorySummary();
+      final history = await _primary
+          .fetchIntradayNavHistorySummary()
+          .timeout(primaryTimeout);
       _intradayNavHistoryCache = history;
       return history;
     } catch (_) {
@@ -134,7 +142,9 @@ class Cached00631LRepository extends Official00631LRepository {
   @override
   Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
     try {
-      final history = await _primary.fetchPriceHistory(limit: limit);
+      final history = await _primary
+          .fetchPriceHistory(limit: limit)
+          .timeout(primaryTimeout);
       _priceHistoryCache = history;
       return history;
     } catch (_) {
@@ -149,7 +159,8 @@ class Cached00631LRepository extends Official00631LRepository {
   @override
   Future<EtfOperationsStatus> fetchOperationsStatus() async {
     try {
-      final status = await _primary.fetchOperationsStatus();
+      final status =
+          await _primary.fetchOperationsStatus().timeout(primaryTimeout);
       _operationsStatusCache = status;
       return status;
     } catch (error) {
@@ -165,7 +176,8 @@ class Cached00631LRepository extends Official00631LRepository {
   @override
   Future<EtfAiAnalysisSummary> fetchAiAnalysisSummary() async {
     try {
-      final analysis = await _primary.fetchAiAnalysisSummary();
+      final analysis =
+          await _primary.fetchAiAnalysisSummary().timeout(primaryTimeout);
       _aiAnalysisCache = analysis;
       return analysis;
     } catch (_) {
