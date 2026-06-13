@@ -126,61 +126,68 @@ class _LabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: _marketTheme(context),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final isCompact = constraints.maxWidth < 720;
-          final horizontalPadding = constraints.maxWidth < 520 ? 12.0 : 18.0;
-          final shellBackground = _marketBackground(context);
-          return DecoratedBox(
-            decoration: BoxDecoration(color: shellBackground),
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView(
-                    padding: EdgeInsets.fromLTRB(
-                      horizontalPadding,
-                      6,
-                      horizontalPadding,
-                      isCompact ? 84 : 92,
-                    ),
-                    children: [
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 1180),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _MarketTopBar(
-                                onRefresh: onRefresh,
-                              ),
-                              const SizedBox(height: 8),
-                              if (detailsLoading || detailsError != null) ...[
-                                _DetailsLoadStateStrip(
-                                  isLoading: detailsLoading,
-                                  errorMessage: detailsError,
-                                ),
-                                const SizedBox(height: 8),
-                              ],
-                              _sectionWidget(data),
-                            ],
-                          ),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: appThemeModeNotifier,
+      builder: (context, themeMode, _) {
+        return Theme(
+          data: _marketTheme(context, themeMode),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isCompact = constraints.maxWidth < 720;
+              final horizontalPadding =
+                  constraints.maxWidth < 520 ? 12.0 : 18.0;
+              final shellBackground = _marketBackground(context);
+              return DecoratedBox(
+                decoration: BoxDecoration(color: shellBackground),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.fromLTRB(
+                          horizontalPadding,
+                          6,
+                          horizontalPadding,
+                          isCompact ? 84 : 92,
                         ),
+                        children: [
+                          Align(
+                            alignment: Alignment.topCenter,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 1180),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _MarketTopBar(
+                                    onRefresh: onRefresh,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  if (detailsLoading ||
+                                      detailsError != null) ...[
+                                    _DetailsLoadStateStrip(
+                                      isLoading: detailsLoading,
+                                      errorMessage: detailsError,
+                                    ),
+                                    const SizedBox(height: 8),
+                                  ],
+                                  _sectionWidget(data),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    _MarketBottomNav(
+                      selected: selectedSection,
+                      onChanged: onSectionChanged,
+                    ),
+                  ],
                 ),
-                _MarketBottomNav(
-                  selected: selectedSection,
-                  onChanged: onSectionChanged,
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -1476,18 +1483,47 @@ class _ThemeToggleButton extends StatelessWidget {
       valueListenable: appThemeModeNotifier,
       builder: (context, mode, _) {
         final isDark = mode == ThemeMode.dark;
-        return IconButton(
-          tooltip: isDark ? '切換淺色模式' : '切換夜間模式',
-          onPressed: () {
-            setAppThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
-          },
-          style: compact
-              ? IconButton.styleFrom(
-                  backgroundColor: _marketPanelAltColor(context),
-                  foregroundColor: _marketTextColor(context),
-                )
-              : null,
-          icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode),
+        final nextMode = isDark ? ThemeMode.light : ThemeMode.dark;
+        final label = isDark ? '夜間' : '日間';
+        return Tooltip(
+          message: isDark ? '切換到日間模式' : '切換到夜間模式',
+          child: InkWell(
+            key: const ValueKey('00631l-theme-toggle'),
+            borderRadius: BorderRadius.circular(999),
+            onTap: () => setAppThemeMode(nextMode),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: _marketPanelAltColor(context),
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: _marketBorderColor(context)),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: compact ? 8 : 10,
+                  vertical: compact ? 6 : 8,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isDark ? Icons.dark_mode : Icons.light_mode_outlined,
+                      size: 17,
+                      color: _marketTextColor(context),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      label,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: _marketTextColor(context),
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         );
       },
     );
@@ -2890,15 +2926,14 @@ class _HistorySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final holdingsTrend = data.holdingsHistory.trendSummary();
     final priceHistory = data.priceHistory;
-    final performance = priceHistory.performance;
     final completeness = priceHistory.completenessSummary();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionHeaderCard(
-          title: '歷史快覽',
-          subtitle: '價格、淨值與 coverage；公開靜態資料可支援手機查詢與回測。',
+          title: '歷史回測',
+          subtitle: '預設顯示最近 1 年，可自行調整開始與結束日期。',
           icon: Icons.show_chart_outlined,
           badges: [
             'HIS',
@@ -2907,7 +2942,7 @@ class _HistorySection extends StatelessWidget {
           ],
           metrics: [
             _SectionHeaderMetric(
-              label: 'coverage',
+              label: '完整 coverage',
               value:
                   '${_dateOrDash(completeness.coverageStart)} - ${_dateOrDash(completeness.coverageEnd)}',
             ),
@@ -2915,33 +2950,34 @@ class _HistorySection extends StatelessWidget {
               label: '最新收盤',
               value: _price(completeness.latest?.close),
             ),
-            _SectionHeaderMetric(
-              label: '累積報酬',
-              value: formatSignedNullablePercent(performance.totalReturnPct),
+            const _SectionHeaderMetric(
+              label: '預設區間',
+              value: '最近 1 年',
             ),
             _SectionHeaderMetric(
-              label: '最大回撤',
-              value: formatSignedNullablePercent(performance.maxDrawdownPct),
+              label: '日期調整',
+              value: priceHistory.hasData ? '可用' : '缺資料',
             ),
           ],
         ),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: '價格 / 淨值歷史',
+          title: '價格歷史',
           subtitle: priceHistory.hasData
-              ? 'coverage ${_dateOrDash(priceHistory.coverageStart)} - ${_dateOrDash(priceHistory.coverageEnd)}，sourceStatus ${priceHistory.sourceStatusLabel}'
-              : '尚無 official price history。請執行 scripts\\00631l_update_price_history.cmd。',
+              ? '完整 coverage ${_dateOrDash(priceHistory.coverageStart)} - ${_dateOrDash(priceHistory.coverageEnd)}；圖表預設最近 1 年。'
+              : '尚無 official price history，請執行 scripts\\00631l_update_price_history.cmd。',
           child: priceHistory.hasData
               ? _FilterablePriceHistoryBlock(priceHistory: priceHistory)
               : const _EmptyPanel(
                   title: '尚無 official price history',
-                  message: '歷史價格需要手動更新後才會顯示。本頁不會用 mock 偽裝 official。',
+                  message:
+                      '價格歷史需要 official/cache/static data；不會用 mock 當成 official。',
                 ),
         ),
         const SizedBox(height: 12),
         _SectionBlock(
           title: '每日 holdings history',
-          subtitle: '最近 7 日摘要與最近 30 筆表格，資料從本 app 開始累積。',
+          subtitle: '官方 holdings history 從 daily cycle 開始累積，不補假過去資料。',
           child: data.holdingsHistory.hasData
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -2951,13 +2987,13 @@ class _HistorySection extends StatelessWidget {
                     _HoldingsTrendCharts(summary: holdingsTrend),
                     const SizedBox(height: 12),
                     _CompactExpansionPanel(
-                      title: '最近 30 筆 holdings 表',
-                      subtitle: 'TX、台積電、股票、期貨、現金與 NAV 明細。',
+                      title: '最近 30 筆 holdings',
+                      subtitle: 'TX、台積電、股票、期貨、現金與 NAV。',
                       child: _HorizontalTable(
                         columns: const [
                           '日期',
                           'TX 權重',
-                          '台積電權重',
+                          '台積電',
                           '股票 %',
                           '期貨 %',
                           '現金/保證金 %',
@@ -2982,8 +3018,8 @@ class _HistorySection extends StatelessWidget {
                   ],
                 )
               : const _EmptyPanel(
-                  title: '尚無歷史紀錄',
-                  message: '請執行 daily cycle 保存官方每日內容物快照。',
+                  title: '尚無 holdings history',
+                  message: '請執行 daily cycle 累積官方每日快照。',
                 ),
         ),
       ],
@@ -3051,11 +3087,11 @@ class _FilterablePriceHistoryBlockState
           runSpacing: 8,
           children: [
             _RangeActionChip(
-              label: '最近一年',
+              label: '最近 1 年',
               onTap: () => _setTrailingYears(1),
             ),
             _RangeActionChip(
-              label: '最近三年',
+              label: '最近 3 年',
               onTap: () => _setTrailingYears(3),
             ),
             _RangeActionChip(
@@ -3067,9 +3103,9 @@ class _FilterablePriceHistoryBlockState
         const SizedBox(height: 10),
         _StatusWrap(
           labels: [
-            '目前區間 ${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}',
-            '顯示 ${formatInteger(selectedSummary.rowCount)} 筆',
-            '完整 ${formatInteger(fullSummary.rowCount)} 筆',
+            '目前區間：${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}',
+            '區間筆數 ${formatInteger(selectedSummary.rowCount)}',
+            '完整筆數 ${formatInteger(fullSummary.rowCount)}',
           ],
         ),
         const SizedBox(height: 12),
@@ -3088,7 +3124,7 @@ class _FilterablePriceHistoryBlockState
               value: formatSignedNullablePercent(
                 performance.annualizedReturnPct,
               ),
-              caption: '歷史估算',
+              caption: '以區間資料計算',
               icon: Icons.functions_outlined,
             ),
             _MetricCard(
@@ -3114,14 +3150,14 @@ class _FilterablePriceHistoryBlockState
         const SizedBox(height: 8),
         const _StatusWrap(
           labels: [
-            '績效 / 回測使用分割調整收盤價',
-            '原始 TWSE OHLC 保留',
+            '回測不代表未來表現',
+            '價格歷史使用 split-adjusted close',
           ],
         ),
         const SizedBox(height: 12),
         _CompactExpansionPanel(
           title: '歷史資料完整度',
-          subtitle: 'rows、coverage、52 週區間與欄位覆蓋。',
+          subtitle: '完整 rows、coverage、欄位完整度。',
           child: _PriceCompletenessPanel(
             priceHistory: fullHistory,
             summary: fullSummary,
@@ -3130,7 +3166,7 @@ class _FilterablePriceHistoryBlockState
         const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '目前區間價格表',
-          subtitle: '開高低收、NAV、折溢價、成交量與回撤。',
+          subtitle: '顯示目前日期區間最近 30 筆。',
           child: _HorizontalTable(
             columns: const [
               '日期',
@@ -3188,7 +3224,7 @@ class _FilterablePriceHistoryBlockState
       initialDate: _startDate ?? _historyFirstDate(history) ?? DateTime.now(),
       firstDate: _historyFirstDate(history),
       lastDate: _historyLastDate(history),
-      helpText: '選擇歷史開始日期',
+      helpText: '選擇開始日期',
     );
     if (picked == null) {
       return;
@@ -3208,7 +3244,7 @@ class _FilterablePriceHistoryBlockState
       initialDate: _endDate ?? _historyLastDate(history) ?? DateTime.now(),
       firstDate: _historyFirstDate(history),
       lastDate: _historyLastDate(history),
-      helpText: '選擇歷史結束日期',
+      helpText: '選擇結束日期',
     );
     if (picked == null) {
       return;
@@ -3554,15 +3590,17 @@ class _BacktestDateRangeControls extends StatelessWidget {
         final compact = constraints.maxWidth < 520;
         final children = [
           _BacktestDateButton(
+            key: const ValueKey('00631l-start-date-button'),
             label: '開始日期',
             value: _dateOrDash(startDate),
-            caption: firstDate == null ? 'history start unavailable' : '可選起點',
+            caption: firstDate == null ? 'history start unavailable' : '點擊調整',
             onTap: onStartTap,
           ),
           _BacktestDateButton(
+            key: const ValueKey('00631l-end-date-button'),
             label: '結束日期',
             value: _dateOrDash(endDate),
-            caption: lastDate == null ? 'history end unavailable' : '可選終點',
+            caption: lastDate == null ? 'history end unavailable' : '點擊調整',
             onTap: onEndTap,
           ),
         ];
@@ -3590,6 +3628,7 @@ class _BacktestDateRangeControls extends StatelessWidget {
 
 class _BacktestDateButton extends StatelessWidget {
   const _BacktestDateButton({
+    super.key,
     required this.label,
     required this.value,
     required this.caption,
@@ -6125,9 +6164,13 @@ const _marketLightBorder = Color(0xFFD7E0E7);
 const _marketLightText = Color(0xFF14202B);
 const _marketLightMutedText = Color(0xFF5C6B78);
 
-ThemeData _marketTheme(BuildContext context) {
+ThemeData _marketTheme(BuildContext context, [ThemeMode? mode]) {
   final base = Theme.of(context);
-  final dark = base.brightness == Brightness.dark;
+  final dark = mode == null
+      ? base.brightness == Brightness.dark
+      : mode == ThemeMode.dark ||
+          (mode == ThemeMode.system &&
+              MediaQuery.platformBrightnessOf(context) == Brightness.dark);
   final background =
       dark ? _marketBackgroundColor : _marketLightBackgroundColor;
   final panel = dark ? _marketPanel : _marketLightPanel;

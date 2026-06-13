@@ -161,14 +161,20 @@ void main() {
     await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
 
-    expect(find.text('歷史快覽'), findsOneWidget);
+    expect(find.text('歷史回測'), findsWidgets);
+    expect(find.textContaining('預設顯示最近 1 年'), findsOneWidget);
     expect(find.textContaining('coverage'), findsWidgets);
-    expect(find.text('價格 / 淨值歷史'), findsOneWidget);
+    expect(find.text('價格歷史'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
     expect(find.text('歷史資料完整度'), findsWidgets);
-    expect(find.text('累積報酬'), findsWidgets);
+    expect(find.text('區間報酬'), findsWidgets);
+    expect(find.text('最近 1 年'), findsWidgets);
+    expect(find.text('最近 3 年'), findsOneWidget);
+    expect(find.text('全部資料'), findsOneWidget);
+    expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsOneWidget);
+    expect(find.textContaining('區間筆數 4'), findsOneWidget);
+    expect(find.textContaining('完整筆數 5'), findsOneWidget);
     expect(find.text('目前區間價格表'), findsOneWidget);
-    expect(find.text('最近一年'), findsOneWidget);
     expect(find.text('每日 holdings history'), findsOneWidget);
     expect(find.text('回測快覽'), findsOneWidget);
     expect(find.text('回測工具'), findsNothing);
@@ -186,7 +192,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('尚無 official price history'), findsWidgets);
-    expect(find.text('尚無歷史紀錄'), findsWidgets);
+    expect(find.text('尚無 holdings history'), findsWidgets);
   });
 
   testWidgets('history backtest section renders inputs and disclaimer',
@@ -324,14 +330,15 @@ void main() {
     final initialBox =
         tester.widget<DecoratedBox>(find.byType(DecoratedBox).first);
     final initialColor = (initialBox.decoration as BoxDecoration).color;
-    expect(find.byIcon(Icons.dark_mode), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.dark_mode));
+    expect(find.text('日間'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('00631l-theme-toggle')));
     await tester.pumpAndSettle();
 
     final changedBox =
         tester.widget<DecoratedBox>(find.byType(DecoratedBox).first);
     final changedColor = (changedBox.decoration as BoxDecoration).color;
     expect(changedColor, isNot(initialColor));
+    expect(find.text('夜間'), findsOneWidget);
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
@@ -378,6 +385,26 @@ class _PriceHistoryRepository extends Mock00631LRepository {
   @override
   Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
     final points = [
+      EtfPriceHistoryPoint(
+        date: DateTime(2024, 6, 3),
+        open: 20.0,
+        high: 20.4,
+        low: 19.8,
+        close: 20.2,
+        volume: 900000,
+        nav: 20.1,
+        premiumDiscountPct: 0.1,
+      ),
+      EtfPriceHistoryPoint(
+        date: DateTime(2025, 6, 3),
+        open: 25.0,
+        high: 25.5,
+        low: 24.8,
+        close: 25.2,
+        volume: 950000,
+        nav: 25.1,
+        premiumDiscountPct: 0.2,
+      ),
       EtfPriceHistoryPoint(
         date: DateTime(2026, 6, 1),
         open: 30.1,
