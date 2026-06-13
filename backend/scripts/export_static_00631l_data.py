@@ -31,6 +31,11 @@ def main() -> int:
     parser.add_argument("--price-history-path", default=settings.price_history_path)
     parser.add_argument("--start-date", default="2014-10-31")
     parser.add_argument("--end-date", default="")
+    parser.add_argument(
+        "--seed-price-history-path",
+        default=str(ROOT / "backend" / "seeds" / "00631l_price_history_seed.jsonl"),
+    )
+    parser.add_argument("--min-row-count", type=int, default=1000)
     parser.add_argument("--update", action="store_true")
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--status-only", action="store_true")
@@ -68,11 +73,18 @@ def main() -> int:
         if fetched.get("sourceStatus") != "official":
             warnings.append(fetched.get("errorMessage") or "TWSE price history update failed.")
         warnings.append(f"updateSavedRows={saved}")
+        _merge_seed_if_needed(
+            store=store,
+            seed_path=Path(args.seed_price_history_path),
+            min_row_count=args.min_row_count,
+            warnings=warnings,
+        )
 
     payload = export_static_00631l_data(
         output_dir=args.output_dir,
         price_history_store=store,
         strict=args.strict,
+        minimum_row_count=args.min_row_count,
         warnings=warnings,
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
@@ -84,6 +96,38 @@ def main() -> int:
         f"output={payload['outputDir']}"
     )
     return 1 if payload["overallStatus"] == "FAIL" else 0
+
+
+def _merge_seed_if_needed(
+    *,
+    store: PriceHistoryStore,
+    seed_path: Path,
+    min_row_count: int,
+    warnings: list[str],
+) -> None:
+    status = store.status_response(fetched_at=datetime.now(timezone.utc).isoformat())
+    row_count = int(status.get("rowCount") or 0)
+    if row_count >= min_row_count:
+        return
+    if not seed_path.exists():
+        warnings.append(
+            f"seedPriceHistoryMissing={seed_path}; rowCount={row_count}"
+        )
+        return
+    seed_store = PriceHistoryStore(seed_path)
+    seed_records = seed_store.all()
+    if not seed_records:
+        warnings.append(f"seedPriceHistoryEmpty={seed_path}; rowCount={row_count}")
+        return
+    saved = store.save_points(seed_records)
+    merged_status = store.status_response(
+        fetched_at=datetime.now(timezone.utc).isoformat()
+    )
+    warnings.append(
+        "seedPriceHistoryMerged="
+        f"{len(seed_records)}; seedSavedRows={saved}; "
+        f"rowCountBefore={row_count}; rowCountAfter={merged_status.get('rowCount', 0)}"
+    )
 
 
 if __name__ == "__main__":

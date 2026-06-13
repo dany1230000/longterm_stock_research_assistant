@@ -15,6 +15,7 @@ def export_static_00631l_data(
     output_dir: str | Path,
     price_history_store: PriceHistoryStore,
     strict: bool = False,
+    minimum_row_count: int = 2,
     warnings: list[str] | None = None,
 ) -> dict[str, Any]:
     generated_at = utc_now_iso()
@@ -29,11 +30,13 @@ def export_static_00631l_data(
     performance = price_history_store.performance_response(fetched_at=generated_at)
     status = price_history_store.status_response(fetched_at=generated_at)
     row_count = int(status.get("rowCount") or 0)
+    required_rows = max(2, int(minimum_row_count))
     failures: list[str] = []
-    if row_count < 2:
+    is_ready = row_count >= required_rows
+    if not is_ready:
         message = (
-            "Official price history has fewer than two rows; static public "
-            "history/backtest data is not ready."
+            f"Official price history has {row_count} rows; static public "
+            f"history/backtest data requires at least {required_rows} rows."
         )
         warnings.append(message)
         if strict:
@@ -41,28 +44,31 @@ def export_static_00631l_data(
 
     status_payload = {
         **status,
-        "sourceStatus": "static_official" if row_count >= 2 else "unavailable",
+        "sourceStatus": "static_official" if is_ready else "unavailable",
         "sourceContract": STATIC_SOURCE_CONTRACT,
         "generatedAt": generated_at,
         "outputDir": str(output),
+        "minimumRowCount": required_rows,
         "warnings": warnings,
         "failures": failures,
         "strict": strict,
     }
     price_payload = {
         **price_history,
-        "sourceStatus": "static_official" if row_count >= 2 else "unavailable",
+        "sourceStatus": "static_official" if is_ready else "unavailable",
         "sourceContract": "00631l_static_price_history",
         "generatedAt": generated_at,
         "rowCount": row_count,
-        "errorMessage": None if row_count >= 2 else status.get("errorMessage"),
+        "minimumRowCount": required_rows,
+        "errorMessage": None if is_ready else status.get("errorMessage"),
     }
     performance_payload = {
         **performance,
-        "sourceStatus": "static_official" if row_count >= 2 else "unavailable",
+        "sourceStatus": "static_official" if is_ready else "unavailable",
         "sourceContract": "00631l_static_price_performance",
         "generatedAt": generated_at,
-        "errorMessage": None if row_count >= 2 else status.get("errorMessage"),
+        "minimumRowCount": required_rows,
+        "errorMessage": None if is_ready else status.get("errorMessage"),
     }
     manifest_payload = {
         "sourceStatus": status_payload["sourceStatus"],
@@ -74,6 +80,7 @@ def export_static_00631l_data(
             "status": "status.json",
         },
         "rowCount": row_count,
+        "minimumRowCount": required_rows,
         "coverageStart": status.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd"),
         "isCompleteFromListing": status.get("isCompleteFromListing"),
@@ -97,9 +104,10 @@ def export_static_00631l_data(
         "coverageStart": status.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd"),
         "isCompleteFromListing": status.get("isCompleteFromListing"),
+        "minimumRowCount": required_rows,
         "warnings": warnings,
         "failures": failures,
-        "overallStatus": "FAIL" if failures else "PASS" if row_count >= 2 else "WARN",
+        "overallStatus": "FAIL" if failures else "PASS" if is_ready else "WARN",
         "files": manifest_payload["files"],
     }
 

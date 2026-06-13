@@ -200,6 +200,7 @@ def _required_files_check() -> dict[str, Any]:
         "backend/app/analysis.py",
         "backend/app/backtest.py",
         "backend/app/price_history.py",
+        "backend/seeds/00631l_price_history_seed.jsonl",
         "backend/app/taifex_tx.py",
         "backend/app/etf_catalog.py",
         "backend/app/static_export.py",

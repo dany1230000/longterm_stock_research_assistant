@@ -10,6 +10,7 @@ from backend.app.price_history import (
     performance_summary,
 )
 from backend.app.static_export import export_static_00631l_data, static_export_status
+from backend.scripts.export_static_00631l_data import _merge_seed_if_needed
 
 
 class PriceHistoryAndBacktestTests(unittest.TestCase):
@@ -147,6 +148,52 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             self.assertEqual(result["overallStatus"], "FAIL")
             self.assertEqual(result["rowCount"], 0)
             self.assertTrue(result["failures"])
+
+    def test_static_export_strict_fails_below_minimum_row_count(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            store.save_points(rows[:1])
+
+            result = export_static_00631l_data(
+                output_dir=root / "static",
+                price_history_store=store,
+                strict=True,
+                minimum_row_count=3,
+            )
+
+            self.assertEqual(result["overallStatus"], "FAIL")
+            self.assertEqual(result["rowCount"], 1)
+            self.assertIn("requires at least 3 rows", result["failures"][0])
+
+    def test_static_export_seed_merge_restores_minimum_history(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+            seed = PriceHistoryStore(root / "seed.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            store.save_points(rows[:1])
+            seed.save_points(rows)
+            warnings: list[str] = []
+
+            _merge_seed_if_needed(
+                store=store,
+                seed_path=seed.path,
+                min_row_count=3,
+                warnings=warnings,
+            )
+            result = export_static_00631l_data(
+                output_dir=root / "static",
+                price_history_store=store,
+                strict=True,
+                minimum_row_count=3,
+                warnings=warnings,
+            )
+
+            self.assertEqual(result["overallStatus"], "PASS")
+            self.assertEqual(result["rowCount"], 3)
+            self.assertTrue(any("seedPriceHistoryMerged" in item for item in warnings))
 
 
 def _stock_day_fixture() -> str:
