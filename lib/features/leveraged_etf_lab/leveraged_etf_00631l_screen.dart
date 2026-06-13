@@ -108,6 +108,14 @@ enum _LabSection {
   final IconData icon;
 }
 
+const _bottomLabSections = [
+  _LabSection.overview,
+  _LabSection.historyBacktest,
+  _LabSection.position,
+  _LabSection.ai,
+  _LabSection.settings,
+];
+
 class _LabContent extends StatelessWidget {
   const _LabContent({
     required this.data,
@@ -514,14 +522,21 @@ class _MarketIndexPill extends StatelessWidget {
             border: Border.all(color: const Color(0xFF67C58B)),
           ),
           child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            child: Text(
-              '00631L ▼',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
-              ),
+            padding: EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '00631L',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                SizedBox(width: 5),
+                Icon(Icons.search, color: Colors.white, size: 16),
+              ],
             ),
           ),
         ),
@@ -603,7 +618,7 @@ class _SymbolSearchSheetState extends State<_SymbolSearchSheet> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '目前完整研究室為 00631L；其他代號先比對 ETF catalog。',
+                        'ETF catalog 已集中到左上角代號搜尋；股票資料源尚未接入。',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: _marketMutedTextColor(context),
                               fontWeight: FontWeight.w700,
@@ -1830,7 +1845,7 @@ class _MarketBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final itemWidth = (constraints.maxWidth / _LabSection.values.length)
+        final itemWidth = (constraints.maxWidth / _bottomLabSections.length)
             .clamp(48.0, 96.0)
             .toDouble();
         return DecoratedBox(
@@ -1847,7 +1862,7 @@ class _MarketBottomNav extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  for (final section in _LabSection.values)
+                  for (final section in _bottomLabSections)
                     _MarketBottomNavItem(
                       section: section,
                       selected: section == selected,
@@ -3874,7 +3889,6 @@ class _BacktestDateRangeControls extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 520;
         final children = [
           _BacktestDateButton(
             key: const ValueKey('00631l-start-date-button'),
@@ -3891,16 +3905,6 @@ class _BacktestDateRangeControls extends StatelessWidget {
             onTap: onEndTap,
           ),
         ];
-        if (compact) {
-          return Column(
-            children: [
-              for (var index = 0; index < children.length; index += 1) ...[
-                if (index > 0) const SizedBox(height: 8),
-                children[index],
-              ],
-            ],
-          );
-        }
         return Row(
           children: [
             Expanded(child: children[0]),
@@ -3939,21 +3943,23 @@ class _BacktestDateButton extends StatelessWidget {
           border: Border.all(color: theme.colorScheme.outlineVariant),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 9),
           child: Row(
             children: [
               Icon(
                 Icons.calendar_today_outlined,
-                size: 18,
+                size: 16,
                 color: theme.colorScheme.primary,
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 7),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w800,
@@ -3962,12 +3968,16 @@ class _BacktestDateButton extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                     Text(
                       caption,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -5807,7 +5817,7 @@ class _MiniChartGrid extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
-          childAspectRatio: isCompact ? 2.15 : 1.65,
+          childAspectRatio: isCompact ? 1.78 : 1.5,
           children: children,
         );
       },
@@ -5860,7 +5870,7 @@ class _MiniChartCard extends StatelessWidget {
                 points: points,
                 valueOf: valueOf ?? (point) => point.close,
                 labelOf: (point) => _monthDay(point.date),
-                height: 132,
+                height: 92,
                 color: theme.colorScheme.secondary,
               ),
             ),
@@ -6412,15 +6422,16 @@ class _ResponsiveMetricGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        final isVeryNarrow = constraints.maxWidth < 300;
         final isCompact = constraints.maxWidth < 560;
         final isWide = constraints.maxWidth > 960;
         return GridView.count(
-          crossAxisCount: isCompact ? 1 : (isWide ? 4 : 2),
+          crossAxisCount: isVeryNarrow ? 1 : (isWide ? 4 : 2),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
-          childAspectRatio: isCompact ? 2.45 : 1.35,
+          childAspectRatio: isVeryNarrow ? 2.7 : (isCompact ? 1.35 : 1.35),
           children: cards,
         );
       },
@@ -6445,56 +6456,71 @@ class _MetricCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = theme.colorScheme.primary;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    value,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    caption,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tight = constraints.maxWidth < 180;
+        final textContent = Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                caption,
+                maxLines: tight ? 1 : 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        );
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(tight ? 10 : 12),
+            child: tight
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(icon, color: color, size: 18),
+                      const SizedBox(height: 6),
+                      textContent,
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(icon, color: color, size: 22),
+                      const SizedBox(width: 10),
+                      textContent,
+                    ],
+                  ),
+          ),
+        );
+      },
     );
   }
 }
@@ -6508,14 +6534,14 @@ class _InputGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isCompact = constraints.maxWidth < 560;
+        final veryNarrow = constraints.maxWidth < 300;
         return GridView.count(
-          crossAxisCount: isCompact ? 1 : 2,
+          crossAxisCount: veryNarrow ? 1 : 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
-          childAspectRatio: isCompact ? 3.9 : 3.2,
+          childAspectRatio: veryNarrow ? 3.9 : 2.55,
           children: children,
         );
       },
@@ -6539,13 +6565,16 @@ class _NumberField extends StatelessWidget {
     return TextField(
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(labelText: label),
+      decoration: const InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      ).copyWith(labelText: label),
       onChanged: onChanged,
     );
   }
 }
 
-class _LineChartPanel extends StatelessWidget {
+class _LineChartPanel extends StatefulWidget {
   const _LineChartPanel({
     required this.points,
     required this.valueOf,
@@ -6561,63 +6590,177 @@ class _LineChartPanel extends StatelessWidget {
   final Color? color;
 
   @override
+  State<_LineChartPanel> createState() => _LineChartPanelState();
+}
+
+class _LineChartPanelState extends State<_LineChartPanel> {
+  int? _touchedIndex;
+
+  @override
   Widget build(BuildContext context) {
-    final selected = points.length > 120
+    final selected = widget.points.length > 120
         ? [
             for (var i = 0;
-                i < points.length;
-                i += (points.length / 120).ceil())
-              points[i],
+                i < widget.points.length;
+                i += (widget.points.length / 120).ceil())
+              widget.points[i],
           ]
-        : points;
+        : widget.points;
     final spots = <FlSpot>[];
+    final spotPoints = <EtfPriceHistoryPoint>[];
     for (var index = 0; index < selected.length; index += 1) {
-      final value = valueOf(selected[index]);
+      final value = widget.valueOf(selected[index]);
       if (value.isFinite) {
         spots.add(FlSpot(index.toDouble(), value));
+        spotPoints.add(selected[index]);
       }
     }
-    return SizedBox(
-      height: height,
-      child: spots.isEmpty
-          ? const Center(child: Text('尚無圖表資料'))
-          : LineChart(
-              LineChartData(
-                gridData: const FlGridData(show: true),
-                titlesData: FlTitlesData(
-                  rightTitles: const AxisTitles(),
-                  topTitles: const AxisTitles(),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 24,
-                      interval: (spots.length / 4).clamp(1, 999).toDouble(),
-                      getTitlesWidget: (value, meta) {
-                        final index = value.round();
-                        if (index < 0 || index >= selected.length) {
-                          return const SizedBox.shrink();
+    final safeTouchedIndex = _touchedIndex == null || spots.isEmpty
+        ? null
+        : _touchedIndex!.clamp(0, spots.length - 1);
+    final touchedPoint =
+        safeTouchedIndex == null ? null : spotPoints[safeTouchedIndex];
+    final touchedValue =
+        safeTouchedIndex == null ? null : spots[safeTouchedIndex].y;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: widget.height,
+          child: spots.isEmpty
+              ? const Center(child: Text('尚無圖表資料'))
+              : LineChart(
+                  LineChartData(
+                    gridData: const FlGridData(show: true),
+                    lineTouchData: LineTouchData(
+                      enabled: true,
+                      touchCallback: (event, response) {
+                        final touched =
+                            response?.lineBarSpots?.isNotEmpty == true
+                                ? response!.lineBarSpots!.first.spotIndex
+                                : null;
+                        if (touched != null && touched != _touchedIndex) {
+                          setState(() => _touchedIndex = touched);
                         }
-                        return Text(
-                          labelOf(selected[index]),
-                          style: const TextStyle(fontSize: 10),
-                        );
                       },
+                      touchTooltipData: LineTouchTooltipData(
+                        getTooltipItems: (touchedSpots) => [
+                          for (final spot in touchedSpots)
+                            LineTooltipItem(
+                              '${formatTaiwanDate(spotPoints[spot.spotIndex].date)}\n${_compactChartValue(spot.y)}',
+                              const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 11,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
+                    titlesData: FlTitlesData(
+                      rightTitles: const AxisTitles(),
+                      topTitles: const AxisTitles(),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 34,
+                          interval: 1,
+                          getTitlesWidget: (value, meta) {
+                            final index = value.round();
+                            if (!_isBottomDateTick(index, spotPoints.length)) {
+                              return const SizedBox.shrink();
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: Text(
+                                _shortChartDate(spotPoints[index].date),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  height: 1.05,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: spots,
+                        barWidth: 2.5,
+                        isCurved: false,
+                        dotData: FlDotData(show: spots.length <= 12),
+                        color: widget.color ??
+                            Theme.of(context).colorScheme.primary,
+                      ),
+                    ],
                   ),
                 ),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: spots,
-                    barWidth: 2.5,
-                    isCurved: false,
-                    dotData: FlDotData(show: spots.length <= 12),
-                    color: color ?? Theme.of(context).colorScheme.primary,
-                  ),
-                ],
-              ),
-            ),
+        ),
+        const SizedBox(height: 6),
+        _ChartTouchDetail(
+          point: touchedPoint,
+          value: touchedValue,
+        ),
+      ],
     );
   }
+}
+
+class _ChartTouchDetail extends StatelessWidget {
+  const _ChartTouchDetail({
+    required this.point,
+    required this.value,
+  });
+
+  final EtfPriceHistoryPoint? point;
+  final double? value;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = point == null || value == null
+        ? '點擊圖表可查看完整日期與數值'
+        : '${formatTaiwanDate(point!.date)}  ${_compactChartValue(value!)}';
+    return Text(
+      text,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: _marketMutedTextColor(context),
+            fontWeight: FontWeight.w800,
+          ),
+    );
+  }
+}
+
+bool _isBottomDateTick(int index, int length) {
+  if (index < 0 || index >= length) {
+    return false;
+  }
+  if (length <= 3) {
+    return true;
+  }
+  final mid = (length - 1) ~/ 2;
+  return index == 0 || index == mid || index == length - 1;
+}
+
+String _shortChartDate(DateTime date) {
+  final yy = (date.year % 100).toString().padLeft(2, '0');
+  final mm = date.month.toString().padLeft(2, '0');
+  final dd = date.day.toString().padLeft(2, '0');
+  return '$yy/$mm\n$dd';
+}
+
+String _compactChartValue(double value) {
+  if (value.abs() >= 1000000) {
+    return formatInteger(value.round());
+  }
+  if (value.abs() >= 1000) {
+    return value.toStringAsFixed(0);
+  }
+  return value.toStringAsFixed(2);
 }
 
 class _CurveChartPanel extends StatelessWidget {

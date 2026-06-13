@@ -40,7 +40,6 @@ void main() {
     expect(find.textContaining('Mock 預設'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
-    expect(find.text('ETF'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI'), findsWidgets);
     expect(find.text('設定'), findsWidgets);
@@ -48,10 +47,13 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-button')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-section-etf')),
+      findsNothing,
+    );
     for (final section in const [
       'overview',
       'historyBacktest',
-      'etf',
       'position',
       'ai',
       'settings',
@@ -69,7 +71,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
-    expect(find.textContaining('目前完整研究室為 00631L'), findsOneWidget);
+    expect(find.textContaining('ETF catalog 已集中到左上角代號搜尋'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
       findsOneWidget,
@@ -95,7 +97,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('查無代號'), findsOneWidget);
-    expect(find.textContaining('股票資料源尚未接入'), findsOneWidget);
+    expect(find.textContaining('股票資料源尚未接入'), findsWidgets);
     _expectNoTradingActionText();
   });
 
@@ -119,7 +121,7 @@ void main() {
     expect(find.text('資料來源'), findsNothing);
     expect(find.text('近 60 日收盤'), findsOneWidget);
     expect(find.text('官方曝險'), findsOneWidget);
-    expect(find.text('00631L ▼'), findsOneWidget);
+    expect(find.text('00631L'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);
   });
@@ -148,7 +150,6 @@ void main() {
     for (final section in const [
       'overview',
       'historyBacktest',
-      'etf',
       'position',
       'ai',
       'settings',
@@ -216,6 +217,7 @@ void main() {
     expect(find.text('最近 1 年'), findsWidgets);
     expect(find.text('最近 3 年'), findsOneWidget);
     expect(find.text('全部資料'), findsOneWidget);
+    expect(find.textContaining('點擊圖表可查看完整日期與數值'), findsWidgets);
     expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsOneWidget);
     expect(find.textContaining('區間筆數 4'), findsOneWidget);
     expect(find.textContaining('完整筆數 5'), findsOneWidget);
@@ -225,6 +227,20 @@ void main() {
     expect(find.text('回測工具'), findsNothing);
     expect(find.text('開始日期'), findsWidgets);
     expect(find.text('結束日期'), findsWidgets);
+    final historyView = find.byKey(const ValueKey('00631l-history-view'));
+    final startCenter = tester.getCenter(
+      find.descendant(
+        of: historyView,
+        matching: find.byKey(const ValueKey('00631l-start-date-button')),
+      ),
+    );
+    final endCenter = tester.getCenter(
+      find.descendant(
+        of: historyView,
+        matching: find.byKey(const ValueKey('00631l-end-date-button')),
+      ),
+    );
+    expect((startCenter.dy - endCenter.dy).abs(), lessThan(2));
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     _expectNoTradingActionText();
   });
@@ -279,47 +295,35 @@ void main() {
     expect(find.textContaining('local-only'), findsWidgets);
   });
 
-  testWidgets('ETF section renders catalog search and clean item list',
+  testWidgets('top symbol search renders catalog result list',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 
-    await _tapSection(tester, 'etf');
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
     await tester.pumpAndSettle();
 
-    expect(find.text('ETF 資料庫'), findsWidgets);
-    expect(find.text('ETF 查詢'), findsOneWidget);
-    expect(find.text('ETF 清單'), findsOneWidget);
-    expect(find.text('ETF 比較基礎'), findsOneWidget);
-    expect(find.text('比較功能準備'), findsOneWidget);
     expect(
-      find.byKey(const ValueKey('00631l-etf-catalog-search')),
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
       findsOneWidget,
     );
-    expect(find.text('常用'), findsWidgets);
-    expect(find.text('台股'), findsOneWidget);
-    expect(find.text('高股息'), findsOneWidget);
-    expect(find.text('槓桿/反向'), findsOneWidget);
-    expect(find.text('全部'), findsOneWidget);
-    expect(find.byKey(const ValueKey('00631l-etf-list-item-00631L')),
+    expect(find.byKey(const ValueKey('00631l-symbol-search-result-00631L')),
         findsOneWidget);
     expect(
-      find.byKey(const ValueKey('00631l-etf-list-item-0050')),
+      find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
       findsOneWidget,
     );
-    expect(find.text('catalog snapshot'), findsOneWidget);
-    expect(find.text('非完整績效比較'), findsOneWidget);
 
     await tester.enterText(
-      find.byKey(const ValueKey('00631l-etf-catalog-search')),
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
       '0050',
     );
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const ValueKey('00631l-etf-list-item-0050')),
+      find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
       findsOneWidget,
     );
-    expect(find.byKey(const ValueKey('00631l-etf-list-item-00631L')),
+    expect(find.byKey(const ValueKey('00631l-symbol-search-result-00631L')),
         findsNothing);
     _expectNoTradingActionText();
   });
@@ -348,7 +352,6 @@ void main() {
     for (final section in const [
       'overview',
       'historyBacktest',
-      'etf',
       'position',
       'ai',
       'settings',
