@@ -127,8 +127,9 @@ If there is no cloud account, token, domain, or backend server yet, use static-p
 Static-public mode:
 
 - Generates official TWSE price history into `web\00631l-static-data`.
+- Generates a TWSE all-ETF catalog snapshot into `web\00631l-static-data\etf_catalog.json`.
 - Builds Flutter Web with `USE_00631L_STATIC_DATA=true`.
-- Lets a phone open GitHub Pages and use history/backtest sections.
+- Lets a phone open GitHub Pages and use history/backtest plus ETF catalog/search data.
 - Labels the frontend mode as `static_public`.
 - Labels static history as `static_official`.
 - Keeps live intraday NAV marked as backend-required.
@@ -147,7 +148,7 @@ GitHub Actions:
 - It runs strict static export before Flutter build.
 - If repository secret `PUBLIC_BACKEND_URL` is set, Pages build enables `live_proxy` plus `static_public` fallback.
 - If `PUBLIC_BACKEND_URL` is not set, Pages build stays in `static_public` mode and does not fail for missing backend credentials.
-- If TWSE price history cannot be fetched and no usable cache exists, the build fails rather than deploying empty history.
+- If TWSE price history or ETF catalog cannot be fetched and no usable cache/seed exists, the strict build fails rather than deploying empty core data.
 
 Public static URL after Pages deployment:
 

@@ -154,6 +154,13 @@ v4.6 header symbol search:
 - Search currently uses the ETF catalog. If a stock code is not in the loaded catalog, the UI says the stock data source is not connected yet.
 - Summary: `docs\00631l_v4_6_header_symbol_search_summary.md`.
 
+v4.7 static ETF catalog import:
+
+- Static public export now writes `etf_catalog.json` next to price history, performance, status, and manifest.
+- GitHub Pages builds refresh the TWSE all-ETF catalog before Flutter build and use a committed official snapshot seed only when live refresh is temporarily unavailable.
+- Static mode can load ETF catalog/search data without waiting for a live backend. Broader ETF history/backtest comparison still needs separate verified data.
+- Summary: `docs\00631l_v4_7_static_etf_catalog_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.
@@ -425,9 +432,9 @@ Current source timing:
 - Yuanta holdings ratio is an official daily snapshot, not an intraday holdings feed.
 - TWSE intraday NAV is the fast-updating market price, estimated NAV, premium/discount, and data-time source.
 - TWSE price history is cached locally after running the update script.
-- Static public mode reads `00631l-static-data` generated from official TWSE price history.
+- Static public mode reads `00631l-static-data` generated from official TWSE price history and TWSE all-ETF catalog snapshots.
 - TAIFEX TX live quote is available through the backend and is shown separately from daily Yuanta holdings.
-- TWSE all-ETF catalog import is available for future ETF-room work; 00631L remains the focused app.
+- TWSE all-ETF catalog import supports search/catalog data; 00631L remains the focused app.
 
 ## 00631L lab v1.0 completed
 

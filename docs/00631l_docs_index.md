@@ -91,7 +91,7 @@ This is the main entry point for 00631L lab documentation.
 - Public web build: `scripts\00631l_build_web_public.cmd`
 - Backend production check: `scripts\00631l_backend_prod_check.cmd`
 - Backend Docker check: `scripts\00631l_backend_docker_check.cmd`
-- Static data export: `scripts\00631l_export_static_data.cmd --update`
+- Static data export: `scripts\00631l_export_static_data.cmd --update` (price history plus ETF catalog snapshot)
 - GitHub Pages static build: `scripts\00631l_build_pages_static.cmd`
 
 ## Data And Reports

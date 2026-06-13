@@ -14,8 +14,10 @@ def export_static_00631l_data(
     *,
     output_dir: str | Path,
     price_history_store: PriceHistoryStore,
+    etf_catalog_payload: dict[str, Any] | None = None,
     strict: bool = False,
     minimum_row_count: int = 2,
+    minimum_catalog_row_count: int = 0,
     warnings: list[str] | None = None,
 ) -> dict[str, Any]:
     generated_at = utc_now_iso()
@@ -42,6 +44,23 @@ def export_static_00631l_data(
         if strict:
             failures.append(message)
 
+    catalog_payload = _normalize_static_catalog_payload(
+        etf_catalog_payload=etf_catalog_payload,
+        output_dir=output,
+        generated_at=generated_at,
+    )
+    catalog_row_count = int(catalog_payload.get("rowCount") or 0)
+    catalog_min_rows = max(0, int(minimum_catalog_row_count))
+    catalog_ready = catalog_min_rows == 0 or catalog_row_count >= catalog_min_rows
+    if catalog_min_rows > 0 and not catalog_ready:
+        message = (
+            f"ETF catalog has {catalog_row_count} rows; static public ETF "
+            f"catalog requires at least {catalog_min_rows} rows."
+        )
+        warnings.append(message)
+        if strict:
+            failures.append(message)
+
     status_payload = {
         **status,
         "sourceStatus": "static_official" if is_ready else "unavailable",
@@ -49,6 +68,9 @@ def export_static_00631l_data(
         "generatedAt": generated_at,
         "outputDir": str(output),
         "minimumRowCount": required_rows,
+        "etfCatalogRowCount": catalog_row_count,
+        "etfCatalogDataTime": catalog_payload.get("dataTime"),
+        "minimumCatalogRowCount": catalog_min_rows,
         "warnings": warnings,
         "failures": failures,
         "strict": strict,
@@ -78,9 +100,13 @@ def export_static_00631l_data(
             "priceHistory": "price_history.json",
             "performance": "performance.json",
             "status": "status.json",
+            "etfCatalog": "etf_catalog.json",
         },
         "rowCount": row_count,
         "minimumRowCount": required_rows,
+        "etfCatalogRowCount": catalog_row_count,
+        "etfCatalogDataTime": catalog_payload.get("dataTime"),
+        "minimumCatalogRowCount": catalog_min_rows,
         "coverageStart": status.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd"),
         "isCompleteFromListing": status.get("isCompleteFromListing"),
@@ -93,6 +119,7 @@ def export_static_00631l_data(
     _write_json(output / "price_history.json", price_payload)
     _write_json(output / "performance.json", performance_payload)
     _write_json(output / "status.json", status_payload)
+    _write_json(output / "etf_catalog.json", catalog_payload)
     _write_json(output / "manifest.json", manifest_payload)
 
     return {
@@ -105,6 +132,9 @@ def export_static_00631l_data(
         "coverageEnd": status.get("coverageEnd"),
         "isCompleteFromListing": status.get("isCompleteFromListing"),
         "minimumRowCount": required_rows,
+        "etfCatalogRowCount": catalog_row_count,
+        "etfCatalogDataTime": catalog_payload.get("dataTime"),
+        "minimumCatalogRowCount": catalog_min_rows,
         "warnings": warnings,
         "failures": failures,
         "overallStatus": "FAIL" if failures else "PASS" if is_ready else "WARN",
@@ -126,6 +156,9 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             "rowCount": 0,
             "coverageStart": None,
             "coverageEnd": None,
+            "etfCatalogRowCount": 0,
+            "etfCatalogDataTime": None,
+            "minimumCatalogRowCount": 0,
             "overallStatus": "WARN",
             "warnings": ["Static public data export does not exist yet."],
             "failures": [],
@@ -146,6 +179,9 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             "rowCount": 0,
             "coverageStart": None,
             "coverageEnd": None,
+            "etfCatalogRowCount": 0,
+            "etfCatalogDataTime": None,
+            "minimumCatalogRowCount": 0,
             "overallStatus": "FAIL",
             "warnings": [],
             "failures": [str(error)],
@@ -154,6 +190,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
     row_count = int(manifest.get("rowCount") or status.get("rowCount") or 0)
     warnings = list(manifest.get("warnings") or [])
     failures = list(manifest.get("failures") or [])
+    catalog_row_count = int(manifest.get("etfCatalogRowCount") or 0)
     return {
         "sourceStatus": manifest.get("sourceStatus", "unavailable"),
         "sourceContract": STATIC_SOURCE_CONTRACT,
@@ -164,10 +201,62 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         "coverageStart": manifest.get("coverageStart"),
         "coverageEnd": manifest.get("coverageEnd"),
         "isCompleteFromListing": manifest.get("isCompleteFromListing") is True,
+        "etfCatalogRowCount": catalog_row_count,
+        "etfCatalogDataTime": manifest.get("etfCatalogDataTime"),
+        "minimumCatalogRowCount": int(manifest.get("minimumCatalogRowCount") or 0),
         "overallStatus": "FAIL" if failures else "PASS" if row_count >= 2 else "WARN",
         "warnings": warnings,
         "failures": failures,
         "errorMessage": None if row_count >= 2 else status.get("errorMessage"),
+    }
+
+
+def _normalize_static_catalog_payload(
+    *,
+    etf_catalog_payload: dict[str, Any] | None,
+    output_dir: Path,
+    generated_at: str,
+) -> dict[str, Any]:
+    if not etf_catalog_payload:
+        return {
+            "sourceStatus": "unavailable",
+            "sourceContract": "twse_all_etf_catalog_static_public",
+            "sourceUrl": "unavailable",
+            "fetchedAt": generated_at,
+            "generatedAt": generated_at,
+            "sourceUpdatedAt": None,
+            "dataTime": None,
+            "isStale": True,
+            "userDelayMs": 15000,
+            "rowCount": 0,
+            "items": [],
+            "errorMessage": (
+                "Static public ETF catalog is unavailable. Run "
+                "scripts\\00631l_export_static_data.cmd --update."
+            ),
+        }
+
+    items = list(etf_catalog_payload.get("items") or [])
+    row_count = int(etf_catalog_payload.get("rowCount") or len(items))
+    source_url = str(etf_catalog_payload.get("sourceUrl") or f"local://{output_dir}")
+    return {
+        **etf_catalog_payload,
+        "sourceStatus": "static_official" if row_count else "unavailable",
+        "sourceContract": "twse_all_etf_catalog_static_public",
+        "sourceUrl": source_url,
+        "fetchedAt": generated_at,
+        "generatedAt": generated_at,
+        "sourceUpdatedAt": etf_catalog_payload.get("sourceUpdatedAt")
+        or etf_catalog_payload.get("dataTime"),
+        "dataTime": etf_catalog_payload.get("dataTime")
+        or etf_catalog_payload.get("sourceUpdatedAt"),
+        "isStale": etf_catalog_payload.get("isStale") is True,
+        "rowCount": row_count,
+        "items": items,
+        "errorMessage": None
+        if row_count
+        else etf_catalog_payload.get("errorMessage")
+        or "Static public ETF catalog has no rows.",
     }
 
 

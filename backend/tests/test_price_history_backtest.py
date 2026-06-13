@@ -120,19 +120,33 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             result = export_static_00631l_data(
                 output_dir=root / "static",
                 price_history_store=store,
+                etf_catalog_payload=_etf_catalog_payload(),
                 strict=True,
+                minimum_catalog_row_count=2,
             )
 
             self.assertEqual(result["overallStatus"], "PASS")
             self.assertEqual(result["rowCount"], 3)
+            self.assertEqual(result["etfCatalogRowCount"], 2)
             self.assertTrue((root / "static" / "price_history.json").exists())
             self.assertTrue((root / "static" / "performance.json").exists())
             self.assertTrue((root / "static" / "status.json").exists())
+            self.assertTrue((root / "static" / "etf_catalog.json").exists())
             self.assertTrue((root / "static" / "manifest.json").exists())
+            manifest = json.loads(
+                (root / "static" / "manifest.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(manifest["files"]["etfCatalog"], "etf_catalog.json")
+            catalog = json.loads(
+                (root / "static" / "etf_catalog.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(catalog["sourceStatus"], "static_official")
+            self.assertEqual(catalog["rowCount"], 2)
 
             status = static_export_status(root / "static")
             self.assertEqual(status["overallStatus"], "PASS")
             self.assertEqual(status["sourceStatus"], "static_official")
+            self.assertEqual(status["etfCatalogRowCount"], 2)
 
     def test_static_export_strict_fails_without_price_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -207,6 +221,43 @@ def _stock_day_fixture() -> str:
             ],
         }
     )
+
+
+def _etf_catalog_payload() -> dict[str, object]:
+    return {
+        "sourceStatus": "official",
+        "sourceContract": "twse_all_etf_catalog",
+        "sourceUrl": "fixture://twse/all_etf",
+        "fetchedAt": "2026-06-12T05:31:20+00:00",
+        "sourceUpdatedAt": "2026-06-12T13:31:00+08:00",
+        "dataTime": "2026-06-12T13:31:00+08:00",
+        "isStale": False,
+        "userDelayMs": 15000,
+        "rowCount": 2,
+        "items": [
+            {
+                "code": "00631L",
+                "name": "元大台灣50正2",
+                "marketPrice": 34.83,
+                "estimatedNav": 34.97,
+                "premiumDiscountPct": -0.4,
+                "previousNav": 33.29,
+                "dataTime": "2026-06-12T13:31:00+08:00",
+                "targetType": "1",
+            },
+            {
+                "code": "0050",
+                "name": "元大台灣50",
+                "marketPrice": 101.95,
+                "estimatedNav": 102.14,
+                "premiumDiscountPct": -0.19,
+                "previousNav": 99.64,
+                "dataTime": "2026-06-12T13:31:00+08:00",
+                "targetType": "1",
+            },
+        ],
+        "errorMessage": None,
+    }
 
 
 def _split_fixture() -> str:

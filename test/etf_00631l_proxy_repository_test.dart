@@ -239,12 +239,15 @@ void main() {
         '00631l-static-data/price_history.json':
             jsonEncode(_staticPriceHistoryPayload()),
         '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
+        '00631l-static-data/etf_catalog.json':
+            jsonEncode(_staticEtfCatalogPayload()),
       }),
     );
 
     final history = await repository.fetchPriceHistory();
     final status = await repository.fetchOperationsStatus();
     final analysis = await repository.fetchAiAnalysisSummary();
+    final catalog = await repository.fetchEtfCatalog();
 
     expect(history.status, EtfDataStatus.cached);
     expect(history.sourceStatusLabel, 'static_official');
@@ -253,10 +256,19 @@ void main() {
     expect(status.sourceStatusLabel, 'static_public_data');
     expect(status.priceHistoryStatus, 'static_official');
     expect(status.priceHistoryRows, 3);
+    expect(status.etfCatalogStatus, 'static_official');
+    expect(status.etfCatalogRowCount, 3);
+    expect(status.etfCatalogDataTime, DateTime(2026, 6, 12, 13, 31));
     expect(status.backtestAvailable, isTrue);
     expect(status.backendConnectionLabel, 'static public data');
     expect(analysis.sourceStatusLabel, 'static_official');
     expect(analysis.sourceStatuses['intradayNav'], 'backend_required');
+    expect(catalog.status, EtfDataStatus.cached);
+    expect(catalog.sourceStatusLabel, 'static_official');
+    expect(catalog.sourceContract, 'twse_all_etf_catalog_static_public');
+    expect(catalog.rowCount, 3);
+    expect(catalog.focusItems.first.code, '00631L');
+    expect(catalog.items[1].code, '0050');
     expect(analysis.disclaimer, '非買賣建議');
   });
 
@@ -1021,6 +1033,54 @@ Map<String, Object?> _staticStatusPayload() {
     'warnings': [],
     'failures': [],
     'strict': false,
+    'errorMessage': null,
+  };
+}
+
+Map<String, Object?> _staticEtfCatalogPayload() {
+  return {
+    'sourceStatus': 'static_official',
+    'sourceContract': 'twse_all_etf_catalog_static_public',
+    'sourceUrl': 'https://mis.twse.com.tw/stock/data/all_etf.txt',
+    'generatedAt': '2026-06-12T13:35:00+08:00',
+    'fetchedAt': '2026-06-12T13:35:00+08:00',
+    'sourceUpdatedAt': '2026-06-12T13:31:00+08:00',
+    'dataTime': '2026-06-12T13:31:00+08:00',
+    'isStale': false,
+    'userDelayMs': 15000,
+    'rowCount': 3,
+    'items': [
+      {
+        'code': '00631L',
+        'name': '元大台灣50正2',
+        'marketPrice': 34.83,
+        'estimatedNav': 34.97,
+        'premiumDiscountPct': -0.4,
+        'previousNav': 33.29,
+        'dataTime': '2026-06-12T13:31:00+08:00',
+        'targetType': '1',
+      },
+      {
+        'code': '0050',
+        'name': '元大台灣50',
+        'marketPrice': 101.95,
+        'estimatedNav': 102.14,
+        'premiumDiscountPct': -0.19,
+        'previousNav': 99.64,
+        'dataTime': '2026-06-12T13:31:00+08:00',
+        'targetType': '1',
+      },
+      {
+        'code': '00878',
+        'name': '國泰永續高股息',
+        'marketPrice': 22.4,
+        'estimatedNav': 22.42,
+        'premiumDiscountPct': -0.08,
+        'previousNav': 22.39,
+        'dataTime': '2026-06-12T13:31:00+08:00',
+        'targetType': '1',
+      },
+    ],
     'errorMessage': null,
   };
 }

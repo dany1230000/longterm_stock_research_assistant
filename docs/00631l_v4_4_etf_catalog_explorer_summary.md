@@ -16,7 +16,7 @@ v4.4 starts turning the TWSE all-ETF catalog into a visible ETF data entry point
 
 ## Data Boundary
 
-The ETF catalog comes from the normalized TWSE all-ETF catalog endpoint when live backend data is available. Static public mode still focuses on 00631L history and backtest data. Mock fallback remains labeled as mock.
+The ETF catalog comes from the normalized TWSE all-ETF catalog endpoint when live backend data is available. Since v4.7, static public mode can also load an exported TWSE catalog snapshot. Mock fallback remains labeled as mock.
 
 ## Still Not Done
 

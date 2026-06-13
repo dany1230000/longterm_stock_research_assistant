@@ -79,6 +79,13 @@ class Static00631LRepository extends Mock00631LRepository {
   @override
   Future<EtfOperationsStatus> fetchOperationsStatus() async {
     final statusPayload = await _tryGetJson('status.json');
+    final catalogPayload = await _tryGetJson('etf_catalog.json');
+    final catalogRawStatus =
+        _string(catalogPayload?['sourceStatus'], fallback: 'unavailable');
+    final catalogRowCount = _int(catalogPayload?['rowCount']);
+    final catalogDataTime = _wallClockDateTime(
+      catalogPayload?['dataTime'] ?? catalogPayload?['sourceUpdatedAt'],
+    );
     if (statusPayload == null) {
       return _staticOperationsStatus(
         rawStatus: 'unavailable',
@@ -87,6 +94,9 @@ class Static00631LRepository extends Mock00631LRepository {
         coverageEnd: null,
         generatedAt: null,
         isStale: true,
+        etfCatalogStatus: catalogRawStatus,
+        etfCatalogRowCount: catalogRowCount,
+        etfCatalogDataTime: catalogDataTime,
         errorMessage: 'Static public status.json is unavailable.',
       );
     }
@@ -101,6 +111,9 @@ class Static00631LRepository extends Mock00631LRepository {
       generatedAt: _dateTime(statusPayload['generatedAt']),
       isStale: statusPayload['isStale'] == true,
       isCompleteFromListing: statusPayload['isCompleteFromListing'] == true,
+      etfCatalogStatus: catalogRawStatus,
+      etfCatalogRowCount: catalogRowCount,
+      etfCatalogDataTime: catalogDataTime,
       errorMessage: rowCount >= 2
           ? null
           : statusPayload['errorMessage']?.toString() ??
@@ -116,6 +129,9 @@ class Static00631LRepository extends Mock00631LRepository {
     required DateTime? generatedAt,
     required bool isStale,
     bool isCompleteFromListing = false,
+    String etfCatalogStatus = 'unavailable',
+    int etfCatalogRowCount = 0,
+    DateTime? etfCatalogDataTime,
     String? errorMessage,
   }) {
     final now = DateTime.now();
@@ -152,6 +168,9 @@ class Static00631LRepository extends Mock00631LRepository {
       priceHistoryCoverageStart: coverageStart,
       priceHistoryCoverageEnd: coverageEnd,
       priceHistoryCompleteFromListing: isCompleteFromListing,
+      etfCatalogStatus: etfCatalogStatus,
+      etfCatalogRowCount: etfCatalogRowCount,
+      etfCatalogDataTime: etfCatalogDataTime,
       backtestStatus: rowCount >= 2 ? 'static_official' : 'unavailable',
       backtestAvailable: rowCount >= 2,
       positionStatus: 'local_only',
@@ -222,14 +241,43 @@ class Static00631LRepository extends Mock00631LRepository {
 
   @override
   Future<EtfCatalog> fetchEtfCatalog() async {
-    return EtfCatalog.empty(
-      lastFetchedAt: DateTime.now(),
-      status: EtfDataStatus.cached,
-      sourceStatusLabel: 'backend_required',
-      sourceContract: 'twse_all_etf_catalog',
-      sourceUrl: 'public backend required for ETF catalog',
-      errorMessage:
-          'Static public mode does not include the TWSE all-ETF catalog yet.',
+    final payload = await _tryGetJson('etf_catalog.json');
+    if (payload == null) {
+      return EtfCatalog.empty(
+        lastFetchedAt: DateTime.now(),
+        status: EtfDataStatus.error,
+        sourceStatusLabel: 'unavailable',
+        sourceContract: 'twse_all_etf_catalog_static_public',
+        sourceUrl: _resolve('etf_catalog.json').toString(),
+        errorMessage: 'Static public etf_catalog.json is unavailable.',
+      );
+    }
+    final rawStatus = _string(payload['sourceStatus'], fallback: 'unavailable');
+    return EtfCatalog(
+      items: [
+        for (final rawItem in _list(payload['items']))
+          _catalogItem(_map(rawItem)),
+      ],
+      status: rawStatus == 'static_official'
+          ? EtfDataStatus.cached
+          : EtfDataStatus.error,
+      sourceStatusLabel: rawStatus,
+      sourceContract: _string(
+        payload['sourceContract'],
+        fallback: 'twse_all_etf_catalog_static_public',
+      ),
+      sourceUrl: _string(
+        payload['sourceUrl'],
+        fallback: _resolve('etf_catalog.json').toString(),
+      ),
+      lastFetchedAt:
+          _dateTime(payload['generatedAt'] ?? payload['fetchedAt']) ??
+              DateTime.now(),
+      sourceUpdatedAt: _wallClockDateTime(payload['sourceUpdatedAt']),
+      dataTime: _wallClockDateTime(payload['dataTime']),
+      isStale: payload['isStale'] == true,
+      userDelayMs: _int(payload['userDelayMs'], fallback: 15000),
+      errorMessage: payload['errorMessage']?.toString(),
     );
   }
 
@@ -256,6 +304,21 @@ class Static00631LRepository extends Mock00631LRepository {
     final normalized = filename.replaceFirst(RegExp(r'^/+'), '');
     return Uri.parse('$baseUrl/$normalized');
   }
+}
+
+EtfCatalogItem _catalogItem(Map<String, dynamic> payload) {
+  return EtfCatalogItem(
+    code: _string(payload['code']),
+    name: _string(payload['name']),
+    marketPrice: _nullableDouble(payload['marketPrice']),
+    estimatedNav: _nullableDouble(payload['estimatedNav']),
+    premiumDiscountPct: _nullableDouble(payload['premiumDiscountPct']),
+    previousNav: _nullableDouble(payload['previousNav']),
+    outstandingUnits: _nullableInt(payload['outstandingUnits']),
+    outstandingUnitsDelta: _nullableInt(payload['outstandingUnitsDelta']),
+    dataTime: _wallClockDateTime(payload['dataTime']),
+    targetType: _string(payload['targetType']),
+  );
 }
 
 EtfPriceHistoryPoint _pricePoint(Map<String, dynamic> payload) {
@@ -348,6 +411,26 @@ DateTime? _dateTime(Object? value) {
     return null;
   }
   return DateTime.tryParse(value.toString());
+}
+
+DateTime? _wallClockDateTime(Object? value) {
+  if (value == null) {
+    return null;
+  }
+  final match = RegExp(
+    r'^(\d{4})-(\d{2})-(\d{2})(?:T|\s)(\d{2}):(\d{2}):(\d{2})',
+  ).firstMatch(value.toString());
+  if (match == null) {
+    return null;
+  }
+  return DateTime(
+    int.parse(match.group(1)!),
+    int.parse(match.group(2)!),
+    int.parse(match.group(3)!),
+    int.parse(match.group(4)!),
+    int.parse(match.group(5)!),
+    int.parse(match.group(6)!),
+  );
 }
 
 String _dateLabel(DateTime? value) {
