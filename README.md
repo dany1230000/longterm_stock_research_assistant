@@ -140,6 +140,13 @@ v4.4 ETF catalog explorer:
 - The theme toggle now labels the current state as `日間模式` or `夜間模式`.
 - Summary: `docs\00631l_v4_4_etf_catalog_explorer_summary.md`.
 
+v4.5 ETF comparison foundation:
+
+- The ETF page now includes a comparison foundation table for common catalog items.
+- The table compares only verified catalog snapshot fields: code, name, market price, estimated NAV, premium/discount, previous NAV, and data time.
+- Full multi-ETF performance/backtest comparison still requires verified historical data for each ETF and remains a later feature.
+- Summary: `docs\00631l_v4_5_etf_comparison_foundation_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.

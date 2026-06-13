@@ -4313,7 +4313,10 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
                       )
                     else ...[
                       for (final item in visibleItems) ...[
-                        _EtfCatalogItemTile(item: item),
+                        _EtfCatalogItemTile(
+                          key: ValueKey('00631l-etf-list-item-${item.code}'),
+                          item: item,
+                        ),
                         const SizedBox(height: 8),
                       ],
                       if (filteredItems.length > visibleItems.length)
@@ -4331,6 +4334,12 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
                   message:
                       'live backend 可提供 ETF catalog；static public mode 仍保留 00631L 歷史與回測。',
                 ),
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: 'ETF 比較基礎',
+          subtitle: '先比較 catalog snapshot 的行情與 NAV 欄位；完整 ETF 回測比較會在後續版本加入。',
+          child: _EtfComparisonPreview(catalog: catalog),
         ),
         const SizedBox(height: 12),
         const _SectionBlock(
@@ -4602,8 +4611,65 @@ class _SettingsSection extends StatelessWidget {
   }
 }
 
+class _EtfComparisonPreview extends StatelessWidget {
+  const _EtfComparisonPreview({required this.catalog});
+
+  final EtfCatalog catalog;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = catalog.focusItems.take(6).toList(growable: false);
+    if (items.isEmpty) {
+      return const _EmptyPanel(
+        title: '尚無可比較 ETF',
+        message: '需要 live backend ETF catalog 才能顯示比較基礎資料。',
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _StatusWrap(
+          labels: [
+            'catalog snapshot',
+            '非完整績效比較',
+            '00631L 研究室仍為主軸',
+          ],
+        ),
+        const SizedBox(height: 10),
+        _HorizontalTable(
+          columns: const [
+            '代號',
+            '名稱',
+            '市價',
+            '預估淨值',
+            '折溢價',
+            '前日淨值',
+            '資料時間',
+          ],
+          rows: [
+            for (final item in items)
+              [
+                item.code,
+                item.displayName,
+                _price(item.marketPrice),
+                _price(item.estimatedNav),
+                formatSignedNullablePercent(item.premiumDiscountPct),
+                _price(item.previousNav),
+                _dateTimeOrDash(item.dataTime),
+              ],
+          ],
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          '這裡只做 catalog 欄位對照；若要比較長期績效，需要各 ETF 的可驗證歷史資料。',
+        ),
+      ],
+    );
+  }
+}
+
 class _EtfCatalogItemTile extends StatelessWidget {
-  const _EtfCatalogItemTile({required this.item});
+  const _EtfCatalogItemTile({super.key, required this.item});
 
   final EtfCatalogItem item;
 

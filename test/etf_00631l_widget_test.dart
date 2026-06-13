@@ -247,6 +247,7 @@ void main() {
     expect(find.text('ETF 資料庫'), findsWidgets);
     expect(find.text('ETF 查詢'), findsOneWidget);
     expect(find.text('ETF 清單'), findsOneWidget);
+    expect(find.text('ETF 比較基礎'), findsOneWidget);
     expect(find.text('比較功能準備'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-etf-catalog-search')),
@@ -257,8 +258,14 @@ void main() {
     expect(find.text('高股息'), findsOneWidget);
     expect(find.text('槓桿/反向'), findsOneWidget);
     expect(find.text('全部'), findsOneWidget);
-    expect(find.text('元大台灣50正2'), findsOneWidget);
-    expect(find.text('元大台灣50'), findsOneWidget);
+    expect(find.byKey(const ValueKey('00631l-etf-list-item-00631L')),
+        findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-etf-list-item-0050')),
+      findsOneWidget,
+    );
+    expect(find.text('catalog snapshot'), findsOneWidget);
+    expect(find.text('非完整績效比較'), findsOneWidget);
 
     await tester.enterText(
       find.byKey(const ValueKey('00631l-etf-catalog-search')),
@@ -266,8 +273,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('元大台灣50'), findsOneWidget);
-    expect(find.text('元大台灣50正2'), findsNothing);
+    expect(
+      find.byKey(const ValueKey('00631l-etf-list-item-0050')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('00631l-etf-list-item-00631L')),
+        findsNothing);
     _expectNoTradingActionText();
   });
 
