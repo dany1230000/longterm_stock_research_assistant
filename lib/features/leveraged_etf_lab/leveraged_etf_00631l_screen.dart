@@ -711,18 +711,16 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
-            _QuoteFactsStrip(
-              items: [
-                _QuoteFact(
-                  label: '預估淨值',
-                  value: _price(nav?.estimatedNav),
-                ),
-                _QuoteFact(
-                  label: '前日淨值',
-                  value: _price(nav?.previousBusinessDayNav),
-                ),
-              ],
+            const SizedBox(height: 5),
+            Text(
+              '預估淨值 ${_price(nav?.estimatedNav)} · 前日淨值 ${_price(nav?.previousBusinessDayNav)}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: _marketMutedText,
+                fontWeight: FontWeight.w800,
+                height: 1.1,
+              ),
             ),
           ],
         ),
@@ -786,82 +784,6 @@ class _CompactPremiumBox extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _QuoteFact {
-  const _QuoteFact({
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
-}
-
-class _QuoteFactsStrip extends StatelessWidget {
-  const _QuoteFactsStrip({required this.items});
-
-  final List<_QuoteFact> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: [
-          for (var index = 0; index < items.length; index++) ...[
-            if (index > 0) const SizedBox(width: 6),
-            _QuoteFactChip(item: items[index]),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _QuoteFactChip extends StatelessWidget {
-  const _QuoteFactChip({required this.item});
-
-  final _QuoteFact item;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelAlt,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: _marketBorder),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              item.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: _marketMutedText,
-                    fontWeight: FontWeight.w800,
-                  ),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              item.value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: _marketText,
-                    fontWeight: FontWeight.w900,
-                  ),
-            ),
-          ],
         ),
       ),
     );

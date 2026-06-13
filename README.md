@@ -282,6 +282,12 @@ v3.38 history/backtest merge:
 - Historical coverage and metrics are first; the backtest tool stays on the same page behind a compact expansion panel.
 - Summary: `docs\00631l_v3_38_history_backtest_merge_summary.md`.
 
+v3.39 compact quote NAV line:
+
+- The overview quote header now uses one compact NAV metadata line instead of separate NAV chips.
+- This reduces the first-screen height while keeping market price, premium/discount state, estimated NAV, previous NAV, and data time visible.
+- Summary: `docs\00631l_v3_39_compact_quote_nav_line_summary.md`.
+
 Rule-based AI analysis is available at `/api/etf/00631l/analysis/summary` and on `/00631l-lab`. It does not call an external LLM by default and does not require an API key.
 
 Price history and historical backtest:

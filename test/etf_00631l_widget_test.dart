@@ -17,7 +17,7 @@ void main() {
 
     expect(find.text('00631L 正二研究室'), findsWidgets);
     expect(find.textContaining('市價'), findsWidgets);
-    expect(find.text('預估淨值'), findsWidgets);
+    expect(find.textContaining('預估淨值'), findsWidgets);
     expect(find.text('折溢價'), findsWidgets);
     expect(find.text('今日一眼看'), findsOneWidget);
     expect(find.text('資料完整度'), findsOneWidget);
