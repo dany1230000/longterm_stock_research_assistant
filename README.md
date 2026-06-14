@@ -169,6 +169,14 @@ v4.8 multi-ETF price history import foundation:
 - This is the data foundation for later ETF comparison; the 00631L research room remains the primary app.
 - Summary: `docs\00631l_v4_8_multi_etf_history_import_summary.md`.
 
+v4.9 ETF history selection:
+
+- The top-left ETF selector and ETF catalog list can switch the history/backtest view to selected ETF price history.
+- Proxy mode reads `/api/etf/history/price?code=<ETF_CODE>`.
+- Static public mode reads `00631l-static-data/etf_price_history/<ETF_CODE>.json`.
+- GitHub Pages builds import selected ETF history before exporting static public data.
+- Summary: `docs\00631l_v4_9_etf_history_selection_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.

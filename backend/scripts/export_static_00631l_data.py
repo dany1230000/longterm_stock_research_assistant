@@ -17,6 +17,11 @@ from backend.app.etf_catalog import (  # noqa: E402
     parse_twse_etf_catalog,
     save_etf_catalog,
 )
+from backend.app.etf_price_history import (  # noqa: E402
+    DEFAULT_ETF_HISTORY_CODES,
+    EtfPriceHistoryStore,
+    parse_code_list,
+)
 from backend.app.fetcher import fetch_text  # noqa: E402
 from backend.app.parsers import utc_now_iso  # noqa: E402
 from backend.app.price_history import (  # noqa: E402
@@ -58,6 +63,15 @@ def main() -> int:
     )
     parser.add_argument("--min-row-count", type=int, default=2800)
     parser.add_argument("--min-etf-catalog-row-count", type=int, default=100)
+    parser.add_argument(
+        "--multi-etf-codes",
+        default=",".join(DEFAULT_ETF_HISTORY_CODES),
+        help="Selected ETF codes to include in static public price-history files.",
+    )
+    parser.add_argument(
+        "--etf-price-history-dir",
+        default=settings.etf_price_history_dir,
+    )
     parser.add_argument("--update", action="store_true")
     parser.add_argument(
         "--update-etf-catalog",
@@ -119,6 +133,8 @@ def main() -> int:
     payload = export_static_00631l_data(
         output_dir=args.output_dir,
         price_history_store=store,
+        etf_price_history_store=EtfPriceHistoryStore(args.etf_price_history_dir),
+        etf_price_history_codes=parse_code_list(args.multi_etf_codes),
         etf_catalog_payload=etf_catalog_payload,
         strict=args.strict,
         minimum_row_count=args.min_row_count,

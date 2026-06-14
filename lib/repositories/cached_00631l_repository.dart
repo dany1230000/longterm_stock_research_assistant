@@ -23,6 +23,7 @@ class Cached00631LRepository extends Official00631LRepository {
   EtfHoldingsHistory? _holdingsHistoryCache;
   EtfIntradayNavHistorySummary? _intradayNavHistoryCache;
   EtfPriceHistory? _priceHistoryCache;
+  final Map<String, EtfPriceHistory> _etfPriceHistoryCache = {};
   EtfOperationsStatus? _operationsStatusCache;
   EtfAiAnalysisSummary? _aiAnalysisCache;
   EtfCatalog? _etfCatalogCache;
@@ -168,6 +169,43 @@ class Cached00631LRepository extends Official00631LRepository {
         return _cachedPriceHistory(cached);
       }
       return _fallback.fetchPriceHistory(limit: limit);
+    }
+  }
+
+  @override
+  Future<EtfPriceHistory> fetchEtfPriceHistory(
+    String code, {
+    int limit = 5000,
+  }) async {
+    final normalized = code.trim().toUpperCase();
+    if (normalized == '00631L') {
+      return fetchPriceHistory(limit: limit);
+    }
+    try {
+      final history = await _primary
+          .fetchEtfPriceHistory(normalized, limit: limit)
+          .timeout(primaryTimeout);
+      if (!_isPriceHistoryUsable(history)) {
+        try {
+          final fallback = await _fallback
+              .fetchEtfPriceHistory(normalized, limit: limit)
+              .timeout(primaryTimeout);
+          if (_isPriceHistoryUsable(fallback)) {
+            _etfPriceHistoryCache[normalized] = fallback;
+            return fallback;
+          }
+        } catch (_) {
+          // Keep the primary response below; it still carries the error state.
+        }
+      }
+      _etfPriceHistoryCache[normalized] = history;
+      return history;
+    } catch (_) {
+      final cached = _etfPriceHistoryCache[normalized];
+      if (cached != null) {
+        return _cachedPriceHistory(cached);
+      }
+      return _fallback.fetchEtfPriceHistory(normalized, limit: limit);
     }
   }
 
@@ -373,6 +411,8 @@ EtfIntradayNavHistorySummary _cachedIntradayHistory(
 
 EtfPriceHistory _cachedPriceHistory(EtfPriceHistory history) {
   return EtfPriceHistory(
+    code: history.code,
+    name: history.name,
     points: history.points,
     status: EtfDataStatus.cached,
     sourceStatusLabel: 'cached',

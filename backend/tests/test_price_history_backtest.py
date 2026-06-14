@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 from backend.app.backtest import run_backtest
+from backend.app.etf_price_history import EtfPriceHistoryStore
 from backend.app.price_history import (
     PriceHistoryStore,
     parse_twse_stock_day,
@@ -147,6 +148,44 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             self.assertEqual(status["overallStatus"], "PASS")
             self.assertEqual(status["sourceStatus"], "static_official")
             self.assertEqual(status["etfCatalogRowCount"], 2)
+
+    def test_static_export_writes_selected_etf_price_history(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            store.save_points(rows)
+            etf_store = EtfPriceHistoryStore(root / "etf_history")
+            etf_store.save_points("0050", rows)
+
+            result = export_static_00631l_data(
+                output_dir=root / "static",
+                price_history_store=store,
+                etf_price_history_store=etf_store,
+                etf_price_history_codes=["0050"],
+                etf_catalog_payload=_etf_catalog_payload(),
+                strict=True,
+                minimum_catalog_row_count=2,
+            )
+
+            self.assertEqual(result["overallStatus"], "PASS")
+            self.assertEqual(result["etfPriceHistoryReadyCount"], 1)
+            self.assertTrue(
+                (root / "static" / "etf_price_history" / "0050.json").exists()
+            )
+            index = json.loads(
+                (root / "static" / "etf_price_history_index.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(index["readyCount"], 1)
+            price = json.loads(
+                (root / "static" / "etf_price_history" / "0050.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(price["code"], "0050")
+            self.assertEqual(price["sourceStatus"], "static_official")
 
     def test_static_export_strict_fails_without_price_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

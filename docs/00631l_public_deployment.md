@@ -129,6 +129,7 @@ Static-public mode:
 
 - Generates official TWSE price history into `web\00631l-static-data`.
 - Generates a TWSE all-ETF catalog snapshot into `web\00631l-static-data\etf_catalog.json`.
+- Generates selected ETF history into `web\00631l-static-data\etf_price_history\`.
 - Multi-ETF price-history imports should use a persistent `ETF_PRICE_HISTORY_DIR`.
 - Builds Flutter Web with `USE_00631L_STATIC_DATA=true`.
 - Lets a phone open GitHub Pages and use history/backtest plus ETF catalog/search data.

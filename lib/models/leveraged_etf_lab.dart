@@ -1835,6 +1835,8 @@ class EtfPriceHistoryPoint {
 
 class EtfPriceHistory {
   const EtfPriceHistory({
+    this.code = '00631L',
+    this.name = '00631L',
     required this.points,
     required this.status,
     required this.sourceStatusLabel,
@@ -1847,6 +1849,8 @@ class EtfPriceHistory {
   });
 
   factory EtfPriceHistory.empty({
+    String code = '00631L',
+    String name = '00631L',
     DateTime? lastFetchedAt,
     EtfDataStatus status = EtfDataStatus.mock,
     String sourceStatusLabel = 'mock',
@@ -1855,6 +1859,8 @@ class EtfPriceHistory {
   }) {
     final now = lastFetchedAt ?? DateTime.now();
     return EtfPriceHistory(
+      code: code,
+      name: name,
       points: const [],
       status: status,
       sourceStatusLabel: sourceStatusLabel,
@@ -1867,6 +1873,8 @@ class EtfPriceHistory {
     );
   }
 
+  final String code;
+  final String name;
   final List<EtfPriceHistoryPoint> points;
   final EtfDataStatus status;
   final String sourceStatusLabel;

@@ -212,3 +212,8 @@ final etf00631LLabProvider = FutureProvider<Etf00631LLabData>((ref) {
 final etf00631LFastLabProvider = FutureProvider<Etf00631LLabData>((ref) {
   return ref.watch(official00631LRepositoryProvider).fetchFastLabData();
 });
+
+final selectedEtfPriceHistoryProvider =
+    FutureProvider.family<EtfPriceHistory, String>((ref, code) {
+  return ref.watch(official00631LRepositoryProvider).fetchEtfPriceHistory(code);
+});

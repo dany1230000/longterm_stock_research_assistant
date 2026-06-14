@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .etf_price_history import DEFAULT_ETF_HISTORY_CODES, EtfPriceHistoryStore
 from .price_history import PriceHistoryStore, utc_now_iso
 
 
@@ -14,6 +15,8 @@ def export_static_00631l_data(
     *,
     output_dir: str | Path,
     price_history_store: PriceHistoryStore,
+    etf_price_history_store: EtfPriceHistoryStore | None = None,
+    etf_price_history_codes: list[str] | tuple[str, ...] | None = None,
     etf_catalog_payload: dict[str, Any] | None = None,
     strict: bool = False,
     minimum_row_count: int = 2,
@@ -48,6 +51,15 @@ def export_static_00631l_data(
         etf_catalog_payload=etf_catalog_payload,
         output_dir=output,
         generated_at=generated_at,
+    )
+    etf_history_payload = _export_static_etf_price_history(
+        output_dir=output,
+        store=etf_price_history_store,
+        codes=etf_price_history_codes or DEFAULT_ETF_HISTORY_CODES,
+        generated_at=generated_at,
+        warnings=warnings,
+        failures=failures,
+        strict=strict,
     )
     catalog_row_count = int(catalog_payload.get("rowCount") or 0)
     catalog_min_rows = max(0, int(minimum_catalog_row_count))
@@ -101,11 +113,15 @@ def export_static_00631l_data(
             "performance": "performance.json",
             "status": "status.json",
             "etfCatalog": "etf_catalog.json",
+            "etfPriceHistoryIndex": "etf_price_history_index.json",
         },
         "rowCount": row_count,
         "minimumRowCount": required_rows,
         "etfCatalogRowCount": catalog_row_count,
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
+        "etfPriceHistoryRowCount": etf_history_payload["rowCount"],
+        "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
+        "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
         "minimumCatalogRowCount": catalog_min_rows,
         "coverageStart": status.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd"),
@@ -134,6 +150,9 @@ def export_static_00631l_data(
         "minimumRowCount": required_rows,
         "etfCatalogRowCount": catalog_row_count,
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
+        "etfPriceHistoryRowCount": etf_history_payload["rowCount"],
+        "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
+        "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
         "minimumCatalogRowCount": catalog_min_rows,
         "warnings": warnings,
         "failures": failures,
@@ -203,6 +222,11 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         "isCompleteFromListing": manifest.get("isCompleteFromListing") is True,
         "etfCatalogRowCount": catalog_row_count,
         "etfCatalogDataTime": manifest.get("etfCatalogDataTime"),
+        "etfPriceHistoryRowCount": int(manifest.get("etfPriceHistoryRowCount") or 0),
+        "etfPriceHistoryReadyCount": int(
+            manifest.get("etfPriceHistoryReadyCount") or 0
+        ),
+        "etfPriceHistoryDataTime": manifest.get("etfPriceHistoryDataTime"),
         "minimumCatalogRowCount": int(manifest.get("minimumCatalogRowCount") or 0),
         "overallStatus": "FAIL" if failures else "PASS" if row_count >= 2 else "WARN",
         "warnings": warnings,
@@ -258,6 +282,76 @@ def _normalize_static_catalog_payload(
         else etf_catalog_payload.get("errorMessage")
         or "Static public ETF catalog has no rows.",
     }
+
+
+def _export_static_etf_price_history(
+    *,
+    output_dir: Path,
+    store: EtfPriceHistoryStore | None,
+    codes: list[str] | tuple[str, ...],
+    generated_at: str,
+    warnings: list[str],
+    failures: list[str],
+    strict: bool,
+) -> dict[str, Any]:
+    history_dir = output_dir / "etf_price_history"
+    history_dir.mkdir(parents=True, exist_ok=True)
+    if store is None:
+        payload = {
+            "sourceStatus": "unavailable",
+            "sourceContract": "twse_multi_etf_static_price_history_index",
+            "generatedAt": generated_at,
+            "dataTime": None,
+            "rowCount": 0,
+            "readyCount": 0,
+            "items": [],
+            "errorMessage": "ETF price history store is not configured.",
+        }
+        _write_json(output_dir / "etf_price_history_index.json", payload)
+        return payload
+
+    items: list[dict[str, Any]] = []
+    ready_count = 0
+    latest: str | None = None
+    for code in codes:
+        status = store.status(code, fetched_at=generated_at)
+        row_count = int(status.get("rowCount") or 0)
+        if row_count >= 2:
+            ready_count += 1
+            latest_value = status.get("coverageEnd")
+            if latest_value and (latest is None or str(latest_value) > latest):
+                latest = str(latest_value)
+            price_payload = store.price_response(
+                code=code,
+                limit=5000,
+                fetched_at=generated_at,
+            )
+            static_payload = {
+                **price_payload,
+                "sourceStatus": "static_official",
+                "sourceContract": "twse_multi_etf_static_price_history",
+                "generatedAt": generated_at,
+            }
+            _write_json(history_dir / f"{code}.json", static_payload)
+        else:
+            warnings.append(f"etfPriceHistoryMissing={code}")
+        items.append(status)
+
+    if strict and codes and ready_count == 0:
+        failures.append("No selected ETF price history is available for static export.")
+
+    payload = {
+        "sourceStatus": "static_official" if ready_count else "unavailable",
+        "sourceContract": "twse_multi_etf_static_price_history_index",
+        "generatedAt": generated_at,
+        "dataTime": latest,
+        "rowCount": len(items),
+        "readyCount": ready_count,
+        "items": items,
+        "errorMessage": None if ready_count else "No selected ETF price history is available.",
+    }
+    _write_json(output_dir / "etf_price_history_index.json", payload)
+    return payload
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:

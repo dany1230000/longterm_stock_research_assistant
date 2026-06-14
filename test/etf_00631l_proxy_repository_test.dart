@@ -216,6 +216,26 @@ void main() {
     expect(history.points.last.drawdownPct, -3.23);
   });
 
+  test('proxy repository maps selected ETF price history payload', () async {
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/history/price': jsonEncode({
+          ..._priceHistoryPayload(),
+          'code': '0050',
+          'name': '元大台灣50',
+        }),
+      }),
+    );
+
+    final history = await repository.fetchEtfPriceHistory('0050');
+
+    expect(history.code, '0050');
+    expect(history.name, '元大台灣50');
+    expect(history.status, EtfDataStatus.cached);
+    expect(history.points, hasLength(3));
+    expect(history.coverageEnd, DateTime(2026, 6, 3));
+  });
+
   test('proxy repository maps ETF catalog payload', () async {
     final repository = Proxy00631LRepository(
       client: _FakeProxyHttpClient({
@@ -245,10 +265,19 @@ void main() {
         '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
         '00631l-static-data/etf_catalog.json':
             jsonEncode(_staticEtfCatalogPayload()),
+        '00631l-static-data/etf_price_history_index.json':
+            jsonEncode(_staticEtfPriceHistoryIndexPayload()),
+        '00631l-static-data/etf_price_history/0050.json': jsonEncode({
+          ..._staticPriceHistoryPayload(),
+          'code': '0050',
+          'name': '元大台灣50',
+          'sourceContract': 'twse_multi_etf_static_price_history',
+        }),
       }),
     );
 
     final history = await repository.fetchPriceHistory();
+    final etfHistory = await repository.fetchEtfPriceHistory('0050');
     final status = await repository.fetchOperationsStatus();
     final analysis = await repository.fetchAiAnalysisSummary();
     final catalog = await repository.fetchEtfCatalog();
@@ -257,12 +286,17 @@ void main() {
     expect(history.sourceStatusLabel, 'static_official');
     expect(history.points, hasLength(3));
     expect(history.coverageStart, DateTime(2026, 6, 1));
+    expect(etfHistory.code, '0050');
+    expect(etfHistory.name, '元大台灣50');
+    expect(etfHistory.sourceStatusLabel, 'static_official');
     expect(status.sourceStatusLabel, 'static_public_data');
     expect(status.priceHistoryStatus, 'static_official');
     expect(status.priceHistoryRows, 3);
     expect(status.etfCatalogStatus, 'static_official');
     expect(status.etfCatalogRowCount, 3);
     expect(status.etfCatalogDataTime, DateTime(2026, 6, 12, 13, 31));
+    expect(status.etfPriceHistoryStatus, 'static_official');
+    expect(status.etfPriceHistoryReadyCount, 1);
     expect(status.backtestAvailable, isTrue);
     expect(status.backendConnectionLabel, 'static public data');
     expect(analysis.sourceStatusLabel, 'static_official');
@@ -1046,6 +1080,28 @@ Map<String, Object?> _staticStatusPayload() {
     'warnings': [],
     'failures': [],
     'strict': false,
+    'errorMessage': null,
+  };
+}
+
+Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
+  return {
+    'sourceStatus': 'static_official',
+    'sourceContract': 'twse_multi_etf_static_price_history_index',
+    'generatedAt': '2026-06-11T10:00:00+08:00',
+    'dataTime': '2026-06-03',
+    'rowCount': 1,
+    'readyCount': 1,
+    'items': [
+      {
+        'code': '0050',
+        'sourceStatus': 'cached',
+        'coverageStart': '2026-06-01',
+        'coverageEnd': '2026-06-03',
+        'rowCount': 3,
+        'errorMessage': null,
+      },
+    ],
     'errorMessage': null,
   };
 }

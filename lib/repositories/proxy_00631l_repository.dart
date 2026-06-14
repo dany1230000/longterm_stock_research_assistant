@@ -206,6 +206,29 @@ class Proxy00631LRepository extends Official00631LRepository {
   Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
     final payload =
         await _getJson('/api/etf/00631l/history/price?limit=$limit');
+    return _priceHistoryFromPayload(payload);
+  }
+
+  @override
+  Future<EtfPriceHistory> fetchEtfPriceHistory(
+    String code, {
+    int limit = 5000,
+  }) async {
+    final normalized = code.trim().toUpperCase();
+    if (normalized == '00631L') {
+      return fetchPriceHistory(limit: limit);
+    }
+    final encoded = Uri.encodeQueryComponent(normalized);
+    final payload = await _getJson(
+      '/api/etf/history/price?code=$encoded&limit=$limit',
+    );
+    return _priceHistoryFromPayload(payload, fallbackCode: normalized);
+  }
+
+  EtfPriceHistory _priceHistoryFromPayload(
+    Map<String, dynamic> payload, {
+    String fallbackCode = '00631L',
+  }) {
     final rawStatus = _rawStatus(payload);
     final items = [
       for (final item in _list(payload['items']))
@@ -213,6 +236,9 @@ class Proxy00631LRepository extends Official00631LRepository {
     ];
 
     return EtfPriceHistory(
+      code: _string(payload['code'], fallback: fallbackCode),
+      name: _string(payload['name'],
+          fallback: _string(payload['code'], fallback: fallbackCode)),
       points: items,
       status: _status(payload),
       sourceStatusLabel: rawStatus.isEmpty ? _status(payload).label : rawStatus,

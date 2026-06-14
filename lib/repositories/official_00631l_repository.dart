@@ -43,6 +43,23 @@ abstract class Official00631LRepository {
     );
   }
 
+  Future<EtfPriceHistory> fetchEtfPriceHistory(
+    String code, {
+    int limit = 5000,
+  }) async {
+    final normalized = code.trim().toUpperCase();
+    if (normalized == '00631L') {
+      return fetchPriceHistory(limit: limit);
+    }
+    return EtfPriceHistory.empty(
+      code: normalized,
+      name: normalized,
+      sourceStatusLabel: 'unavailable',
+      status: EtfDataStatus.error,
+      errorMessage: 'Price history is unavailable for $normalized.',
+    );
+  }
+
   Future<EtfCatalog> fetchEtfCatalog() async {
     return EtfCatalog.empty(
       sourceStatusLabel: 'unavailable',

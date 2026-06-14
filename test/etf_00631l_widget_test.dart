@@ -343,6 +343,28 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('selecting ETF loads selected ETF history view', (tester) async {
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '0050',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('0050'), findsWidgets);
+    expect(find.textContaining('元大台灣50'), findsWidgets);
+    expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
+    expect(find.byKey(const ValueKey('00631l-backtest-view')), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('overview includes official holdings digest on phone',
       (tester) async {
     tester.view.physicalSize = const Size(390, 844);

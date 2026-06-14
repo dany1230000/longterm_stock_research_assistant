@@ -34,6 +34,7 @@ class _LeveragedEtf00631LScreenState
     extends ConsumerState<LeveragedEtf00631LScreen> {
   Timer? _refreshTimer;
   _LabSection _section = _LabSection.overview;
+  String _selectedEtfCode = '00631L';
 
   @override
   void initState() {
@@ -58,6 +59,10 @@ class _LeveragedEtf00631LScreenState
         ? ref.watch(etf00631LLabProvider)
         : const AsyncValue<Etf00631LLabData>.loading();
     final displayData = fullValue.valueOrNull ?? fastValue.valueOrNull;
+    final useEmbeddedPriceHistory = _selectedEtfCode == '00631L';
+    final selectedHistoryValue = useEmbeddedPriceHistory
+        ? null
+        : ref.watch(selectedEtfPriceHistoryProvider(_selectedEtfCode));
     final detailsLoading = !fullValue.hasValue && fullValue.isLoading;
     final detailsError = fullValue.hasError && !fullValue.hasValue
         ? fullValue.error.toString()
@@ -67,10 +72,20 @@ class _LeveragedEtf00631LScreenState
           ? _buildInitialState(fastValue, fullValue)
           : _LabContent(
               data: displayData,
+              selectedEtfCode: _selectedEtfCode,
+              selectedPriceHistory: useEmbeddedPriceHistory
+                  ? displayData.priceHistory
+                  : selectedHistoryValue?.valueOrNull,
+              selectedPriceHistoryLoading:
+                  selectedHistoryValue?.isLoading ?? false,
+              selectedPriceHistoryError: selectedHistoryValue?.hasError == true
+                  ? selectedHistoryValue?.error
+                  : null,
               selectedSection: _section,
               detailsLoading: detailsLoading,
               detailsError: detailsError,
               onSectionChanged: (section) => setState(() => _section = section),
+              onEtfSelected: _selectEtf,
               onRefresh: _refreshLabData,
             ),
     );
@@ -92,6 +107,18 @@ class _LeveragedEtf00631LScreenState
   void _refreshLabData() {
     ref.invalidate(etf00631LFastLabProvider);
     ref.invalidate(etf00631LLabProvider);
+    ref.invalidate(selectedEtfPriceHistoryProvider(_selectedEtfCode));
+  }
+
+  void _selectEtf(String code) {
+    final normalized = code.trim().toUpperCase();
+    if (normalized.isEmpty) {
+      return;
+    }
+    setState(() {
+      _selectedEtfCode = normalized;
+      _section = _LabSection.historyBacktest;
+    });
   }
 }
 
@@ -119,18 +146,28 @@ const _bottomLabSections = [
 class _LabContent extends StatelessWidget {
   const _LabContent({
     required this.data,
+    required this.selectedEtfCode,
+    required this.selectedPriceHistory,
+    required this.selectedPriceHistoryLoading,
+    required this.selectedPriceHistoryError,
     required this.selectedSection,
     required this.detailsLoading,
     required this.detailsError,
     required this.onSectionChanged,
+    required this.onEtfSelected,
     required this.onRefresh,
   });
 
   final Etf00631LLabData data;
+  final String selectedEtfCode;
+  final EtfPriceHistory? selectedPriceHistory;
+  final bool selectedPriceHistoryLoading;
+  final Object? selectedPriceHistoryError;
   final _LabSection selectedSection;
   final bool detailsLoading;
   final String? detailsError;
   final ValueChanged<_LabSection> onSectionChanged;
+  final ValueChanged<String> onEtfSelected;
   final VoidCallback onRefresh;
 
   @override
@@ -168,6 +205,8 @@ class _LabContent extends StatelessWidget {
                                 children: [
                                   _MarketTopBar(
                                     data: data,
+                                    selectedEtfCode: selectedEtfCode,
+                                    onEtfSelected: onEtfSelected,
                                     onRefresh: onRefresh,
                                   ),
                                   const SizedBox(height: 8),
@@ -206,9 +245,18 @@ class _LabContent extends StatelessWidget {
       case _LabSection.overview:
         return _OverviewSection(data: data);
       case _LabSection.historyBacktest:
-        return _HistoryBacktestSection(data: data);
+        return _HistoryBacktestSection(
+          data: data,
+          selectedEtfCode: selectedEtfCode,
+          selectedPriceHistory: selectedPriceHistory,
+          selectedPriceHistoryLoading: selectedPriceHistoryLoading,
+          selectedPriceHistoryError: selectedPriceHistoryError,
+        );
       case _LabSection.etf:
-        return _EtfCatalogSection(data: data);
+        return _EtfCatalogSection(
+          data: data,
+          onEtfSelected: onEtfSelected,
+        );
       case _LabSection.position:
         return _PositionSection(data: data);
       case _LabSection.ai:
@@ -428,10 +476,14 @@ class _LoadingBar extends StatelessWidget {
 class _MarketTopBar extends StatelessWidget {
   const _MarketTopBar({
     this.data,
+    this.selectedEtfCode = '00631L',
+    this.onEtfSelected,
     required this.onRefresh,
   });
 
   final Etf00631LLabData? data;
+  final String selectedEtfCode;
+  final ValueChanged<String>? onEtfSelected;
   final VoidCallback onRefresh;
 
   @override
@@ -445,9 +497,14 @@ class _MarketTopBar extends StatelessWidget {
           return Row(
             children: [
               _MarketIndexPill(
+                label: selectedEtfCode,
                 onTap: data == null
                     ? null
-                    : () => _showSymbolSearchSheet(context, data!),
+                    : () => _showSymbolSearchSheet(
+                          context,
+                          data!,
+                          onEtfSelected: onEtfSelected,
+                        ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -502,8 +559,9 @@ class _MarketTopBar extends StatelessWidget {
 }
 
 class _MarketIndexPill extends StatelessWidget {
-  const _MarketIndexPill({this.onTap});
+  const _MarketIndexPill({required this.label, this.onTap});
 
+  final String label;
   final VoidCallback? onTap;
 
   @override
@@ -521,21 +579,21 @@ class _MarketIndexPill extends StatelessWidget {
             borderRadius: BorderRadius.circular(999),
             border: Border.all(color: const Color(0xFF67C58B)),
           ),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '00631L',
-                  style: TextStyle(
+                  label,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-                SizedBox(width: 5),
-                Icon(Icons.search, color: Colors.white, size: 16),
+                const SizedBox(width: 5),
+                const Icon(Icons.search, color: Colors.white, size: 16),
               ],
             ),
           ),
@@ -545,10 +603,8 @@ class _MarketIndexPill extends StatelessWidget {
   }
 }
 
-Future<void> _showSymbolSearchSheet(
-  BuildContext context,
-  Etf00631LLabData data,
-) {
+Future<void> _showSymbolSearchSheet(BuildContext context, Etf00631LLabData data,
+    {ValueChanged<String>? onEtfSelected}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -558,15 +614,19 @@ Future<void> _showSymbolSearchSheet(
       borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
     ),
     builder: (sheetContext) {
-      return _SymbolSearchSheet(data: data);
+      return _SymbolSearchSheet(
+        data: data,
+        onEtfSelected: onEtfSelected,
+      );
     },
   );
 }
 
 class _SymbolSearchSheet extends StatefulWidget {
-  const _SymbolSearchSheet({required this.data});
+  const _SymbolSearchSheet({required this.data, this.onEtfSelected});
 
   final Etf00631LLabData data;
+  final ValueChanged<String>? onEtfSelected;
 
   @override
   State<_SymbolSearchSheet> createState() => _SymbolSearchSheetState();
@@ -683,7 +743,8 @@ class _SymbolSearchSheetState extends State<_SymbolSearchSheet> {
                         final item = visibleItems[index];
                         return _SymbolSearchResultTile(
                           item: item,
-                          selected: item.code == '00631L',
+                          selected: item.code == widget.data.profile.symbol,
+                          onSelected: widget.onEtfSelected,
                         );
                       },
                     ),
@@ -699,10 +760,12 @@ class _SymbolSearchResultTile extends StatelessWidget {
   const _SymbolSearchResultTile({
     required this.item,
     required this.selected,
+    this.onSelected,
   });
 
   final EtfCatalogItem item;
   final bool selected;
+  final ValueChanged<String>? onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -713,6 +776,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
       onTap: () {
         final messenger = ScaffoldMessenger.of(context);
         Navigator.of(context).pop();
+        onSelected?.call(item.code);
         final message = selected
             ? '目前已開啟 00631L 正二研究室。'
             : '${item.code} 已在 ETF catalog；完整研究室與比較頁後續接入。';
@@ -3260,15 +3324,23 @@ class _HoldingsSection extends StatelessWidget {
 }
 
 class _HistorySection extends StatelessWidget {
-  const _HistorySection({super.key, required this.data});
+  const _HistorySection({
+    super.key,
+    required this.data,
+    required this.selectedEtfCode,
+    required this.priceHistory,
+  });
 
   final Etf00631LLabData data;
+  final String selectedEtfCode;
+  final EtfPriceHistory priceHistory;
 
   @override
   Widget build(BuildContext context) {
     final holdingsTrend = data.holdingsHistory.trendSummary();
-    final priceHistory = data.priceHistory;
     final completeness = priceHistory.completenessSummary();
+    final selectedName =
+        priceHistory.name.trim().isEmpty ? selectedEtfCode : priceHistory.name;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3279,6 +3351,8 @@ class _HistorySection extends StatelessWidget {
           icon: Icons.show_chart_outlined,
           badges: [
             'HIS',
+            selectedEtfCode,
+            selectedName,
             'source ${priceHistory.sourceStatusLabel}',
             '${completeness.rowCount} rows',
           ],
@@ -3640,23 +3714,46 @@ class _RangeActionChip extends StatelessWidget {
 }
 
 class _HistoryBacktestSection extends StatelessWidget {
-  const _HistoryBacktestSection({required this.data});
+  const _HistoryBacktestSection({
+    required this.data,
+    required this.selectedEtfCode,
+    required this.selectedPriceHistory,
+    required this.selectedPriceHistoryLoading,
+    required this.selectedPriceHistoryError,
+  });
 
   final Etf00631LLabData data;
+  final String selectedEtfCode;
+  final EtfPriceHistory? selectedPriceHistory;
+  final bool selectedPriceHistoryLoading;
+  final Object? selectedPriceHistoryError;
 
   @override
   Widget build(BuildContext context) {
+    final history = selectedPriceHistory ?? data.priceHistory;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (selectedPriceHistoryLoading ||
+            selectedPriceHistoryError != null) ...[
+          _DetailsLoadStateStrip(
+            isLoading: selectedPriceHistoryLoading,
+            errorMessage: selectedPriceHistoryError?.toString(),
+          ),
+          const SizedBox(height: 10),
+        ],
         _HistorySection(
           key: const ValueKey('00631l-history-view'),
           data: data,
+          selectedEtfCode: selectedEtfCode,
+          priceHistory: history,
         ),
         const SizedBox(height: 10),
         _BacktestSection(
           key: const ValueKey('00631l-backtest-view'),
           data: data,
+          selectedEtfCode: selectedEtfCode,
+          priceHistory: history,
         ),
       ],
     );
@@ -3664,9 +3761,16 @@ class _HistoryBacktestSection extends StatelessWidget {
 }
 
 class _BacktestSection extends StatefulWidget {
-  const _BacktestSection({super.key, required this.data});
+  const _BacktestSection({
+    super.key,
+    required this.data,
+    required this.selectedEtfCode,
+    required this.priceHistory,
+  });
 
   final Etf00631LLabData data;
+  final String selectedEtfCode;
+  final EtfPriceHistory priceHistory;
 
   @override
   State<_BacktestSection> createState() => _BacktestSectionState();
@@ -3684,7 +3788,29 @@ class _BacktestSectionState extends State<_BacktestSection> {
   @override
   void initState() {
     super.initState();
-    final history = widget.data.priceHistory;
+    _syncBacktestRange();
+  }
+
+  @override
+  void didUpdateWidget(covariant _BacktestSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedEtfCode != widget.selectedEtfCode ||
+        oldWidget.priceHistory.coverageEnd != widget.priceHistory.coverageEnd) {
+      _syncBacktestRange();
+    }
+  }
+
+  @override
+  void dispose() {
+    _initialController.dispose();
+    _monthlyController.dispose();
+    _dayController.dispose();
+    _feeController.dispose();
+    super.dispose();
+  }
+
+  void _syncBacktestRange() {
+    final history = widget.priceHistory;
     final end = _historyLastDate(history);
     _endDate = end;
     _startDate = end == null
@@ -3697,17 +3823,8 @@ class _BacktestSectionState extends State<_BacktestSection> {
   }
 
   @override
-  void dispose() {
-    _initialController.dispose();
-    _monthlyController.dispose();
-    _dayController.dispose();
-    _feeController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final history = widget.data.priceHistory;
+    final history = widget.priceHistory;
     final result = const EtfBacktestEngine().run(
       request: EtfBacktestRequest(
         strategy: _strategy,
@@ -3730,6 +3847,7 @@ class _BacktestSectionState extends State<_BacktestSection> {
           icon: Icons.query_stats_outlined,
           badges: [
             'backtest',
+            widget.selectedEtfCode,
             'source ${history.sourceStatusLabel}',
             _strategy == EtfBacktestStrategy.lumpSum ? '一次投入' : '定期定額',
           ],
@@ -3868,7 +3986,7 @@ class _BacktestSectionState extends State<_BacktestSection> {
   }
 
   Future<void> _selectStartDate() async {
-    final history = widget.data.priceHistory;
+    final history = widget.priceHistory;
     final picked = await _pickBacktestDate(
       context: context,
       initialDate: _startDate ?? history.coverageStart ?? DateTime.now(),
@@ -3888,7 +4006,7 @@ class _BacktestSectionState extends State<_BacktestSection> {
   }
 
   Future<void> _selectEndDate() async {
-    final history = widget.data.priceHistory;
+    final history = widget.priceHistory;
     final picked = await _pickBacktestDate(
       context: context,
       initialDate: _endDate ?? history.coverageEnd ?? DateTime.now(),
@@ -4508,9 +4626,10 @@ enum _EtfCatalogFilter {
 }
 
 class _EtfCatalogSection extends StatefulWidget {
-  const _EtfCatalogSection({required this.data});
+  const _EtfCatalogSection({required this.data, required this.onEtfSelected});
 
   final Etf00631LLabData data;
+  final ValueChanged<String> onEtfSelected;
 
   @override
   State<_EtfCatalogSection> createState() => _EtfCatalogSectionState();
@@ -4645,6 +4764,7 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
                         _EtfCatalogItemTile(
                           key: ValueKey('00631l-etf-list-item-${item.code}'),
                           item: item,
+                          onSelected: widget.onEtfSelected,
                         ),
                         const SizedBox(height: 8),
                       ],
@@ -4998,70 +5118,79 @@ class _EtfComparisonPreview extends StatelessWidget {
 }
 
 class _EtfCatalogItemTile extends StatelessWidget {
-  const _EtfCatalogItemTile({super.key, required this.item});
+  const _EtfCatalogItemTile({
+    super.key,
+    required this.item,
+    required this.onSelected,
+  });
 
   final EtfCatalogItem item;
+  final ValueChanged<String> onSelected;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelAltColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          children: [
-            _MiniStatusBadge(label: item.code),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => onSelected(item.code),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketPanelAltColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: _marketBorderColor(context)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              _MiniStatusBadge(label: item.code),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: _marketTextColor(context),
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      item.targetType.isEmpty ? 'ETF' : item.targetType,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: _marketMutedTextColor(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    item.displayName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    _price(item.marketPrice),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                       color: _marketTextColor(context),
                     ),
                   ),
-                  const SizedBox(height: 3),
                   Text(
-                    item.targetType.isEmpty ? 'ETF' : item.targetType,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    formatSignedNullablePercent(item.premiumDiscountPct),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: _marketMutedTextColor(context),
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  _price(item.marketPrice),
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: _marketTextColor(context),
-                  ),
-                ),
-                Text(
-                  formatSignedNullablePercent(item.premiumDiscountPct),
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: _marketMutedTextColor(context),
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -7338,6 +7467,8 @@ EtfPriceHistory _filteredPriceHistory(
   ]..sort((a, b) => a.date.compareTo(b.date));
 
   return EtfPriceHistory(
+    code: history.code,
+    name: history.name,
     points: filteredPoints,
     status: history.status,
     sourceStatusLabel: history.sourceStatusLabel,

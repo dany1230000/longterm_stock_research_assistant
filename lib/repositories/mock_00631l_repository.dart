@@ -92,38 +92,50 @@ class Mock00631LRepository extends Official00631LRepository {
 
   @override
   Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
+    return fetchEtfPriceHistory('00631L', limit: limit);
+  }
+
+  @override
+  Future<EtfPriceHistory> fetchEtfPriceHistory(
+    String code, {
+    int limit = 5000,
+  }) async {
+    final normalized = code.trim().toUpperCase();
     final now = _clock();
+    final profile = _mockEtfHistoryProfile(normalized);
     final points = [
       EtfPriceHistoryPoint(
         date: _mockHistoryStart,
-        close: 22.15,
-        open: 21.8,
-        high: 22.3,
-        low: 21.6,
-        volume: 18000000,
+        close: profile.start,
+        open: profile.start * 0.98,
+        high: profile.start * 1.01,
+        low: profile.start * 0.97,
+        volume: profile.volume,
       ),
       EtfPriceHistoryPoint(
         date: _mockHistoryMid,
-        close: 28.40,
-        open: 27.9,
-        high: 28.6,
-        low: 27.7,
-        volume: 21000000,
+        close: profile.mid,
+        open: profile.mid * 0.99,
+        high: profile.mid * 1.01,
+        low: profile.mid * 0.98,
+        volume: profile.volume + 1200000,
       ),
       EtfPriceHistoryPoint(
         date: _mockHistoryEnd,
-        close: 35.20,
-        open: 34.8,
-        high: 35.5,
-        low: 34.7,
-        volume: 26000000,
+        close: profile.end,
+        open: profile.end * 0.99,
+        high: profile.end * 1.01,
+        low: profile.end * 0.98,
+        volume: profile.volume + 2400000,
       ),
-    ];
+    ].take(limit).toList(growable: false);
     return EtfPriceHistory(
+      code: normalized,
+      name: profile.name,
       points: points,
       status: EtfDataStatus.mock,
       sourceStatusLabel: 'mock',
-      sourceUrl: 'mock://00631l-price-history',
+      sourceUrl: 'mock://$normalized-price-history',
       lastFetchedAt: now,
       coverageStart: points.first.date,
       coverageEnd: points.last.date,
@@ -223,6 +235,52 @@ class Mock00631LRepository extends Official00631LRepository {
 final _mockHistoryStart = DateTime(2024, 1, 2);
 final _mockHistoryMid = DateTime(2025, 1, 2);
 final _mockHistoryEnd = DateTime(2026, 6, 8);
+
+({String name, double start, double mid, double end, int volume})
+    _mockEtfHistoryProfile(String code) {
+  switch (code) {
+    case '0050':
+      return (
+        name: '元大台灣50',
+        start: 138.2,
+        mid: 166.5,
+        end: 185.4,
+        volume: 9000000,
+      );
+    case '006208':
+      return (
+        name: '富邦台50',
+        start: 82.6,
+        mid: 100.8,
+        end: 112.3,
+        volume: 3500000,
+      );
+    case '00878':
+      return (
+        name: '國泰永續高股息',
+        start: 18.1,
+        mid: 21.3,
+        end: 22.4,
+        volume: 42000000,
+      );
+    case '00919':
+      return (
+        name: '群益台灣精選高息',
+        start: 15.8,
+        mid: 20.6,
+        end: 24.1,
+        volume: 36000000,
+      );
+    default:
+      return (
+        name: '00631L',
+        start: 22.15,
+        mid: 28.40,
+        end: 35.20,
+        volume: 18000000,
+      );
+  }
+}
 
 const mock00631LProfileFixture = '''
 Fund Profile
