@@ -161,6 +161,14 @@ v4.7 static ETF catalog import:
 - Static mode can load ETF catalog/search data without waiting for a live backend. Broader ETF history/backtest comparison still needs separate verified data.
 - Summary: `docs\00631l_v4_7_static_etf_catalog_summary.md`.
 
+v4.8 multi-ETF price history import foundation:
+
+- Backend can import TWSE `STOCK_DAY` price history for selected ETF catalog codes into ignored local JSONL files.
+- New endpoints expose multi-ETF history index, per-code price history, and manual update.
+- The import keeps each ETF separate and does not apply 00631L split adjustment to other ETFs.
+- This is the data foundation for later ETF comparison; the 00631L research room remains the primary app.
+- Summary: `docs\00631l_v4_8_multi_etf_history_import_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.
@@ -435,6 +443,7 @@ Current source timing:
 - Static public mode reads `00631l-static-data` generated from official TWSE price history and TWSE all-ETF catalog snapshots.
 - TAIFEX TX live quote is available through the backend and is shown separately from daily Yuanta holdings.
 - TWSE all-ETF catalog import supports search/catalog data; 00631L remains the focused app.
+- Selected ETF price history can be imported with `scripts\00631l_import_etf_price_history.cmd`; this prepares comparison data without changing the app focus.
 
 ## 00631L lab v1.0 completed
 

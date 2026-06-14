@@ -76,7 +76,7 @@ class Settings:
         "TWSE_00631L_PRICE_HISTORY_URL_TEMPLATE",
         (
             "https://www.twse.com.tw/exchangeReport/STOCK_DAY"
-            "?response=json&date={yyyymmdd}&stockNo=00631L"
+            "?response=json&date={yyyymmdd}&stockNo={symbol}"
         ),
     )
     request_timeout_seconds: float = _env_float("00631L_PROXY_TIMEOUT_SECONDS", 8)
@@ -108,6 +108,10 @@ class Settings:
     etf_catalog_path: str = os.getenv(
         "ETF_CATALOG_PATH",
         _data_path("ETF_CATALOG_PATH", "twse_etf_catalog.json"),
+    )
+    etf_price_history_dir: str = os.getenv(
+        "ETF_PRICE_HISTORY_DIR",
+        _data_path("ETF_PRICE_HISTORY_DIR", "etf_price_history"),
     )
     history_export_dir: str = os.getenv(
         "00631L_HISTORY_EXPORT_DIR",

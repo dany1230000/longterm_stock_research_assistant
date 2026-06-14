@@ -140,6 +140,29 @@ def create_app(
             end_date=endDate,
         )
 
+    @fastapi_app.get("/api/etf/history/status")
+    def etf_history_status() -> dict:
+        return current_service().etf_price_history_index()
+
+    @fastapi_app.get("/api/etf/history/price")
+    def etf_history_price(
+        code: str,
+        limit: int = Query(5000, ge=1, le=5000),
+    ) -> dict:
+        return current_service().etf_price_history(code=code, limit=limit)
+
+    @fastapi_app.post("/api/etf/history/update")
+    def etf_history_update(
+        codes: str | None = None,
+        startDate: str | None = None,
+        endDate: str | None = None,
+    ) -> dict:
+        return current_service().etf_price_history_update(
+            codes=codes,
+            start_date=startDate,
+            end_date=endDate,
+        )
+
     @fastapi_app.get("/api/etf/00631l/backtest/defaults")
     def backtest_defaults() -> dict:
         return current_service().backtest_defaults()

@@ -1133,6 +1133,10 @@ class EtfOperationsStatus {
     this.etfCatalogStatus = 'unavailable',
     this.etfCatalogRowCount = 0,
     this.etfCatalogDataTime,
+    this.etfPriceHistoryStatus = 'unavailable',
+    this.etfPriceHistoryRowCount = 0,
+    this.etfPriceHistoryReadyCount = 0,
+    this.etfPriceHistoryDataTime,
     this.backtestStatus = 'unavailable',
     this.backtestAvailable = false,
     this.positionStatus = 'local_only',
@@ -1209,6 +1213,10 @@ class EtfOperationsStatus {
       etfCatalogStatus: sourceStatusLabel,
       etfCatalogRowCount: 0,
       etfCatalogDataTime: null,
+      etfPriceHistoryStatus: sourceStatusLabel,
+      etfPriceHistoryRowCount: 0,
+      etfPriceHistoryReadyCount: 0,
+      etfPriceHistoryDataTime: null,
       backtestStatus: sourceStatusLabel,
       backtestAvailable: false,
       positionStatus: 'local_only',
@@ -1281,6 +1289,10 @@ class EtfOperationsStatus {
   final String etfCatalogStatus;
   final int etfCatalogRowCount;
   final DateTime? etfCatalogDataTime;
+  final String etfPriceHistoryStatus;
+  final int etfPriceHistoryRowCount;
+  final int etfPriceHistoryReadyCount;
+  final DateTime? etfPriceHistoryDataTime;
   final String backtestStatus;
   final bool backtestAvailable;
   final String positionStatus;

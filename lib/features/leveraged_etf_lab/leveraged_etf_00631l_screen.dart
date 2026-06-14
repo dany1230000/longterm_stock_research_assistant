@@ -7499,6 +7499,15 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
           ? 'ETF catalog already imported; 00631L stays as the focused research room.'
           : 'Run scripts\\00631l_import_etf_catalog.cmd to import TWSE all_etf catalog.',
     ),
+    _StatusItem(
+      label: 'ETF history',
+      status: data.operationsStatus.etfPriceHistoryStatus,
+      detail:
+          'ready ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / symbols ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}; dataTime ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}.',
+      action: data.operationsStatus.etfPriceHistoryReadyCount > 0
+          ? 'ETF price history imported for comparison data foundation.'
+          : 'Run scripts\\00631l_import_etf_price_history.cmd to import selected ETF price history.',
+    ),
   ];
 }
 

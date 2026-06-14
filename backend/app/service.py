@@ -16,6 +16,13 @@ from .etf_catalog import (
     parse_twse_etf_catalog,
     save_etf_catalog,
 )
+from .etf_price_history import (
+    DEFAULT_ETF_HISTORY_CODES,
+    EtfPriceHistoryStore,
+    fetch_etf_price_history,
+    normalize_etf_code,
+    parse_code_list,
+)
 from .fetcher import FetchError, fetch_text
 from .backtest import default_backtest_payload, run_backtest
 from .daily_report import report_status
@@ -61,6 +68,7 @@ class Etf00631LService:
         history_store: HoldingsHistoryStore | None = None,
         intraday_history_store: IntradayNavHistoryStore | None = None,
         price_history_store: PriceHistoryStore | None = None,
+        etf_price_history_store: EtfPriceHistoryStore | None = None,
         analysis_provider: AnalysisProvider | None = None,
     ) -> None:
         self._config = config
@@ -74,6 +82,10 @@ class Etf00631LService:
         )
         self._price_history_store = price_history_store or PriceHistoryStore(
             self._config.price_history_path
+        )
+        self._etf_price_history_store = (
+            etf_price_history_store
+            or EtfPriceHistoryStore(self._config.etf_price_history_dir)
         )
         self._analysis_provider = analysis_provider or RuleBasedAnalysisProvider()
 
@@ -553,6 +565,115 @@ class Etf00631LService:
                 "errorMessage": f"Price history update failed: {error}",
             }
 
+    def etf_price_history_index(self) -> dict[str, Any]:
+        return self._etf_price_history_store.index_response(fetched_at=utc_now_iso())
+
+    def etf_price_history(self, *, code: str, limit: int = 5000) -> dict[str, Any]:
+        now = utc_now_iso()
+        normalized = normalize_etf_code(code)
+        if not normalized:
+            return {
+                "code": code,
+                "items": [],
+                "limit": limit,
+                "sourceStatus": "error",
+                "sourceContract": "twse_multi_etf_stock_day",
+                "sourceUrl": "",
+                "fetchedAt": now,
+                "sourceUpdatedAt": None,
+                "dataTime": None,
+                "coverageStart": None,
+                "coverageEnd": None,
+                "rowCount": 0,
+                "isStale": True,
+                "priceField": "close",
+                "errorMessage": f"Invalid ETF code: {code}",
+            }
+        return self._etf_price_history_store.price_response(
+            code=normalized,
+            limit=limit,
+            fetched_at=now,
+        )
+
+    def etf_price_history_update(
+        self,
+        *,
+        codes: str | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+    ) -> dict[str, Any]:
+        now = utc_now_iso()
+        requested_codes = parse_code_list(codes or "")
+        if not requested_codes:
+            requested_codes = list(DEFAULT_ETF_HISTORY_CODES)
+        start = _parse_date(start_date) or date(2019, 1, 1)
+        end = _parse_date(end_date) or datetime.now(timezone.utc).date()
+        items: list[dict[str, Any]] = []
+        warnings: list[str] = []
+        failures: list[str] = []
+        for code in requested_codes:
+            try:
+                fetched = fetch_etf_price_history(
+                    code=code,
+                    fetcher=self._fetcher,
+                    url_template=self._config.twse_price_history_url_template,
+                    start_date=start,
+                    end_date=end,
+                    timeout_seconds=self._config.request_timeout_seconds,
+                )
+                saved = self._etf_price_history_store.save_points(
+                    code,
+                    fetched["points"],
+                )
+                status = self._etf_price_history_store.status(code, fetched_at=now)
+                if fetched.get("sourceStatus") != "official":
+                    failures.append(f"{code}: {fetched.get('errorMessage')}")
+                warnings.extend(f"{code}: {warning}" for warning in fetched.get("warnings", []))
+                items.append(
+                    {
+                        "code": code,
+                        "sourceStatus": fetched.get("sourceStatus"),
+                        "requestedMonths": fetched.get("requestedMonths"),
+                        "fetchedRows": fetched.get("rowCount"),
+                        "savedRows": saved,
+                        "coverageStart": status.get("coverageStart"),
+                        "coverageEnd": status.get("coverageEnd"),
+                        "rowCount": status.get("rowCount"),
+                        "errorMessage": fetched.get("errorMessage"),
+                    }
+                )
+            except (OSError, RuntimeError, ValueError, FetchError) as error:
+                failures.append(f"{code}: {error}")
+                items.append(
+                    {
+                        "code": code,
+                        "sourceStatus": "error",
+                        "requestedMonths": 0,
+                        "fetchedRows": 0,
+                        "savedRows": 0,
+                        "coverageStart": None,
+                        "coverageEnd": None,
+                        "rowCount": 0,
+                        "errorMessage": str(error),
+                    }
+                )
+        index = self._etf_price_history_store.index_response(fetched_at=now)
+        return {
+            "sourceStatus": "error" if failures else "cached",
+            "sourceContract": "twse_multi_etf_price_history_update",
+            "sourceUrl": self._config.twse_price_history_url_template,
+            "fetchedAt": now,
+            "sourceUpdatedAt": index.get("sourceUpdatedAt"),
+            "dataTime": index.get("dataTime"),
+            "requestedCodes": requested_codes,
+            "updatedCount": len([item for item in items if item.get("rowCount")]),
+            "readyCount": index.get("readyCount", 0),
+            "items": items,
+            "warnings": warnings,
+            "failures": failures,
+            "errorMessage": "; ".join(failures) if failures else None,
+        }
+
     def backtest_defaults(self) -> dict[str, Any]:
         return default_backtest_payload()
 
@@ -571,6 +692,7 @@ class Etf00631LService:
         )
         catalog_status = self.etf_catalog_status()
         price_history_status = self.price_history_status()
+        etf_price_history = self.etf_price_history_index()
         export_status = self._export_status()
         backup_status = self._backup_status()
         report = report_status(self._config.report_dir)
@@ -638,6 +760,9 @@ class Etf00631LService:
                 "intradayNavHistoryPathConfigured": bool(self._config.intraday_nav_history_path),
                 "priceHistoryPathConfigured": bool(self._config.price_history_path),
                 "etfCatalogPathConfigured": bool(self._config.etf_catalog_path),
+                "etfPriceHistoryDirConfigured": bool(
+                    self._config.etf_price_history_dir
+                ),
                 "twsePriceHistoryUrlTemplateConfigured": bool(self._config.twse_price_history_url_template),
                 "historyExportDir": self._config.history_export_dir,
                 "dailyCycleStatusPath": self._config.daily_cycle_status_path,
@@ -697,6 +822,16 @@ class Etf00631LService:
                 "dataTime": catalog_status.get("dataTime"),
                 "isStale": catalog_status.get("isStale"),
                 "errorMessage": catalog_status.get("errorMessage"),
+            },
+            "etfPriceHistory": {
+                "sourceStatus": etf_price_history.get("sourceStatus"),
+                "sourceContract": etf_price_history.get("sourceContract"),
+                "rowCount": etf_price_history.get("rowCount", 0),
+                "readyCount": etf_price_history.get("readyCount", 0),
+                "sourceUpdatedAt": etf_price_history.get("sourceUpdatedAt"),
+                "dataTime": etf_price_history.get("dataTime"),
+                "isStale": etf_price_history.get("isStale"),
+                "errorMessage": etf_price_history.get("errorMessage"),
             },
             "backtest": {
                 "sourceStatus": "cached"

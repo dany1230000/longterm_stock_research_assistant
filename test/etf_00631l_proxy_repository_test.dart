@@ -176,6 +176,10 @@ void main() {
     expect(status.etfCatalogStatus, 'cached');
     expect(status.etfCatalogRowCount, 128);
     expect(status.etfCatalogDataTime, DateTime(2026, 6, 8, 13, 31));
+    expect(status.etfPriceHistoryStatus, 'cached');
+    expect(status.etfPriceHistoryRowCount, 5);
+    expect(status.etfPriceHistoryReadyCount, 5);
+    expect(status.etfPriceHistoryDataTime, DateTime(2026, 6, 12));
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
     expect(status.publicApiBaseUrl, 'https://api.example.com');
     expect(status.allowedOrigins, ['https://00631l.example.com']);
@@ -776,6 +780,15 @@ Map<String, Object?> _operationsStatusPayload() {
       'sourceContract': 'twse_all_etf_catalog',
       'rowCount': 128,
       'dataTime': '2026-06-08T13:31:00+08:00',
+      'isStale': false,
+      'errorMessage': null,
+    },
+    'etfPriceHistory': {
+      'sourceStatus': 'cached',
+      'sourceContract': 'twse_multi_etf_price_history_index',
+      'rowCount': 5,
+      'readyCount': 5,
+      'dataTime': '2026-06-12',
       'isStale': false,
       'errorMessage': null,
     },

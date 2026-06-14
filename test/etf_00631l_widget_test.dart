@@ -434,6 +434,7 @@ void main() {
     expect(find.text('內容物歷史'), findsOneWidget);
     expect(find.text('盤中 NAV / 折溢價'), findsOneWidget);
     expect(find.text('TX live'), findsOneWidget);
+    expect(find.text('ETF history'), findsWidgets);
     _expectNoTradingActionText();
   });
 

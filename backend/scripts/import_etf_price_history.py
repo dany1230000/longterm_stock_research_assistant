@@ -1,0 +1,145 @@
+from __future__ import annotations
+
+import argparse
+from datetime import datetime, timezone
+import json
+from pathlib import Path
+import sys
+
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from backend.app.config import settings  # noqa: E402
+from backend.app.etf_catalog import load_etf_catalog  # noqa: E402
+from backend.app.etf_price_history import (  # noqa: E402
+    DEFAULT_ETF_HISTORY_CODES,
+    EtfPriceHistoryStore,
+    catalog_codes,
+    fetch_etf_price_history,
+    parse_code_list,
+)
+from backend.app.fetcher import fetch_text  # noqa: E402
+from backend.app.price_history import utc_now_iso  # noqa: E402
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Import TWSE STOCK_DAY price history for ETF catalog symbols.",
+    )
+    parser.add_argument("--codes", default=",".join(DEFAULT_ETF_HISTORY_CODES))
+    parser.add_argument("--from-catalog", action="store_true")
+    parser.add_argument("--catalog-path", default=settings.etf_catalog_path)
+    parser.add_argument("--limit", type=int, default=20)
+    parser.add_argument("--start-date", default="2019-01-01")
+    parser.add_argument("--end-date", default="")
+    parser.add_argument("--output-dir", default=settings.etf_price_history_dir)
+    parser.add_argument("--status-only", action="store_true")
+    args = parser.parse_args()
+
+    store = EtfPriceHistoryStore(args.output_dir)
+    if args.status_only:
+        payload = store.index_response(fetched_at=utc_now_iso())
+        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+        print(
+            "[summary] "
+            f"overallStatus={'PASS' if payload.get('readyCount', 0) else 'WARN'} "
+            f"symbols={payload.get('rowCount', 0)} "
+            f"ready={payload.get('readyCount', 0)}"
+        )
+        return 0
+
+    codes = _resolve_codes(args)
+    if not codes:
+        print("FAIL no ETF codes were resolved for import.")
+        return 1
+
+    start = datetime.strptime(args.start_date, "%Y-%m-%d").date()
+    end = (
+        datetime.strptime(args.end_date, "%Y-%m-%d").date()
+        if args.end_date
+        else datetime.now(timezone.utc).date()
+    )
+    now = utc_now_iso()
+    items: list[dict[str, object]] = []
+    warnings: list[str] = []
+    failures: list[str] = []
+    for code in codes:
+        try:
+            fetched = fetch_etf_price_history(
+                code=code,
+                fetcher=fetch_text,
+                url_template=settings.twse_price_history_url_template,
+                start_date=start,
+                end_date=end,
+                timeout_seconds=settings.request_timeout_seconds,
+            )
+            saved = store.save_points(code, fetched["points"])
+            status = store.status(code, fetched_at=now)
+            if fetched.get("sourceStatus") != "official":
+                failures.append(f"{code}: {fetched.get('errorMessage')}")
+            warnings.extend(f"{code}: {warning}" for warning in fetched.get("warnings", []))
+            items.append(
+                {
+                    "code": code,
+                    "sourceStatus": fetched.get("sourceStatus"),
+                    "requestedMonths": fetched.get("requestedMonths"),
+                    "fetchedRows": fetched.get("rowCount"),
+                    "savedRows": saved,
+                    "coverageStart": status.get("coverageStart"),
+                    "coverageEnd": status.get("coverageEnd"),
+                    "rowCount": status.get("rowCount"),
+                    "errorMessage": fetched.get("errorMessage"),
+                }
+            )
+        except Exception as error:  # noqa: BLE001 - CLI should keep importing others.
+            failures.append(f"{code}: {error}")
+            items.append(
+                {
+                    "code": code,
+                    "sourceStatus": "error",
+                    "requestedMonths": 0,
+                    "fetchedRows": 0,
+                    "savedRows": 0,
+                    "coverageStart": None,
+                    "coverageEnd": None,
+                    "rowCount": 0,
+                    "errorMessage": str(error),
+                }
+            )
+
+    index = store.index_response(fetched_at=now)
+    payload = {
+        "sourceStatus": "error" if failures else "cached",
+        "sourceContract": "twse_multi_etf_price_history_import",
+        "sourceUrl": settings.twse_price_history_url_template,
+        "fetchedAt": now,
+        "sourceUpdatedAt": index.get("sourceUpdatedAt"),
+        "dataTime": index.get("dataTime"),
+        "requestedCodes": codes,
+        "readyCount": index.get("readyCount", 0),
+        "items": items,
+        "warnings": warnings,
+        "failures": failures,
+        "errorMessage": "; ".join(failures) if failures else None,
+    }
+    print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+    print(
+        "[summary] "
+        f"overallStatus={'FAIL' if failures else 'PASS'} "
+        f"symbols={len(codes)} ready={payload['readyCount']} "
+        f"warnings={len(warnings)} failures={len(failures)}"
+    )
+    return 1 if failures else 0
+
+
+def _resolve_codes(args: argparse.Namespace) -> list[str]:
+    if not args.from_catalog:
+        return parse_code_list(args.codes)
+    payload = load_etf_catalog(args.catalog_path, fetched_at=utc_now_iso())
+    return catalog_codes(payload, limit=args.limit)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

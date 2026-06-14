@@ -21,6 +21,7 @@ PUBLIC_API_BASE_URL=https://longterm-stock-research-assistant.onrender.com
 ALLOWED_ORIGINS=https://dany1230000.github.io
 TWSE_00631L_INTRADAY_NAV_URL=https://mis.twse.com.tw/stock/data/all_etf.txt
 00631L_DATA_DIR=/data/00631l
+ETF_PRICE_HISTORY_DIR=/data/00631l/etf_price_history
 00631L_DATA_PERSISTENCE_MODE=persistent
 ```
 
@@ -128,6 +129,7 @@ Static-public mode:
 
 - Generates official TWSE price history into `web\00631l-static-data`.
 - Generates a TWSE all-ETF catalog snapshot into `web\00631l-static-data\etf_catalog.json`.
+- Multi-ETF price-history imports should use a persistent `ETF_PRICE_HISTORY_DIR`.
 - Builds Flutter Web with `USE_00631L_STATIC_DATA=true`.
 - Lets a phone open GitHub Pages and use history/backtest plus ETF catalog/search data.
 - Labels the frontend mode as `static_public`.

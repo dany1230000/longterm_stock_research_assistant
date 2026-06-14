@@ -199,43 +199,66 @@ def fetch_twse_stock_day_range(
     start_date: date,
     end_date: date,
     timeout_seconds: float,
+    symbol: str = "00631L",
+    adjust_for_00631l_split: bool = True,
 ) -> dict[str, Any]:
     fetched_at = utc_now_iso()
     points: list[dict[str, Any]] = []
     failures: list[str] = []
+    empty_month_count = 0
     urls: list[str] = []
     for month in _month_starts(start_date, end_date):
         url = url_template.format(
             yyyymmdd=f"{month.year:04d}{month.month:02d}01",
             year=month.year,
             month=f"{month.month:02d}",
-            symbol="00631L",
+            symbol=symbol,
         )
+        if "{symbol}" not in url_template and symbol != "00631L":
+            url = url.replace("stockNo=00631L", f"stockNo={symbol}")
         urls.append(url)
         try:
             source = fetcher(url, timeout_seconds)
-            points.extend(parse_twse_stock_day(source, source_url=url))
+            points.extend(
+                parse_twse_stock_day(
+                    source,
+                    source_url=url,
+                    adjust_for_00631l_split=adjust_for_00631l_split,
+                )
+            )
         except Exception as error:  # pragma: no cover - live network guard
-            failures.append(f"{month.isoformat()}: {error}")
+            if "has no data list" in str(error):
+                empty_month_count += 1
+            else:
+                failures.append(f"{month.isoformat()}: {error}")
     filtered = []
     for point in points:
         point_date = _parse_iso_date(str(point.get("date")))
         if point_date is not None and start_date <= point_date <= end_date:
             filtered.append(point)
+    warnings = list(failures)
+    if empty_month_count:
+        warnings.append(f"emptyMonths={empty_month_count}")
     return {
         "points": filtered,
         "sourceStatus": "official" if filtered else "error",
         "sourceContract": "twse_stock_day_json",
         "sourceUrl": urls[-1] if urls else "",
+        "symbol": symbol,
         "fetchedAt": fetched_at,
         "requestedMonths": len(urls),
         "rowCount": len(filtered),
-        "warnings": failures,
+        "warnings": warnings,
         "errorMessage": "; ".join(failures) if failures and not filtered else None,
     }
 
 
-def parse_twse_stock_day(source: str, *, source_url: str) -> list[dict[str, Any]]:
+def parse_twse_stock_day(
+    source: str,
+    *,
+    source_url: str,
+    adjust_for_00631l_split: bool = True,
+) -> list[dict[str, Any]]:
     decoded = json.loads(source)
     if not isinstance(decoded, dict):
         raise ValueError("TWSE STOCK_DAY payload is not an object")
@@ -265,7 +288,7 @@ def parse_twse_stock_day(source: str, *, source_url: str) -> list[dict[str, Any]
                 "sourceUrl": source_url,
             }
         )
-    return apply_00631l_split_adjustments(points)
+    return apply_00631l_split_adjustments(points) if adjust_for_00631l_split else points
 
 
 def performance_summary(records: list[dict[str, Any]]) -> dict[str, Any]:

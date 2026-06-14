@@ -240,6 +240,7 @@ class Proxy00631LRepository extends Official00631LRepository {
     final integrityHoldings = _map(integrity['holdings']);
     final priceHistory = _map(payload['priceHistory']);
     final etfCatalog = _map(payload['etfCatalog']);
+    final etfPriceHistory = _map(payload['etfPriceHistory']);
     final backtest = _map(payload['backtest']);
     final position = _map(payload['position']);
     final backendHealth = _map(payload['backendHealth']);
@@ -308,6 +309,15 @@ class Proxy00631LRepository extends Official00631LRepository {
       ),
       etfCatalogRowCount: _int(etfCatalog['rowCount']),
       etfCatalogDataTime: _wallClockDateTime(etfCatalog['dataTime']),
+      etfPriceHistoryStatus: _string(
+        etfPriceHistory['sourceStatus'],
+        fallback: 'unavailable',
+      ),
+      etfPriceHistoryRowCount: _int(etfPriceHistory['rowCount']),
+      etfPriceHistoryReadyCount: _int(etfPriceHistory['readyCount']),
+      etfPriceHistoryDataTime:
+          _wallClockDateTime(etfPriceHistory['dataTime']) ??
+              _nullableDate(etfPriceHistory['dataTime']),
       backtestStatus: _string(
         backtest['sourceStatus'],
         fallback: 'unavailable',

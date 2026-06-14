@@ -138,6 +138,7 @@ See `backend/.env.example` for the deployable template.
 - `00631L_HOLDINGS_HISTORY_PATH`: local JSONL path for daily holdings history, default `backend/data/00631l_holdings_history.jsonl`.
 - `00631L_INTRADAY_NAV_HISTORY_PATH`: local JSONL path for intraday NAV history, default `backend/data/00631l_intraday_nav_history.jsonl`.
 - `ETF_CATALOG_PATH`: local normalized TWSE all-ETF catalog JSON path, default `backend/data/twse_etf_catalog.json`.
+- `ETF_PRICE_HISTORY_DIR`: local directory for selected ETF TWSE `STOCK_DAY` history, default `backend/data/etf_price_history`.
 - `00631L_BACKUP_DIR`: local backup output directory, default `backend/backups`.
 - `00631L_BACKUP_RETENTION_COUNT`: number of local backup archives to keep, default `30`.
 - `00631L_REPORT_DIR`: local daily Markdown report directory, default `backend/reports`.
@@ -261,6 +262,24 @@ scripts\00631l_import_etf_catalog.cmd --status-only
 ```
 
 The catalog is normalized from TWSE `all_etf.txt` and saved under `ETF_CATALOG_PATH`. It is local operational data and should not be committed.
+
+Selected ETF price history can be imported with:
+
+```cmd
+scripts\00631l_import_etf_price_history.cmd --codes 0050,006208,00878
+```
+
+The data is saved under `ETF_PRICE_HISTORY_DIR`, one JSONL file per ETF code.
+Endpoints:
+
+```text
+GET /api/etf/history/status
+GET /api/etf/history/price?code=0050
+POST /api/etf/history/update?codes=0050,006208,00878
+```
+
+This is comparison data foundation only. It does not replace 00631L holdings,
+intraday NAV, or the 00631L-specific backtest flow.
 
 ## v1.10 operations status
 
