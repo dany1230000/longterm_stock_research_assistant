@@ -48,6 +48,10 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.byKey(const ValueKey('00631l-top-search-button')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-section-etf')),
       findsNothing,
     );
@@ -353,6 +357,25 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('top right search icon opens ETF and stock search sheet',
+      (tester) async {
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-top-search-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-result-00631L')),
+      findsOneWidget,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('catalog-only ETF selection shows missing history guidance',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
@@ -385,7 +408,7 @@ void main() {
   });
 
   testWidgets('selecting ETF loads selected ETF history view', (tester) async {
-    await _pumpLab(tester, Mock00631LRepository());
+    await _pumpLab(tester, _PriceHistoryRepository());
 
     await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
     await tester.pumpAndSettle();
@@ -416,8 +439,38 @@ void main() {
     expect(find.text('ETF 歷史比較'), findsOneWidget);
     expect(find.text('最近 1 年'), findsWidgets);
     expect(find.text('比較檔數'), findsOneWidget);
-    expect(find.text('代表'), findsOneWidget);
+    expect(find.text('代表'), findsWidgets);
     expect(find.text('高股息'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
+      findsOneWidget,
+    );
+
+    await tester.drag(find.byType(ListView).first, const Offset(0, -1720));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
+    );
+    await tester.pumpAndSettle();
+    final selectedSummaryAfterDeselect = tester.widget<Text>(
+      find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
+    );
+    expect(selectedSummaryAfterDeselect.data, isNot(contains('0050')));
+
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-etf-comparison-filter-dividend')),
+    );
+    await tester.pumpAndSettle();
+    final dividendSummary = tester.widget<Text>(
+      find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
+    );
+    expect(dividendSummary.data, anyOf(contains('0056'), contains('00878')));
+    expect(find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
+        findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -652,6 +705,63 @@ class _PriceHistoryRepository extends Mock00631LRepository {
       status: EtfDataStatus.cached,
       sourceStatusLabel: 'cached',
       sourceUrl: 'local://00631l-price-history',
+      lastFetchedAt: DateTime(2026, 6, 11),
+      coverageStart: points.first.date,
+      coverageEnd: points.last.date,
+      isCompleteFromListing: false,
+    );
+  }
+
+  @override
+  Future<EtfPriceHistory> fetchEtfPriceHistory(
+    String code, {
+    int limit = 5000,
+  }) async {
+    final normalized = code.trim().toUpperCase();
+    if (normalized == '00631L') {
+      return fetchPriceHistory(limit: limit);
+    }
+    final profile = switch (normalized) {
+      '0050' => ('元大台灣50', 100.0),
+      '0056' => ('元大高股息', 32.0),
+      '006208' => ('富邦台50', 82.0),
+      '00878' => ('國泰永續高股息', 21.0),
+      '00919' => ('群益台灣精選高息', 23.0),
+      _ => (normalized, 40.0),
+    };
+    final points = [
+      EtfPriceHistoryPoint(
+        date: DateTime(2025, 6, 3),
+        open: profile.$2,
+        high: profile.$2 * 1.01,
+        low: profile.$2 * 0.99,
+        close: profile.$2,
+        volume: 1000000,
+      ),
+      EtfPriceHistoryPoint(
+        date: DateTime(2026, 6, 1),
+        open: profile.$2 * 1.08,
+        high: profile.$2 * 1.1,
+        low: profile.$2 * 1.07,
+        close: profile.$2 * 1.09,
+        volume: 1100000,
+      ),
+      EtfPriceHistoryPoint(
+        date: DateTime(2026, 6, 3),
+        open: profile.$2 * 1.1,
+        high: profile.$2 * 1.12,
+        low: profile.$2 * 1.08,
+        close: profile.$2 * 1.11,
+        volume: 1200000,
+      ),
+    ].take(limit).toList(growable: false);
+    return EtfPriceHistory(
+      code: normalized,
+      name: profile.$1,
+      points: points,
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'cached',
+      sourceUrl: 'local://$normalized-price-history',
       lastFetchedAt: DateTime(2026, 6, 11),
       coverageStart: points.first.date,
       coverageEnd: points.last.date,

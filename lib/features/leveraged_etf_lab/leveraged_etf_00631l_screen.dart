@@ -580,6 +580,20 @@ class _MarketTopBar extends StatelessWidget {
                 const SizedBox(width: 4),
               ],
               IconButton(
+                key: const ValueKey('00631l-top-search-button'),
+                tooltip: '搜尋 ETF / 股票代號',
+                onPressed: data == null
+                    ? null
+                    : () => _showSymbolSearchSheet(
+                          context,
+                          data!,
+                          onEtfSelected: onEtfSelected,
+                        ),
+                color: _marketTextColor(context),
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.search, size: 21),
+              ),
+              IconButton(
                 tooltip: '重新整理',
                 onPressed: onRefresh,
                 color: _marketTextColor(context),
@@ -3889,6 +3903,17 @@ class _EtfHistoryComparisonPanel extends StatefulWidget {
 class _EtfHistoryComparisonPanelState
     extends State<_EtfHistoryComparisonPanel> {
   _EtfComparisonFilter _filter = _EtfComparisonFilter.focused;
+  Set<String>? _selectedComparisonCodes;
+
+  @override
+  void didUpdateWidget(covariant _EtfHistoryComparisonPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedEtfCode != widget.selectedEtfCode ||
+        oldWidget.selectedHistory.code != widget.selectedHistory.code ||
+        oldWidget.histories.length != widget.histories.length) {
+      _selectedComparisonCodes = null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -3912,15 +3937,16 @@ class _EtfHistoryComparisonPanelState
           endDate: endDate,
         ),
     ];
-    final usableMetrics = [
+    final availableMetrics = [
       for (final metric in metrics)
-        if (metric.rowCount >= 2 &&
-            _comparisonFilterIncludes(_filter, metric.code,
-                selectedCode: widget.selectedEtfCode))
-          metric,
+        if (metric.rowCount >= 2) metric,
     ];
-    final allUsableCount =
-        metrics.where((metric) => metric.rowCount >= 2).length;
+    final selectedCodes = _effectiveComparisonCodes(availableMetrics);
+    final usableMetrics = [
+      for (final metric in availableMetrics)
+        if (selectedCodes.contains(metric.code)) metric,
+    ];
+    final allUsableCount = availableMetrics.length;
     final chartHistories = _comparisonChartHistories(
       histories: mergedHistories,
       metrics: usableMetrics,
@@ -3933,8 +3959,8 @@ class _EtfHistoryComparisonPanelState
           title: 'ETF 歷史比較',
           subtitle: '使用已匯入的歷史收盤價；比較結果只描述過去資料，非買賣建議。',
           icon: Icons.stacked_line_chart_outlined,
-          badges: [
-            widget.selectedEtfCode,
+          badges: const [
+            '自選 ETF',
             '最近 1 年',
             'static / proxy history',
           ],
@@ -3942,12 +3968,12 @@ class _EtfHistoryComparisonPanelState
             _SectionHeaderMetric(
               label: '比較檔數',
               value: formatInteger(usableMetrics.length),
-              caption: '已匯入且有足夠資料',
+              caption: '目前納入比較',
             ),
             _SectionHeaderMetric(
               label: '區間',
               value: '${_dateOrDash(startDate)} - ${_dateOrDash(endDate)}',
-              caption: '依目前選取 ETF 對齊；已載入 $allUsableCount 檔',
+              caption: '已載入 $allUsableCount 檔可比較資料',
             ),
           ],
         ),
@@ -3965,14 +3991,45 @@ class _EtfHistoryComparisonPanelState
             children: [
               for (final filter in _EtfComparisonFilter.values) ...[
                 ChoiceChip(
+                  key: ValueKey('00631l-etf-comparison-filter-${filter.name}'),
                   label: Text(filter.label),
                   selected: _filter == filter,
-                  onSelected: (_) => setState(() => _filter = filter),
+                  onSelected: (_) =>
+                      _applyComparisonFilter(filter, availableMetrics),
                 ),
                 const SizedBox(width: 8),
               ],
             ],
           ),
+        ),
+        const SizedBox(height: 10),
+        _ComparisonSelectionChips(
+          metrics: availableMetrics,
+          selectedCodes: selectedCodes,
+          onChanged: (code, selected) {
+            setState(() {
+              final next = {...selectedCodes};
+              if (selected) {
+                if (next.length < 5) {
+                  next.add(code);
+                }
+              } else if (next.length > 1) {
+                next.remove(code);
+              }
+              _selectedComparisonCodes = next;
+            });
+          },
+        ),
+        const SizedBox(height: 8),
+        Text(
+          usableMetrics.isEmpty
+              ? '尚未選擇比較 ETF'
+              : '比較 ${usableMetrics.map((metric) => metric.code).join(' / ')}',
+          key: const ValueKey('00631l-etf-comparison-selected-codes'),
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w800,
+              ),
         ),
         const SizedBox(height: 10),
         if (usableMetrics.isEmpty)
@@ -3987,7 +4044,7 @@ class _EtfHistoryComparisonPanelState
         else ...[
           _StatusWrap(
             labels: [
-              'selected ${widget.selectedEtfCode}',
+              '自選比較',
               _filter.label,
               'rows ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
               'history comparison',
@@ -4029,6 +4086,81 @@ class _EtfHistoryComparisonPanelState
             ],
           ),
         ],
+      ],
+    );
+  }
+
+  Set<String> _effectiveComparisonCodes(
+      List<_EtfComparisonMetric> availableMetrics) {
+    final availableCodes = {
+      for (final metric in availableMetrics) metric.code,
+    };
+    if (availableCodes.isEmpty) {
+      _selectedComparisonCodes = <String>{};
+      return const <String>{};
+    }
+
+    final current = _selectedComparisonCodes;
+    if (current == null) {
+      final preset = _presetComparisonCodes(_filter, availableMetrics);
+      _selectedComparisonCodes =
+          preset.isNotEmpty ? preset : availableCodes.take(5).toSet();
+    } else {
+      final cleaned = current.where(availableCodes.contains).toSet();
+      _selectedComparisonCodes = cleaned.isEmpty
+          ? availableCodes.take(1).toSet()
+          : cleaned.take(5).toSet();
+    }
+    return _selectedComparisonCodes!;
+  }
+
+  void _applyComparisonFilter(
+    _EtfComparisonFilter filter,
+    List<_EtfComparisonMetric> availableMetrics,
+  ) {
+    setState(() {
+      _filter = filter;
+      final preset = _presetComparisonCodes(filter, availableMetrics);
+      _selectedComparisonCodes = preset.isNotEmpty
+          ? preset
+          : {
+              for (final metric in availableMetrics.take(5)) metric.code,
+            };
+    });
+  }
+}
+
+class _ComparisonSelectionChips extends StatelessWidget {
+  const _ComparisonSelectionChips({
+    required this.metrics,
+    required this.selectedCodes,
+    required this.onChanged,
+  });
+
+  final List<_EtfComparisonMetric> metrics;
+  final Set<String> selectedCodes;
+  final void Function(String code, bool selected) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    if (metrics.isEmpty) {
+      return const _EmptyPanel(
+        title: '尚無可比較 ETF',
+        message: '請先匯入 ETF 歷史價格，再選擇要比較的標的。',
+      );
+    }
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final metric in metrics)
+          FilterChip(
+            key: ValueKey('00631l-etf-compare-chip-${metric.code}'),
+            label: Text(metric.code),
+            selected: selectedCodes.contains(metric.code),
+            onSelected: (selected) => onChanged(metric.code, selected),
+            visualDensity: VisualDensity.compact,
+          ),
       ],
     );
   }
@@ -8156,14 +8288,9 @@ String _historyDisplayName(EtfPriceHistory history) {
 
 bool _comparisonFilterIncludes(
   _EtfComparisonFilter filter,
-  String code, {
-  required String selectedCode,
-}) {
+  String code,
+) {
   final normalized = code.trim().toUpperCase();
-  final selected = selectedCode.trim().toUpperCase();
-  if (normalized == selected) {
-    return true;
-  }
   switch (filter) {
     case _EtfComparisonFilter.focused:
       return const {'00631L', '0050', '006208', '00878', '00919'}
@@ -8179,6 +8306,16 @@ bool _comparisonFilterIncludes(
     case _EtfComparisonFilter.all:
       return true;
   }
+}
+
+Set<String> _presetComparisonCodes(
+  _EtfComparisonFilter filter,
+  List<_EtfComparisonMetric> availableMetrics,
+) {
+  return {
+    for (final metric in availableMetrics)
+      if (_comparisonFilterIncludes(filter, metric.code)) metric.code,
+  }.take(5).toSet();
 }
 
 List<EtfPriceHistory> _comparisonChartHistories({
