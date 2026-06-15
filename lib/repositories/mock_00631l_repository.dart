@@ -177,11 +177,110 @@ class Mock00631LRepository extends Official00631LRepository {
           targetType: '台股 ETF',
         ),
         EtfCatalogItem(
+          code: '0056',
+          name: '元大高股息',
+          marketPrice: 37.8,
+          estimatedNav: 37.82,
+          premiumDiscountPct: -0.05,
+          dataTime: now,
+          targetType: '高股息 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00692',
+          name: '富邦公司治理',
+          marketPrice: 43.6,
+          estimatedNav: 43.55,
+          premiumDiscountPct: 0.11,
+          dataTime: now,
+          targetType: '台股 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00713',
+          name: '元大台灣高息低波',
+          marketPrice: 55.2,
+          estimatedNav: 55.18,
+          premiumDiscountPct: 0.04,
+          dataTime: now,
+          targetType: '高股息 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00757',
+          name: '統一FANG+',
+          marketPrice: 92.4,
+          estimatedNav: 92.1,
+          premiumDiscountPct: 0.33,
+          dataTime: now,
+          targetType: '海外科技 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00850',
+          name: '元大臺灣ESG永續',
+          marketPrice: 42.5,
+          estimatedNav: 42.47,
+          premiumDiscountPct: 0.07,
+          dataTime: now,
+          targetType: '台股 ETF',
+        ),
+        EtfCatalogItem(
           code: '00878',
           name: '國泰永續高股息',
           marketPrice: 22.4,
           estimatedNav: 22.42,
           premiumDiscountPct: -0.08,
+          dataTime: now,
+          targetType: '高股息 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00881',
+          name: '國泰台灣5G+',
+          marketPrice: 29.4,
+          estimatedNav: 29.35,
+          premiumDiscountPct: 0.17,
+          dataTime: now,
+          targetType: '科技 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00919',
+          name: '群益台灣精選高息',
+          marketPrice: 24.1,
+          estimatedNav: 24.08,
+          premiumDiscountPct: 0.08,
+          dataTime: now,
+          targetType: '高股息 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00922',
+          name: '國泰台灣領袖50',
+          marketPrice: 23.6,
+          estimatedNav: 23.58,
+          premiumDiscountPct: 0.08,
+          dataTime: now,
+          targetType: '台股 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00923',
+          name: '群益台ESG低碳50',
+          marketPrice: 21.9,
+          estimatedNav: 21.88,
+          premiumDiscountPct: 0.09,
+          dataTime: now,
+          targetType: '台股 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00929',
+          name: '復華台灣科技優息',
+          marketPrice: 18.7,
+          estimatedNav: 18.69,
+          premiumDiscountPct: 0.05,
+          dataTime: now,
+          targetType: '科技高息 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00940',
+          name: '元大台灣價值高息',
+          marketPrice: 9.6,
+          estimatedNav: 9.6,
+          premiumDiscountPct: 0.0,
           dataTime: now,
           targetType: '高股息 ETF',
         ),
@@ -239,6 +338,14 @@ final _mockHistoryEnd = DateTime(2026, 6, 8);
 ({String name, double start, double mid, double end, int volume})
     _mockEtfHistoryProfile(String code) {
   switch (code) {
+    case '00631L':
+      return (
+        name: '元大台灣50正2',
+        start: 22.15,
+        mid: 28.40,
+        end: 35.20,
+        volume: 18000000,
+      );
     case '0050':
       return (
         name: '元大台灣50',
@@ -246,6 +353,14 @@ final _mockHistoryEnd = DateTime(2026, 6, 8);
         mid: 166.5,
         end: 185.4,
         volume: 9000000,
+      );
+    case '0056':
+      return (
+        name: '元大高股息',
+        start: 29.4,
+        mid: 34.6,
+        end: 37.8,
+        volume: 22000000,
       );
     case '006208':
       return (
@@ -255,6 +370,38 @@ final _mockHistoryEnd = DateTime(2026, 6, 8);
         end: 112.3,
         volume: 3500000,
       );
+    case '00692':
+      return (
+        name: '富邦公司治理',
+        start: 31.8,
+        mid: 38.4,
+        end: 43.6,
+        volume: 2400000,
+      );
+    case '00713':
+      return (
+        name: '元大台灣高息低波',
+        start: 39.6,
+        mid: 49.2,
+        end: 55.2,
+        volume: 7000000,
+      );
+    case '00757':
+      return (
+        name: '統一FANG+',
+        start: 56.5,
+        mid: 78.8,
+        end: 92.4,
+        volume: 1200000,
+      );
+    case '00850':
+      return (
+        name: '元大臺灣ESG永續',
+        start: 31.2,
+        mid: 37.9,
+        end: 42.5,
+        volume: 1800000,
+      );
     case '00878':
       return (
         name: '國泰永續高股息',
@@ -262,6 +409,14 @@ final _mockHistoryEnd = DateTime(2026, 6, 8);
         mid: 21.3,
         end: 22.4,
         volume: 42000000,
+      );
+    case '00881':
+      return (
+        name: '國泰台灣5G+',
+        start: 18.2,
+        mid: 25.1,
+        end: 29.4,
+        volume: 16000000,
       );
     case '00919':
       return (
@@ -271,13 +426,45 @@ final _mockHistoryEnd = DateTime(2026, 6, 8);
         end: 24.1,
         volume: 36000000,
       );
+    case '00922':
+      return (
+        name: '國泰台灣領袖50',
+        start: 16.8,
+        mid: 20.4,
+        end: 23.6,
+        volume: 9000000,
+      );
+    case '00923':
+      return (
+        name: '群益台ESG低碳50',
+        start: 15.9,
+        mid: 19.3,
+        end: 21.9,
+        volume: 5000000,
+      );
+    case '00929':
+      return (
+        name: '復華台灣科技優息',
+        start: 15.1,
+        mid: 17.9,
+        end: 18.7,
+        volume: 52000000,
+      );
+    case '00940':
+      return (
+        name: '元大台灣價值高息',
+        start: 9.8,
+        mid: 9.4,
+        end: 9.6,
+        volume: 80000000,
+      );
     default:
       return (
-        name: '00631L',
-        start: 22.15,
-        mid: 28.40,
-        end: 35.20,
-        volume: 18000000,
+        name: code,
+        start: 20.0,
+        mid: 22.0,
+        end: 24.0,
+        volume: 1000000,
       );
   }
 }

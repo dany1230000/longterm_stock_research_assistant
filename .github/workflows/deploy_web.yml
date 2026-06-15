@@ -45,7 +45,7 @@ jobs:
         run: flutter test
 
       - name: Import selected ETF price history
-        run: python backend/scripts/import_etf_price_history.py --codes 0050,006208,00878,00919,00631L --start-date 2019-01-01 --output-dir backend/data/etf_price_history
+        run: python backend/scripts/import_etf_price_history.py --codes 00631L,0050,0056,006208,00692,00713,00757,00850,00878,00881,00919,00922,00923,00929,00940 --start-date 2019-01-01 --output-dir backend/data/etf_price_history
 
       - name: Export static 00631L data
         run: python backend/scripts/export_static_00631l_data.py --update --strict --min-row-count 2800 --min-etf-catalog-row-count 100 --seed-price-history-path backend/seeds/00631l_price_history_seed.jsonl --seed-etf-catalog-path backend/seeds/twse_etf_catalog_seed.json --output-dir web/00631l-static-data

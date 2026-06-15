@@ -3792,7 +3792,18 @@ class _HistoryBacktestSection extends StatelessWidget {
   }
 }
 
-class _EtfHistoryComparisonPanel extends StatelessWidget {
+enum _EtfComparisonFilter {
+  focused('代表'),
+  market('市值型'),
+  dividend('高股息'),
+  tech('科技'),
+  all('全部');
+
+  const _EtfComparisonFilter(this.label);
+  final String label;
+}
+
+class _EtfHistoryComparisonPanel extends StatefulWidget {
   const _EtfHistoryComparisonPanel({
     super.key,
     required this.selectedEtfCode,
@@ -3809,18 +3820,27 @@ class _EtfHistoryComparisonPanel extends StatelessWidget {
   final Object? error;
 
   @override
+  State<_EtfHistoryComparisonPanel> createState() =>
+      _EtfHistoryComparisonPanelState();
+}
+
+class _EtfHistoryComparisonPanelState
+    extends State<_EtfHistoryComparisonPanel> {
+  _EtfComparisonFilter _filter = _EtfComparisonFilter.focused;
+
+  @override
   Widget build(BuildContext context) {
-    final endDate = _historyLastDate(selectedHistory) ??
-        _latestHistoryEnd(histories) ??
+    final endDate = _historyLastDate(widget.selectedHistory) ??
+        _latestHistoryEnd(widget.histories) ??
         DateTime.now();
     final startDate = _defaultTrailingStart(
-      first: _historyFirstDate(selectedHistory),
+      first: _historyFirstDate(widget.selectedHistory),
       end: endDate,
       years: 1,
     );
     final mergedHistories = _mergeSelectedComparisonHistories(
-      selectedHistory: selectedHistory,
-      histories: histories,
+      selectedHistory: widget.selectedHistory,
+      histories: widget.histories,
     );
     final metrics = [
       for (final history in mergedHistories)
@@ -3832,8 +3852,13 @@ class _EtfHistoryComparisonPanel extends StatelessWidget {
     ];
     final usableMetrics = [
       for (final metric in metrics)
-        if (metric.rowCount >= 2) metric,
+        if (metric.rowCount >= 2 &&
+            _comparisonFilterIncludes(_filter, metric.code,
+                selectedCode: widget.selectedEtfCode))
+          metric,
     ];
+    final allUsableCount =
+        metrics.where((metric) => metric.rowCount >= 2).length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3843,7 +3868,7 @@ class _EtfHistoryComparisonPanel extends StatelessWidget {
           subtitle: '使用已匯入的歷史收盤價；比較結果只描述過去資料，非買賣建議。',
           icon: Icons.stacked_line_chart_outlined,
           badges: [
-            selectedEtfCode,
+            widget.selectedEtfCode,
             '最近 1 年',
             'static / proxy history',
           ],
@@ -3856,18 +3881,34 @@ class _EtfHistoryComparisonPanel extends StatelessWidget {
             _SectionHeaderMetric(
               label: '區間',
               value: '${_dateOrDash(startDate)} - ${_dateOrDash(endDate)}',
-              caption: '依目前選取 ETF 對齊',
+              caption: '依目前選取 ETF 對齊；已載入 $allUsableCount 檔',
             ),
           ],
         ),
         const SizedBox(height: 10),
-        if (isLoading || error != null) ...[
+        if (widget.isLoading || widget.error != null) ...[
           _DetailsLoadStateStrip(
-            isLoading: isLoading,
-            errorMessage: error?.toString(),
+            isLoading: widget.isLoading,
+            errorMessage: widget.error?.toString(),
           ),
           const SizedBox(height: 10),
         ],
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              for (final filter in _EtfComparisonFilter.values) ...[
+                ChoiceChip(
+                  label: Text(filter.label),
+                  selected: _filter == filter,
+                  onSelected: (_) => setState(() => _filter = filter),
+                ),
+                const SizedBox(width: 8),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
         if (usableMetrics.isEmpty)
           const _EmptyPanel(
             title: '尚無 ETF 比較資料',
@@ -3877,7 +3918,8 @@ class _EtfHistoryComparisonPanel extends StatelessWidget {
         else ...[
           _StatusWrap(
             labels: [
-              'selected $selectedEtfCode',
+              'selected ${widget.selectedEtfCode}',
+              _filter.label,
               'rows ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
               'history comparison',
             ],
@@ -7669,18 +7711,65 @@ String _historyDisplayName(EtfPriceHistory history) {
   return _knownEtfName(history.code) ?? history.code;
 }
 
+bool _comparisonFilterIncludes(
+  _EtfComparisonFilter filter,
+  String code, {
+  required String selectedCode,
+}) {
+  final normalized = code.trim().toUpperCase();
+  final selected = selectedCode.trim().toUpperCase();
+  if (normalized == selected) {
+    return true;
+  }
+  switch (filter) {
+    case _EtfComparisonFilter.focused:
+      return const {'00631L', '0050', '006208', '00878', '00919'}
+          .contains(normalized);
+    case _EtfComparisonFilter.market:
+      return const {'0050', '006208', '00692', '00850', '00922', '00923'}
+          .contains(normalized);
+    case _EtfComparisonFilter.dividend:
+      return const {'0056', '00713', '00878', '00919', '00929', '00940'}
+          .contains(normalized);
+    case _EtfComparisonFilter.tech:
+      return const {'00757', '00881', '00929'}.contains(normalized);
+    case _EtfComparisonFilter.all:
+      return true;
+  }
+}
+
 String? _knownEtfName(String code) {
   switch (code.trim().toUpperCase()) {
     case '00631L':
       return '元大台灣50正2';
     case '0050':
       return '元大台灣50';
+    case '0056':
+      return '元大高股息';
     case '006208':
       return '富邦台50';
+    case '00692':
+      return '富邦公司治理';
+    case '00713':
+      return '元大台灣高息低波';
+    case '00757':
+      return '統一FANG+';
+    case '00850':
+      return '元大臺灣ESG永續';
     case '00878':
       return '國泰永續高股息';
+    case '00881':
+      return '國泰台灣5G+';
     case '00919':
       return '群益台灣精選高息';
+    case '00922':
+      return '國泰台灣領袖50';
+    case '00923':
+      return '群益台ESG低碳50';
+    case '00929':
+      return '復華台灣科技優息';
+    case '00940':
+      return '元大台灣價值高息';
     default:
       return null;
   }

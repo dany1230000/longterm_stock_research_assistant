@@ -85,9 +85,10 @@ This is the main entry point for 00631L lab documentation.
 - Daily cycle: `scripts\00631l_daily_cycle.cmd`
 - Price history update: `scripts\00631l_update_price_history.cmd`
 - TWSE ETF catalog import: `scripts\00631l_import_etf_catalog.cmd`
-- Multi-ETF price history import: `scripts\00631l_import_etf_price_history.cmd --codes 0050,006208,00878`
+- Multi-ETF price history import: `scripts\00631l_import_etf_price_history.cmd --codes 00631L,0050,0056,006208,00692,00713,00757,00850,00878,00881,00919,00922,00923,00929,00940`
 - ETF history selection summary: `docs\00631l_v4_9_etf_history_selection_summary.md`
 - ETF history comparison summary: `docs\00631l_v4_10_etf_history_comparison_summary.md`
+- ETF comparison basket summary: `docs\00631l_v4_11_etf_comparison_basket_summary.md`
 - Release check: `scripts\00631l_release_check.cmd`
 - Remote public backend maintenance: `scripts\00631l_remote_maintenance.cmd --mode all`
 - Public config check: `scripts\00631l_check_public_config.cmd`

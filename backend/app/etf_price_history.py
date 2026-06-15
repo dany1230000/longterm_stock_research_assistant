@@ -15,7 +15,23 @@ from .price_history import (
 )
 
 
-DEFAULT_ETF_HISTORY_CODES = ("0050", "006208", "00878", "00919", "00631L")
+DEFAULT_ETF_HISTORY_CODES = (
+    "00631L",
+    "0050",
+    "0056",
+    "006208",
+    "00692",
+    "00713",
+    "00757",
+    "00850",
+    "00878",
+    "00881",
+    "00919",
+    "00922",
+    "00923",
+    "00929",
+    "00940",
+)
 ETF_PRICE_HISTORY_CONTRACT = "twse_multi_etf_stock_day"
 
 

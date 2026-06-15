@@ -184,6 +184,13 @@ v4.10 ETF history comparison:
 - The top-left ETF selector remains the entry point; the bottom navigation stays focused on overview, history/backtest, position, AI, and settings.
 - Summary: `docs\00631l_v4_10_etf_history_comparison_summary.md`.
 
+v4.11 ETF comparison basket:
+
+- The default ETF history import basket now covers 15 representative ETFs across market-cap, dividend, tech, and 00631L categories.
+- The ETF history comparison section has filters for representative, market-cap style, dividend style, tech theme, and all imported histories.
+- Static public Pages builds import the expanded basket before exporting static data.
+- Summary: `docs\00631l_v4_11_etf_comparison_basket_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.

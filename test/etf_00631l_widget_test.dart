@@ -371,6 +371,8 @@ void main() {
     expect(find.text('ETF 歷史比較'), findsOneWidget);
     expect(find.text('最近 1 年'), findsWidgets);
     expect(find.text('比較檔數'), findsOneWidget);
+    expect(find.text('代表'), findsOneWidget);
+    expect(find.text('高股息'), findsOneWidget);
     _expectNoTradingActionText();
   });
 

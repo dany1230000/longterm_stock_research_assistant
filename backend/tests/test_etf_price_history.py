@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from backend.app.config import Settings
 from backend.app.etf_price_history import (
+    DEFAULT_ETF_HISTORY_CODES,
     EtfPriceHistoryStore,
     fetch_etf_price_history,
 )
@@ -15,6 +16,14 @@ from backend.app.service import Etf00631LService
 
 
 class EtfPriceHistoryTests(unittest.TestCase):
+    def test_default_etf_history_basket_has_representative_symbols(self) -> None:
+        self.assertGreaterEqual(len(DEFAULT_ETF_HISTORY_CODES), 15)
+        self.assertIn("00631L", DEFAULT_ETF_HISTORY_CODES)
+        self.assertIn("0050", DEFAULT_ETF_HISTORY_CODES)
+        self.assertIn("0056", DEFAULT_ETF_HISTORY_CODES)
+        self.assertIn("00878", DEFAULT_ETF_HISTORY_CODES)
+        self.assertIn("00940", DEFAULT_ETF_HISTORY_CODES)
+
     def test_multi_etf_store_does_not_apply_00631l_split(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             store = EtfPriceHistoryStore(Path(temp_dir))

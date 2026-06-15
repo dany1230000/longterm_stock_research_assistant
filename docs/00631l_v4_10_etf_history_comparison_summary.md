@@ -10,6 +10,7 @@ v4.10 turns the imported ETF price histories into a visible comparison block ins
   - `006208`
   - `00878`
   - `00919`
+- v4.11 expands the default basket; see `docs\00631l_v4_11_etf_comparison_basket_summary.md`.
 - The history/backtest page now shows an `ETF 歷史比較` section.
 - The comparison uses the selected ETF's latest one-year window by default.
 - The comparison table shows:

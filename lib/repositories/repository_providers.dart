@@ -226,9 +226,19 @@ final etfHistoryComparisonProvider =
     if (normalizedSelected.isNotEmpty) normalizedSelected,
     '00631L',
     '0050',
+    '0056',
     '006208',
+    '00692',
+    '00713',
+    '00757',
+    '00850',
     '00878',
+    '00881',
     '00919',
+    '00922',
+    '00923',
+    '00929',
+    '00940',
   }.toList(growable: false);
 
   return Future.wait([
