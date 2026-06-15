@@ -680,6 +680,7 @@ class _SymbolSearchSheetState extends State<_SymbolSearchSheet> {
   Widget build(BuildContext context) {
     final query = _controller.text.trim().toLowerCase();
     final catalog = widget.data.etfCatalog;
+    final readyHistoryCount = _catalogHistoryReadyCount(catalog);
     final items = query.isEmpty
         ? catalog.focusItems
         : [
@@ -758,6 +759,7 @@ class _SymbolSearchSheetState extends State<_SymbolSearchSheet> {
               labels: [
                 'catalog ${catalog.sourceStatusLabel}',
                 'rows ${formatInteger(catalog.rowCount)}',
+                'history ready ${formatInteger(readyHistoryCount)}',
                 if (query.isEmpty) '常用代號' else '搜尋結果 ${visibleItems.length}',
               ],
             ),
@@ -5250,6 +5252,7 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
     final rowCount =
         catalog.hasData ? catalog.rowCount : status.etfCatalogRowCount;
     final dataTime = catalog.dataTime ?? status.etfCatalogDataTime;
+    final readyHistoryCount = _catalogHistoryReadyCount(catalog);
     final filteredItems = _filteredItems(catalog);
     final visibleItems = filteredItems.take(60).toList(growable: false);
 
@@ -5284,6 +5287,14 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
             _SectionHeaderMetric(
               label: '顯示筆數',
               value: formatInteger(visibleItems.length),
+            ),
+            _SectionHeaderMetric(
+              label: '歷史可用',
+              value: formatInteger(
+                readyHistoryCount == 0
+                    ? status.etfPriceHistoryReadyCount
+                    : readyHistoryCount,
+              ),
             ),
           ],
         ),
@@ -8044,6 +8055,14 @@ String _catalogSearchText(EtfCatalogItem item) {
 
 bool _hasImportedEtfHistory(String code) {
   return _etfHistoryReadyCodes.contains(code.trim().toUpperCase());
+}
+
+int _catalogHistoryReadyCount(EtfCatalog catalog) {
+  return catalog.items
+      .where((item) => _hasImportedEtfHistory(item.code))
+      .map((item) => item.code.trim().toUpperCase())
+      .toSet()
+      .length;
 }
 
 List<EtfPriceHistory> _mergeSelectedComparisonHistories({

@@ -72,6 +72,7 @@ void main() {
 
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
     expect(find.textContaining('ETF catalog 已集中到左上角代號搜尋'), findsOneWidget);
+    expect(find.text('history ready 15'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
       findsOneWidget,
