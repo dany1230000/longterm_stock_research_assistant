@@ -456,6 +456,43 @@ void main() {
     expect(dividendSummary.data, anyOf(contains('0056'), contains('00878')));
     expect(find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
         findsOneWidget);
+
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('selecting ETF switches overview position and AI context',
+      (tester) async {
+    await _pumpLab(tester, _PriceHistoryRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '0050',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
+    );
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+
+    await _tapSection(tester, 'overview');
+    await tester.pumpAndSettle();
+    expect(find.textContaining('0050 元大台灣50'), findsWidgets);
+    expect(find.text('0050 核心資料'), findsOneWidget);
+    expect(find.text('官方內容物重點'), findsNothing);
+
+    await _tapSection(tester, 'position');
+    await tester.pumpAndSettle();
+    expect(find.textContaining('0050'), findsWidgets);
+    expect(find.textContaining('local-only'), findsWidgets);
+
+    await _tapSection(tester, 'ai');
+    await tester.pumpAndSettle();
+    expect(find.text('0050 AI 快覽'), findsOneWidget);
+    expect(find.textContaining('元大台灣50'), findsWidgets);
     _expectNoTradingActionText();
   });
 

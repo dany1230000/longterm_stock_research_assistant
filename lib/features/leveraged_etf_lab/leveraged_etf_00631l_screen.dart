@@ -206,6 +206,11 @@ class _LabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedEtf = _SelectedEtfViewData.from(
+      data: data,
+      selectedEtfCode: selectedEtfCode,
+      selectedPriceHistory: selectedPriceHistory,
+    );
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: appThemeModeNotifier,
       builder: (context, themeMode, _) {
@@ -252,7 +257,7 @@ class _LabContent extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 8),
                                   ],
-                                  _sectionWidget(data),
+                                  _sectionWidget(data, selectedEtf),
                                 ],
                               ),
                             ),
@@ -274,10 +279,13 @@ class _LabContent extends StatelessWidget {
     );
   }
 
-  Widget _sectionWidget(Etf00631LLabData data) {
+  Widget _sectionWidget(
+    Etf00631LLabData data,
+    _SelectedEtfViewData selectedEtf,
+  ) {
     switch (selectedSection) {
       case _LabSection.overview:
-        return _OverviewSection(data: data);
+        return _OverviewSection(data: data, selectedEtf: selectedEtf);
       case _LabSection.historyBacktest:
         return _HistoryBacktestSection(
           data: data,
@@ -288,6 +296,7 @@ class _LabContent extends StatelessWidget {
           comparisonHistories: comparisonHistories,
           comparisonHistoriesLoading: comparisonHistoriesLoading,
           comparisonHistoriesError: comparisonHistoriesError,
+          selectedEtf: selectedEtf,
         );
       case _LabSection.etf:
         return _EtfCatalogSection(
@@ -295,13 +304,100 @@ class _LabContent extends StatelessWidget {
           onEtfSelected: onEtfSelected,
         );
       case _LabSection.position:
-        return _PositionSection(data: data);
+        return _PositionSection(data: data, selectedEtf: selectedEtf);
       case _LabSection.ai:
-        return _AiSection(data: data);
+        return _AiSection(data: data, selectedEtf: selectedEtf);
       case _LabSection.settings:
-        return _SettingsSection(data: data);
+        return _SettingsSection(data: data, selectedEtf: selectedEtf);
     }
   }
+}
+
+class _SelectedEtfViewData {
+  const _SelectedEtfViewData({
+    required this.code,
+    required this.name,
+    required this.priceHistory,
+    required this.catalogItem,
+    required this.is00631L,
+    required this.marketPrice,
+    required this.estimatedNav,
+    required this.premiumDiscountPct,
+    required this.previousNav,
+    required this.dataTime,
+    required this.sourceStatusLabel,
+  });
+
+  factory _SelectedEtfViewData.from({
+    required Etf00631LLabData data,
+    required String selectedEtfCode,
+    required EtfPriceHistory? selectedPriceHistory,
+  }) {
+    final normalized = selectedEtfCode.trim().toUpperCase().isEmpty
+        ? '00631L'
+        : selectedEtfCode.trim().toUpperCase();
+    final catalogItem = _catalogItemByCode(data.etfCatalog, normalized);
+    final is00631L = normalized == '00631L';
+    final history = selectedPriceHistory ??
+        (is00631L
+            ? data.priceHistory
+            : EtfPriceHistory.empty(
+                code: normalized,
+                name: catalogItem?.displayName ?? normalized,
+                status: EtfDataStatus.error,
+                sourceStatusLabel: 'loading',
+                sourceUrl: '',
+                lastFetchedAt: DateTime.now(),
+                errorMessage: 'Selected ETF price history is loading.',
+              ));
+    final summary = history.completenessSummary();
+    final nav = is00631L ? data.intradayNav : null;
+    final name = history.name.trim().isNotEmpty
+        ? history.name.trim()
+        : catalogItem?.displayName ??
+            (is00631L ? data.profile.fundName : normalized);
+    final marketPrice = is00631L
+        ? nav?.marketPrice ?? summary.latest?.close ?? catalogItem?.marketPrice
+        : catalogItem?.marketPrice ?? summary.latest?.close;
+    final estimatedNav = nav?.estimatedNav ?? catalogItem?.estimatedNav;
+    final premiumDiscountPct =
+        nav?.estimatedPremiumDiscountPct ?? catalogItem?.premiumDiscountPct;
+    final previousNav = nav?.previousBusinessDayNav ?? catalogItem?.previousNav;
+    final dataTime = is00631L
+        ? nav?.dataTime ?? summary.latest?.date ?? catalogItem?.dataTime
+        : catalogItem?.dataTime ?? summary.latest?.date;
+    final sourceStatusLabel = nav?.status.label ??
+        (is00631L
+            ? history.sourceStatusLabel
+            : catalogItem == null
+                ? history.sourceStatusLabel
+                : data.etfCatalog.sourceStatusLabel);
+    return _SelectedEtfViewData(
+      code: normalized,
+      name: name,
+      priceHistory: history,
+      catalogItem: catalogItem,
+      is00631L: is00631L,
+      marketPrice: marketPrice,
+      estimatedNav: estimatedNav,
+      premiumDiscountPct: premiumDiscountPct,
+      previousNav: previousNav,
+      dataTime: dataTime,
+      sourceStatusLabel: sourceStatusLabel,
+    );
+  }
+
+  final String code;
+  final String name;
+  final EtfPriceHistory priceHistory;
+  final EtfCatalogItem? catalogItem;
+  final bool is00631L;
+  final double? marketPrice;
+  final double? estimatedNav;
+  final double? premiumDiscountPct;
+  final double? previousNav;
+  final DateTime? dataTime;
+  final String sourceStatusLabel;
 }
 
 class _DetailsLoadStateStrip extends StatelessWidget {
@@ -1125,38 +1221,48 @@ class _MarketSignalPill extends StatelessWidget {
 }
 
 class _CompactQuoteHeader extends StatelessWidget {
-  const _CompactQuoteHeader({required this.data});
+  const _CompactQuoteHeader({
+    required this.data,
+    required this.selectedEtf,
+  });
 
   final Etf00631LLabData data;
+  final _SelectedEtfViewData selectedEtf;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final nav = data.intradayNav;
     final premiumAssessment = PremiumDiscountAssessment.evaluate(
-      premiumDiscountPct: nav?.estimatedPremiumDiscountPct,
-      sourceStatus: nav?.status ?? EtfDataStatus.error,
-      isStale: nav?.isStale ?? true,
+      premiumDiscountPct: selectedEtf.premiumDiscountPct,
+      sourceStatus: selectedEtf.is00631L
+          ? data.intradayNav?.status ?? EtfDataStatus.error
+          : data.etfCatalog.status,
+      isStale: selectedEtf.is00631L
+          ? data.intradayNav?.isStale ?? true
+          : data.etfCatalog.isStale,
     );
     final premiumColor = _levelColor(
       theme.colorScheme,
       premiumAssessment.level,
     );
-    final history = data.priceHistory.completenessSummary();
+    final history = selectedEtf.priceHistory.completenessSummary();
     final latestHistoryPoint = history.latest;
-    final quoteValue = nav?.marketPrice ?? latestHistoryPoint?.close;
-    final quoteStatus = nav?.status.label ??
-        (latestHistoryPoint == null
-            ? 'unavailable'
-            : data.priceHistory.sourceStatusLabel);
-    final quoteStatusDisplay = nav == null && latestHistoryPoint != null
-        ? '歷史收盤'
-        : _statusDisplay(quoteStatus);
-    final quoteCaption = nav?.dataTime == null
+    final quoteValue = selectedEtf.marketPrice ?? latestHistoryPoint?.close;
+    final quoteStatus = selectedEtf.sourceStatusLabel;
+    final quoteStatusDisplay =
+        !selectedEtf.is00631L && selectedEtf.catalogItem != null
+            ? 'catalog'
+            : selectedEtf.dataTime == latestHistoryPoint?.date &&
+                    latestHistoryPoint != null
+                ? '歷史收盤'
+                : _statusDisplay(quoteStatus);
+    final quoteCaption = selectedEtf.dataTime == null
         ? latestHistoryPoint == null
             ? '市價 · 盤中資料暫無'
             : '市價參考 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
-        : '市價 · 盤中時間 ${formatTimeSeconds(nav!.dataTime!)}';
+        : selectedEtf.is00631L
+            ? '市價 · 盤中時間 ${formatTimeSeconds(selectedEtf.dataTime!)}'
+            : '市價 · catalog ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
     final backendLabel = data.operationsStatus.backendDisconnected
         ? '後端未連線'
         : data.operationsStatus.backendConnectionLabel;
@@ -1183,7 +1289,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              '00631L 元大台灣50正2',
+                              '${selectedEtf.code} ${selectedEtf.name}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.labelMedium?.copyWith(
@@ -1226,7 +1332,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                 const SizedBox(width: 10),
                 _CompactPremiumBox(
                   value: formatSignedNullablePercent(
-                    nav?.estimatedPremiumDiscountPct,
+                    selectedEtf.premiumDiscountPct,
                   ),
                   label: _premiumLabel(premiumAssessment),
                   color: premiumColor,
@@ -1238,11 +1344,11 @@ class _CompactQuoteHeader extends StatelessWidget {
               items: [
                 _QuoteMetaItem(
                   label: '預估淨值',
-                  value: _price(nav?.estimatedNav),
+                  value: _price(selectedEtf.estimatedNav),
                 ),
                 _QuoteMetaItem(
                   label: '前日淨值',
-                  value: _price(nav?.previousBusinessDayNav),
+                  value: _price(selectedEtf.previousNav),
                 ),
                 _QuoteMetaItem(
                   label: '歷史資料',
@@ -1253,7 +1359,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                 _QuoteMetaItem(
                   label: '模式',
                   value: _frontendDataModeDisplay,
-                  caption: backendLabel,
+                  caption: selectedEtf.is00631L ? backendLabel : 'ETF catalog',
                 ),
               ],
             ),
@@ -2191,9 +2297,13 @@ class _MarketBottomNavItem extends StatelessWidget {
 }
 
 class _OverviewSection extends StatelessWidget {
-  const _OverviewSection({required this.data});
+  const _OverviewSection({
+    required this.data,
+    required this.selectedEtf,
+  });
 
   final Etf00631LLabData data;
+  final _SelectedEtfViewData selectedEtf;
 
   @override
   Widget build(BuildContext context) {
@@ -2202,22 +2312,168 @@ class _OverviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _CompactQuoteHeader(data: data),
+        _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
-        _OverviewAtAGlancePanel(data: data),
+        if (selectedEtf.is00631L)
+          _OverviewAtAGlancePanel(data: data)
+        else
+          _SelectedEtfAtAGlancePanel(selectedEtf: selectedEtf),
         const SizedBox(height: 8),
-        _OverviewHoldingsDigestPanel(data: data),
-        const SizedBox(height: 8),
+        if (selectedEtf.is00631L) ...[
+          _OverviewHoldingsDigestPanel(data: data),
+          const SizedBox(height: 8),
+        ],
         _AlwaysExpandedPanel(
-          title: '圖表與曝險',
-          subtitle: '近 60 日收盤與官方每日曝險；需要比較時再展開。',
-          child: _OverviewSignalPanel(data: data),
+          title: selectedEtf.is00631L ? '圖表與曝險' : '價格圖表',
+          subtitle: selectedEtf.is00631L
+              ? '近 60 日收盤與官方每日曝險；需要比較時再展開。'
+              : '${selectedEtf.code} 近 60 日收盤與歷史資料狀態。',
+          child: selectedEtf.is00631L
+              ? _OverviewSignalPanel(data: data)
+              : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
         ),
         const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '更多資料',
-          subtitle: '完整數字、資料來源與內容物變化需要時再展開。',
-          child: _OverviewMorePanel(data: data, history: history),
+          subtitle: selectedEtf.is00631L
+              ? '完整數字、資料來源與內容物變化需要時再展開。'
+              : '${selectedEtf.code} 的資料來源、coverage 與目前限制。',
+          child: selectedEtf.is00631L
+              ? _OverviewMorePanel(data: data, history: history)
+              : _SelectedEtfMorePanel(selectedEtf: selectedEtf),
+        ),
+      ],
+    );
+  }
+}
+
+class _SelectedEtfAtAGlancePanel extends StatelessWidget {
+  const _SelectedEtfAtAGlancePanel({required this.selectedEtf});
+
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final history = selectedEtf.priceHistory.completenessSummary();
+    final performance = selectedEtf.priceHistory.performance;
+    final metrics = [
+      _AtAGlanceMetricData(
+        label: '目前 ETF',
+        value: selectedEtf.code,
+        caption: selectedEtf.name,
+      ),
+      _AtAGlanceMetricData(
+        label: '市價',
+        value: _price(selectedEtf.marketPrice),
+        caption: selectedEtf.sourceStatusLabel,
+      ),
+      _AtAGlanceMetricData(
+        label: '歷史資料',
+        value: history.rowCount >= 2
+            ? '${formatInteger(history.rowCount)} 筆'
+            : '缺資料',
+        caption:
+            '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
+      ),
+      _AtAGlanceMetricData(
+        label: '累積報酬',
+        value: formatSignedNullablePercent(performance.totalReturnPct),
+        caption:
+            '最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}',
+      ),
+    ];
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${selectedEtf.code} 核心資料',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                        ),
+                  ),
+                ),
+                _CompactTextBadge(label: selectedEtf.sourceStatusLabel),
+              ],
+            ),
+            const SizedBox(height: 6),
+            _AtAGlanceMetricGrid(metrics: metrics),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectedEtfSignalPanel extends StatelessWidget {
+  const _SelectedEtfSignalPanel({required this.selectedEtf});
+
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: _OverviewSparklineBlock(points: selectedEtf.priceHistory.points),
+      ),
+    );
+  }
+}
+
+class _SelectedEtfMorePanel extends StatelessWidget {
+  const _SelectedEtfMorePanel({required this.selectedEtf});
+
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final summary = selectedEtf.priceHistory.completenessSummary();
+    return Column(
+      children: [
+        _StatusList(
+          items: [
+            _StatusItem(
+              label: '目前 ETF',
+              status: selectedEtf.code,
+              detail: selectedEtf.name,
+              action: '左上角代號搜尋可切換其他 ETF 或內建股票研究資料。',
+            ),
+            _StatusItem(
+              label: '價格歷史',
+              status: selectedEtf.priceHistory.sourceStatusLabel,
+              detail:
+                  'rows ${formatInteger(summary.rowCount)}，coverage ${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}。',
+              action: summary.rowCount >= 2
+                  ? '可切到歷史回測頁調整日期與查看回測。'
+                  : '請先匯入該 ETF 歷史價格。',
+            ),
+            const _StatusItem(
+              label: '官方內容物',
+              status: '00631L only',
+              detail: '目前官方 holdings parser 仍只接 00631L，不會套用到其他 ETF。',
+              action: '其他 ETF 先使用 catalog 與 price history；內容物資料後續再逐檔接入。',
+            ),
+          ],
         ),
       ],
     );
@@ -3475,11 +3731,13 @@ class _HistorySection extends StatelessWidget {
     required this.data,
     required this.selectedEtfCode,
     required this.priceHistory,
+    required this.show00631LHoldingsHistory,
   });
 
   final Etf00631LLabData data;
   final String selectedEtfCode;
   final EtfPriceHistory priceHistory;
+  final bool show00631LHoldingsHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -3537,53 +3795,66 @@ class _HistorySection extends StatelessWidget {
                 ),
         ),
         const SizedBox(height: 12),
-        _SectionBlock(
-          title: '每日 holdings history',
-          subtitle: '官方 holdings history 從 daily cycle 開始累積，不補假過去資料。',
-          child: data.holdingsHistory.hasData
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _HistoryChangeCards(summary: holdingsTrend),
-                    const SizedBox(height: 12),
-                    _HoldingsTrendCharts(summary: holdingsTrend),
-                    const SizedBox(height: 12),
-                    _CompactExpansionPanel(
-                      title: '最近 30 筆 holdings',
-                      subtitle: 'TX、台積電、股票、期貨、現金與 NAV。',
-                      child: _HorizontalTable(
-                        columns: const [
-                          '日期',
-                          'TX 權重',
-                          '台積電',
-                          '股票 %',
-                          '期貨 %',
-                          '現金/保證金 %',
-                          'NAV',
-                          '發行單位數',
-                        ],
-                        rows: [
-                          for (final point in holdingsTrend.points)
-                            [
-                              formatTaiwanDate(point.tradeDate),
-                              formatNullablePercent(point.txWeightPct),
-                              formatNullablePercent(point.tsmcWeightPct),
-                              formatNullablePercent(point.stockExposurePct),
-                              formatNullablePercent(point.futuresExposurePct),
-                              formatNullablePercent(point.cashAndMarginPct),
-                              _price(point.navPerUnit),
-                              formatInteger(point.outstandingUnits),
-                            ],
-                        ],
+        if (show00631LHoldingsHistory)
+          _SectionBlock(
+            title: '每日 holdings history',
+            subtitle: '官方 holdings history 從 daily cycle 開始累積，不補假過去資料。',
+            child: data.holdingsHistory.hasData
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _HistoryChangeCards(summary: holdingsTrend),
+                      const SizedBox(height: 12),
+                      _HoldingsTrendCharts(summary: holdingsTrend),
+                      const SizedBox(height: 12),
+                      _CompactExpansionPanel(
+                        title: '最近 30 筆 holdings',
+                        subtitle: 'TX、台積電、股票、期貨、現金與 NAV。',
+                        child: _HorizontalTable(
+                          columns: const [
+                            '日期',
+                            'TX 權重',
+                            '台積電',
+                            '股票 %',
+                            '期貨 %',
+                            '現金/保證金 %',
+                            'NAV',
+                            '發行單位數',
+                          ],
+                          rows: [
+                            for (final point in holdingsTrend.points)
+                              [
+                                formatTaiwanDate(point.tradeDate),
+                                formatNullablePercent(point.txWeightPct),
+                                formatNullablePercent(point.tsmcWeightPct),
+                                formatNullablePercent(point.stockExposurePct),
+                                formatNullablePercent(point.futuresExposurePct),
+                                formatNullablePercent(point.cashAndMarginPct),
+                                _price(point.navPerUnit),
+                                formatInteger(point.outstandingUnits),
+                              ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                )
-              : const _EmptyPanel(
-                  title: '尚無 holdings history',
-                  message: '請執行 daily cycle 累積官方每日快照。',
-                ),
-        ),
+                    ],
+                  )
+                : const _EmptyPanel(
+                    title: '尚無 holdings history',
+                    message: '請執行 daily cycle 累積官方每日快照。',
+                  ),
+          )
+        else
+          _SectionBlock(
+            title: '$selectedEtfCode holdings history',
+            subtitle: '目前此 ETF 尚未接官方每日內容物；此頁保留價格歷史、回測與 ETF 比較。',
+            child: const _StatusWrap(
+              labels: [
+                'price history available',
+                'holdings not connected',
+                '不套用 00631L 內容物',
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -3869,6 +4140,7 @@ class _HistoryBacktestSection extends StatelessWidget {
     required this.comparisonHistories,
     required this.comparisonHistoriesLoading,
     required this.comparisonHistoriesError,
+    required this.selectedEtf,
   });
 
   final Etf00631LLabData data;
@@ -3879,10 +4151,11 @@ class _HistoryBacktestSection extends StatelessWidget {
   final List<EtfPriceHistory> comparisonHistories;
   final bool comparisonHistoriesLoading;
   final Object? comparisonHistoriesError;
+  final _SelectedEtfViewData selectedEtf;
 
   @override
   Widget build(BuildContext context) {
-    final history = selectedPriceHistory ?? data.priceHistory;
+    final history = selectedEtf.priceHistory;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -3913,6 +4186,7 @@ class _HistoryBacktestSection extends StatelessWidget {
           data: data,
           selectedEtfCode: selectedEtfCode,
           priceHistory: history,
+          show00631LHoldingsHistory: selectedEtf.is00631L,
         ),
         const SizedBox(height: 10),
         _EtfHistoryComparisonPanel(
@@ -4953,9 +5227,13 @@ class _BacktestDateButton extends StatelessWidget {
 }
 
 class _PositionSection extends StatefulWidget {
-  const _PositionSection({required this.data});
+  const _PositionSection({
+    required this.data,
+    required this.selectedEtf,
+  });
 
   final Etf00631LLabData data;
+  final _SelectedEtfViewData selectedEtf;
 
   @override
   State<_PositionSection> createState() => _PositionSectionState();
@@ -4973,18 +5251,37 @@ class _PositionSectionState extends State<_PositionSection> {
   @override
   void initState() {
     super.initState();
-    PositionStore.load00631L().then((value) {
-      if (!mounted || value == null) {
-        setState(() => _loaded = true);
+    _loadPosition();
+  }
+
+  @override
+  void didUpdateWidget(covariant _PositionSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedEtf.code != widget.selectedEtf.code) {
+      _loadPosition();
+    }
+  }
+
+  void _loadPosition() {
+    _loaded = false;
+    _sharesController.clear();
+    _costController.clear();
+    _assetsController.clear();
+    _feeController.text = '0';
+    _noteController.clear();
+    PositionStore.loadPosition(widget.selectedEtf.code).then((value) {
+      if (!mounted) {
         return;
       }
-      final decoded = jsonDecode(value);
-      if (decoded is Map) {
-        _sharesController.text = decoded['shares']?.toString() ?? '';
-        _costController.text = decoded['averageCost']?.toString() ?? '';
-        _assetsController.text = decoded['totalAssets']?.toString() ?? '';
-        _feeController.text = decoded['feeAndTax']?.toString() ?? '0';
-        _noteController.text = decoded['note']?.toString() ?? '';
+      if (value != null) {
+        final decoded = jsonDecode(value);
+        if (decoded is Map) {
+          _sharesController.text = decoded['shares']?.toString() ?? '';
+          _costController.text = decoded['averageCost']?.toString() ?? '';
+          _assetsController.text = decoded['totalAssets']?.toString() ?? '';
+          _feeController.text = decoded['feeAndTax']?.toString() ?? '0';
+          _noteController.text = decoded['note']?.toString() ?? '';
+        }
       }
       setState(() => _loaded = true);
     });
@@ -5005,8 +5302,8 @@ class _PositionSectionState extends State<_PositionSection> {
     final input = _input;
     final summary = EtfPositionSummary.evaluate(
       input: input,
-      marketPrice: widget.data.intradayNav?.marketPrice,
-      dataTime: widget.data.intradayNav?.dataTime,
+      marketPrice: widget.selectedEtf.marketPrice,
+      dataTime: widget.selectedEtf.dataTime,
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -5017,7 +5314,7 @@ class _PositionSectionState extends State<_PositionSection> {
               ? '依目前市價估算；資料只保存在本機瀏覽器。'
               : '先輸入股數與平均成本，就能在本機估算持倉狀態。',
           icon: Icons.account_balance_wallet_outlined,
-          badges: const ['local-only', 'browser storage', '00631L'],
+          badges: ['local-only', 'browser storage', widget.selectedEtf.code],
           metrics: [
             _SectionHeaderMetric(
               label: '目前市值',
@@ -5043,8 +5340,8 @@ class _PositionSectionState extends State<_PositionSection> {
         _PositionStatePanel(
           input: input,
           summary: summary,
-          marketPrice: widget.data.intradayNav?.marketPrice,
-          sourceLabel: widget.data.intradayNav?.status.label ?? 'unavailable',
+          marketPrice: widget.selectedEtf.marketPrice,
+          sourceLabel: widget.selectedEtf.sourceStatusLabel,
         ),
         const SizedBox(height: 12),
         _SectionBlock(
@@ -5143,12 +5440,12 @@ class _PositionSectionState extends State<_PositionSection> {
   }
 
   Future<void> _save() async {
-    await PositionStore.save00631L(_encodedInput);
+    await PositionStore.savePosition(widget.selectedEtf.code, _encodedInput);
     setState(() => _exportJson = null);
   }
 
   Future<void> _clear() async {
-    await PositionStore.clear00631L();
+    await PositionStore.clearPosition(widget.selectedEtf.code);
     _sharesController.clear();
     _costController.clear();
     _assetsController.clear();
@@ -5164,7 +5461,8 @@ class _PositionSectionState extends State<_PositionSection> {
   String get _encodedInput {
     final input = _input;
     return const JsonEncoder.withIndent('  ').convert({
-      'symbol': '00631L',
+      'symbol': widget.selectedEtf.code,
+      'name': widget.selectedEtf.name,
       'storage': 'local_browser_only',
       'shares': input.shares,
       'averageCost': input.averageCost,
@@ -5263,12 +5561,19 @@ class _PositionResultGrid extends StatelessWidget {
 }
 
 class _AiSection extends StatelessWidget {
-  const _AiSection({required this.data});
+  const _AiSection({
+    required this.data,
+    required this.selectedEtf,
+  });
 
   final Etf00631LLabData data;
+  final _SelectedEtfViewData selectedEtf;
 
   @override
   Widget build(BuildContext context) {
+    if (!selectedEtf.is00631L) {
+      return _SelectedEtfAiSection(selectedEtf: selectedEtf);
+    }
     final summary = data.aiAnalysis;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -5358,6 +5663,81 @@ class _AiSection extends StatelessWidget {
                 _BulletLine(text: bullet, icon: Icons.analytics_outlined),
               const SizedBox(height: 8),
               const Text('非買賣建議。'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SelectedEtfAiSection extends StatelessWidget {
+  const _SelectedEtfAiSection({required this.selectedEtf});
+
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final history = selectedEtf.priceHistory.completenessSummary();
+    final performance = selectedEtf.priceHistory.performance;
+    final bullets = [
+      '${selectedEtf.code} ${selectedEtf.name} 目前使用 ETF catalog 與 price history 產生摘要。',
+      '歷史 coverage ${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}，共 ${formatInteger(history.rowCount)} 筆。',
+      '最新收盤 ${_price(history.latest?.close)}；區間累積報酬 ${formatSignedNullablePercent(performance.totalReturnPct)}，最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}。',
+      selectedEtf.premiumDiscountPct == null
+          ? '此 ETF 目前沒有可用的盤中折溢價欄位。'
+          : 'catalog 折溢價 ${formatSignedNullablePercent(selectedEtf.premiumDiscountPct)}，請以資料時間為準。',
+      '官方每日內容物與 live intraday NAV 目前仍只完整接 00631L；不會把 00631L 資料套用到 ${selectedEtf.code}。',
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeaderCard(
+          title: '${selectedEtf.code} AI 快覽',
+          subtitle: 'rule_based 分析；只解釋目前已載入的 ETF catalog 與歷史資料。',
+          icon: Icons.psychology_alt_outlined,
+          badges: [
+            'AI',
+            'rule_based',
+            selectedEtf.sourceStatusLabel,
+          ],
+          metrics: [
+            _SectionHeaderMetric(
+              label: '資料筆數',
+              value: formatInteger(history.rowCount),
+            ),
+            _SectionHeaderMetric(
+              label: '最新收盤',
+              value: _price(history.latest?.close),
+            ),
+            _SectionHeaderMetric(
+              label: '累積報酬',
+              value: formatSignedNullablePercent(performance.totalReturnPct),
+            ),
+            const _SectionHeaderMetric(
+              label: '性質',
+              value: '非買賣建議',
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: '${selectedEtf.code} 資料解讀摘要',
+          subtitle: '目前不需要 API key；資料不足時只提示缺口。',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _StatusWrap(
+                labels: [
+                  'source rule_based',
+                  'ETF ${selectedEtf.code}',
+                  selectedEtf.sourceStatusLabel,
+                  '非買賣建議',
+                ],
+              ),
+              const SizedBox(height: 12),
+              for (final bullet in bullets)
+                _BulletLine(text: bullet, icon: Icons.insights_outlined),
             ],
           ),
         ),
@@ -5663,9 +6043,13 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
 }
 
 class _SettingsSection extends StatelessWidget {
-  const _SettingsSection({required this.data});
+  const _SettingsSection({
+    required this.data,
+    required this.selectedEtf,
+  });
 
   final Etf00631LLabData data;
+  final _SelectedEtfViewData selectedEtf;
 
   @override
   Widget build(BuildContext context) {
@@ -5698,9 +6082,16 @@ class _SettingsSection extends StatelessWidget {
                 action: '需要切換時點選月亮或太陽圖示。',
               ),
               _StatusItem(
+                label: '目前 ETF',
+                status: selectedEtf.code,
+                detail:
+                    '${selectedEtf.name}；價格資料 ${selectedEtf.priceHistory.sourceStatusLabel}。',
+                action: '左上角代號按鈕可搜尋並切換 ETF。',
+              ),
+              _StatusItem(
                 label: '持倉資料',
                 status: status.positionStatus,
-                detail: '持倉追蹤採 local-only，不會上傳個人持倉。',
+                detail: '${selectedEtf.code} 持倉追蹤採 local-only，不會上傳個人持倉。',
                 action: '可在持倉頁保存、匯出 JSON 或清除。',
               ),
             ],
@@ -8257,6 +8648,16 @@ String _catalogSearchText(EtfCatalogItem item) {
 String _stockSearchText(Stock stock) {
   return '${stock.symbol} ${stock.name} ${stock.industry} ${stock.tags.join(' ')}'
       .toLowerCase();
+}
+
+EtfCatalogItem? _catalogItemByCode(EtfCatalog catalog, String code) {
+  final normalized = code.trim().toUpperCase();
+  for (final item in catalog.items) {
+    if (item.code.trim().toUpperCase() == normalized) {
+      return item;
+    }
+  }
+  return null;
 }
 
 bool _hasImportedEtfHistory(String code) {
