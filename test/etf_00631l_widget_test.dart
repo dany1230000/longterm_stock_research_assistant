@@ -357,11 +357,20 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
     );
     await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(find.text('0050'), findsWidgets);
     expect(find.textContaining('元大台灣50'), findsWidgets);
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     expect(find.byKey(const ValueKey('00631l-backtest-view')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-etf-history-comparison')),
+      findsOneWidget,
+    );
+    expect(find.text('ETF 歷史比較'), findsOneWidget);
+    expect(find.text('最近 1 年'), findsWidgets);
+    expect(find.text('比較檔數'), findsOneWidget);
     _expectNoTradingActionText();
   });
 

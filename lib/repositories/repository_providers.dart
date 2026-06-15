@@ -217,3 +217,31 @@ final selectedEtfPriceHistoryProvider =
     FutureProvider.family<EtfPriceHistory, String>((ref, code) {
   return ref.watch(official00631LRepositoryProvider).fetchEtfPriceHistory(code);
 });
+
+final etfHistoryComparisonProvider =
+    FutureProvider.family<List<EtfPriceHistory>, String>((ref, selectedCode) {
+  final repository = ref.watch(official00631LRepositoryProvider);
+  final normalizedSelected = selectedCode.trim().toUpperCase();
+  final codes = <String>{
+    if (normalizedSelected.isNotEmpty) normalizedSelected,
+    '00631L',
+    '0050',
+    '006208',
+    '00878',
+    '00919',
+  }.toList(growable: false);
+
+  return Future.wait([
+    for (final code in codes)
+      repository.fetchEtfPriceHistory(code).catchError(
+            (Object error) => EtfPriceHistory.empty(
+              code: code,
+              name: code,
+              status: EtfDataStatus.error,
+              sourceStatusLabel: 'error',
+              sourceUrl: '',
+              errorMessage: error.toString(),
+            ),
+          ),
+  ]);
+});

@@ -196,6 +196,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_7_static_etf_catalog_summary.md",
         "docs/00631l_v4_8_multi_etf_history_import_summary.md",
         "docs/00631l_v4_9_etf_history_selection_summary.md",
+        "docs/00631l_v4_10_etf_history_comparison_summary.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

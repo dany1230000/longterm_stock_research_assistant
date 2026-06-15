@@ -63,6 +63,8 @@ class _LeveragedEtf00631LScreenState
     final selectedHistoryValue = useEmbeddedPriceHistory
         ? null
         : ref.watch(selectedEtfPriceHistoryProvider(_selectedEtfCode));
+    final comparisonHistoriesValue =
+        ref.watch(etfHistoryComparisonProvider(_selectedEtfCode));
     final detailsLoading = !fullValue.hasValue && fullValue.isLoading;
     final detailsError = fullValue.hasError && !fullValue.hasValue
         ? fullValue.error.toString()
@@ -80,6 +82,12 @@ class _LeveragedEtf00631LScreenState
                   selectedHistoryValue?.isLoading ?? false,
               selectedPriceHistoryError: selectedHistoryValue?.hasError == true
                   ? selectedHistoryValue?.error
+                  : null,
+              comparisonHistories:
+                  comparisonHistoriesValue.valueOrNull ?? const [],
+              comparisonHistoriesLoading: comparisonHistoriesValue.isLoading,
+              comparisonHistoriesError: comparisonHistoriesValue.hasError
+                  ? comparisonHistoriesValue.error
                   : null,
               selectedSection: _section,
               detailsLoading: detailsLoading,
@@ -150,6 +158,9 @@ class _LabContent extends StatelessWidget {
     required this.selectedPriceHistory,
     required this.selectedPriceHistoryLoading,
     required this.selectedPriceHistoryError,
+    required this.comparisonHistories,
+    required this.comparisonHistoriesLoading,
+    required this.comparisonHistoriesError,
     required this.selectedSection,
     required this.detailsLoading,
     required this.detailsError,
@@ -163,6 +174,9 @@ class _LabContent extends StatelessWidget {
   final EtfPriceHistory? selectedPriceHistory;
   final bool selectedPriceHistoryLoading;
   final Object? selectedPriceHistoryError;
+  final List<EtfPriceHistory> comparisonHistories;
+  final bool comparisonHistoriesLoading;
+  final Object? comparisonHistoriesError;
   final _LabSection selectedSection;
   final bool detailsLoading;
   final String? detailsError;
@@ -251,6 +265,9 @@ class _LabContent extends StatelessWidget {
           selectedPriceHistory: selectedPriceHistory,
           selectedPriceHistoryLoading: selectedPriceHistoryLoading,
           selectedPriceHistoryError: selectedPriceHistoryError,
+          comparisonHistories: comparisonHistories,
+          comparisonHistoriesLoading: comparisonHistoriesLoading,
+          comparisonHistoriesError: comparisonHistoriesError,
         );
       case _LabSection.etf:
         return _EtfCatalogSection(
@@ -3720,6 +3737,9 @@ class _HistoryBacktestSection extends StatelessWidget {
     required this.selectedPriceHistory,
     required this.selectedPriceHistoryLoading,
     required this.selectedPriceHistoryError,
+    required this.comparisonHistories,
+    required this.comparisonHistoriesLoading,
+    required this.comparisonHistoriesError,
   });
 
   final Etf00631LLabData data;
@@ -3727,6 +3747,9 @@ class _HistoryBacktestSection extends StatelessWidget {
   final EtfPriceHistory? selectedPriceHistory;
   final bool selectedPriceHistoryLoading;
   final Object? selectedPriceHistoryError;
+  final List<EtfPriceHistory> comparisonHistories;
+  final bool comparisonHistoriesLoading;
+  final Object? comparisonHistoriesError;
 
   @override
   Widget build(BuildContext context) {
@@ -3749,12 +3772,145 @@ class _HistoryBacktestSection extends StatelessWidget {
           priceHistory: history,
         ),
         const SizedBox(height: 10),
+        _EtfHistoryComparisonPanel(
+          key: const ValueKey('00631l-etf-history-comparison'),
+          selectedEtfCode: selectedEtfCode,
+          selectedHistory: history,
+          histories: comparisonHistories,
+          isLoading: comparisonHistoriesLoading,
+          error: comparisonHistoriesError,
+        ),
+        const SizedBox(height: 10),
         _BacktestSection(
           key: const ValueKey('00631l-backtest-view'),
           data: data,
           selectedEtfCode: selectedEtfCode,
           priceHistory: history,
         ),
+      ],
+    );
+  }
+}
+
+class _EtfHistoryComparisonPanel extends StatelessWidget {
+  const _EtfHistoryComparisonPanel({
+    super.key,
+    required this.selectedEtfCode,
+    required this.selectedHistory,
+    required this.histories,
+    required this.isLoading,
+    required this.error,
+  });
+
+  final String selectedEtfCode;
+  final EtfPriceHistory selectedHistory;
+  final List<EtfPriceHistory> histories;
+  final bool isLoading;
+  final Object? error;
+
+  @override
+  Widget build(BuildContext context) {
+    final endDate = _historyLastDate(selectedHistory) ??
+        _latestHistoryEnd(histories) ??
+        DateTime.now();
+    final startDate = _defaultTrailingStart(
+      first: _historyFirstDate(selectedHistory),
+      end: endDate,
+      years: 1,
+    );
+    final mergedHistories = _mergeSelectedComparisonHistories(
+      selectedHistory: selectedHistory,
+      histories: histories,
+    );
+    final metrics = [
+      for (final history in mergedHistories)
+        _comparisonMetricForHistory(
+          history: history,
+          startDate: startDate,
+          endDate: endDate,
+        ),
+    ];
+    final usableMetrics = [
+      for (final metric in metrics)
+        if (metric.rowCount >= 2) metric,
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeaderCard(
+          title: 'ETF 歷史比較',
+          subtitle: '使用已匯入的歷史收盤價；比較結果只描述過去資料，非買賣建議。',
+          icon: Icons.stacked_line_chart_outlined,
+          badges: [
+            selectedEtfCode,
+            '最近 1 年',
+            'static / proxy history',
+          ],
+          metrics: [
+            _SectionHeaderMetric(
+              label: '比較檔數',
+              value: formatInteger(usableMetrics.length),
+              caption: '已匯入且有足夠資料',
+            ),
+            _SectionHeaderMetric(
+              label: '區間',
+              value: '${_dateOrDash(startDate)} - ${_dateOrDash(endDate)}',
+              caption: '依目前選取 ETF 對齊',
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        if (isLoading || error != null) ...[
+          _DetailsLoadStateStrip(
+            isLoading: isLoading,
+            errorMessage: error?.toString(),
+          ),
+          const SizedBox(height: 10),
+        ],
+        if (usableMetrics.isEmpty)
+          const _EmptyPanel(
+            title: '尚無 ETF 比較資料',
+            message:
+                '請先匯入 ETF 歷史價格，或確認 static public data 內含 etf_price_history 檔案。',
+          )
+        else ...[
+          _StatusWrap(
+            labels: [
+              'selected $selectedEtfCode',
+              'rows ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
+              'history comparison',
+            ],
+          ),
+          const SizedBox(height: 10),
+          _HorizontalTable(
+            columns: const [
+              '代號',
+              '名稱',
+              '區間報酬',
+              '年化',
+              '最大回撤',
+              '波動',
+              '最新收盤',
+              '筆數',
+              '狀態',
+            ],
+            rows: [
+              for (final metric in usableMetrics)
+                [
+                  metric.code,
+                  metric.name,
+                  formatSignedNullablePercent(metric.totalReturnPct),
+                  formatSignedNullablePercent(metric.annualizedReturnPct),
+                  formatSignedNullablePercent(metric.maxDrawdownPct),
+                  formatNullablePercent(metric.annualizedVolatilityPct),
+                  _price(metric.latestClose),
+                  formatInteger(metric.rowCount),
+                  metric.sourceStatusLabel,
+                ],
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -6206,6 +6362,30 @@ class _ComparisonRowData {
   final String caption;
 }
 
+class _EtfComparisonMetric {
+  const _EtfComparisonMetric({
+    required this.code,
+    required this.name,
+    required this.rowCount,
+    required this.latestClose,
+    required this.totalReturnPct,
+    required this.annualizedReturnPct,
+    required this.maxDrawdownPct,
+    required this.annualizedVolatilityPct,
+    required this.sourceStatusLabel,
+  });
+
+  final String code;
+  final String name;
+  final int rowCount;
+  final double? latestClose;
+  final double? totalReturnPct;
+  final double? annualizedReturnPct;
+  final double? maxDrawdownPct;
+  final double? annualizedVolatilityPct;
+  final String sourceStatusLabel;
+}
+
 class _ComparisonGroup extends StatelessWidget {
   const _ComparisonGroup({
     required this.title,
@@ -7400,6 +7580,110 @@ DateTime? _historyFirstDate(EtfPriceHistory history) {
 
 String _catalogSearchText(EtfCatalogItem item) {
   return '${item.code} ${item.name} ${item.targetType}'.toLowerCase();
+}
+
+List<EtfPriceHistory> _mergeSelectedComparisonHistories({
+  required EtfPriceHistory selectedHistory,
+  required List<EtfPriceHistory> histories,
+}) {
+  final byCode = <String, EtfPriceHistory>{};
+  void put(EtfPriceHistory history) {
+    final code = history.code.trim().toUpperCase();
+    if (code.isEmpty) {
+      return;
+    }
+    final existing = byCode[code];
+    if (existing == null || history.points.length >= existing.points.length) {
+      byCode[code] = history;
+    }
+  }
+
+  put(selectedHistory);
+  for (final history in histories) {
+    put(history);
+  }
+
+  const preferredOrder = ['00631L', '0050', '006208', '00878', '00919'];
+  final values = byCode.values.toList(growable: false);
+  values.sort((a, b) {
+    final selectedCode = selectedHistory.code.trim().toUpperCase();
+    if (a.code == selectedCode && b.code != selectedCode) {
+      return -1;
+    }
+    if (b.code == selectedCode && a.code != selectedCode) {
+      return 1;
+    }
+    final aIndex = preferredOrder.indexOf(a.code);
+    final bIndex = preferredOrder.indexOf(b.code);
+    if (aIndex != -1 || bIndex != -1) {
+      return (aIndex == -1 ? 999 : aIndex)
+          .compareTo(bIndex == -1 ? 999 : bIndex);
+    }
+    return a.code.compareTo(b.code);
+  });
+  return values;
+}
+
+DateTime? _latestHistoryEnd(List<EtfPriceHistory> histories) {
+  DateTime? latest;
+  for (final history in histories) {
+    final end = _historyLastDate(history);
+    if (end != null && (latest == null || end.isAfter(latest))) {
+      latest = end;
+    }
+  }
+  return latest;
+}
+
+_EtfComparisonMetric _comparisonMetricForHistory({
+  required EtfPriceHistory history,
+  required DateTime startDate,
+  required DateTime endDate,
+}) {
+  final filtered = _filteredPriceHistory(
+    history,
+    startDate: startDate,
+    endDate: endDate,
+  );
+  final summary = filtered.completenessSummary();
+  final performance = filtered.performance;
+  final code = history.code.trim().toUpperCase();
+  return _EtfComparisonMetric(
+    code: code.isEmpty ? 'ETF' : code,
+    name: _historyDisplayName(history),
+    rowCount: summary.rowCount,
+    latestClose: summary.latest?.performanceClose,
+    totalReturnPct: performance.totalReturnPct,
+    annualizedReturnPct: performance.annualizedReturnPct,
+    maxDrawdownPct: performance.maxDrawdownPct,
+    annualizedVolatilityPct: performance.annualizedVolatilityPct,
+    sourceStatusLabel: history.sourceStatusLabel,
+  );
+}
+
+String _historyDisplayName(EtfPriceHistory history) {
+  final name = history.name.trim();
+  if (name.isNotEmpty && name != history.code) {
+    return name;
+  }
+  return _knownEtfName(history.code) ?? history.code;
+}
+
+String? _knownEtfName(String code) {
+  switch (code.trim().toUpperCase()) {
+    case '00631L':
+      return '元大台灣50正2';
+    case '0050':
+      return '元大台灣50';
+    case '006208':
+      return '富邦台50';
+    case '00878':
+      return '國泰永續高股息';
+    case '00919':
+      return '群益台灣精選高息';
+    default:
+      return null;
+  }
 }
 
 bool _isTaiwanEquityEtf(EtfCatalogItem item) {

@@ -177,6 +177,13 @@ v4.9 ETF history selection:
 - GitHub Pages builds import selected ETF history before exporting static public data.
 - Summary: `docs\00631l_v4_9_etf_history_selection_summary.md`.
 
+v4.10 ETF history comparison:
+
+- The history/backtest page now shows an `ETF 歷史比較` section using imported histories for `00631L`, `0050`, `006208`, `00878`, and `00919`.
+- The comparison defaults to the selected ETF's latest one-year window and reports return, drawdown, volatility, latest close, row count, and source status.
+- The top-left ETF selector remains the entry point; the bottom navigation stays focused on overview, history/backtest, position, AI, and settings.
+- Summary: `docs\00631l_v4_10_etf_history_comparison_summary.md`.
+
 v3.6 UI refresh:
 
 - `/00631l-lab` now uses a quote-first stock-app style header.
