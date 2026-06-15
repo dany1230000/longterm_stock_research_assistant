@@ -3859,6 +3859,10 @@ class _EtfHistoryComparisonPanelState
     ];
     final allUsableCount =
         metrics.where((metric) => metric.rowCount >= 2).length;
+    final chartHistories = _comparisonChartHistories(
+      histories: mergedHistories,
+      metrics: usableMetrics,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3910,10 +3914,13 @@ class _EtfHistoryComparisonPanelState
         ),
         const SizedBox(height: 10),
         if (usableMetrics.isEmpty)
-          const _EmptyPanel(
-            title: '尚無 ETF 比較資料',
-            message:
-                '請先匯入 ETF 歷史價格，或確認 static public data 內含 etf_price_history 檔案。',
+          const KeyedSubtree(
+            key: ValueKey('00631l-etf-comparison-return-chart'),
+            child: _EmptyPanel(
+              title: 'ETF 報酬比較圖暫無資料',
+              message:
+                  '請先匯入 ETF 歷史價格，或確認 static public data 內含 etf_price_history 檔案。',
+            ),
           )
         else ...[
           _StatusWrap(
@@ -3923,6 +3930,13 @@ class _EtfHistoryComparisonPanelState
               'rows ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
               'history comparison',
             ],
+          ),
+          const SizedBox(height: 10),
+          _EtfComparisonReturnChart(
+            key: const ValueKey('00631l-etf-comparison-return-chart'),
+            histories: chartHistories,
+            startDate: startDate,
+            endDate: endDate,
           ),
           const SizedBox(height: 10),
           _HorizontalTable(
@@ -3956,6 +3970,334 @@ class _EtfHistoryComparisonPanelState
       ],
     );
   }
+}
+
+class _EtfComparisonReturnChart extends StatefulWidget {
+  const _EtfComparisonReturnChart({
+    super.key,
+    required this.histories,
+    required this.startDate,
+    required this.endDate,
+  });
+
+  final List<EtfPriceHistory> histories;
+  final DateTime startDate;
+  final DateTime endDate;
+
+  @override
+  State<_EtfComparisonReturnChart> createState() =>
+      _EtfComparisonReturnChartState();
+}
+
+class _EtfComparisonReturnChartState extends State<_EtfComparisonReturnChart> {
+  List<_TouchedComparisonValue> _touchedValues = const [];
+  DateTime? _touchedDate;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final series = _buildComparisonChartSeries(
+      context: context,
+      histories: widget.histories,
+      startDate: widget.startDate,
+      endDate: widget.endDate,
+    );
+    if (series.isEmpty) {
+      return const _EmptyPanel(
+        title: 'ETF 報酬比較圖暫無資料',
+        message: '目前篩選條件下沒有足夠歷史價格可畫比較圖。',
+      );
+    }
+
+    final maxDays =
+        widget.endDate.difference(widget.startDate).inDays.clamp(1, 10000);
+    var minY = 0.0;
+    var maxY = 0.0;
+    for (final item in series) {
+      for (final spot in item.spots) {
+        if (spot.y < minY) {
+          minY = spot.y;
+        }
+        if (spot.y > maxY) {
+          maxY = spot.y;
+        }
+      }
+    }
+    if ((maxY - minY).abs() < 0.01) {
+      maxY += 1;
+      minY -= 1;
+    }
+    final padding = (maxY - minY).abs() * 0.12;
+    final bottomInterval = maxDays <= 2 ? 1.0 : maxDays / 2;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'ETF 報酬比較圖',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              '以區間第一筆收盤價歸零，顯示歷史區間報酬；可點擊圖表查看日期與數值。',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketMutedTextColor(context),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                for (final item in series)
+                  _ChartLegendPill(
+                    color: item.color,
+                    label: '${item.code} ${item.name}',
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 230,
+              child: LineChart(
+                LineChartData(
+                  minX: 0,
+                  maxX: maxDays.toDouble(),
+                  minY: minY - padding,
+                  maxY: maxY + padding,
+                  gridData: FlGridData(
+                    show: true,
+                    getDrawingHorizontalLine: (_) => FlLine(
+                      color: theme.colorScheme.outlineVariant
+                          .withValues(alpha: 0.45),
+                      strokeWidth: 0.8,
+                    ),
+                    getDrawingVerticalLine: (_) => FlLine(
+                      color: theme.colorScheme.outlineVariant
+                          .withValues(alpha: 0.3),
+                      strokeWidth: 0.6,
+                    ),
+                  ),
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant,
+                    ),
+                  ),
+                  lineTouchData: LineTouchData(
+                    enabled: true,
+                    touchCallback: (event, response) {
+                      final spots = response?.lineBarSpots;
+                      if (spots == null || spots.isEmpty) {
+                        return;
+                      }
+                      final touchedX = spots.first.x.round();
+                      final touchedDate =
+                          widget.startDate.add(Duration(days: touchedX));
+                      final values = [
+                        for (final spot in spots)
+                          if (spot.barIndex >= 0 &&
+                              spot.barIndex < series.length)
+                            _TouchedComparisonValue(
+                              code: series[spot.barIndex].code,
+                              value: spot.y,
+                            ),
+                      ];
+                      setState(() {
+                        _touchedDate = touchedDate;
+                        _touchedValues = values;
+                      });
+                    },
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipItems: (spots) => [
+                        for (final spot in spots)
+                          if (spot.barIndex >= 0 &&
+                              spot.barIndex < series.length)
+                            LineTooltipItem(
+                              '${series[spot.barIndex].code}\n${formatSignedNullablePercent(spot.y)}',
+                              const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 11,
+                              ),
+                            ),
+                      ],
+                    ),
+                  ),
+                  titlesData: FlTitlesData(
+                    topTitles: const AxisTitles(),
+                    rightTitles: const AxisTitles(),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 44,
+                        getTitlesWidget: (value, meta) => Text(
+                          '${value.toStringAsFixed(0)}%',
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      ),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 34,
+                        interval: bottomInterval,
+                        getTitlesWidget: (value, meta) {
+                          final day = value.round().clamp(0, maxDays);
+                          final date =
+                              widget.startDate.add(Duration(days: day));
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: Text(
+                              _shortChartDate(date),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                height: 1.05,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  lineBarsData: [
+                    for (final item in series)
+                      LineChartBarData(
+                        spots: item.spots,
+                        isCurved: false,
+                        barWidth: 2.4,
+                        color: item.color,
+                        dotData: FlDotData(show: item.spots.length <= 18),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            _ComparisonTouchDetail(
+              date: _touchedDate,
+              values: _touchedValues,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ChartLegendPill extends StatelessWidget {
+  const _ChartLegendPill({required this.color, required this.label});
+
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(999),
+        color: color.withValues(alpha: 0.12),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: theme.textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ComparisonTouchDetail extends StatelessWidget {
+  const _ComparisonTouchDetail({
+    required this.date,
+    required this.values,
+  });
+
+  final DateTime? date;
+  final List<_TouchedComparisonValue> values;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    if (date == null || values.isEmpty) {
+      return Text(
+        '點擊圖表可查看指定日期附近的 ETF 區間報酬。',
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: _marketMutedTextColor(context),
+          fontWeight: FontWeight.w800,
+        ),
+      );
+    }
+    return Wrap(
+      spacing: 8,
+      runSpacing: 6,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text(
+          formatTaiwanDate(date!),
+          style: theme.textTheme.labelMedium?.copyWith(
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        for (final item in values)
+          _StatusPill(
+            label: '${item.code} ${formatSignedNullablePercent(item.value)}',
+          ),
+      ],
+    );
+  }
+}
+
+class _EtfComparisonChartSeries {
+  const _EtfComparisonChartSeries({
+    required this.code,
+    required this.name,
+    required this.color,
+    required this.spots,
+  });
+
+  final String code;
+  final String name;
+  final Color color;
+  final List<FlSpot> spots;
+}
+
+class _TouchedComparisonValue {
+  const _TouchedComparisonValue({
+    required this.code,
+    required this.value,
+  });
+
+  final String code;
+  final double value;
 }
 
 class _BacktestSection extends StatefulWidget {
@@ -7736,6 +8078,73 @@ bool _comparisonFilterIncludes(
     case _EtfComparisonFilter.all:
       return true;
   }
+}
+
+List<EtfPriceHistory> _comparisonChartHistories({
+  required List<EtfPriceHistory> histories,
+  required List<_EtfComparisonMetric> metrics,
+}) {
+  final byCode = <String, EtfPriceHistory>{
+    for (final history in histories) history.code.trim().toUpperCase(): history,
+  };
+  return [
+    for (final metric in metrics.take(5))
+      if (byCode[metric.code] != null) byCode[metric.code]!,
+  ];
+}
+
+List<_EtfComparisonChartSeries> _buildComparisonChartSeries({
+  required BuildContext context,
+  required List<EtfPriceHistory> histories,
+  required DateTime startDate,
+  required DateTime endDate,
+}) {
+  final theme = Theme.of(context);
+  final palette = [
+    theme.colorScheme.primary,
+    theme.colorScheme.tertiary,
+    theme.colorScheme.secondary,
+    Colors.amber.shade700,
+    Colors.pinkAccent.shade200,
+  ];
+  final series = <_EtfComparisonChartSeries>[];
+  for (var index = 0;
+      index < histories.length && index < palette.length;
+      index += 1) {
+    final history = histories[index];
+    final points = [
+      for (final point in history.points)
+        if (!point.date.isBefore(startDate) && !point.date.isAfter(endDate))
+          point,
+    ]..sort((a, b) => a.date.compareTo(b.date));
+    if (points.length < 2) {
+      continue;
+    }
+    final base = points.first.performanceClose;
+    if (base <= 0) {
+      continue;
+    }
+    final spots = <FlSpot>[];
+    for (final point in points) {
+      final x = point.date.difference(startDate).inDays.toDouble();
+      final y = (point.performanceClose / base - 1) * 100;
+      if (x.isFinite && y.isFinite) {
+        spots.add(FlSpot(x, y));
+      }
+    }
+    if (spots.length < 2) {
+      continue;
+    }
+    series.add(
+      _EtfComparisonChartSeries(
+        code: history.code,
+        name: _historyDisplayName(history),
+        color: palette[index],
+        spots: spots,
+      ),
+    );
+  }
+  return series;
 }
 
 String? _knownEtfName(String code) {

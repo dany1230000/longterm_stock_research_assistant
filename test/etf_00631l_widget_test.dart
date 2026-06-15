@@ -368,6 +368,10 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-history-comparison')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
+      findsOneWidget,
+    );
     expect(find.text('ETF 歷史比較'), findsOneWidget);
     expect(find.text('最近 1 年'), findsWidgets);
     expect(find.text('比較檔數'), findsOneWidget);
