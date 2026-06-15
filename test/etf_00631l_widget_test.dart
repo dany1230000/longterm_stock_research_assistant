@@ -49,7 +49,7 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-top-search-button')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-section-etf')),
@@ -75,7 +75,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
-    expect(find.textContaining('ETF catalog 已集中到左上角代號搜尋'), findsOneWidget);
+    expect(find.textContaining('左上角代號搜尋可查 ETF catalog'), findsOneWidget);
     expect(find.text('history ready 15'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
@@ -106,8 +106,12 @@ void main() {
       '2330',
     );
     await tester.pumpAndSettle();
-    expect(find.text('查無代號'), findsOneWidget);
-    expect(find.textContaining('股票資料源尚未接入'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('00631l-stock-search-result-2330')),
+      findsOneWidget,
+    );
+    expect(find.text('台積電'), findsWidgets);
+    expect(find.textContaining('股票研究資料'), findsWidgets);
     _expectNoTradingActionText();
   });
 
@@ -354,25 +358,6 @@ void main() {
     );
     expect(find.byKey(const ValueKey('00631l-symbol-search-result-00631L')),
         findsNothing);
-    _expectNoTradingActionText();
-  });
-
-  testWidgets('top right search icon opens ETF and stock search sheet',
-      (tester) async {
-    await _pumpLab(tester, Mock00631LRepository());
-
-    await tester.tap(find.byKey(const ValueKey('00631l-top-search-button')));
-    await tester.pumpAndSettle();
-
-    expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('00631l-symbol-search-field')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('00631l-symbol-search-result-00631L')),
-      findsOneWidget,
-    );
     _expectNoTradingActionText();
   });
 

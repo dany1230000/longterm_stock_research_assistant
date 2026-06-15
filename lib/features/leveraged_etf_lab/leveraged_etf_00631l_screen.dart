@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../models/leveraged_etf_lab.dart';
+import '../../models/stock.dart';
 import '../../repositories/repository_providers.dart';
 import '../../services/app_theme_controller.dart';
 import '../../services/position_store.dart';
@@ -580,20 +582,6 @@ class _MarketTopBar extends StatelessWidget {
                 const SizedBox(width: 4),
               ],
               IconButton(
-                key: const ValueKey('00631l-top-search-button'),
-                tooltip: '搜尋 ETF / 股票代號',
-                onPressed: data == null
-                    ? null
-                    : () => _showSymbolSearchSheet(
-                          context,
-                          data!,
-                          onEtfSelected: onEtfSelected,
-                        ),
-                color: _marketTextColor(context),
-                visualDensity: VisualDensity.compact,
-                icon: const Icon(Icons.search, size: 21),
-              ),
-              IconButton(
                 tooltip: '重新整理',
                 onPressed: onRefresh,
                 color: _marketTextColor(context),
@@ -673,17 +661,17 @@ Future<void> _showSymbolSearchSheet(BuildContext context, Etf00631LLabData data,
   );
 }
 
-class _SymbolSearchSheet extends StatefulWidget {
+class _SymbolSearchSheet extends ConsumerStatefulWidget {
   const _SymbolSearchSheet({required this.data, this.onEtfSelected});
 
   final Etf00631LLabData data;
   final ValueChanged<String>? onEtfSelected;
 
   @override
-  State<_SymbolSearchSheet> createState() => _SymbolSearchSheetState();
+  ConsumerState<_SymbolSearchSheet> createState() => _SymbolSearchSheetState();
 }
 
-class _SymbolSearchSheetState extends State<_SymbolSearchSheet> {
+class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
   final _controller = TextEditingController();
 
   @override
@@ -696,6 +684,7 @@ class _SymbolSearchSheetState extends State<_SymbolSearchSheet> {
   Widget build(BuildContext context) {
     final query = _controller.text.trim().toLowerCase();
     final catalog = widget.data.etfCatalog;
+    final stocksAsync = ref.watch(watchlistProvider);
     final readyHistoryCount = _catalogHistoryReadyCount(catalog);
     final items = query.isEmpty
         ? catalog.focusItems
@@ -704,6 +693,15 @@ class _SymbolSearchSheetState extends State<_SymbolSearchSheet> {
               if (_catalogSearchText(item).contains(query)) item,
           ];
     final visibleItems = items.take(30).toList(growable: false);
+    final stockItems = query.isEmpty
+        ? const <Stock>[]
+        : stocksAsync.maybeWhen(
+            data: (stocks) => [
+              for (final stock in stocks)
+                if (_stockSearchText(stock).contains(query)) stock,
+            ].take(12).toList(growable: false),
+            orElse: () => const <Stock>[],
+          );
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Padding(
@@ -730,7 +728,7 @@ class _SymbolSearchSheetState extends State<_SymbolSearchSheet> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'ETF catalog 已集中到左上角代號搜尋；股票資料源尚未接入。',
+                        '左上角代號搜尋可查 ETF catalog，也可開啟內建股票研究資料。',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: _marketMutedTextColor(context),
                               fontWeight: FontWeight.w700,
@@ -776,33 +774,102 @@ class _SymbolSearchSheetState extends State<_SymbolSearchSheet> {
                 'catalog ${catalog.sourceStatusLabel}',
                 'rows ${formatInteger(catalog.rowCount)}',
                 'history ready ${formatInteger(readyHistoryCount)}',
-                if (query.isEmpty) '常用代號' else '搜尋結果 ${visibleItems.length}',
+                if (query.isEmpty) '常用代號' else 'ETF ${visibleItems.length}',
+                if (query.isNotEmpty) '股票 ${stockItems.length}',
               ],
             ),
             const SizedBox(height: 10),
             Flexible(
-              child: visibleItems.isEmpty
+              child: visibleItems.isEmpty && stockItems.isEmpty
                   ? _EmptyPanel(
                       title: '查無代號',
                       message: query.isEmpty
                           ? 'ETF catalog 暫無明細。'
-                          : '目前只載入 ETF catalog；股票資料源尚未接入。',
+                          : '目前沒有符合的 ETF 或內建股票研究資料。',
                     )
                   : ListView.separated(
                       shrinkWrap: true,
-                      itemCount: visibleItems.length,
+                      itemCount: visibleItems.length + stockItems.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
                       itemBuilder: (context, index) {
-                        final item = visibleItems[index];
-                        return _SymbolSearchResultTile(
-                          item: item,
-                          selected: item.code == widget.data.profile.symbol,
-                          onSelected: widget.onEtfSelected,
-                        );
+                        if (index < visibleItems.length) {
+                          final item = visibleItems[index];
+                          return _SymbolSearchResultTile(
+                            item: item,
+                            selected: item.code == widget.data.profile.symbol,
+                            onSelected: widget.onEtfSelected,
+                          );
+                        }
+                        final stock = stockItems[index - visibleItems.length];
+                        return _StockSearchResultTile(stock: stock);
                       },
                     ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StockSearchResultTile extends StatelessWidget {
+  const _StockSearchResultTile({required this.stock});
+
+  final Stock stock;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      key: ValueKey('00631l-stock-search-result-${stock.symbol}'),
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        final router = GoRouter.of(context);
+        Navigator.of(context).pop();
+        router.push('/stocks/${stock.symbol}');
+      },
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketPanelAltColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: _marketBorderColor(context)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              _MiniStatusBadge(label: stock.symbol),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      stock.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${stock.industry} / 股票研究資料',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: _marketMutedTextColor(context),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              const _MiniStatusBadge(label: 'STOCK'),
+            ],
+          ),
         ),
       ),
     );
@@ -8185,6 +8252,11 @@ DateTime? _historyFirstDate(EtfPriceHistory history) {
 
 String _catalogSearchText(EtfCatalogItem item) {
   return '${item.code} ${item.name} ${item.targetType}'.toLowerCase();
+}
+
+String _stockSearchText(Stock stock) {
+  return '${stock.symbol} ${stock.name} ${stock.industry} ${stock.tags.join(' ')}'
+      .toLowerCase();
 }
 
 bool _hasImportedEtfHistory(String code) {
