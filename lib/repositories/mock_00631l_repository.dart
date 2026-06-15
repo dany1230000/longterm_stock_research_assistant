@@ -2,6 +2,24 @@ import '../models/leveraged_etf_lab.dart';
 import 'official_00631l_repository.dart';
 import 'yuanta_00631l_parser.dart';
 
+const _mockEtfHistoryReadyCodes = {
+  '00631L',
+  '0050',
+  '0056',
+  '006208',
+  '00692',
+  '00713',
+  '00757',
+  '00850',
+  '00878',
+  '00881',
+  '00919',
+  '00922',
+  '00923',
+  '00929',
+  '00940',
+};
+
 class Mock00631LRepository extends Official00631LRepository {
   Mock00631LRepository({
     DateTime Function()? clock,
@@ -102,6 +120,17 @@ class Mock00631LRepository extends Official00631LRepository {
   }) async {
     final normalized = code.trim().toUpperCase();
     final now = _clock();
+    if (!_mockEtfHistoryReadyCodes.contains(normalized)) {
+      return EtfPriceHistory.empty(
+        code: normalized,
+        name: normalized,
+        lastFetchedAt: now,
+        status: EtfDataStatus.error,
+        sourceStatusLabel: 'unavailable',
+        sourceUrl: 'mock://$normalized-price-history',
+        errorMessage: 'Mock catalog-only ETF has no imported price history.',
+      );
+    }
     final profile = _mockEtfHistoryProfile(normalized);
     final points = [
       EtfPriceHistoryPoint(
@@ -283,6 +312,15 @@ class Mock00631LRepository extends Official00631LRepository {
           premiumDiscountPct: 0.0,
           dataTime: now,
           targetType: '高股息 ETF',
+        ),
+        EtfCatalogItem(
+          code: '00400A',
+          name: '主動群益台灣強棒',
+          marketPrice: 14.63,
+          estimatedNav: null,
+          premiumDiscountPct: null,
+          dataTime: now,
+          targetType: '主動式 ETF',
         ),
       ],
       status: EtfDataStatus.mock,

@@ -353,6 +353,37 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('catalog-only ETF selection shows missing history guidance',
+      (tester) async {
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '00400A',
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-catalog-only-00400A')),
+      findsOneWidget,
+    );
+
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('ETF 歷史資料尚未匯入'), findsOneWidget);
+    expect(find.textContaining('請先匯入歷史價格'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('selecting ETF loads selected ETF history view', (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 
