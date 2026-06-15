@@ -90,6 +90,11 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
+      findsOneWidget,
+    );
+    expect(find.text('歷史/回測可用'), findsWidgets);
 
     await tester.enterText(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
@@ -336,6 +341,10 @@ void main() {
 
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
     );
     expect(find.byKey(const ValueKey('00631l-symbol-search-result-00631L')),

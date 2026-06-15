@@ -22,6 +22,24 @@ const _staticDataBaseUrl00631l = String.fromEnvironment(
   defaultValue: '00631l-static-data',
 );
 
+const _etfHistoryReadyCodes = {
+  '00631L',
+  '0050',
+  '0056',
+  '006208',
+  '00692',
+  '00713',
+  '00757',
+  '00850',
+  '00878',
+  '00881',
+  '00919',
+  '00922',
+  '00923',
+  '00929',
+  '00940',
+};
+
 class LeveragedEtf00631LScreen extends ConsumerStatefulWidget {
   const LeveragedEtf00631LScreen({super.key});
 
@@ -787,6 +805,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hasHistory = _hasImportedEtfHistory(item.code);
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
       borderRadius: BorderRadius.circular(12),
@@ -796,7 +815,9 @@ class _SymbolSearchResultTile extends StatelessWidget {
         onSelected?.call(item.code);
         final message = selected
             ? '目前已開啟 00631L 正二研究室。'
-            : '${item.code} 已在 ETF catalog；完整研究室與比較頁後續接入。';
+            : hasHistory
+                ? '${item.code} 已匯入歷史價格，可查看歷史與回測。'
+                : '${item.code} 目前只有 ETF catalog；尚未匯入歷史價格。';
         messenger.showSnackBar(SnackBar(content: Text(message)));
       },
       child: DecoratedBox(
@@ -829,13 +850,32 @@ class _SymbolSearchResultTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      item.targetType.isEmpty ? 'ETF catalog' : item.targetType,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: _marketMutedTextColor(context),
-                      ),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 5,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          item.targetType.isEmpty
+                              ? 'ETF catalog'
+                              : item.targetType,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: _marketMutedTextColor(context),
+                          ),
+                        ),
+                        KeyedSubtree(
+                          key: ValueKey(
+                            hasHistory
+                                ? '00631l-symbol-history-ready-${item.code}'
+                                : '00631l-symbol-catalog-only-${item.code}',
+                          ),
+                          child: _CompactTextBadge(
+                            label: hasHistory ? '歷史/回測可用' : '僅 catalog',
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -852,7 +892,11 @@ class _SymbolSearchResultTile extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    selected ? '目前頁面' : 'catalog',
+                    selected
+                        ? '目前頁面'
+                        : hasHistory
+                            ? 'ready'
+                            : 'catalog',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: _marketMutedTextColor(context),
                       fontWeight: FontWeight.w800,
@@ -3765,6 +3809,20 @@ class _HistoryBacktestSection extends StatelessWidget {
           ),
           const SizedBox(height: 10),
         ],
+        if (!_hasImportedEtfHistory(selectedEtfCode)) ...[
+          const _SectionBlock(
+            title: 'ETF 歷史資料尚未匯入',
+            subtitle: '目前只找到 ETF catalog；歷史圖表與回測需要先匯入該 ETF 的可驗證歷史價格。',
+            child: _StatusWrap(
+              labels: [
+                'catalog only',
+                'history unavailable',
+                '請先匯入歷史價格',
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
         _HistorySection(
           key: const ValueKey('00631l-history-view'),
           data: data,
@@ -5670,6 +5728,7 @@ class _EtfCatalogItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hasHistory = _hasImportedEtfHistory(item.code);
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => onSelected(item.code),
@@ -5699,13 +5758,30 @@ class _EtfCatalogItemTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 3),
-                    Text(
-                      item.targetType.isEmpty ? 'ETF' : item.targetType,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _marketMutedTextColor(context),
-                      ),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 5,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          item.targetType.isEmpty ? 'ETF' : item.targetType,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: _marketMutedTextColor(context),
+                          ),
+                        ),
+                        KeyedSubtree(
+                          key: ValueKey(
+                            hasHistory
+                                ? '00631l-etf-list-history-ready-${item.code}'
+                                : '00631l-etf-list-catalog-only-${item.code}',
+                          ),
+                          child: _CompactTextBadge(
+                            label: hasHistory ? '歷史/回測可用' : '僅 catalog',
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -7964,6 +8040,10 @@ DateTime? _historyFirstDate(EtfPriceHistory history) {
 
 String _catalogSearchText(EtfCatalogItem item) {
   return '${item.code} ${item.name} ${item.targetType}'.toLowerCase();
+}
+
+bool _hasImportedEtfHistory(String code) {
+  return _etfHistoryReadyCodes.contains(code.trim().toUpperCase());
 }
 
 List<EtfPriceHistory> _mergeSelectedComparisonHistories({
