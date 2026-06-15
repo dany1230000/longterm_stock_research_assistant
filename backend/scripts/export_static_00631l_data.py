@@ -280,13 +280,13 @@ def _merge_etf_price_history_seed_if_needed(
         if not seed_records:
             warnings.append(f"seedEtfPriceHistoryMissingCode={code}")
             continue
+        saved = store.save_points(code, seed_records)
         status = store.status(code, fetched_at=utc_now_iso())
         row_count = int(status.get("rowCount") or 0)
         if row_count >= 2:
             ready += 1
-            continue
-        saved = store.save_points(code, seed_records)
-        merged += 1
+        if saved:
+            merged += 1
         warnings.append(
             "seedEtfPriceHistoryMerged="
             f"{code}; seedRows={len(seed_records)}; savedRows={saved}"
@@ -294,7 +294,7 @@ def _merge_etf_price_history_seed_if_needed(
 
     if merged or ready:
         warnings.append(
-            f"seedEtfPriceHistoryReady={ready + merged}; merged={merged}; seedDir={seed_dir}"
+            f"seedEtfPriceHistoryReady={ready}; merged={merged}; seedDir={seed_dir}"
         )
 
 

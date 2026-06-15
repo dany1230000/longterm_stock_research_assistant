@@ -281,6 +281,28 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             self.assertEqual(result["etfPriceHistoryReadyCount"], 1)
             self.assertTrue(any("seedEtfPriceHistoryMerged=0050" in item for item in warnings))
 
+    def test_static_export_merges_seed_when_recent_etf_history_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            seed_store = EtfPriceHistoryStore(root / "seed_etf_history")
+            seed_store.save_points("0050", rows)
+            etf_store = EtfPriceHistoryStore(root / "etf_history")
+            etf_store.save_points("0050", rows[-1:])
+            warnings: list[str] = []
+
+            _merge_etf_price_history_seed_if_needed(
+                store=etf_store,
+                seed_dir=root / "seed_etf_history",
+                codes=["0050"],
+                warnings=warnings,
+            )
+
+            status = etf_store.status("0050", fetched_at="2026-06-15T00:00:00+00:00")
+            self.assertEqual(status["rowCount"], 3)
+            self.assertEqual(status["coverageStart"], "2026-06-01")
+            self.assertTrue(any("seedEtfPriceHistoryMerged=0050" in item for item in warnings))
+
 
 def _stock_day_fixture() -> str:
     return json.dumps(
