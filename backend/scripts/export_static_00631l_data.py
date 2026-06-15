@@ -72,6 +72,15 @@ def main() -> int:
         "--etf-price-history-dir",
         default=settings.etf_price_history_dir,
     )
+    parser.add_argument(
+        "--seed-etf-price-history-dir",
+        default=str(ROOT / "backend" / "seeds" / "etf_price_history_seed"),
+        help=(
+            "Committed official baseline ETF price-history seed directory. "
+            "Used to keep static Pages export usable when live multi-ETF "
+            "refresh is skipped or rate-limited."
+        ),
+    )
     parser.add_argument("--update", action="store_true")
     parser.add_argument(
         "--update-etf-catalog",
@@ -102,24 +111,29 @@ def main() -> int:
             if args.end_date
             else datetime.now(timezone.utc).date()
         )
-        fetched = fetch_twse_stock_day_range(
-            fetcher=fetch_text,
-            url_template=settings.twse_price_history_url_template,
-            start_date=start,
-            end_date=end,
-            timeout_seconds=settings.request_timeout_seconds,
-        )
-        saved = store.save_points(fetched["points"])
-        warnings.extend(fetched.get("warnings", []))
-        if fetched.get("sourceStatus") != "official":
-            warnings.append(fetched.get("errorMessage") or "TWSE price history update failed.")
-        warnings.append(f"updateSavedRows={saved}")
-        _merge_seed_if_needed(
-            store=store,
-            seed_path=Path(args.seed_price_history_path),
-            min_row_count=args.min_row_count,
-            warnings=warnings,
-        )
+        try:
+            fetched = fetch_twse_stock_day_range(
+                fetcher=fetch_text,
+                url_template=settings.twse_price_history_url_template,
+                start_date=start,
+                end_date=end,
+                timeout_seconds=settings.request_timeout_seconds,
+            )
+            saved = store.save_points(fetched["points"])
+            warnings.extend(fetched.get("warnings", []))
+            if fetched.get("sourceStatus") != "official":
+                warnings.append(
+                    fetched.get("errorMessage") or "TWSE price history update failed."
+                )
+            warnings.append(f"updateSavedRows={saved}")
+        except Exception as error:  # noqa: BLE001 - seed fallback keeps Pages deployable.
+            warnings.append(f"priceHistoryUpdateFailed={error}")
+    _merge_seed_if_needed(
+        store=store,
+        seed_path=Path(args.seed_price_history_path),
+        min_row_count=args.min_row_count,
+        warnings=warnings,
+    )
 
     etf_catalog_payload = _load_etf_catalog_payload(
         path=Path(args.etf_catalog_path),
@@ -129,12 +143,20 @@ def main() -> int:
         min_row_count=args.min_etf_catalog_row_count,
         warnings=warnings,
     )
+    multi_etf_codes = parse_code_list(args.multi_etf_codes)
+    etf_price_history_store = EtfPriceHistoryStore(args.etf_price_history_dir)
+    _merge_etf_price_history_seed_if_needed(
+        store=etf_price_history_store,
+        seed_dir=Path(args.seed_etf_price_history_dir),
+        codes=multi_etf_codes,
+        warnings=warnings,
+    )
 
     payload = export_static_00631l_data(
         output_dir=args.output_dir,
         price_history_store=store,
-        etf_price_history_store=EtfPriceHistoryStore(args.etf_price_history_dir),
-        etf_price_history_codes=parse_code_list(args.multi_etf_codes),
+        etf_price_history_store=etf_price_history_store,
+        etf_price_history_codes=multi_etf_codes,
         etf_catalog_payload=etf_catalog_payload,
         strict=args.strict,
         minimum_row_count=args.min_row_count,
@@ -237,6 +259,43 @@ def _merge_seed_if_needed(
         f"{len(seed_records)}; seedSavedRows={saved}; "
         f"rowCountBefore={row_count}; rowCountAfter={merged_status.get('rowCount', 0)}"
     )
+
+
+def _merge_etf_price_history_seed_if_needed(
+    *,
+    store: EtfPriceHistoryStore,
+    seed_dir: Path,
+    codes: list[str],
+    warnings: list[str],
+) -> None:
+    if not seed_dir.exists():
+        warnings.append(f"seedEtfPriceHistoryMissing={seed_dir}")
+        return
+
+    seed_store = EtfPriceHistoryStore(seed_dir)
+    merged = 0
+    ready = 0
+    for code in codes:
+        seed_records = seed_store.all(code)
+        if not seed_records:
+            warnings.append(f"seedEtfPriceHistoryMissingCode={code}")
+            continue
+        status = store.status(code, fetched_at=utc_now_iso())
+        row_count = int(status.get("rowCount") or 0)
+        if row_count >= 2:
+            ready += 1
+            continue
+        saved = store.save_points(code, seed_records)
+        merged += 1
+        warnings.append(
+            "seedEtfPriceHistoryMerged="
+            f"{code}; seedRows={len(seed_records)}; savedRows={saved}"
+        )
+
+    if merged or ready:
+        warnings.append(
+            f"seedEtfPriceHistoryReady={ready + merged}; merged={merged}; seedDir={seed_dir}"
+        )
 
 
 if __name__ == "__main__":

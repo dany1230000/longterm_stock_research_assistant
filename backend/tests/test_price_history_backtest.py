@@ -11,7 +11,10 @@ from backend.app.price_history import (
     performance_summary,
 )
 from backend.app.static_export import export_static_00631l_data, static_export_status
-from backend.scripts.export_static_00631l_data import _merge_seed_if_needed
+from backend.scripts.export_static_00631l_data import (
+    _merge_etf_price_history_seed_if_needed,
+    _merge_seed_if_needed,
+)
 
 
 class PriceHistoryAndBacktestTests(unittest.TestCase):
@@ -247,6 +250,36 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             self.assertEqual(result["overallStatus"], "PASS")
             self.assertEqual(result["rowCount"], 3)
             self.assertTrue(any("seedPriceHistoryMerged" in item for item in warnings))
+
+    def test_static_export_merges_seeded_multi_etf_price_history(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            store.save_points(rows)
+            seed_store = EtfPriceHistoryStore(root / "seed_etf_history")
+            seed_store.save_points("0050", rows)
+            etf_store = EtfPriceHistoryStore(root / "etf_history")
+            warnings: list[str] = []
+
+            _merge_etf_price_history_seed_if_needed(
+                store=etf_store,
+                seed_dir=root / "seed_etf_history",
+                codes=["0050"],
+                warnings=warnings,
+            )
+            result = export_static_00631l_data(
+                output_dir=root / "static",
+                price_history_store=store,
+                etf_price_history_store=etf_store,
+                etf_price_history_codes=["0050"],
+                strict=True,
+                warnings=warnings,
+            )
+
+            self.assertEqual(result["overallStatus"], "PASS")
+            self.assertEqual(result["etfPriceHistoryReadyCount"], 1)
+            self.assertTrue(any("seedEtfPriceHistoryMerged=0050" in item for item in warnings))
 
 
 def _stock_day_fixture() -> str:
