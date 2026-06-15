@@ -525,7 +525,7 @@ class _MarketTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SizedBox(
-      height: 50,
+      height: 58,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 500;
@@ -553,9 +553,10 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: _marketTextColor(context),
+                        fontSize: 19,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0,
-                        height: 1.05,
+                        height: 1.08,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -565,9 +566,10 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: _marketMutedTextColor(context),
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0,
-                        height: 1.05,
+                        height: 1.08,
                       ),
                     ),
                   ],
@@ -615,7 +617,7 @@ class _MarketIndexPill extends StatelessWidget {
             border: Border.all(color: const Color(0xFF67C58B)),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -623,7 +625,7 @@ class _MarketIndexPill extends StatelessWidget {
                   label,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
