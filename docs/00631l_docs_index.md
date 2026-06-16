@@ -86,6 +86,7 @@ This is the main entry point for 00631L lab documentation.
 - Price history update: `scripts\00631l_update_price_history.cmd`
 - TWSE ETF catalog import: `scripts\00631l_import_etf_catalog.cmd`
 - Multi-ETF price history import: `scripts\00631l_import_etf_price_history.cmd --codes 00631L,0050,0056,006208,00692,00713,00757,00850,00878,00881,00919,00922,00923,00929,00940`
+- Multi-ETF price validation: `scripts\00631l_validate_etf_price_history.cmd`
 - ETF history selection summary: `docs\00631l_v4_9_etf_history_selection_summary.md`
 - ETF history comparison summary: `docs\00631l_v4_10_etf_history_comparison_summary.md`
 - ETF comparison basket summary: `docs\00631l_v4_11_etf_comparison_basket_summary.md`
@@ -194,6 +195,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF catalog explorer release: `docs\00631l_v4_4_etf_catalog_explorer_summary.md`
 - ETF comparison foundation release: `docs\00631l_v4_5_etf_comparison_foundation_summary.md`
 - Header symbol search release: `docs\00631l_v4_6_header_symbol_search_summary.md`
+- ETF price validation and split-adjustment release: `docs\00631l_v4_12_etf_price_validation_summary.md`
 
 ## Scope Boundary
 

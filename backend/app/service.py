@@ -625,10 +625,22 @@ class Etf00631LService:
                     code,
                     fetched["points"],
                 )
+                normalized_rows = self._etf_price_history_store.normalize_saved_records(
+                    code,
+                )
                 status = self._etf_price_history_store.status(code, fetched_at=now)
                 if fetched.get("sourceStatus") != "official":
                     failures.append(f"{code}: {fetched.get('errorMessage')}")
                 warnings.extend(f"{code}: {warning}" for warning in fetched.get("warnings", []))
+                validation = status.get("validation") or {}
+                warnings.extend(
+                    f"{code}: validation: {warning}"
+                    for warning in validation.get("warnings", [])
+                )
+                failures.extend(
+                    f"{code}: validation: {failure}"
+                    for failure in validation.get("failures", [])
+                )
                 items.append(
                     {
                         "code": code,
@@ -636,9 +648,14 @@ class Etf00631LService:
                         "requestedMonths": fetched.get("requestedMonths"),
                         "fetchedRows": fetched.get("rowCount"),
                         "savedRows": saved,
+                        "normalizedRows": normalized_rows,
                         "coverageStart": status.get("coverageStart"),
                         "coverageEnd": status.get("coverageEnd"),
                         "rowCount": status.get("rowCount"),
+                        "priceField": status.get("priceField"),
+                        "validationStatus": status.get("validationStatus"),
+                        "validationFailureCount": status.get("validationFailureCount"),
+                        "validationWarningCount": status.get("validationWarningCount"),
                         "errorMessage": fetched.get("errorMessage"),
                     }
                 )
@@ -668,6 +685,8 @@ class Etf00631LService:
             "requestedCodes": requested_codes,
             "updatedCount": len([item for item in items if item.get("rowCount")]),
             "readyCount": index.get("readyCount", 0),
+            "validationFailureCount": index.get("validationFailureCount", 0),
+            "validationWarningCount": index.get("validationWarningCount", 0),
             "items": items,
             "warnings": warnings,
             "failures": failures,

@@ -238,6 +238,7 @@ def _required_files_check() -> dict[str, Any]:
         "scripts/00631l_remote_maintenance.cmd",
         "scripts/00631l_import_etf_catalog.cmd",
         "scripts/00631l_import_etf_price_history.cmd",
+        "scripts/00631l_validate_etf_price_history.cmd",
         "scripts/00631l_daily_cycle_scheduled.cmd",
         "scripts/00631l_lan_info.cmd",
         "scripts/00631l_start_backend_lan.cmd",

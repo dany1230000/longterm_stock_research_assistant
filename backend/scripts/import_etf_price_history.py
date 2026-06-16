@@ -31,24 +31,39 @@ def main() -> int:
     parser.add_argument("--codes", default=",".join(DEFAULT_ETF_HISTORY_CODES))
     parser.add_argument("--from-catalog", action="store_true")
     parser.add_argument("--catalog-path", default=settings.etf_catalog_path)
-    parser.add_argument("--limit", type=int, default=20)
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=0,
+        help="Maximum catalog symbols to import. 0 means all catalog symbols.",
+    )
     parser.add_argument("--start-date", default="2019-01-01")
     parser.add_argument("--end-date", default="")
     parser.add_argument("--output-dir", default=settings.etf_price_history_dir)
     parser.add_argument("--status-only", action="store_true")
+    parser.add_argument(
+        "--allow-partial",
+        action="store_true",
+        help=(
+            "Treat per-symbol fetch failures as warnings for broad catalog "
+            "backfills. Validation failures still fail the command."
+        ),
+    )
     args = parser.parse_args()
 
     store = EtfPriceHistoryStore(args.output_dir)
     if args.status_only:
         payload = store.index_response(fetched_at=utc_now_iso())
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+        validation_failures = int(payload.get("validationFailureCount") or 0)
         print(
             "[summary] "
-            f"overallStatus={'PASS' if payload.get('readyCount', 0) else 'WARN'} "
+            f"overallStatus={'FAIL' if validation_failures else 'PASS' if payload.get('readyCount', 0) else 'WARN'} "
             f"symbols={payload.get('rowCount', 0)} "
-            f"ready={payload.get('readyCount', 0)}"
+            f"ready={payload.get('readyCount', 0)} "
+            f"validationFailures={validation_failures}"
         )
-        return 0
+        return 1 if validation_failures else 0
 
     codes = _resolve_codes(args)
     if not codes:
@@ -64,7 +79,8 @@ def main() -> int:
     now = utc_now_iso()
     items: list[dict[str, object]] = []
     warnings: list[str] = []
-    failures: list[str] = []
+    fetch_failures: list[str] = []
+    validation_failures: list[str] = []
     for code in codes:
         try:
             fetched = fetch_etf_price_history(
@@ -76,10 +92,20 @@ def main() -> int:
                 timeout_seconds=settings.request_timeout_seconds,
             )
             saved = store.save_points(code, fetched["points"])
+            normalized_rows = store.normalize_saved_records(code)
             status = store.status(code, fetched_at=now)
             if fetched.get("sourceStatus") != "official":
-                failures.append(f"{code}: {fetched.get('errorMessage')}")
+                fetch_failures.append(f"{code}: {fetched.get('errorMessage')}")
             warnings.extend(f"{code}: {warning}" for warning in fetched.get("warnings", []))
+            validation = status.get("validation") or {}
+            warnings.extend(
+                f"{code}: validation: {warning}"
+                for warning in validation.get("warnings", [])
+            )
+            validation_failures.extend(
+                f"{code}: validation: {failure}"
+                for failure in validation.get("failures", [])
+            )
             items.append(
                 {
                     "code": code,
@@ -87,14 +113,19 @@ def main() -> int:
                     "requestedMonths": fetched.get("requestedMonths"),
                     "fetchedRows": fetched.get("rowCount"),
                     "savedRows": saved,
+                    "normalizedRows": normalized_rows,
                     "coverageStart": status.get("coverageStart"),
                     "coverageEnd": status.get("coverageEnd"),
                     "rowCount": status.get("rowCount"),
+                    "priceField": status.get("priceField"),
+                    "validationStatus": status.get("validationStatus"),
+                    "validationFailureCount": status.get("validationFailureCount"),
+                    "validationWarningCount": status.get("validationWarningCount"),
                     "errorMessage": fetched.get("errorMessage"),
                 }
             )
         except Exception as error:  # noqa: BLE001 - CLI should keep importing others.
-            failures.append(f"{code}: {error}")
+            fetch_failures.append(f"{code}: {error}")
             items.append(
                 {
                     "code": code,
@@ -109,6 +140,9 @@ def main() -> int:
                 }
             )
 
+    if args.allow_partial and fetch_failures:
+        warnings.extend(f"partialFetchFailure={failure}" for failure in fetch_failures)
+    failures = validation_failures + ([] if args.allow_partial else fetch_failures)
     index = store.index_response(fetched_at=now)
     payload = {
         "sourceStatus": "error" if failures else "cached",
@@ -119,6 +153,8 @@ def main() -> int:
         "dataTime": index.get("dataTime"),
         "requestedCodes": codes,
         "readyCount": index.get("readyCount", 0),
+        "validationFailureCount": index.get("validationFailureCount", 0),
+        "validationWarningCount": index.get("validationWarningCount", 0),
         "items": items,
         "warnings": warnings,
         "failures": failures,

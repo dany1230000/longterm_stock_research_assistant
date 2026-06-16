@@ -143,12 +143,21 @@ def main() -> int:
         min_row_count=args.min_etf_catalog_row_count,
         warnings=warnings,
     )
-    multi_etf_codes = parse_code_list(args.multi_etf_codes)
     etf_price_history_store = EtfPriceHistoryStore(args.etf_price_history_dir)
+    seed_codes = (
+        list(DEFAULT_ETF_HISTORY_CODES)
+        if _is_all_local_codes_mode(args.multi_etf_codes)
+        else parse_code_list(args.multi_etf_codes)
+    )
     _merge_etf_price_history_seed_if_needed(
         store=etf_price_history_store,
         seed_dir=Path(args.seed_etf_price_history_dir),
-        codes=multi_etf_codes,
+        codes=seed_codes,
+        warnings=warnings,
+    )
+    multi_etf_codes = _resolve_multi_etf_codes(
+        args.multi_etf_codes,
+        store=etf_price_history_store,
         warnings=warnings,
     )
 
@@ -296,6 +305,38 @@ def _merge_etf_price_history_seed_if_needed(
         warnings.append(
             f"seedEtfPriceHistoryReady={ready}; merged={merged}; seedDir={seed_dir}"
         )
+
+
+def _resolve_multi_etf_codes(
+    value: str,
+    *,
+    store: EtfPriceHistoryStore,
+    warnings: list[str],
+) -> list[str]:
+    mode = str(value or "").strip().lower()
+    if not _is_all_local_codes_mode(value):
+        return parse_code_list(value)
+
+    fetched_at = utc_now_iso()
+    codes = []
+    skipped = 0
+    for code in store.codes():
+        status = store.status(code, fetched_at=fetched_at)
+        row_count = int(status.get("rowCount") or 0)
+        validation_failures = int(status.get("validationFailureCount") or 0)
+        if row_count >= 2 and validation_failures == 0:
+            codes.append(code)
+        else:
+            skipped += 1
+    warnings.append(
+        "multiEtfCodesResolved="
+        f"{mode}; readyCodes={len(codes)}; skipped={skipped}"
+    )
+    return codes
+
+
+def _is_all_local_codes_mode(value: str) -> bool:
+    return str(value or "").strip().lower() in {"all-local", "local", "*"}
 
 
 if __name__ == "__main__":
