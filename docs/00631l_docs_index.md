@@ -55,6 +55,7 @@ This is the main entry point for 00631L lab documentation.
 - App Store foundation release: `docs\00631l_v4_0_app_store_foundation_summary.md`
 - App Store foundation v4.0 summary: `docs\00631l_v4_0_app_store_foundation_summary.md`
 - TX live and history controls v4.1 summary: `docs\00631l_v4_1_tx_live_history_controls_summary.md`
+- Intraday session update v4.12 summary: `docs\00631l_v4_12_intraday_session_update_summary.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
@@ -64,6 +65,7 @@ This is the main entry point for 00631L lab documentation.
 - Live backend deployment: `docs\00631l_live_backend_deployment.md`
 - PWA usage: `docs\00631l_pwa_usage.md`
 - Data source and freshness guide: `docs\00631l_data_sources_freshness.md`
+- Intraday update timing: `docs\00631l_intraday_update_timing.md`
 - Backtest guide: `docs\00631l_backtest_guide.md`
 - Position tracking guide: `docs\00631l_position_tracking.md`
 - AI analysis: `docs\00631l_ai_analysis.md`

@@ -28,6 +28,114 @@ extension EtfDataStatusLabel on EtfDataStatus {
   }
 }
 
+enum IntradayMarketPhase {
+  preOpen,
+  regular,
+  postCloseConfirm,
+  afterClose,
+  closed,
+}
+
+class IntradayMarketSession {
+  const IntradayMarketSession({
+    required this.phase,
+    required this.phaseLabel,
+    required this.dataFreshness,
+    required this.dataFreshnessLabel,
+    required this.isTradingDay,
+    required this.isRegularSession,
+    required this.isIntradayFresh,
+    required this.isDisplayUsable,
+    required this.expectedRefreshSeconds,
+    required this.nextRefreshSeconds,
+    required this.dataAgeSeconds,
+  });
+
+  factory IntradayMarketSession.evaluate({
+    DateTime? now,
+    DateTime? dataTime,
+    int userDelayMs = 15000,
+    bool sourceAvailable = true,
+  }) {
+    final taipeiNow = _toTaipeiClock(now ?? DateTime.now());
+    final taipeiDataTime =
+        dataTime == null ? null : _intradayDataTimeAsTaipei(dataTime);
+    final phase = _marketPhaseFor(taipeiNow);
+    final delaySeconds = math.max(15, userDelayMs ~/ 1000);
+    final expected = _expectedRefreshSeconds(phase, delaySeconds);
+    final maxFreshAge = _maxFreshAgeSeconds(phase, delaySeconds);
+    final dataAge = taipeiDataTime == null
+        ? null
+        : math.max(0, taipeiNow.difference(taipeiDataTime).inSeconds).toInt();
+    final freshness = sourceAvailable
+        ? _marketFreshness(
+            phase: phase,
+            now: taipeiNow,
+            dataTime: taipeiDataTime,
+            dataAgeSeconds: dataAge,
+            maxFreshAgeSeconds: maxFreshAge,
+          )
+        : 'unavailable';
+
+    return IntradayMarketSession(
+      phase: phase,
+      phaseLabel: _marketPhaseLabel(phase),
+      dataFreshness: freshness,
+      dataFreshnessLabel: _marketFreshnessLabel(freshness),
+      isTradingDay: taipeiNow.weekday <= DateTime.friday,
+      isRegularSession: phase == IntradayMarketPhase.regular,
+      isIntradayFresh: freshness == 'fresh',
+      isDisplayUsable: const {
+        'fresh',
+        'after_hours_last',
+        'market_closed_last',
+      }.contains(freshness),
+      expectedRefreshSeconds: expected,
+      nextRefreshSeconds: expected,
+      dataAgeSeconds: dataAge,
+    );
+  }
+
+  final IntradayMarketPhase phase;
+  final String phaseLabel;
+  final String dataFreshness;
+  final String dataFreshnessLabel;
+  final bool isTradingDay;
+  final bool isRegularSession;
+  final bool isIntradayFresh;
+  final bool isDisplayUsable;
+  final int expectedRefreshSeconds;
+  final int nextRefreshSeconds;
+  final int? dataAgeSeconds;
+
+  bool get isAfterHours =>
+      phase == IntradayMarketPhase.postCloseConfirm ||
+      phase == IntradayMarketPhase.afterClose ||
+      phase == IntradayMarketPhase.closed;
+
+  Duration get refreshInterval => Duration(seconds: nextRefreshSeconds);
+
+  String get refreshText => nextRefreshSeconds <= 60
+      ? '約 $nextRefreshSeconds 秒'
+      : '約 ${(nextRefreshSeconds / 60).round()} 分鐘';
+
+  String get ageText {
+    final age = dataAgeSeconds;
+    if (age == null) {
+      return '資料時間不可用';
+    }
+    if (age < 60) {
+      return '$age 秒前';
+    }
+    final minutes = age ~/ 60;
+    if (minutes < 60) {
+      return '$minutes 分鐘前';
+    }
+    final hours = minutes ~/ 60;
+    return '$hours 小時前';
+  }
+}
+
 enum PremiumDiscountLevel {
   unavailable,
   normal,
@@ -752,6 +860,16 @@ class EtfIntradayNav {
       premiumDiscountPct: estimatedPremiumDiscountPct,
       sourceStatus: status,
       isStale: isStale,
+    );
+  }
+
+  IntradayMarketSession marketSession({DateTime? now}) {
+    return IntradayMarketSession.evaluate(
+      now: now,
+      dataTime: dataTime,
+      userDelayMs: userDelayMs,
+      sourceAvailable:
+          status != EtfDataStatus.error && status != EtfDataStatus.mock,
     );
   }
 }
@@ -2603,4 +2721,142 @@ int _businessDaysBetween(DateTime start, DateTime end) {
   }
 
   return days;
+}
+
+DateTime _toTaipeiClock(DateTime value) {
+  final shifted = value.toUtc().add(const Duration(hours: 8));
+  return DateTime(
+    shifted.year,
+    shifted.month,
+    shifted.day,
+    shifted.hour,
+    shifted.minute,
+    shifted.second,
+  );
+}
+
+DateTime _intradayDataTimeAsTaipei(DateTime value) {
+  if (value.isUtc) {
+    final shifted = value.toUtc().add(const Duration(hours: 8));
+    return DateTime(
+      shifted.year,
+      shifted.month,
+      shifted.day,
+      shifted.hour,
+      shifted.minute,
+      shifted.second,
+    );
+  }
+  return value;
+}
+
+IntradayMarketPhase _marketPhaseFor(DateTime taipeiNow) {
+  if (taipeiNow.weekday > DateTime.friday) {
+    return IntradayMarketPhase.closed;
+  }
+  final minuteOfDay = taipeiNow.hour * 60 + taipeiNow.minute;
+  if (minuteOfDay < 9 * 60) {
+    return IntradayMarketPhase.preOpen;
+  }
+  if (minuteOfDay < 13 * 60 + 30) {
+    return IntradayMarketPhase.regular;
+  }
+  if (minuteOfDay < 13 * 60 + 45) {
+    return IntradayMarketPhase.postCloseConfirm;
+  }
+  return IntradayMarketPhase.afterClose;
+}
+
+int _expectedRefreshSeconds(
+  IntradayMarketPhase phase,
+  int delaySeconds,
+) {
+  switch (phase) {
+    case IntradayMarketPhase.regular:
+      return delaySeconds;
+    case IntradayMarketPhase.postCloseConfirm:
+      return 30;
+    case IntradayMarketPhase.preOpen:
+      return 60;
+    case IntradayMarketPhase.afterClose:
+    case IntradayMarketPhase.closed:
+      return 300;
+  }
+}
+
+int? _maxFreshAgeSeconds(
+  IntradayMarketPhase phase,
+  int delaySeconds,
+) {
+  switch (phase) {
+    case IntradayMarketPhase.regular:
+      return math.max(45, delaySeconds * 4).toInt();
+    case IntradayMarketPhase.postCloseConfirm:
+      return 15 * 60;
+    case IntradayMarketPhase.preOpen:
+    case IntradayMarketPhase.afterClose:
+    case IntradayMarketPhase.closed:
+      return null;
+  }
+}
+
+String _marketFreshness({
+  required IntradayMarketPhase phase,
+  required DateTime now,
+  required DateTime? dataTime,
+  required int? dataAgeSeconds,
+  required int? maxFreshAgeSeconds,
+}) {
+  if (dataTime == null) {
+    return 'unavailable';
+  }
+  if (phase == IntradayMarketPhase.regular) {
+    if (dataAgeSeconds == null || maxFreshAgeSeconds == null) {
+      return 'unavailable';
+    }
+    return dataAgeSeconds <= maxFreshAgeSeconds ? 'fresh' : 'stale';
+  }
+  if (phase == IntradayMarketPhase.closed) {
+    return 'market_closed_last';
+  }
+  if (_sameTaipeiDate(now, dataTime) && dataTime.hour >= 9) {
+    return 'after_hours_last';
+  }
+  return 'stale';
+}
+
+bool _sameTaipeiDate(DateTime a, DateTime b) {
+  return a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
+String _marketPhaseLabel(IntradayMarketPhase phase) {
+  switch (phase) {
+    case IntradayMarketPhase.preOpen:
+      return '盤前等待';
+    case IntradayMarketPhase.regular:
+      return '盤中更新';
+    case IntradayMarketPhase.postCloseConfirm:
+      return '收盤確認';
+    case IntradayMarketPhase.afterClose:
+      return '盤後資料';
+    case IntradayMarketPhase.closed:
+      return '休市資料';
+  }
+}
+
+String _marketFreshnessLabel(String freshness) {
+  switch (freshness) {
+    case 'fresh':
+      return '即時資料新鮮';
+    case 'after_hours_last':
+      return '盤後最後資料';
+    case 'market_closed_last':
+      return '休市最後資料';
+    case 'stale':
+      return '資料可能過期';
+    case 'unavailable':
+      return '即時資料不可用';
+    default:
+      return '資料狀態未知';
+  }
 }

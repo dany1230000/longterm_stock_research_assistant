@@ -164,6 +164,11 @@ class EndpointTests(unittest.TestCase):
         self.assertEqual(payload["symbol"], "00631L")
         self.assertIn(payload["sourceStatus"], {"unavailable", "error", "cached"})
         self.assertIn("sourceContract", payload)
+        self.assertIn("marketSession", payload)
+        self.assertEqual(
+            payload["marketSession"]["sourceContract"],
+            "twse_intraday_market_session",
+        )
 
     def test_intraday_nav_with_twse_fixture_returns_normalized_payload(self) -> None:
         fixture = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(encoding="utf-8")
@@ -191,6 +196,10 @@ class EndpointTests(unittest.TestCase):
         self.assertEqual(payload["marketPrice"], 33.8)
         self.assertEqual(payload["estimatedNav"], 33.55)
         self.assertEqual(payload["premiumDiscountPct"], 0.75)
+        self.assertIn("marketSession", payload)
+        self.assertEqual(payload["marketSession"]["timezone"], "Asia/Taipei")
+        self.assertEqual(payload["marketSession"]["regularSessionStart"], "09:00:00")
+        self.assertEqual(payload["marketSession"]["regularSessionEnd"], "13:30:00")
 
     def test_live_proxy_endpoints_return_consistent_metadata(self) -> None:
         holdings_fixture = (FIXTURES / "00631l_yuanta_ratio_fixture.txt").read_text(encoding="utf-8")

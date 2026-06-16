@@ -53,17 +53,15 @@ class LeveragedEtf00631LScreen extends ConsumerStatefulWidget {
 class _LeveragedEtf00631LScreenState
     extends ConsumerState<LeveragedEtf00631LScreen> {
   Timer? _refreshTimer;
+  int? _scheduledRefreshSeconds;
+  DateTime? _lastFullRefreshAt;
   _LabSection _section = _LabSection.overview;
   String _selectedEtfCode = '00631L';
 
   @override
   void initState() {
     super.initState();
-    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (mounted) {
-        _refreshLabData();
-      }
-    });
+    _scheduleRefreshTimer(force: true);
   }
 
   @override
@@ -92,29 +90,40 @@ class _LeveragedEtf00631LScreenState
     return SafeArea(
       child: displayData == null
           ? _buildInitialState(fastValue, fullValue)
-          : _LabContent(
-              data: displayData,
-              selectedEtfCode: _selectedEtfCode,
-              selectedPriceHistory: useEmbeddedPriceHistory
-                  ? displayData.priceHistory
-                  : selectedHistoryValue?.valueOrNull,
-              selectedPriceHistoryLoading:
-                  selectedHistoryValue?.isLoading ?? false,
-              selectedPriceHistoryError: selectedHistoryValue?.hasError == true
-                  ? selectedHistoryValue?.error
-                  : null,
-              comparisonHistories:
-                  comparisonHistoriesValue.valueOrNull ?? const [],
-              comparisonHistoriesLoading: comparisonHistoriesValue.isLoading,
-              comparisonHistoriesError: comparisonHistoriesValue.hasError
-                  ? comparisonHistoriesValue.error
-                  : null,
-              selectedSection: _section,
-              detailsLoading: detailsLoading,
-              detailsError: detailsError,
-              onSectionChanged: (section) => setState(() => _section = section),
-              onEtfSelected: _selectEtf,
-              onRefresh: _refreshLabData,
+          : Builder(
+              builder: (context) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    _scheduleRefreshTimer(data: displayData);
+                  }
+                });
+                return _LabContent(
+                  data: displayData,
+                  selectedEtfCode: _selectedEtfCode,
+                  selectedPriceHistory: useEmbeddedPriceHistory
+                      ? displayData.priceHistory
+                      : selectedHistoryValue?.valueOrNull,
+                  selectedPriceHistoryLoading:
+                      selectedHistoryValue?.isLoading ?? false,
+                  selectedPriceHistoryError:
+                      selectedHistoryValue?.hasError == true
+                          ? selectedHistoryValue?.error
+                          : null,
+                  comparisonHistories:
+                      comparisonHistoriesValue.valueOrNull ?? const [],
+                  comparisonHistoriesLoading: comparisonHistoriesValue.isLoading,
+                  comparisonHistoriesError: comparisonHistoriesValue.hasError
+                      ? comparisonHistoriesValue.error
+                      : null,
+                  selectedSection: _section,
+                  detailsLoading: detailsLoading,
+                  detailsError: detailsError,
+                  onSectionChanged: (section) =>
+                      setState(() => _section = section),
+                  onEtfSelected: _selectEtf,
+                  onRefresh: _refreshLabData,
+                );
+              },
             ),
     );
   }
@@ -136,6 +145,65 @@ class _LeveragedEtf00631LScreenState
     ref.invalidate(etf00631LFastLabProvider);
     ref.invalidate(etf00631LLabProvider);
     ref.invalidate(selectedEtfPriceHistoryProvider(_selectedEtfCode));
+    _lastFullRefreshAt = DateTime.now();
+    _scheduleRefreshTimer(force: true);
+  }
+
+  void _refreshFastData() {
+    ref.invalidate(etf00631LFastLabProvider);
+    final now = DateTime.now();
+    if (_shouldRefreshFullData(now)) {
+      ref.invalidate(etf00631LLabProvider);
+      if (_selectedEtfCode != '00631L') {
+        ref.invalidate(selectedEtfPriceHistoryProvider(_selectedEtfCode));
+      }
+      _lastFullRefreshAt = now;
+    }
+    _scheduleRefreshTimer(force: true);
+  }
+
+  bool _shouldRefreshFullData(DateTime now) {
+    final last = _lastFullRefreshAt;
+    if (last == null) {
+      return true;
+    }
+    final fastData = ref.read(etf00631LFastLabProvider).valueOrNull;
+    final session = fastData?.intradayNav?.marketSession(now: now);
+    final threshold = _use00631LLiveProxy && session?.isRegularSession == true
+        ? const Duration(minutes: 1)
+        : const Duration(minutes: 10);
+    return now.difference(last) >= threshold;
+  }
+
+  void _scheduleRefreshTimer({
+    Etf00631LLabData? data,
+    bool force = false,
+  }) {
+    final interval = _refreshInterval(data);
+    final seconds = interval.inSeconds;
+    if (!force &&
+        _refreshTimer?.isActive == true &&
+        _scheduledRefreshSeconds == seconds) {
+      return;
+    }
+    _refreshTimer?.cancel();
+    _scheduledRefreshSeconds = seconds;
+    _refreshTimer = Timer(interval, () {
+      if (mounted) {
+        _refreshFastData();
+      }
+    });
+  }
+
+  Duration _refreshInterval(Etf00631LLabData? data) {
+    if (!_use00631LLiveProxy) {
+      return const Duration(minutes: 5);
+    }
+    final nav = data?.intradayNav;
+    final session = nav?.marketSession() ??
+        IntradayMarketSession.evaluate(sourceAvailable: false);
+    final seconds = session.nextRefreshSeconds.clamp(15, 300).toInt();
+    return Duration(seconds: seconds);
   }
 
   void _selectEtf(String code) {
@@ -1256,16 +1324,20 @@ class _CompactQuoteHeader extends StatelessWidget {
                     latestHistoryPoint != null
                 ? '歷史收盤'
                 : _statusDisplay(quoteStatus);
-    final quoteCaption = selectedEtf.dataTime == null
-        ? latestHistoryPoint == null
-            ? '市價 · 盤中資料暫無'
-            : '市價參考 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
-        : selectedEtf.is00631L
-            ? '市價 · 盤中時間 ${formatTimeSeconds(selectedEtf.dataTime!)}'
-            : '市價 · catalog ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
     final backendLabel = data.operationsStatus.backendDisconnected
         ? '後端未連線'
         : data.operationsStatus.backendConnectionLabel;
+    final marketSession = selectedEtf.is00631L
+        ? data.intradayNav?.marketSession() ??
+            IntradayMarketSession.evaluate(sourceAvailable: false)
+        : null;
+    final quoteCaptionDisplay = selectedEtf.dataTime == null
+        ? latestHistoryPoint == null
+            ? '市價 · 盤中資料暫無'
+            : '市價 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
+        : selectedEtf.is00631L
+            ? '市價 · ${marketSession!.phaseLabel} ${formatTimeSeconds(selectedEtf.dataTime!)}'
+            : '市價 · catalog ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -1318,7 +1390,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        quoteCaption,
+                        quoteCaptionDisplay,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -1346,6 +1418,13 @@ class _CompactQuoteHeader extends StatelessWidget {
                   label: '預估淨值',
                   value: _price(selectedEtf.estimatedNav),
                 ),
+                if (marketSession != null)
+                  _QuoteMetaItem(
+                    label: '時段',
+                    value: marketSession.phaseLabel,
+                    caption:
+                        '${marketSession.dataFreshnessLabel} · ${marketSession.ageText}',
+                  ),
                 _QuoteMetaItem(
                   label: '前日淨值',
                   value: _price(selectedEtf.previousNav),
@@ -9069,6 +9148,8 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
   final holdingsCount = _holdingsHistoryCount(data);
   final latestHoldingDate = _latestHoldingsDate(data);
   final intradayTime = _intradayDataTimeText(data.intradayNav);
+  final intradaySession = data.intradayNav?.marketSession() ??
+      IntradayMarketSession.evaluate(sourceAvailable: false);
   final txLine = _primaryFuturesLine(data.snapshot);
   final txQuote = data.futuresQuote;
   final txTime = txQuote.dataTime == null
@@ -9104,6 +9185,15 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
       action: data.intradayNav == null
           ? 'static public mode 只提供歷史與回測；若要盤中資料，請啟用 public backend。'
           : '請以資料時間與 sourceContract 為準。',
+    ),
+    _StatusItem(
+      label: '盤中時段',
+      status: intradaySession.dataFreshness,
+      detail:
+          '${intradaySession.phaseLabel}；${intradaySession.dataFreshnessLabel}；資料年齡 ${intradaySession.ageText}；下一次自動刷新 ${intradaySession.refreshText}。',
+      action: intradaySession.isRegularSession
+          ? '盤中只高頻更新 NAV、折溢價與狀態；官方 holdings 仍是每日快照。'
+          : '非盤中時段會保留最後資料時間，請以官方 dataTime 為準。',
     ),
     _StatusItem(
       label: 'TX live',

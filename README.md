@@ -24,6 +24,13 @@ Daily helper:
 scripts\00631l_open_lab.cmd
 ```
 
+Intraday update timing:
+
+- Official holdings are daily snapshots.
+- Intraday NAV / premium-discount uses the live backend during TWSE regular trading hours, 09:00-13:30 Asia/Taipei.
+- Static public mode keeps history/backtest usable but is not live intraday data.
+- Details: `docs\00631l_intraday_update_timing.md`.
+
 Local direct route:
 
 ```text
@@ -122,6 +129,13 @@ v4.2 history range and theme fix:
 
 - The history/backtest page clearly defaults to the latest one-year range.
 - Start/end date controls and quick ranges update charts, metrics, and the price table.
+
+v4.12 intraday session update:
+
+- Intraday NAV now carries Asia/Taipei market-session metadata from the backend.
+- The frontend refreshes intraday data faster during regular trading hours and keeps full data refresh lower frequency.
+- The quote header and data coverage area show session phase, data freshness, age, and next refresh timing.
+- Summary: `docs\00631l_v4_12_intraday_session_update_summary.md`.
 - The light/dark toggle is a visible `日間` / `夜間` control and rebuilds the 00631L market palette.
 
 v4.3 position, AI, settings, and ETF catalog:

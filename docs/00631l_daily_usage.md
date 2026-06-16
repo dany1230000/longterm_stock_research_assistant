@@ -17,6 +17,14 @@ Important source timing:
 - Position tracking is browser local-only.
 - TX live remains mock/fallback.
 
+Intraday timing:
+
+- TWSE regular trading is treated as 09:00-13:30 Asia/Taipei.
+- In live proxy mode, the app refreshes intraday NAV, premium/discount, and data time more frequently during the session.
+- Official holdings / ratio remains a daily snapshot, not intraday holdings.
+- Static public mode keeps history/backtest usable but is not live intraday NAV.
+- Details: `docs\00631l_intraday_update_timing.md`.
+
 本文件說明如何每天用同一套本機流程檢查 00631L 資料。這個研究室只整理資料來源、內容物歷史、折溢價狀態與本機操作狀態，不提供操作建議。
 
 ## 第一次安裝

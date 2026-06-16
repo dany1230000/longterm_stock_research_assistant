@@ -61,6 +61,13 @@ set PUBLIC_BACKEND_URL=https://your-backend.example.com
 scripts\00631l_build_web_public.cmd
 ```
 
+Live timing:
+
+- `/api/etf/00631l/intraday-nav` includes `marketSession` metadata for Asia/Taipei regular hours.
+- During 09:00-13:30, the frontend can refresh intraday NAV around the TWSE `userDelay` interval.
+- After the session, the app should show the last data time instead of implying live movement.
+- Official holdings remain daily snapshots.
+
 Required public backend env:
 
 ```env

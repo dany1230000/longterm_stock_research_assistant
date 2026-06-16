@@ -31,6 +31,7 @@ from .intraday_nav_history import (
     IntradayNavHistoryStore,
     empty_intraday_history_response,
 )
+from .market_session import intraday_market_session
 from .price_history import (
     PRICE_ADJUSTMENT_FIELD,
     PriceHistoryStore,
@@ -316,15 +317,21 @@ class Etf00631LService:
         now = utc_now_iso()
         candidates = self._intraday_candidates()
         if not candidates:
-            return unavailable_intraday_nav(
-                "",
-                now,
-                "No intraday NAV URL is configured for 00631L",
+            return self._with_intraday_market_session(
+                unavailable_intraday_nav(
+                    "",
+                    now,
+                    "No intraday NAV URL is configured for 00631L",
+                ),
+                now=now,
             )
 
         cached = self._cache.get("intraday_nav", self._config.intraday_cache_seconds)
         if cached is not None:
-            return mark_cached(cached, fetched_at=now)
+            return self._with_intraday_market_session(
+                mark_cached(cached, fetched_at=now),
+                now=now,
+            )
 
         errors: list[str] = []
         for source_name, url, parser in candidates:
@@ -332,6 +339,7 @@ class Etf00631LService:
                 source = self._fetcher(url, self._config.request_timeout_seconds)
                 payload = parser(source, source_url=url, fetched_at=now)
                 if payload["sourceStatus"] not in {"error", "unavailable"}:
+                    payload = self._with_intraday_market_session(payload, now=now)
                     self._cache.set("intraday_nav", payload)
                     if payload["sourceStatus"] == "official":
                         try:
@@ -346,14 +354,47 @@ class Etf00631LService:
         stale = self._cache.get_any("intraday_nav")
         joined = "; ".join(error for error in errors if error) or "all intraday NAV sources failed"
         if stale is not None:
-            return mark_cached(stale, fetched_at=now, error_message=f"Live intraday NAV fetch failed: {joined}")
+            return self._with_intraday_market_session(
+                mark_cached(
+                    stale,
+                    fetched_at=now,
+                    error_message=f"Live intraday NAV fetch failed: {joined}",
+                ),
+                now=now,
+            )
         source_url = candidates[0][1] if candidates else ""
-        return unavailable_intraday_nav(
-            source_url,
-            now,
-            f"Live intraday NAV fetch failed and no cached data is available: {joined}",
-            source_status="error",
+        return self._with_intraday_market_session(
+            unavailable_intraday_nav(
+                source_url,
+                now,
+                f"Live intraday NAV fetch failed and no cached data is available: {joined}",
+                source_status="error",
+            ),
+            now=now,
         )
+
+    def _with_intraday_market_session(
+        self,
+        payload: dict[str, Any],
+        *,
+        now: str,
+    ) -> dict[str, Any]:
+        session = intraday_market_session(
+            now_iso=now,
+            data_time_iso=payload.get("dataTime"),
+            user_delay_ms=payload.get("userDelayMs"),
+        )
+        enriched = dict(payload)
+        enriched["marketSession"] = session
+        if enriched.get("sourceStatus") in {"error", "unavailable"}:
+            enriched["isStale"] = True
+        elif session["phase"] == "regular":
+            enriched["isStale"] = not session["isIntradayFresh"]
+        elif enriched.get("dataTime"):
+            enriched["isStale"] = False
+        else:
+            enriched["isStale"] = True
+        return enriched
 
     def tx_quote(self) -> dict[str, Any]:
         now = utc_now_iso()
@@ -726,6 +767,11 @@ class Etf00631LService:
         latest_holding = holdings_items[0] if holdings_items else {}
         intraday_items = intraday.get("items") if isinstance(intraday.get("items"), list) else []
         latest_intraday = intraday_items[0] if intraday_items else {}
+        intraday_market = intraday_market_session(
+            now_iso=now,
+            data_time_iso=latest_intraday.get("dataTime") or intraday.get("lastDataTime"),
+            user_delay_ms=self._config.intraday_cache_seconds * 1000,
+        )
         errors = [
             value.get("errorMessage")
             for value in (holdings, intraday, tx_quote)
@@ -806,6 +852,7 @@ class Etf00631LService:
                 "sourceContract": intraday.get("sourceContract"),
                 "sampleCount": intraday.get("sampleCount", 0),
                 "latestDataTime": latest_intraday.get("dataTime") or intraday.get("lastDataTime"),
+                "marketSession": intraday_market,
                 "date": intraday.get("date"),
                 "sourceUpdatedAt": intraday.get("sourceUpdatedAt"),
                 "isStale": intraday.get("isStale"),
