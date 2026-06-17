@@ -88,7 +88,7 @@ class Settings:
         "TAIFEX_TX_SOCKJS_URL",
         "https://mis.taifex.com.tw/futures/rt",
     )
-    taifex_tx_futures_symbol: str = os.getenv("TAIFEX_TX_FUTURES_SYMBOL", "TXF-P")
+    taifex_tx_futures_symbol: str = os.getenv("TAIFEX_TX_FUTURES_SYMBOL", "auto")
     taifex_tx_spot_symbol: str = os.getenv("TAIFEX_TX_SPOT_SYMBOL", "TXF-S")
     holdings_history_path: str = os.getenv(
         "00631L_HOLDINGS_HISTORY_PATH",

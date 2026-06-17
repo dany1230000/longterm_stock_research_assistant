@@ -289,6 +289,6 @@ scripts\00631l_release_check.cmd
 ## 範圍限制
 
 - 只服務 00631L。
-- TX live 尚未接入。
+- TX live 需要 public backend 連 TAIFEX MIS quote stream；static-only 模式不提供 live TX。
 - 不提供投資建議。
 - 不包含通知、自動下單或 app store 上架流程。

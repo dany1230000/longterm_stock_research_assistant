@@ -15,7 +15,7 @@ Important source timing:
 - Intraday NAV is the fast-updating market price, estimated NAV, premium/discount, and data-time source.
 - Price history is a local official TWSE cache after update.
 - Position tracking is browser local-only.
-- TX live remains mock/fallback.
+- TX live：backend 可連 TAIFEX 時顯示即時期貨資料；否則清楚標示 cached / unavailable / mock。
 
 Intraday timing:
 
@@ -198,7 +198,7 @@ http://127.0.0.1:8000/api/etf/00631l/operations/status
 
 - official holdings / ratio：元大每日揭露資料，是每日快照，不是盤中即時內容物。
 - intraday NAV / 折溢價：TWSE `all_etf.txt` 可準即時更新，約 15–30 秒；需要 backend 可連線且 `.env` 設定正確。
-- TX live：目前尚未接入，只保留 mock/fallback 顯示，不會標示為 official。
+- TX live：backend 可連 TAIFEX 時顯示自動月份合約與加權指數；fallback 不會標示為 official。
 
 ## holdings history 怎麼看
 
@@ -397,9 +397,9 @@ Yuanta ratio 是官方每日內容物快照，代表該日揭露的基金內容�
 
 TWSE/Yuanta intraday NAV 是盤中估算資料，只用於市價、預估淨值、折溢價與資料時間觀察。
 
-## 為什麼沒有 TX live
+## TX live 資料怎麼看
 
-目前 TX 仍保留 mock/fallback，因為 v1.0 到 v1.20 的產品範圍先把 00631L 官方內容物、intraday NAV、history、export 與日常操作流程做穩。TX live 需要另行確認官方來源、CORS、更新頻率與測試策略。
+TX live 透過 backend 連 TAIFEX MIS quote stream，使用自動月份合約，例如 2026/06 會解析為 TXFF6-F。非交易時段、來源 timeout 或 backend 無法連線時，畫面會顯示 unavailable / stale / cached / mock，不能當作 official live。
 
 ## 為什麼沒有買賣建議
 

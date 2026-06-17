@@ -965,6 +965,7 @@ class FuturesQuote {
     required this.nightSessionChange,
     required this.status,
     required this.lastFetchedAt,
+    this.txSymbol,
     this.sourceContract,
     this.sourceUrl = '',
     this.dataTime,
@@ -974,6 +975,7 @@ class FuturesQuote {
 
   final String symbol;
   final String contractMonth;
+  final String? txSymbol;
   final double? txPrice;
   final double? weightedIndex;
   final double? nightSessionChange;

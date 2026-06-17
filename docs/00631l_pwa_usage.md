@@ -64,7 +64,7 @@ flutter build web --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_
 
 - Yuanta holdings / ratio 是官方每日快照，不是盤中即時。
 - TWSE intraday NAV / 折溢價可約 15-30 秒更新，前提是 backend 與 env 正常。
-- TX live 尚未接入；頁面只顯示 mock/fallback 狀態。
+- TX live 需要 backend；backend 不可用時，頁面會清楚顯示 cached / unavailable / mock。
 
 ## backend 不通時
 

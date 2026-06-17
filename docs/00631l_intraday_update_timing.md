@@ -21,7 +21,7 @@
 
 ## TX live
 
-TX live 不是本輪範圍。畫面若顯示 unavailable / mock / fallback，不會把它標示成 official。
+TX live 由 backend 連 TAIFEX MIS quote stream，使用自動解析的月份合約。非交易時段或來源失敗時會顯示 unavailable / stale / cached / mock，不會把 fallback 標示成 official。
 
 ## 前端自動刷新
 

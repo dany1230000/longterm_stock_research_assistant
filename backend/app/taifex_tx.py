@@ -11,6 +11,7 @@ import http.cookiejar
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any
+import re
 
 
 TAIPEI_TZ = timezone(timedelta(hours=8))
@@ -20,16 +21,21 @@ TAIFEX_TX_SOURCE_CONTRACT = "taifex_sockjs_quote"
 @dataclass(frozen=True)
 class TaifexQuoteFetchConfig:
     sockjs_url: str
-    futures_symbol: str = "TXF-P"
+    futures_symbol: str = "auto"
     spot_symbol: str = "TXF-S"
     timeout_seconds: float = 8
 
 
 def fetch_taifex_tx_quote(config: TaifexQuoteFetchConfig, *, fetched_at: str) -> dict[str, Any]:
     base_url = config.sockjs_url.rstrip("/")
+    futures_symbols = resolve_taifex_tx_futures_symbols(
+        config.futures_symbol,
+        fetched_at=fetched_at,
+    )
+    primary_futures_symbol = futures_symbols[0]
     session_id = _session_id()
     server_id = "000"
-    symbols = [config.futures_symbol, config.spot_symbol]
+    symbols = [*futures_symbols, config.spot_symbol]
     cookie_jar = http.cookiejar.CookieJar()
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie_jar))
 
@@ -91,20 +97,65 @@ def fetch_taifex_tx_quote(config: TaifexQuoteFetchConfig, *, fetched_at: str) ->
             symbol = str(quote.get("symbol") or "")
             if symbol:
                 quotes[symbol] = quote
-        futures_values = _quote_values(quotes.get(config.futures_symbol))
+        futures_symbol = _select_futures_symbol_with_price(
+            quotes,
+            futures_symbols,
+        )
+        futures_values = _quote_values(quotes.get(futures_symbol))
         spot_values = _quote_values(quotes.get(config.spot_symbol))
         if _to_float(futures_values.get("125")) is not None and (
             _to_float(spot_values.get("125")) is not None or _to_float(spot_values.get("129")) is not None
         ):
             break
 
+    selected_futures_symbol = _select_futures_symbol_with_price(
+        quotes,
+        futures_symbols,
+    )
     return normalize_taifex_tx_quote(
         quotes,
-        futures_symbol=config.futures_symbol,
+        futures_symbol=selected_futures_symbol,
         spot_symbol=config.spot_symbol,
         source_url=base_url,
         fetched_at=fetched_at,
+        requested_futures_symbol=primary_futures_symbol,
     )
+
+
+def resolve_taifex_tx_futures_symbols(config_symbol: str, *, fetched_at: str) -> list[str]:
+    """Return TAIFEX TX futures symbols to subscribe, primary first.
+
+    The TAIFEX quote frontend uses month-coded symbols such as ``TXFF6-F`` for
+    the 2026/06 contract. Older app configs used ``TXF-P``; that stream carries
+    a reference/spot payload and can omit the futures last price, so it is
+    treated as a legacy placeholder and resolved to the active month contract.
+    """
+
+    requested = (config_symbol or "").strip().upper()
+    if requested not in {"", "AUTO", "FRONT_MONTH", "TXF-P"}:
+        return [requested]
+
+    reference = _fetched_at_as_taipei(fetched_at)
+    primary = _tx_symbol_for_contract_month(*_front_month_for(reference))
+    next_month = _tx_symbol_for_contract_month(*_next_month(*_front_month_for(reference)))
+    return [primary] if primary == next_month else [primary, next_month]
+
+
+def contract_month_from_taifex_symbol(symbol: str, *, fetched_at: str) -> str:
+    reference = _fetched_at_as_taipei(fetched_at)
+    match = re.search(r"TXF(?:[A-L]\d/)?([A-L])(\d)-F$", symbol.upper())
+    if match is None:
+        return "front_month"
+
+    month = ord(match.group(1)) - ord("A") + 1
+    year_digit = int(match.group(2))
+    decade = reference.year - reference.year % 10
+    year = decade + year_digit
+    if year < reference.year - 5:
+        year += 10
+    elif year > reference.year + 5:
+        year -= 10
+    return f"{year:04d}{month:02d}"
 
 
 def parse_sockjs_quote_events(line: str) -> list[dict[str, Any]]:
@@ -139,6 +190,7 @@ def normalize_taifex_tx_quote(
     spot_symbol: str,
     source_url: str,
     fetched_at: str,
+    requested_futures_symbol: str | None = None,
 ) -> dict[str, Any]:
     futures_values = _quote_values(quotes.get(futures_symbol))
     spot_values = _quote_values(quotes.get(spot_symbol))
@@ -159,11 +211,16 @@ def normalize_taifex_tx_quote(
     if tx_price is None:
         error_message = (
             f"TAIFEX {futures_symbol} quote did not include CLastPrice; "
-            "the source may be outside active trading hours."
+            "the source may be outside active trading hours or the contract may be inactive."
         )
+        if requested_futures_symbol and requested_futures_symbol != futures_symbol:
+            error_message += f" Requested primary symbol was {requested_futures_symbol}."
     return {
         "symbol": "TX",
-        "contractMonth": "front_month",
+        "contractMonth": contract_month_from_taifex_symbol(
+            futures_symbol,
+            fetched_at=fetched_at,
+        ),
         "txSymbol": futures_symbol,
         "spotSymbol": spot_symbol,
         "txPrice": tx_price,
@@ -223,6 +280,17 @@ def _session_id() -> str:
     return "".join(random.choice(alphabet) for _ in range(8))
 
 
+def _select_futures_symbol_with_price(
+    quotes: dict[str, dict[str, Any]],
+    futures_symbols: list[str],
+) -> str:
+    for symbol in futures_symbols:
+        values = _quote_values(quotes.get(symbol))
+        if _to_float(values.get("125")) is not None:
+            return symbol
+    return futures_symbols[0]
+
+
 def _quote_values(quote: dict[str, Any] | None) -> dict[str, Any]:
     if not isinstance(quote, dict):
         return {}
@@ -263,6 +331,51 @@ def _quote_data_time(values: dict[str, Any]) -> datetime | None:
         )
     except ValueError:
         return None
+
+
+def _fetched_at_as_taipei(fetched_at: str) -> datetime:
+    try:
+        parsed = datetime.fromisoformat(fetched_at.replace("Z", "+00:00"))
+    except ValueError:
+        parsed = datetime.now(timezone.utc)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(TAIPEI_TZ)
+
+
+def _front_month_for(taipei_now: datetime) -> tuple[int, int]:
+    year = taipei_now.year
+    month = taipei_now.month
+    expiry = _third_wednesday(year, month)
+    cutoff_minute = 14 * 60 + 30
+    minute_of_day = taipei_now.hour * 60 + taipei_now.minute
+    if taipei_now.date() > expiry.date() or (
+        taipei_now.date() == expiry.date() and minute_of_day >= cutoff_minute
+    ):
+        year, month = _next_month(year, month)
+    return year, month
+
+
+def _next_month(year: int, month: int) -> tuple[int, int]:
+    if month >= 12:
+        return year + 1, 1
+    return year, month + 1
+
+
+def _third_wednesday(year: int, month: int) -> datetime:
+    cursor = datetime(year, month, 1, tzinfo=TAIPEI_TZ)
+    wednesdays = 0
+    while True:
+        if cursor.weekday() == 2:
+            wednesdays += 1
+            if wednesdays == 3:
+                return cursor
+        cursor += timedelta(days=1)
+
+
+def _tx_symbol_for_contract_month(year: int, month: int) -> str:
+    month_code = chr(ord("A") + month - 1)
+    return f"TXF{month_code}{year % 10}-F"
 
 
 def _is_stale(data_time: datetime | None, fetched_at: str) -> bool:

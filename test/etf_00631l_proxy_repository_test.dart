@@ -83,7 +83,8 @@ void main() {
     final quote = await repository.fetchFuturesQuote();
 
     expect(quote.symbol, 'TX');
-    expect(quote.contractMonth, 'front_month');
+    expect(quote.contractMonth, '202606');
+    expect(quote.txSymbol, 'TXFF6-F');
     expect(quote.txPrice, 27125);
     expect(quote.weightedIndex, 27080.5);
     expect(quote.futuresBasisPoints, closeTo(44.5, 0.001));
@@ -634,8 +635,8 @@ Map<String, Object?> _intradayPayload() {
 Map<String, Object?> _txQuotePayload() {
   return {
     'symbol': 'TX',
-    'contractMonth': 'front_month',
-    'txSymbol': 'TXF-P',
+    'contractMonth': '202606',
+    'txSymbol': 'TXFF6-F',
     'spotSymbol': 'TXF-S',
     'txPrice': 27125.0,
     'weightedIndex': 27080.5,

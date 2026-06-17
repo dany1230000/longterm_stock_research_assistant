@@ -1336,7 +1336,7 @@ class _CompactQuoteHeader extends StatelessWidget {
             ? '市價 · 盤中資料暫無'
             : '市價 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
         : selectedEtf.is00631L
-            ? '市價 · ${marketSession!.phaseLabel} ${formatTimeSeconds(selectedEtf.dataTime!)}'
+            ? '市價 · ${marketSession!.phaseLabel} ${_sourceTimeText(selectedEtf.dataTime!)}'
             : '市價 · catalog ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
     return DecoratedBox(
@@ -3507,6 +3507,10 @@ class _OverviewModeCards extends StatelessWidget {
     final price = data.priceHistory.completenessSummary();
     final nav = data.intradayNav;
     final tx = data.futuresQuote;
+    final txSymbol = tx.txSymbol ?? tx.symbol;
+    final txContract = tx.contractMonth == 'front_month'
+        ? txSymbol
+        : '${tx.contractMonth} · $txSymbol';
     return _InfoCardGrid(
       children: [
         _HoldingInfoCard(
@@ -3545,7 +3549,8 @@ class _OverviewModeCards extends StatelessWidget {
           badge: 'TX',
           title: 'TX live',
           primary: _price(tx.txPrice),
-          secondary: '基差 ${formatSignedNullablePercent(tx.futuresBasisPct)}',
+          secondary:
+              '$txContract · 基差 ${formatSignedNullablePercent(tx.futuresBasisPct)}',
           caption: tx.status == EtfDataStatus.mock
               ? 'mock fallback；不是 TAIFEX live'
               : '${tx.status.label} · ${tx.sourceContract ?? 'taifex'}',
@@ -9087,6 +9092,31 @@ String _dateTimeOrDash(DateTime? dateTime) {
       : formatTaiwanDateTimeSeconds(dateTime);
 }
 
+String _sourceTimeText(DateTime dateTime, {DateTime? now}) {
+  final source = _asTaipeiClock(dateTime);
+  final current = _asTaipeiClock(now ?? DateTime.now());
+  if (_sameCalendarDate(source, current)) {
+    return formatTimeSeconds(source);
+  }
+  return formatTaiwanDateTimeSeconds(source);
+}
+
+DateTime _asTaipeiClock(DateTime value) {
+  final shifted = value.toUtc().add(const Duration(hours: 8));
+  return DateTime(
+    shifted.year,
+    shifted.month,
+    shifted.day,
+    shifted.hour,
+    shifted.minute,
+    shifted.second,
+  );
+}
+
+bool _sameCalendarDate(DateTime a, DateTime b) {
+  return a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
 Future<DateTime?> _pickBacktestDate({
   required BuildContext context,
   required DateTime initialDate,
@@ -9152,9 +9182,9 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
       IntradayMarketSession.evaluate(sourceAvailable: false);
   final txLine = _primaryFuturesLine(data.snapshot);
   final txQuote = data.futuresQuote;
-  final txTime = txQuote.dataTime == null
-      ? '-'
-      : '${formatTaiwanDate(txQuote.dataTime!)} ${formatTimeSeconds(txQuote.dataTime!)}';
+  final txSymbol = txQuote.txSymbol ?? txQuote.symbol;
+  final txTime =
+      txQuote.dataTime == null ? '-' : _sourceTimeText(txQuote.dataTime!);
 
   return [
     _StatusItem(
@@ -9199,7 +9229,7 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
       label: 'TX live',
       status: txQuote.status.label,
       detail:
-          'TAIFEX ${txQuote.sourceContract ?? 'quote'}；TX ${_price(txQuote.txPrice)}，加權指數 ${_price(txQuote.weightedIndex)}，基差 ${formatSignedNullablePercent(txQuote.futuresBasisPct)}，dataTime $txTime。官方 holdings TX 權重 ${txLine == null ? 'unavailable' : formatNullablePercent(txLine.weightPct)}。',
+          'TAIFEX ${txQuote.sourceContract ?? 'quote'}；${txQuote.contractMonth} $txSymbol ${_price(txQuote.txPrice)}，加權指數 ${_price(txQuote.weightedIndex)}，基差 ${formatSignedNullablePercent(txQuote.futuresBasisPct)}，dataTime $txTime。官方 holdings TX 權重 ${txLine == null ? 'unavailable' : formatNullablePercent(txLine.weightPct)}。',
       action: txQuote.txPrice == null
           ? '請確認 TAIFEX 交易時段、backend 連線與 TAIFEX_TX_SOCKJS_URL 設定。'
           : '請以 TAIFEX dataTime 與官方 holdings tradeDate 分別判讀。',

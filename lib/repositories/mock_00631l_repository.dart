@@ -59,6 +59,7 @@ class Mock00631LRepository extends Official00631LRepository {
     return FuturesQuote(
       symbol: 'TX',
       contractMonth: '202606',
+      txSymbol: 'mock_tx_202606',
       txPrice: 27380,
       weightedIndex: 27295.48,
       nightSessionChange: 0.35,

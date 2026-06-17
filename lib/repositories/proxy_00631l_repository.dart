@@ -132,6 +132,7 @@ class Proxy00631LRepository extends Official00631LRepository {
     return FuturesQuote(
       symbol: _string(payload['symbol'], fallback: 'TX'),
       contractMonth: _string(payload['contractMonth'], fallback: 'front_month'),
+      txSymbol: payload['txSymbol']?.toString(),
       txPrice: _nullableDouble(payload['txPrice']),
       weightedIndex: _nullableDouble(payload['weightedIndex']),
       nightSessionChange: _nullableDouble(payload['nightSessionChange']),

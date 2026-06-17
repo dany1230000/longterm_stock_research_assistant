@@ -1521,7 +1521,7 @@ def _data_update_frequencies(*, intraday_cache_seconds: int) -> list[dict[str, A
             "key": "tx_live",
             "label": "TX live quote",
             "frequency": "taifex_realtime_when_backend_ready",
-            "description": "TAIFEX quote stream 可提供 TXF-P 與 TXF-S；非交易時段可能回 unavailable 或 stale。",
+            "description": "TAIFEX quote stream 可提供自動解析的 TX 月份合約與 TXF-S 加權指數；非交易時段可能回 unavailable 或 stale。",
             "sourceStatus": "official_cached_stale_or_unavailable",
         },
     ]

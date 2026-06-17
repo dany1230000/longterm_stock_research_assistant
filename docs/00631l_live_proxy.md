@@ -32,7 +32,7 @@ Important env vars:
 - `00631L_INTRADAY_NAV_CACHE_SECONDS=15`
 - `00631L_TX_QUOTE_CACHE_SECONDS=15`
 - `TAIFEX_TX_SOCKJS_URL=https://mis.taifex.com.tw/futures/rt`
-- `TAIFEX_TX_FUTURES_SYMBOL=TXF-P`
+- `TAIFEX_TX_FUTURES_SYMBOL=auto`
 - `TAIFEX_TX_SPOT_SYMBOL=TXF-S`
 - `ETF_CATALOG_PATH=<local data dir>\twse_etf_catalog.json`
 
@@ -210,7 +210,7 @@ POST /api/etf/catalog/import
 
 `/api/etf/00631l/operations/status` only reads local config and JSONL history summaries for collection status. It does not trigger live source fetch.
 
-`/api/etf/00631l/tx-quote` reads TAIFEX MIS quote data. It returns TXF-P quote fields, TXF-S weighted-index reference fields, computed basis, source metadata, and unavailable/error state when TAIFEX has no active last price.
+`/api/etf/00631l/tx-quote` reads TAIFEX MIS quote data. It returns the active month-coded TX futures quote, TXF-S weighted-index reference fields, computed basis, source metadata, and unavailable/error state when TAIFEX has no active last price.
 
 `/api/etf/catalog/import` imports TWSE `all_etf.txt` into local `ETF_CATALOG_PATH`. This creates an all-ETF catalog for future research-room expansion, not a replacement for 00631L holdings.
 

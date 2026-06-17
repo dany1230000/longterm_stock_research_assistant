@@ -361,6 +361,7 @@ FuturesQuote _cachedFuturesQuote(FuturesQuote quote) {
   return FuturesQuote(
     symbol: quote.symbol,
     contractMonth: quote.contractMonth,
+    txSymbol: quote.txSymbol,
     txPrice: quote.txPrice,
     weightedIndex: quote.weightedIndex,
     nightSessionChange: quote.nightSessionChange,

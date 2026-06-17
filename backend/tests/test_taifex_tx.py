@@ -9,8 +9,10 @@ try:
     import backend.app.service as service_module
     from backend.app.service import Etf00631LService
     from backend.app.taifex_tx import (
+        contract_month_from_taifex_symbol,
         normalize_taifex_tx_quote,
         parse_sockjs_quote_events,
+        resolve_taifex_tx_futures_symbols,
     )
 
     HAS_FASTAPI = True
@@ -24,9 +26,9 @@ class TaifexTxQuoteTests(unittest.TestCase):
         futures_event = {
             "type": "quote",
             "quote": {
-                "symbol": "TXF-P",
+                "symbol": "TXFF6-F",
                 "values": {
-                    "55": "TXF-P",
+                    "55": "TXFF6-F",
                     "125": "27125",
                     "129": "27076",
                     "143": "133115",
@@ -55,7 +57,7 @@ class TaifexTxQuoteTests(unittest.TestCase):
         quotes = {event["quote"]["symbol"]: event["quote"] for event in events}
         payload = normalize_taifex_tx_quote(
             quotes,
-            futures_symbol="TXF-P",
+            futures_symbol="TXFF6-F",
             spot_symbol="TXF-S",
             source_url="fixture://taifex/rt",
             fetched_at="2026-06-12T05:31:20+00:00",
@@ -63,12 +65,56 @@ class TaifexTxQuoteTests(unittest.TestCase):
 
         self.assertEqual(payload["sourceStatus"], "official")
         self.assertEqual(payload["sourceContract"], "taifex_sockjs_quote")
+        self.assertEqual(payload["txSymbol"], "TXFF6-F")
+        self.assertEqual(payload["contractMonth"], "202606")
         self.assertEqual(payload["txPrice"], 27125.0)
         self.assertEqual(payload["weightedIndex"], 27080.5)
         self.assertAlmostEqual(payload["futuresBasisPoints"], 44.5)
         self.assertAlmostEqual(payload["futuresBasisPct"], 0.1643, places=3)
         self.assertEqual(payload["dataTime"], "2026-06-12T13:31:15+08:00")
         self.assertFalse(payload["isStale"])
+
+    def test_resolve_front_month_symbol_before_and_after_expiry_cutoff(self) -> None:
+        before_cutoff = resolve_taifex_tx_futures_symbols(
+            "auto",
+            fetched_at="2026-06-17T05:19:00+00:00",
+        )
+        after_cutoff = resolve_taifex_tx_futures_symbols(
+            "auto",
+            fetched_at="2026-06-17T06:31:00+00:00",
+        )
+        legacy_config = resolve_taifex_tx_futures_symbols(
+            "TXF-P",
+            fetched_at="2026-06-17T05:19:00+00:00",
+        )
+
+        self.assertEqual(before_cutoff[0], "TXFF6-F")
+        self.assertEqual(after_cutoff[0], "TXFG6-F")
+        self.assertEqual(legacy_config[0], "TXFF6-F")
+        self.assertIn("TXFG6-F", before_cutoff)
+
+    def test_contract_month_from_taifex_symbol(self) -> None:
+        self.assertEqual(
+            contract_month_from_taifex_symbol(
+                "TXFF6-F",
+                fetched_at="2026-06-17T05:19:00+00:00",
+            ),
+            "202606",
+        )
+        self.assertEqual(
+            contract_month_from_taifex_symbol(
+                "TXFG6-F",
+                fetched_at="2026-06-17T06:31:00+00:00",
+            ),
+            "202607",
+        )
+        self.assertEqual(
+            contract_month_from_taifex_symbol(
+                "TXF-P",
+                fetched_at="2026-06-17T05:19:00+00:00",
+            ),
+            "front_month",
+        )
 
     def test_tx_quote_endpoint_returns_unavailable_without_config(self) -> None:
         service = Etf00631LService(
@@ -90,8 +136,8 @@ class TaifexTxQuoteTests(unittest.TestCase):
         def fake_fetch(config, *, fetched_at):
             return {
                 "symbol": "TX",
-                "contractMonth": "front_month",
-                "txSymbol": "TXF-P",
+                "contractMonth": "202606",
+                "txSymbol": "TXFF6-F",
                 "spotSymbol": "TXF-S",
                 "txPrice": 27125.0,
                 "weightedIndex": 27080.5,
@@ -113,7 +159,7 @@ class TaifexTxQuoteTests(unittest.TestCase):
             service = Etf00631LService(
                 config=Settings(
                     taifex_tx_sockjs_url="fixture://taifex/rt",
-                    taifex_tx_futures_symbol="TXF-P",
+                    taifex_tx_futures_symbol="auto",
                     taifex_tx_spot_symbol="TXF-S",
                 ),
                 cache=TimedMemoryCache(),

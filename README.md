@@ -136,6 +136,14 @@ v4.12 intraday session update:
 - The frontend refreshes intraday data faster during regular trading hours and keeps full data refresh lower frequency.
 - The quote header and data coverage area show session phase, data freshness, age, and next refresh timing.
 - Summary: `docs\00631l_v4_12_intraday_session_update_summary.md`.
+
+v4.13 intraday time and TX quote fix:
+
+- Home quote time now shows a date when the source data is not from the current Taipei calendar day.
+- TAIFEX TX live quote resolves the active month-coded futures symbol automatically; legacy `TXF-P` is treated as auto because it can omit futures last price.
+- Overview and data status show the resolved contract month and TX symbol.
+- Summary: `docs\00631l_v4_13_intraday_tx_fix_summary.md`.
+
 - The light/dark toggle is a visible `日間` / `夜間` control and rebuilds the 00631L market palette.
 
 v4.3 position, AI, settings, and ETF catalog:
@@ -247,7 +255,7 @@ v3.12 navigation and settings:
 
 - History and backtest are merged into one `歷史回測` bottom tab.
 - The old user-facing system status tab is replaced by `設定`; diagnostics now live under settings as an advanced section.
-- Settings also states which data is complete, which data requires live backend, and why TX live is still not connected.
+- Settings also states which data is complete, which data requires live backend, and how TX live quote is sourced from TAIFEX when backend is connected.
 - Summary: `docs\00631l_v3_12_navigation_settings_summary.md`.
 
 v3.13 data coverage status:
@@ -487,7 +495,7 @@ Release status: completed on 2026-06-08. Release summary: `docs/00631l_v1_releas
 
 Main 00631L documentation entry: `docs/00631l_docs_index.md`.
 
-The 00631L lab remains a single-product MVP. It does not connect TX live, does not expand to all leveraged ETFs, and does not provide buy/sell advice.
+The 00631L lab remains a single-product tool. TAIFEX TX live quote is available through backend data status, while the app still does not expand to all leveraged ETFs and does not provide buy/sell advice.
 
 Default mode is mock/fallback. Live proxy mode requires:
 
@@ -501,7 +509,7 @@ v1.0 live sources:
 - Yuanta 00631L holdings ratio: live official daily snapshot through backend proxy.
 - TWSE intraday NAV: live official through `https://mis.twse.com.tw/stock/data/all_etf.txt`, `sourceContract: twse_a_k_json`.
 - Yuanta INAV: verified official fallback, `sourceContract: yuanta_inav`.
-- TX quote: still mock/fallback.
+- TX quote: TAIFEX live through backend when available; otherwise cached/unavailable/mock is labeled explicitly.
 - Premium/discount status: shown as a price-deviation hint only, based on intraday NAV `premiumDiscountPct`, and not shown as official when data is stale or unavailable.
 - Holdings history v1.2: backend stores official Yuanta ratio snapshots locally by `tradeDate` in JSONL and exposes `/api/etf/00631l/holdings/history` plus `/summary`; default mock mode shows no official history.
 - Holdings change notices v1.3: compares the latest two official holdings history rows and shows data-status reminders for TX, TSMC, cash/margin, and exposure changes. These reminders are not trading advice.
@@ -552,7 +560,7 @@ v1.0 live sources:
 - Documentation index v1.48: `docs\00631l_docs_index.md` is the main entry point for daily use, troubleshooting, maintenance, deployment, and release-summary routing.
 - Stability patch v1.49: backend tests verify that local paths in `docs\00631l_docs_index.md` exist, and release check requires the docs index.
 - Deployment stability release v1.50: `docs\00631l_v1_50_deployment_stability_summary.md` summarizes the stable deployment and data reliability checkpoint.
-- Mobile + AI v2.1: `docs\00631l_mobile_usage.md` explains LAN phone usage, and `docs\00631l_ai_analysis.md` explains rule-based AI analysis. holdings/ratio remains a daily official snapshot; intraday NAV is the 15–30 second live/cached source; TX live remains mock/fallback.
+- Mobile + AI v2.1: `docs\00631l_mobile_usage.md` explains LAN phone usage, and `docs\00631l_ai_analysis.md` explains rule-based AI analysis. holdings/ratio remains a daily official snapshot; intraday NAV is the 15–30 second live/cached source; TX live uses TAIFEX through backend when available; fallback states stay explicit.
 - Public deploy-ready v2.2: `backend\Dockerfile`, `scripts\00631l_check_public_config.cmd`, `scripts\00631l_build_web_public.cmd`, `docs\00631l_public_deployment.md`, and `docs\00631l_pwa_usage.md` prepare the lab for a public Flutter Web frontend plus public FastAPI backend. Local LAN mode remains available.
 - Static-public v3.1: GitHub Pages can serve generated 00631L price history and backtest data without a live backend.
 - Standalone PWA v3.2: the public root URL opens `00631L 正二研究室` directly; `/#/00631l-lab` remains compatible.
@@ -795,7 +803,7 @@ Current source status:
 - Yuanta 00631L Basic information: verified live through backend proxy.
 - Yuanta 00631L holdings ratio: verified live through backend proxy.
 - Intraday NAV: verified via TWSE official `all_etf.txt` aggregate a-k feed when `TWSE_00631L_INTRADAY_NAV_URL` is configured. Yuanta INAV is also supported as `sourceContract: yuanta_inav` fallback.
-- TX quote: still mock/fallback.
+- TX quote: TAIFEX live through backend when available; otherwise cached/unavailable/mock is labeled explicitly.
 
 Official daily holdings are not intraday live holdings. Intraday data should only be used for market price, estimated NAV, and premium/discount observation.
 

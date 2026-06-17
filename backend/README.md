@@ -133,7 +133,7 @@ See `backend/.env.example` for the deployable template.
 - `00631L_INTRADAY_NAV_CACHE_SECONDS`: default `15`.
 - `00631L_TX_QUOTE_CACHE_SECONDS`: default `15`.
 - `TAIFEX_TX_SOCKJS_URL`: TAIFEX MIS quote stream root, default `https://mis.taifex.com.tw/futures/rt`.
-- `TAIFEX_TX_FUTURES_SYMBOL`: default `TXF-P`.
+- `TAIFEX_TX_FUTURES_SYMBOL`: default `auto`; legacy `TXF-P` is treated as auto because TXF-P can omit the futures last price.
 - `TAIFEX_TX_SPOT_SYMBOL`: default `TXF-S`.
 - `00631L_HOLDINGS_HISTORY_PATH`: local JSONL path for daily holdings history, default `backend/data/00631l_holdings_history.jsonl`.
 - `00631L_INTRADAY_NAV_HISTORY_PATH`: local JSONL path for intraday NAV history, default `backend/data/00631l_intraday_nav_history.jsonl`.
@@ -244,7 +244,7 @@ TX quote endpoint:
 GET /api/etf/00631l/tx-quote
 ```
 
-The endpoint uses the TAIFEX MIS quote stream with `sourceContract: taifex_sockjs_quote`. It reports TXF-P price, TXF-S weighted-index reference, basis points, basis percent, data time, and clear unavailable/error metadata. TAIFEX can omit a last price outside active sessions, so the backend does not convert that into mock official data.
+The endpoint uses the TAIFEX MIS quote stream with `sourceContract: taifex_sockjs_quote`. It reports the active month-coded TX futures symbol, TXF-S weighted-index reference, basis points, basis percent, data time, and clear unavailable/error metadata. TAIFEX can omit a last price outside active sessions, so the backend does not convert that into mock official data.
 
 TWSE ETF catalog endpoints:
 
