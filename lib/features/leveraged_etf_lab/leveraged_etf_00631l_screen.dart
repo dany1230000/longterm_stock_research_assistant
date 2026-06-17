@@ -111,7 +111,8 @@ class _LeveragedEtf00631LScreenState
                           : null,
                   comparisonHistories:
                       comparisonHistoriesValue.valueOrNull ?? const [],
-                  comparisonHistoriesLoading: comparisonHistoriesValue.isLoading,
+                  comparisonHistoriesLoading:
+                      comparisonHistoriesValue.isLoading,
                   comparisonHistoriesError: comparisonHistoriesValue.hasError
                       ? comparisonHistoriesValue.error
                       : null,
