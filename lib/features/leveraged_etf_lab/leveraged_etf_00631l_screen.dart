@@ -2406,8 +2406,8 @@ class _OverviewSection extends StatelessWidget {
         _AlwaysExpandedPanel(
           title: selectedEtf.is00631L ? '圖表與曝險' : '價格圖表',
           subtitle: selectedEtf.is00631L
-              ? '近 60 日收盤與官方每日曝險；需要比較時再展開。'
-              : '${selectedEtf.code} 近 60 日收盤與歷史資料狀態。',
+              ? '近一年收盤與官方每日曝險；需要比較時再展開。'
+              : '${selectedEtf.code} 近一年收盤與歷史資料狀態。',
           child: selectedEtf.is00631L
               ? _OverviewSignalPanel(data: data)
               : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
@@ -2959,12 +2959,14 @@ class _OverviewSparklineBlock extends StatelessWidget {
   const _OverviewSparklineBlock({required this.points});
 
   final List<EtfPriceHistoryPoint> points;
+  static const _defaultWindowSize = 252;
 
   @override
   Widget build(BuildContext context) {
     final ordered = [...points]..sort((a, b) => a.date.compareTo(b.date));
-    final recent =
-        ordered.length > 60 ? ordered.sublist(ordered.length - 60) : ordered;
+    final recent = ordered.length > _defaultWindowSize
+        ? ordered.sublist(ordered.length - _defaultWindowSize)
+        : ordered;
     final latest = recent.isEmpty ? null : recent.last;
     final first = recent.isEmpty ? null : recent.first;
     final changePct =
@@ -2981,7 +2983,7 @@ class _OverviewSparklineBlock extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                '近 60 日收盤',
+                '近一年走勢',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -3059,14 +3061,76 @@ class _SparklineChart extends StatelessWidget {
       );
     }
 
+    final chartMinY =
+        spots.map((spot) => spot.y).reduce((a, b) => a < b ? a : b);
+    final chartMaxY =
+        spots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
+    final padding = ((chartMaxY - chartMinY).abs() * 0.08).clamp(0.2, 20.0);
+
     return SizedBox(
-      height: 72,
+      height: 112,
       child: LineChart(
         LineChartData(
+          minX: 0,
+          maxX: (points.length - 1).toDouble(),
+          minY: chartMinY - padding,
+          maxY: chartMaxY + padding,
           borderData: FlBorderData(show: false),
-          gridData: const FlGridData(show: false),
-          titlesData: const FlTitlesData(show: false),
-          lineTouchData: const LineTouchData(enabled: false),
+          gridData: FlGridData(
+            show: true,
+            drawVerticalLine: false,
+            getDrawingHorizontalLine: (_) => FlLine(
+              color: _marketBorderColor(context),
+              strokeWidth: 0.8,
+            ),
+          ),
+          titlesData: FlTitlesData(
+            topTitles: const AxisTitles(),
+            rightTitles: const AxisTitles(),
+            leftTitles: const AxisTitles(),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                interval: 1,
+                reservedSize: 32,
+                getTitlesWidget: (value, meta) {
+                  final index = value.round();
+                  if (!_isBottomDateTick(index, points.length)) {
+                    return const SizedBox.shrink();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      _shortChartDate(points[index].date),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: _marketMutedTextColor(context),
+                        fontSize: 10,
+                        height: 1.05,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          lineTouchData: LineTouchData(
+            enabled: true,
+            touchTooltipData: LineTouchTooltipData(
+              getTooltipItems: (touchedSpots) => [
+                for (final spot in touchedSpots)
+                  LineTooltipItem(
+                    '${formatTaiwanDate(points[spot.spotIndex].date)}\n${_price(spot.y)}',
+                    const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 11,
+                    ),
+                  ),
+              ],
+            ),
+          ),
           lineBarsData: [
             LineChartBarData(
               spots: spots,

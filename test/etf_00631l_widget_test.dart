@@ -34,7 +34,7 @@ void main() {
     expect(find.text('內容物重點'), findsOneWidget);
     expect(find.textContaining('歷史資料'), findsWidgets);
     expect(find.text('累積報酬'), findsOneWidget);
-    expect(find.text('近 60 日收盤'), findsOneWidget);
+    expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.text('官方曝險'), findsOneWidget);
     expect(find.text('官方 NAV'), findsNothing);
     expect(find.textContaining('Mock 預設'), findsWidgets);
@@ -133,11 +133,21 @@ void main() {
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('資料來源'), findsNothing);
-    expect(find.text('近 60 日收盤'), findsOneWidget);
+    expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.text('官方曝險'), findsOneWidget);
     expect(find.text('00631L'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('overview chart shows one-year label and date axis',
+      (tester) async {
+    await _pumpLab(tester, _PriceHistoryRepository());
+
+    expect(find.text('近一年走勢'), findsOneWidget);
+    expect(find.text('24/06\n03'), findsOneWidget);
+    expect(find.text('26/06\n01'), findsOneWidget);
+    expect(find.text('26/06\n03'), findsOneWidget);
   });
 
   testWidgets('quote header uses latest history close when live NAV is absent',

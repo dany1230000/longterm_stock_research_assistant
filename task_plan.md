@@ -1,0 +1,78 @@
+# ETF Research Room Task Plan
+
+Goal: turn the current 00631L-focused PWA into a reliable ETF research room that is mobile-first, data-correct, deployable, and useful for daily review without presenting investment instructions.
+
+## Phase 1 - Current Baseline Summary
+
+Status: complete
+
+- Public app is live on GitHub Pages.
+- Public backend is live on Render.
+- 00631L has official Yuanta basic/holdings data, TWSE intraday NAV, TAIFEX TX quote status, static public price history, backtest, local position tracking, rule-based AI summary, ETF catalog, and selected ETF price history.
+- v4.15 fixed stale TX quote labeling so old TAIFEX quote data is not displayed as current live data.
+
+## Phase 2 - v4.16 Homepage Clarity and Roadmap
+
+Status: complete
+
+Objective: make the first screen easier to understand and document the product direction.
+
+- Add a product goal roadmap document.
+- Make the homepage price chart default to roughly one year of data.
+- Add visible date labels to the homepage chart.
+- Add touch tooltip support so a tapped chart point shows date and value.
+- Keep source labels explicit: live, static, cached, stale, mock, or error.
+
+## Phase 3 - Data Correctness and Coverage
+
+Status: pending
+
+- Verify 00631L split-adjusted calculations and expose the adjusted/raw distinction more clearly.
+- Add stronger validation for selected ETF histories.
+- Surface coverage, missing data, split adjustment, and source status in a compact user-facing way.
+- Keep static history separate from live intraday data.
+
+## Phase 4 - ETF Selection and Comparison
+
+Status: pending
+
+- Make the top-left ETF/search control the primary way to switch ETF context.
+- Allow user-selected comparison baskets instead of always comparing against 00631L.
+- Keep 00631L-specific official holdings separate from generic ETF price history.
+
+## Phase 5 - Backtest and Position UX
+
+Status: pending
+
+- Default backtest window to one year.
+- Keep start/end dates configurable.
+- Make results compact on mobile.
+- Improve local-only position entry, export, and clear flows.
+
+## Phase 6 - AI Daily Analysis
+
+Status: pending
+
+- Make rule-based AI focus on today's data state, holdings changes, intraday status, historical context, and app actions.
+- Keep external LLM as a disabled adapter only.
+- Keep all output descriptive and non-instructional.
+
+## Phase 7 - App Store Readiness
+
+Status: pending
+
+- Keep PWA as the production baseline.
+- Prepare Android/iOS frontend-shell notes.
+- Confirm backend remains public and persistent before any store package.
+
+## Verification Gate
+
+Before commit/tag/push for each implementation slice:
+
+- `dart format --set-exit-if-changed .`
+- `flutter analyze`
+- `flutter test`
+- `flutter build web`
+- `py -m unittest discover -s backend\tests`
+- `scripts\00631l_release_check.cmd`
+- `git diff --check`

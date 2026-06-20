@@ -150,6 +150,12 @@ v4.15 TX stale status fix:
 - Frontend mapping also treats `isStale: true` TX payloads as stale for older backend compatibility.
 - Summary: `docs\00631l_v4_15_tx_stale_status_summary.md`.
 
+v4.16 goal plan and home chart readability:
+
+- Added `docs\00631l_product_goal_plan.md` as the working product direction for the ETF research room.
+- The overview price chart now defaults to roughly one year, shows bottom date labels, and supports touch tooltips with date and price.
+- Summary: `docs\00631l_v4_16_home_chart_goal_plan_summary.md`.
+
 - The light/dark toggle is a visible `日間` / `夜間` control and rebuilds the 00631L market palette.
 
 v4.3 position, AI, settings, and ETF catalog:
