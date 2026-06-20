@@ -10,3 +10,5 @@
 - Started v4.17 data correctness work.
 - Added model-level adjusted-price and non-unit adjustment flags.
 - Added the overview `資料正確性` panel and tests.
+- Started v4.18 ETF search readiness work.
+- Updated the top-left ETF search sheet to show clearer history-ready and catalog-only states.

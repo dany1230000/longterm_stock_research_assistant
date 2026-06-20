@@ -162,6 +162,12 @@ v4.17 data correctness panel:
 - `EtfPriceHistoryCompletenessSummary` exposes adjusted-price and non-unit adjustment flags for tests and UI.
 - Summary: `docs\00631l_v4_17_data_correctness_panel_summary.md`.
 
+v4.18 ETF search readiness:
+
+- The top-left ETF search sheet now labels history-ready ETFs and catalog-only ETFs more clearly.
+- Search results explain whether verified price history is available before switching ETF context.
+- Summary: `docs\00631l_v4_18_etf_search_readiness_summary.md`.
+
 - The light/dark toggle is a visible `日間` / `夜間` control and rebuilds the 00631L market palette.
 
 v4.3 position, AI, settings, and ETF catalog:

@@ -938,7 +938,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               labels: [
                 'catalog ${catalog.sourceStatusLabel}',
                 'rows ${formatInteger(catalog.rowCount)}',
-                'history ready ${formatInteger(readyHistoryCount)}',
+                '可用歷史 ${formatInteger(readyHistoryCount)}',
                 if (query.isEmpty) '常用代號' else 'ETF ${visibleItems.length}',
                 if (query.isNotEmpty) '股票 ${stockItems.length}',
               ],
@@ -1055,7 +1055,8 @@ class _SymbolSearchResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final hasHistory = _hasImportedEtfHistory(item.code);
+    final readiness = _etfHistoryReadiness(item.code);
+    final hasHistory = readiness.hasHistory;
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
       borderRadius: BorderRadius.circular(12),
@@ -1065,9 +1066,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
         onSelected?.call(item.code);
         final message = selected
             ? '目前已開啟 00631L 正二研究室。'
-            : hasHistory
-                ? '${item.code} 已匯入歷史價格，可查看歷史與回測。'
-                : '${item.code} 目前只有 ETF catalog；尚未匯入歷史價格。';
+            : readiness.snackMessage(item.code);
         messenger.showSnackBar(SnackBar(content: Text(message)));
       },
       child: DecoratedBox(
@@ -1122,10 +1121,20 @@ class _SymbolSearchResultTile extends StatelessWidget {
                                 : '00631l-symbol-catalog-only-${item.code}',
                           ),
                           child: _CompactTextBadge(
-                            label: hasHistory ? '歷史/回測可用' : '僅 catalog',
+                            label: readiness.badgeLabel,
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      readiness.caption,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: _marketMutedTextColor(context),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
@@ -1142,11 +1151,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    selected
-                        ? '目前頁面'
-                        : hasHistory
-                            ? 'ready'
-                            : 'catalog',
+                    selected ? '目前頁面' : readiness.trailingLabel,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: _marketMutedTextColor(context),
                       fontWeight: FontWeight.w800,
@@ -8894,6 +8899,40 @@ EtfCatalogItem? _catalogItemByCode(EtfCatalog catalog, String code) {
 
 bool _hasImportedEtfHistory(String code) {
   return _etfHistoryReadyCodes.contains(code.trim().toUpperCase());
+}
+
+_EtfHistoryReadiness _etfHistoryReadiness(String code) {
+  final normalized = code.trim().toUpperCase();
+  final hasHistory = _hasImportedEtfHistory(normalized);
+  return _EtfHistoryReadiness(
+    hasHistory: hasHistory,
+    badgeLabel: hasHistory ? '歷史/回測可用' : '僅 catalog',
+    caption: hasHistory
+        ? '已匯入歷史價格；切換後可看 coverage 與回測。'
+        : '尚未匯入可驗證歷史價格；只能顯示 catalog 欄位。',
+    trailingLabel: hasHistory ? '可切換' : 'catalog',
+  );
+}
+
+class _EtfHistoryReadiness {
+  const _EtfHistoryReadiness({
+    required this.hasHistory,
+    required this.badgeLabel,
+    required this.caption,
+    required this.trailingLabel,
+  });
+
+  final bool hasHistory;
+  final String badgeLabel;
+  final String caption;
+  final String trailingLabel;
+
+  String snackMessage(String code) {
+    if (hasHistory) {
+      return '$code 已匯入歷史價格，可查看歷史與回測。';
+    }
+    return '$code 目前只有 ETF catalog；尚未匯入可驗證歷史價格。';
+  }
 }
 
 int _catalogHistoryReadyCount(EtfCatalog catalog) {

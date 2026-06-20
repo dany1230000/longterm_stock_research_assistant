@@ -79,7 +79,7 @@ void main() {
 
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
     expect(find.textContaining('左上角代號搜尋可查 ETF catalog'), findsOneWidget);
-    expect(find.text('history ready 15'), findsOneWidget);
+    expect(find.text('可用歷史 15'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
       findsOneWidget,
@@ -98,10 +98,12 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
       findsOneWidget,
     );
+    expect(find.textContaining('可用歷史'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
     );
+    expect(find.textContaining('已匯入歷史價格'), findsOneWidget);
     expect(find.text('歷史/回測可用'), findsWidgets);
 
     await tester.enterText(
@@ -394,6 +396,7 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-catalog-only-00400A')),
       findsOneWidget,
     );
+    expect(find.textContaining('尚未匯入可驗證歷史價格'), findsOneWidget);
 
     await tester.tap(
       find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),

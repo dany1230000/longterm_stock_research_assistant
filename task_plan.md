@@ -35,9 +35,10 @@ Status: in_progress
 
 ## Phase 4 - ETF Selection and Comparison
 
-Status: pending
+Status: in_progress
 
 - Make the top-left ETF/search control the primary way to switch ETF context.
+- v4.18 improved ETF search result readiness labels so imported price-history ETFs and catalog-only ETFs are visually distinct.
 - Allow user-selected comparison baskets instead of always comparing against 00631L.
 - Keep 00631L-specific official holdings separate from generic ETF price history.
 
