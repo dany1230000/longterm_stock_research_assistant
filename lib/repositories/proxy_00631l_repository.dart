@@ -129,6 +129,7 @@ class Proxy00631LRepository extends Official00631LRepository {
   @override
   Future<FuturesQuote> fetchFuturesQuote() async {
     final payload = await _getJson('/api/etf/00631l/tx-quote');
+    final isStale = payload['isStale'] == true;
     return FuturesQuote(
       symbol: _string(payload['symbol'], fallback: 'TX'),
       contractMonth: _string(payload['contractMonth'], fallback: 'front_month'),
@@ -136,12 +137,12 @@ class Proxy00631LRepository extends Official00631LRepository {
       txPrice: _nullableDouble(payload['txPrice']),
       weightedIndex: _nullableDouble(payload['weightedIndex']),
       nightSessionChange: _nullableDouble(payload['nightSessionChange']),
-      status: _status(payload),
+      status: isStale ? EtfDataStatus.stale : _status(payload),
       lastFetchedAt: _dateTime(payload['fetchedAt']) ?? DateTime.now(),
       sourceContract: payload['sourceContract']?.toString(),
       sourceUrl: _string(payload['sourceUrl']),
       dataTime: _wallClockDateTime(payload['dataTime']),
-      isStale: payload['isStale'] == true,
+      isStale: isStale,
       errorMessage: payload['errorMessage']?.toString(),
     );
   }

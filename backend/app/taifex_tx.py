@@ -206,7 +206,14 @@ def normalize_taifex_tx_quote(
         if tx_price is not None and tx_reference not in {None, 0}
         else None
     )
-    status = "official" if tx_price is not None else "unavailable"
+    is_stale = _is_stale(data_time, fetched_at)
+    status = (
+        "stale"
+        if tx_price is not None and is_stale
+        else "official"
+        if tx_price is not None
+        else "unavailable"
+    )
     error_message = None
     if tx_price is None:
         error_message = (
@@ -234,7 +241,7 @@ def normalize_taifex_tx_quote(
         "fetchedAt": fetched_at,
         "sourceUpdatedAt": data_time_iso,
         "dataTime": data_time_iso,
-        "isStale": _is_stale(data_time, fetched_at),
+        "isStale": is_stale,
         "errorMessage": error_message,
     }
 

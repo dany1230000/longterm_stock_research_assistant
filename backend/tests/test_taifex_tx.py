@@ -74,6 +74,49 @@ class TaifexTxQuoteTests(unittest.TestCase):
         self.assertEqual(payload["dataTime"], "2026-06-12T13:31:15+08:00")
         self.assertFalse(payload["isStale"])
 
+    def test_normalize_tx_quote_marks_old_quote_stale(self) -> None:
+        futures_event = {
+            "type": "quote",
+            "quote": {
+                "symbol": "TXFF6-F",
+                "values": {
+                    "55": "TXFF6-F",
+                    "125": "27125",
+                    "129": "27076",
+                    "143": "133115",
+                    "144": "20260612",
+                },
+            },
+        }
+        spot_event = {
+            "type": "quote",
+            "quote": {
+                "symbol": "TXF-S",
+                "values": {
+                    "55": "TXF-S",
+                    "125": "27080.5",
+                    "129": "27000",
+                    "143": "133115",
+                    "144": "20260612",
+                },
+            },
+        }
+        quotes = {
+            "TXFF6-F": futures_event["quote"],
+            "TXF-S": spot_event["quote"],
+        }
+
+        payload = normalize_taifex_tx_quote(
+            quotes,
+            futures_symbol="TXFF6-F",
+            spot_symbol="TXF-S",
+            source_url="fixture://taifex/rt",
+            fetched_at="2026-06-13T05:31:20+00:00",
+        )
+
+        self.assertEqual(payload["sourceStatus"], "stale")
+        self.assertTrue(payload["isStale"])
+
     def test_resolve_front_month_symbol_before_and_after_expiry_cutoff(self) -> None:
         before_cutoff = resolve_taifex_tx_futures_symbols(
             "auto",

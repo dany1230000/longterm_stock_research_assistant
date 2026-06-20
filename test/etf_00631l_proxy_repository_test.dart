@@ -94,6 +94,23 @@ void main() {
     expect(quote.dataTime, DateTime(2026, 6, 12, 13, 31, 15));
   });
 
+  test('proxy repository maps stale TAIFEX TX quote as stale status', () async {
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/00631l/tx-quote': jsonEncode({
+          ..._txQuotePayload(),
+          'sourceStatus': 'official',
+          'isStale': true,
+        }),
+      }),
+    );
+
+    final quote = await repository.fetchFuturesQuote();
+
+    expect(quote.status, EtfDataStatus.stale);
+    expect(quote.isStale, isTrue);
+  });
+
   test('proxy repository maps holdings history summary payload', () async {
     final repository = Proxy00631LRepository(
       client: _FakeProxyHttpClient({

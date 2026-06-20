@@ -57,6 +57,7 @@ This is the main entry point for 00631L lab documentation.
 - TX live and history controls v4.1 summary: `docs\00631l_v4_1_tx_live_history_controls_summary.md`
 - Intraday session update v4.12 summary: `docs\00631l_v4_12_intraday_session_update_summary.md`
 - Intraday time and TX quote fix v4.13 summary: `docs\00631l_v4_13_intraday_tx_fix_summary.md`
+- TX stale status fix v4.15 summary: `docs\00631l_v4_15_tx_stale_status_summary.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`

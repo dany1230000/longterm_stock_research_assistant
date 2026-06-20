@@ -144,6 +144,12 @@ v4.13 intraday time and TX quote fix:
 - Overview and data status show the resolved contract month and TX symbol.
 - Summary: `docs\00631l_v4_13_intraday_tx_fix_summary.md`.
 
+v4.15 TX stale status fix:
+
+- TAIFEX TX quotes with old `dataTime` now show `stale` instead of looking like a current live quote.
+- Frontend mapping also treats `isStale: true` TX payloads as stale for older backend compatibility.
+- Summary: `docs\00631l_v4_15_tx_stale_status_summary.md`.
+
 - The light/dark toggle is a visible `日間` / `夜間` control and rebuilds the 00631L market palette.
 
 v4.3 position, AI, settings, and ETF catalog:

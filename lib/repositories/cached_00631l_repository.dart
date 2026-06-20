@@ -365,7 +365,7 @@ FuturesQuote _cachedFuturesQuote(FuturesQuote quote) {
     txPrice: quote.txPrice,
     weightedIndex: quote.weightedIndex,
     nightSessionChange: quote.nightSessionChange,
-    status: EtfDataStatus.cached,
+    status: quote.isStale ? EtfDataStatus.stale : EtfDataStatus.cached,
     lastFetchedAt: quote.lastFetchedAt,
     sourceContract: quote.sourceContract,
     sourceUrl: quote.sourceUrl,
