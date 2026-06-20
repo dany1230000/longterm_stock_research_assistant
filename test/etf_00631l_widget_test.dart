@@ -476,6 +476,39 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('ETF comparison chips update the selected basket',
+      (tester) async {
+    await _pumpLab(tester, _PriceHistoryRepository());
+
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-guidance')),
+      findsOneWidget,
+    );
+    expect(find.textContaining('不固定與 00631L 比'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
+      findsOneWidget,
+    );
+
+    Text selectedLabel() => tester.widget<Text>(
+          find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
+        );
+
+    expect(selectedLabel().data, contains('0050'));
+
+    final chip0050 = find.byKey(const ValueKey('00631l-etf-compare-chip-0050'));
+    await tester.ensureVisible(chip0050);
+    await tester.pumpAndSettle();
+    await tester.tap(chip0050);
+    await tester.pumpAndSettle();
+
+    expect(selectedLabel().data, isNot(contains('0050')));
+    _expectNoTradingActionText();
+  });
+
   testWidgets('selecting ETF switches overview position and AI context',
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());

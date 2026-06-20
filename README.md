@@ -168,6 +168,12 @@ v4.18 ETF search readiness:
 - Search results explain whether verified price history is available before switching ETF context.
 - Summary: `docs\00631l_v4_18_etf_search_readiness_summary.md`.
 
+v4.19 comparison basket clarity:
+
+- ETF comparison now states that users can choose a 1-5 ETF basket instead of being locked to 00631L.
+- Widget tests verify that toggling comparison chips updates the selected basket.
+- Summary: `docs\00631l_v4_19_comparison_basket_summary.md`.
+
 - The light/dark toggle is a visible `日間` / `夜間` control and rebuilds the 00631L market palette.
 
 v4.3 position, AI, settings, and ETF catalog:

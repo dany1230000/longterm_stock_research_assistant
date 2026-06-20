@@ -4535,7 +4535,7 @@ class _EtfHistoryComparisonPanelState
       children: [
         _SectionHeaderCard(
           title: 'ETF 歷史比較',
-          subtitle: '使用已匯入的歷史收盤價；比較結果只描述過去資料，非買賣建議。',
+          subtitle: '可自行勾選 1-5 檔，不固定與 00631L 比；結果只描述過去資料，非買賣建議。',
           icon: Icons.stacked_line_chart_outlined,
           badges: const [
             '自選 ETF',
@@ -4597,6 +4597,15 @@ class _EtfHistoryComparisonPanelState
               _selectedComparisonCodes = next;
             });
           },
+        ),
+        const SizedBox(height: 6),
+        Text(
+          '可自行勾選 1-5 檔 ETF；同類型預設只是快速篩選，仍可手動調整組合。',
+          key: const ValueKey('00631l-etf-comparison-guidance'),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w700,
+              ),
         ),
         const SizedBox(height: 8),
         Text(
