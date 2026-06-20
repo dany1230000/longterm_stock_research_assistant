@@ -156,6 +156,12 @@ v4.16 goal plan and home chart readability:
 - The overview price chart now defaults to roughly one year, shows bottom date labels, and supports touch tooltips with date and price.
 - Summary: `docs\00631l_v4_16_home_chart_goal_plan_summary.md`.
 
+v4.17 data correctness panel:
+
+- The overview page now shows price field, split-adjustment status, coverage, row count, and source status in a compact `資料正確性` panel.
+- `EtfPriceHistoryCompletenessSummary` exposes adjusted-price and non-unit adjustment flags for tests and UI.
+- Summary: `docs\00631l_v4_17_data_correctness_panel_summary.md`.
+
 - The light/dark toggle is a visible `日間` / `夜間` control and rebuilds the 00631L market palette.
 
 v4.3 position, AI, settings, and ETF catalog:

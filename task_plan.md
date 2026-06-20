@@ -25,9 +25,10 @@ Objective: make the first screen easier to understand and document the product d
 
 ## Phase 3 - Data Correctness and Coverage
 
-Status: pending
+Status: in_progress
 
 - Verify 00631L split-adjusted calculations and expose the adjusted/raw distinction more clearly.
+- v4.17 added model flags and an overview `資料正確性` panel for price field, split adjustment, coverage, row count, and source.
 - Add stronger validation for selected ETF histories.
 - Surface coverage, missing data, split adjustment, and source status in a compact user-facing way.
 - Keep static history separate from live intraday data.

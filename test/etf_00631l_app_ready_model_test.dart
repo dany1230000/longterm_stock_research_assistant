@@ -103,6 +103,8 @@ void main() {
     expect(performance.totalReturnPct, greaterThan(-10));
     expect(performance.maxDrawdownPct, greaterThan(-10));
     expect(result.totalReturnPct, greaterThan(-10));
+    expect(history.completenessSummary().hasAdjustedClose, isTrue);
+    expect(history.completenessSummary().hasNonUnitAdjustment, isTrue);
   });
 
   test('position tracking calculates local-only summary', () {

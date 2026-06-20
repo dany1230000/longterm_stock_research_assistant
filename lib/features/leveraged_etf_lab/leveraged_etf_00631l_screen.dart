@@ -2399,6 +2399,8 @@ class _OverviewSection extends StatelessWidget {
         else
           _SelectedEtfAtAGlancePanel(selectedEtf: selectedEtf),
         const SizedBox(height: 8),
+        _OverviewDataQualityPanel(selectedEtf: selectedEtf),
+        const SizedBox(height: 8),
         if (selectedEtf.is00631L) ...[
           _OverviewHoldingsDigestPanel(data: data),
           const SizedBox(height: 8),
@@ -2675,6 +2677,87 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
                   ),
                 ),
                 _CompactTextBadge(label: _coreDataStatusDisplay(data)),
+              ],
+            ),
+            const SizedBox(height: 6),
+            _AtAGlanceMetricGrid(metrics: metrics),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewDataQualityPanel extends StatelessWidget {
+  const _OverviewDataQualityPanel({required this.selectedEtf});
+
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final history = selectedEtf.priceHistory;
+    final summary = history.completenessSummary();
+    final adjustmentLabel = summary.hasNonUnitAdjustment
+        ? '已辨識'
+        : summary.hasAdjustedClose
+            ? '調整價可用'
+            : '未套用';
+    final adjustmentCaption =
+        selectedEtf.is00631L ? '00631L 2026 分割；績效使用調整價' : '依本檔歷史資料欄位判斷';
+    final coverageCaption =
+        '${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}';
+    final metrics = [
+      _AtAGlanceMetricData(
+        label: '價格欄位',
+        value: summary.hasAdjustedClose ? 'adjustedClose' : 'close',
+        caption: '圖表 / 回測 / 績效',
+      ),
+      _AtAGlanceMetricData(
+        label: '分割調整',
+        value: adjustmentLabel,
+        caption: adjustmentCaption,
+      ),
+      _AtAGlanceMetricData(
+        label: 'coverage',
+        value: summary.rowCount >= 2
+            ? '${formatInteger(summary.rowCount)} 筆'
+            : '資料不足',
+        caption: coverageCaption,
+      ),
+      _AtAGlanceMetricData(
+        label: 'source',
+        value: history.sourceStatusLabel,
+        caption: summary.isCompleteFromListing ? '上市日起完整' : '依 cache 範圍',
+      ),
+    ];
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'DATA'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '資料正確性',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                        ),
+                  ),
+                ),
+                _CompactTextBadge(label: selectedEtf.code),
               ],
             ),
             const SizedBox(height: 6),

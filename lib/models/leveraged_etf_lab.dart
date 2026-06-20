@@ -2039,6 +2039,8 @@ class EtfPriceHistoryCompletenessSummary {
     required this.hasVolume,
     required this.hasNav,
     required this.hasPremiumDiscount,
+    required this.hasAdjustedClose,
+    required this.hasNonUnitAdjustment,
   });
 
   factory EtfPriceHistoryCompletenessSummary.fromHistory(
@@ -2091,6 +2093,10 @@ class EtfPriceHistoryCompletenessSummary {
       hasNav: ordered.any((point) => point.nav != null),
       hasPremiumDiscount:
           ordered.any((point) => point.premiumDiscountPct != null),
+      hasAdjustedClose: ordered.any((point) => point.adjustedClose != null),
+      hasNonUnitAdjustment: ordered.any((point) =>
+          point.adjustmentFactor != null &&
+          (point.adjustmentFactor! - 1).abs() > 0.0000001),
     );
   }
 
@@ -2111,6 +2117,8 @@ class EtfPriceHistoryCompletenessSummary {
   final bool hasVolume;
   final bool hasNav;
   final bool hasPremiumDiscount;
+  final bool hasAdjustedClose;
+  final bool hasNonUnitAdjustment;
 }
 
 class EtfPerformanceSummary {
