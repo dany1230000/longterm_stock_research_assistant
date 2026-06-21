@@ -6199,9 +6199,16 @@ class _SelectedEtfAiSection extends StatelessWidget {
     final latestMove = history.latestCloseChange == null
         ? '日變動資料不足'
         : '最新交易日 $latestDate，日變動 $latestCloseChangeText / ${formatSignedNullablePercent(history.latestDailyReturnPct)}。';
+    final priceField = history.hasAdjustedClose ? 'adjustedClose' : 'close';
+    final adjustmentLabel = history.hasNonUnitAdjustment
+        ? '已辨識'
+        : history.hasAdjustedClose
+            ? '調整價可用'
+            : '未套用';
     final bullets = [
       '${selectedEtf.code} ${selectedEtf.name} 目前使用 ETF catalog 與 price history 產生摘要。',
       latestMove,
+      '價格欄位 $priceField；分割調整 $adjustmentLabel。若該 ETF 曾分割，請先確認資料源是否提供 adjustmentFactor。',
       '歷史 coverage ${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}，共 ${formatInteger(history.rowCount)} 筆。',
       '最新收盤 ${_price(history.latest?.close)}；區間累積報酬 ${formatSignedNullablePercent(performance.totalReturnPct)}，最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}。',
       selectedEtf.premiumDiscountPct == null
@@ -6260,6 +6267,8 @@ class _SelectedEtfAiSection extends StatelessWidget {
                   'source rule_based',
                   'ETF ${selectedEtf.code}',
                   selectedEtf.sourceStatusLabel,
+                  '價格欄位 $priceField',
+                  '分割調整 $adjustmentLabel',
                   '非買賣建議',
                 ],
               ),

@@ -645,6 +645,8 @@ void main() {
     expect(find.text('最新交易日'), findsOneWidget);
     expect(find.text('日變動'), findsOneWidget);
     expect(find.text('回撤'), findsOneWidget);
+    expect(find.textContaining('價格欄位 close'), findsWidgets);
+    expect(find.textContaining('分割調整 未套用'), findsWidgets);
     expect(find.textContaining('2026/06/03'), findsWidgets);
     _expectNoTradingActionText();
   });
