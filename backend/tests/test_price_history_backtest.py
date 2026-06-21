@@ -13,6 +13,7 @@ from backend.app.price_history import (
 )
 from backend.app.static_export import export_static_00631l_data, static_export_status
 from backend.scripts.export_static_00631l_data import (
+    build_static_export_summary_line,
     _merge_etf_price_history_seed_if_needed,
     _merge_seed_if_needed,
     _prepare_price_history_update_start,
@@ -254,6 +255,47 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
 
         self.assertEqual(status["etfPriceHistoryCoverageTierCounts"]["long_term"], 1)
         self.assertEqual(status["etfPriceHistoryCoverageTierCounts"]["recent"], 1)
+
+    def test_static_export_summary_line_includes_etf_tier_counts(self) -> None:
+        line = build_static_export_summary_line(
+            {
+                "overallStatus": "PASS",
+                "rowCount": 2827,
+                "coverageStart": "2014-10-31",
+                "coverageEnd": "2026-06-11",
+                "etfPriceHistoryReadyCount": 228,
+                "etfPriceHistoryRowCount": 55000,
+                "etfPriceHistoryCoverageTierCounts": {
+                    "long_term": 8,
+                    "recent": 220,
+                    "unavailable": 0,
+                    "error": 0,
+                },
+                "outputDir": "web/00631l-static-data",
+            }
+        )
+
+        self.assertIn("overallStatus=PASS", line)
+        self.assertIn("rows=2827", line)
+        self.assertIn("coverage=2014-10-31..2026-06-11", line)
+        self.assertIn("etfReady=228", line)
+        self.assertIn("etfRows=55000", line)
+        self.assertIn("tiers=long_term:8,recent:220,unavailable:0,error:0", line)
+
+    def test_static_export_summary_line_does_not_infer_missing_tier_counts(self) -> None:
+        line = build_static_export_summary_line(
+            {
+                "overallStatus": "PASS",
+                "rowCount": 2827,
+                "coverageStart": "2014-10-31",
+                "coverageEnd": "2026-06-11",
+                "etfPriceHistoryReadyCount": 15,
+                "etfPriceHistoryRowCount": 15,
+            }
+        )
+
+        self.assertIn("etfReady=15", line)
+        self.assertIn("tiers=not_available", line)
 
     def test_static_export_strict_fails_without_price_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

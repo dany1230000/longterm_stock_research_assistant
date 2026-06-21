@@ -37,6 +37,32 @@ from backend.app.static_export import (  # noqa: E402
 DEFAULT_TWSE_ALL_ETF_URL = "https://mis.twse.com.tw/stock/data/all_etf.txt"
 
 
+def build_static_export_summary_line(payload: dict[str, object]) -> str:
+    tiers = payload.get("etfPriceHistoryCoverageTierCounts") or {}
+    if not isinstance(tiers, dict):
+        tiers = {}
+    tier_text = (
+        ",".join(
+            f"{key}:{int(tiers.get(key) or 0)}"
+            for key in ("long_term", "recent", "unavailable", "error")
+        )
+        if tiers
+        else "not_available"
+    )
+    parts = [
+        "[summary]",
+        f"overallStatus={payload.get('overallStatus', 'UNKNOWN')}",
+        f"rows={int(payload.get('rowCount') or 0)}",
+        f"coverage={payload.get('coverageStart')}..{payload.get('coverageEnd')}",
+        f"etfReady={int(payload.get('etfPriceHistoryReadyCount') or 0)}",
+        f"etfRows={int(payload.get('etfPriceHistoryRowCount') or 0)}",
+        f"tiers={tier_text}",
+    ]
+    if payload.get("outputDir"):
+        parts.append(f"output={payload['outputDir']}")
+    return " ".join(parts)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Export static public 00631L data for Flutter Web / GitHub Pages.",
@@ -99,12 +125,7 @@ def main() -> int:
     if args.status_only:
         payload = static_export_status(args.output_dir)
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
-        print(
-            "[summary] "
-            f"overallStatus={payload['overallStatus']} "
-            f"rows={payload.get('rowCount', 0)} "
-            f"coverage={payload.get('coverageStart')}..{payload.get('coverageEnd')}"
-        )
+        print(build_static_export_summary_line(payload))
         return 1 if payload["overallStatus"] == "FAIL" else 0
 
     store = PriceHistoryStore(args.price_history_path)
@@ -188,13 +209,7 @@ def main() -> int:
         warnings=warnings,
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
-    print(
-        "[summary] "
-        f"overallStatus={payload['overallStatus']} "
-        f"rows={payload.get('rowCount', 0)} "
-        f"coverage={payload.get('coverageStart')}..{payload.get('coverageEnd')} "
-        f"output={payload['outputDir']}"
-    )
+    print(build_static_export_summary_line(payload))
     return 1 if payload["overallStatus"] == "FAIL" else 0
 
 

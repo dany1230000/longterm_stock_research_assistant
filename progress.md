@@ -30,3 +30,5 @@
 - Added long-term/recent/unavailable/error coverage tier counts across backend status, static export, and frontend operations status.
 - Started v4.27 static status tier fallback work.
 - Added fallback reading from `etf_price_history_index.json` when an older static manifest lacks ETF coverage tier counts.
+- Started v4.28 static export summary output work.
+- Added ETF ready rows and coverage tier counts to the static export `[summary]` line.

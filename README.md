@@ -79,6 +79,8 @@ ETF price-history coverage tiers:
 
 v4.27 makes static export status read ETF coverage tiers from `etf_price_history_index.json` when an older manifest does not contain tier counts. This keeps public static maintenance status backward-compatible.
 
+v4.28 adds ETF price-history readiness and coverage tier counts to the final `[summary]` line printed by `scripts\00631l_export_static_data.cmd --status-only`, so daily logs can be checked without opening the JSON payload.
+
 v3.3 live-public ready status:
 
 - GitHub Pages static mode remains usable without a backend.
