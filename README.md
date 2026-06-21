@@ -91,6 +91,8 @@ v4.32 makes the top-left ETF selector use operations/static price-history readin
 
 v4.33 cleans up the top-left ETF / stock-code selector wording so the title, input, ready count, and result captions read like production UI instead of legacy debug text.
 
+v4.34 adds compact ETF history metadata badges to selector/catalog rows, showing coverage tier and row count such as `recent · 12 筆`.
+
 v3.3 live-public ready status:
 
 - GitHub Pages static mode remains usable without a backend.

@@ -70,6 +70,7 @@ This is the main entry point for 00631L lab documentation.
 - Legacy static count reconcile v4.31: `docs\00631l_v4_31_legacy_static_count_reconcile.md`
 - Search readiness metadata v4.32: `docs\00631l_v4_32_search_readiness_metadata.md`
 - Search sheet wording v4.33: `docs\00631l_v4_33_search_sheet_wording.md`
+- ETF history metadata badge v4.34: `docs\00631l_v4_34_etf_history_metadata_badge.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
@@ -221,6 +222,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF history coverage tiers release: `docs\00631l_v4_26_etf_history_coverage_tiers_summary.md`
 - ETF search readiness metadata release: `docs\00631l_v4_32_search_readiness_metadata.md`
 - ETF search sheet wording release: `docs\00631l_v4_33_search_sheet_wording.md`
+- ETF history metadata badge release: `docs\00631l_v4_34_etf_history_metadata_badge.md`
 - Static status tier fallback release: `docs\00631l_v4_27_static_status_tier_fallback_summary.md`
 
 ## Scope Boundary

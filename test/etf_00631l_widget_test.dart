@@ -451,6 +451,7 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-history-ready-00701')),
       findsOneWidget,
     );
+    expect(find.text('recent · 12 筆'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-catalog-only-00701')),
       findsNothing,

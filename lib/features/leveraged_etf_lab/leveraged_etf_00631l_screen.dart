@@ -1063,6 +1063,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
     final theme = Theme.of(context);
     final readiness = _etfHistoryReadiness(item);
     final hasHistory = readiness.hasHistory;
+    final historyMetadataLabel = _etfHistoryMetadataLabel(item);
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
       borderRadius: BorderRadius.circular(12),
@@ -1130,6 +1131,8 @@ class _SymbolSearchResultTile extends StatelessWidget {
                             label: readiness.badgeLabel,
                           ),
                         ),
+                        if (historyMetadataLabel.isNotEmpty)
+                          _CompactTextBadge(label: historyMetadataLabel),
                       ],
                     ),
                     const SizedBox(height: 3),
@@ -6675,6 +6678,7 @@ class _EtfCatalogItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final hasHistory = _catalogItemHasImportedEtfHistory(item);
+    final historyMetadataLabel = _etfHistoryMetadataLabel(item);
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => onSelected(item.code),
@@ -6727,6 +6731,8 @@ class _EtfCatalogItemTile extends StatelessWidget {
                             label: hasHistory ? '歷史/回測可用' : '僅 catalog',
                           ),
                         ),
+                        if (historyMetadataLabel.isNotEmpty)
+                          _CompactTextBadge(label: historyMetadataLabel),
                       ],
                     ),
                   ],
@@ -9049,6 +9055,16 @@ int _catalogHistoryReadyCount(EtfCatalog catalog) {
 
 bool _catalogItemHasImportedEtfHistory(EtfCatalogItem item) {
   return item.hasPriceHistory || _hasImportedEtfHistory(item.code);
+}
+
+String _etfHistoryMetadataLabel(EtfCatalogItem item) {
+  if (item.priceHistoryRowCount < 2) {
+    return '';
+  }
+  final tier = item.priceHistoryCoverageTier.trim().isEmpty
+      ? 'history'
+      : item.priceHistoryCoverageTier.trim();
+  return '$tier · ${formatInteger(item.priceHistoryRowCount)} 筆';
 }
 
 int _searchReadyHistoryCount(Etf00631LLabData data) {
