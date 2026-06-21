@@ -87,6 +87,8 @@ v4.30 adds a release-check guard so static-public ETF history cannot be ready wh
 
 v4.31 reconciles legacy static ETF history row/ready counts with derived tier counts, so `scripts\00631l_export_static_data.cmd --status-only` reports consistent ETF history availability.
 
+v4.32 makes the top-left ETF selector use operations/static price-history readiness metadata, so the UI can reflect the full static ETF history set instead of only the old representative list.
+
 v3.3 live-public ready status:
 
 - GitHub Pages static mode remains usable without a backend.

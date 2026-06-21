@@ -328,6 +328,10 @@ void main() {
     expect(catalog.rowCount, 3);
     expect(catalog.focusItems.first.code, '00631L');
     expect(catalog.items[1].code, '0050');
+    expect(catalog.items[1].hasPriceHistory, isTrue);
+    expect(catalog.items[1].priceHistoryRowCount, 3);
+    expect(catalog.items[1].priceHistoryCoverageTier, 'recent');
+    expect(catalog.items[2].hasPriceHistory, isFalse);
     expect(analysis.disclaimer, '非買賣建議');
   });
 
@@ -1131,6 +1135,7 @@ Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
         'sourceStatus': 'cached',
         'coverageStart': '2026-06-01',
         'coverageEnd': '2026-06-03',
+        'coverageTier': 'recent',
         'rowCount': 3,
         'errorMessage': null,
       },

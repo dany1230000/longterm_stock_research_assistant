@@ -288,6 +288,12 @@ class Static00631LRepository extends Mock00631LRepository {
   @override
   Future<EtfCatalog> fetchEtfCatalog() async {
     final payload = await _tryGetJson('etf_catalog.json');
+    final historyIndexPayload =
+        await _tryGetJson('etf_price_history_index.json');
+    final historyByCode = {
+      for (final rawItem in _list(historyIndexPayload?['items']))
+        _string(_map(rawItem)['code']).trim().toUpperCase(): _map(rawItem),
+    };
     if (payload == null) {
       return EtfCatalog.empty(
         lastFetchedAt: DateTime.now(),
@@ -302,7 +308,11 @@ class Static00631LRepository extends Mock00631LRepository {
     return EtfCatalog(
       items: [
         for (final rawItem in _list(payload['items']))
-          _catalogItem(_map(rawItem)),
+          _catalogItem(
+            _map(rawItem),
+            historyPayload: historyByCode[
+                _string(_map(rawItem)['code']).trim().toUpperCase()],
+          ),
       ],
       status: rawStatus == 'static_official'
           ? EtfDataStatus.cached
@@ -383,7 +393,10 @@ class Static00631LRepository extends Mock00631LRepository {
   }
 }
 
-EtfCatalogItem _catalogItem(Map<String, dynamic> payload) {
+EtfCatalogItem _catalogItem(
+  Map<String, dynamic> payload, {
+  Map<String, dynamic>? historyPayload,
+}) {
   return EtfCatalogItem(
     code: _string(payload['code']),
     name: _string(payload['name']),
@@ -395,6 +408,11 @@ EtfCatalogItem _catalogItem(Map<String, dynamic> payload) {
     outstandingUnitsDelta: _nullableInt(payload['outstandingUnitsDelta']),
     dataTime: _wallClockDateTime(payload['dataTime']),
     targetType: _string(payload['targetType']),
+    priceHistoryRowCount: _int(historyPayload?['rowCount']),
+    priceHistoryCoverageTier: _string(historyPayload?['coverageTier']),
+    priceHistoryCoverageStart: _date(historyPayload?['coverageStart']),
+    priceHistoryCoverageEnd: _date(historyPayload?['coverageEnd']),
+    priceHistorySourceStatus: _string(historyPayload?['sourceStatus']),
   );
 }
 

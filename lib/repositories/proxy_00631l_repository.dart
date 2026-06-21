@@ -492,6 +492,11 @@ EtfCatalogItem _catalogItemFromPayload(Map<String, dynamic> payload) {
     outstandingUnitsDelta: _nullableInt(payload['outstandingUnitsDelta']),
     dataTime: _wallClockDateTime(payload['dataTime']),
     targetType: _string(payload['targetType']),
+    priceHistoryRowCount: _int(payload['priceHistoryRowCount']),
+    priceHistoryCoverageTier: _string(payload['priceHistoryCoverageTier']),
+    priceHistoryCoverageStart: _date(payload['priceHistoryCoverageStart']),
+    priceHistoryCoverageEnd: _date(payload['priceHistoryCoverageEnd']),
+    priceHistorySourceStatus: _string(payload['priceHistorySourceStatus']),
   );
 }
 

@@ -850,7 +850,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
     final query = _controller.text.trim().toLowerCase();
     final catalog = widget.data.etfCatalog;
     final stocksAsync = ref.watch(watchlistProvider);
-    final readyHistoryCount = _catalogHistoryReadyCount(catalog);
+    final readyHistoryCount = _searchReadyHistoryCount(widget.data);
     final items = query.isEmpty
         ? catalog.focusItems
         : [
@@ -944,6 +944,12 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               ],
             ),
             const SizedBox(height: 10),
+            KeyedSubtree(
+              key: ValueKey(
+                '00631l-symbol-search-ready-count-$readyHistoryCount',
+              ),
+              child: const SizedBox.shrink(),
+            ),
             Flexible(
               child: visibleItems.isEmpty && stockItems.isEmpty
                   ? _EmptyPanel(
@@ -1055,7 +1061,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final readiness = _etfHistoryReadiness(item.code);
+    final readiness = _etfHistoryReadiness(item);
     final hasHistory = readiness.hasHistory;
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
@@ -4404,7 +4410,7 @@ class _HistoryBacktestSection extends StatelessWidget {
           ),
           const SizedBox(height: 10),
         ],
-        if (!_hasImportedEtfHistory(selectedEtfCode)) ...[
+        if (history.points.length < 2) ...[
           const _SectionBlock(
             title: 'ETF 歷史資料尚未匯入',
             subtitle: '目前只找到 ETF catalog；歷史圖表與回測需要先匯入該 ETF 的可驗證歷史價格。',
@@ -6174,7 +6180,7 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
     final rowCount =
         catalog.hasData ? catalog.rowCount : status.etfCatalogRowCount;
     final dataTime = catalog.dataTime ?? status.etfCatalogDataTime;
-    final readyHistoryCount = _catalogHistoryReadyCount(catalog);
+    final readyHistoryCount = _searchReadyHistoryCount(widget.data);
     final filteredItems = _filteredItems(catalog);
     final visibleItems = filteredItems.take(60).toList(growable: false);
 
@@ -6212,11 +6218,7 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
             ),
             _SectionHeaderMetric(
               label: '歷史可用',
-              value: formatInteger(
-                readyHistoryCount == 0
-                    ? status.etfPriceHistoryReadyCount
-                    : readyHistoryCount,
-              ),
+              value: formatInteger(readyHistoryCount),
             ),
           ],
         ),
@@ -6672,7 +6674,7 @@ class _EtfCatalogItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final hasHistory = _hasImportedEtfHistory(item.code);
+    final hasHistory = _catalogItemHasImportedEtfHistory(item);
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => onSelected(item.code),
@@ -9005,9 +9007,8 @@ bool _hasImportedEtfHistory(String code) {
   return _etfHistoryReadyCodes.contains(code.trim().toUpperCase());
 }
 
-_EtfHistoryReadiness _etfHistoryReadiness(String code) {
-  final normalized = code.trim().toUpperCase();
-  final hasHistory = _hasImportedEtfHistory(normalized);
+_EtfHistoryReadiness _etfHistoryReadiness(EtfCatalogItem item) {
+  final hasHistory = _catalogItemHasImportedEtfHistory(item);
   return _EtfHistoryReadiness(
     hasHistory: hasHistory,
     badgeLabel: hasHistory ? '歷史/回測可用' : '僅 catalog',
@@ -9041,10 +9042,20 @@ class _EtfHistoryReadiness {
 
 int _catalogHistoryReadyCount(EtfCatalog catalog) {
   return catalog.items
-      .where((item) => _hasImportedEtfHistory(item.code))
+      .where(_catalogItemHasImportedEtfHistory)
       .map((item) => item.code.trim().toUpperCase())
       .toSet()
       .length;
+}
+
+bool _catalogItemHasImportedEtfHistory(EtfCatalogItem item) {
+  return item.hasPriceHistory || _hasImportedEtfHistory(item.code);
+}
+
+int _searchReadyHistoryCount(Etf00631LLabData data) {
+  final catalogCount = _catalogHistoryReadyCount(data.etfCatalog);
+  final operationsCount = data.operationsStatus.etfPriceHistoryReadyCount;
+  return operationsCount > catalogCount ? operationsCount : catalogCount;
 }
 
 List<EtfPriceHistory> _mergeSelectedComparisonHistories({

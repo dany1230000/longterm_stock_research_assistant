@@ -120,6 +120,24 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('symbol search uses operations ETF history readiness count',
+      (tester) async {
+    await _pumpLab(tester, _EtfReadinessOperationsRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-ready-count-228')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-ready-count-15')),
+      findsNothing,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('00631L lab remains readable on phone width', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -410,6 +428,33 @@ void main() {
 
     expect(find.text('ETF 歷史資料尚未匯入'), findsOneWidget);
     expect(find.textContaining('請先匯入歷史價格'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('symbol search marks ETF ready from catalog history metadata',
+      (tester) async {
+    await _pumpLab(tester, _CatalogHistoryMetadataRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '00701',
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-result-00701')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-history-ready-00701')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-catalog-only-00701')),
+      findsNothing,
+    );
     _expectNoTradingActionText();
   });
 
@@ -855,6 +900,130 @@ class _StaticHistoryOnlyRepository extends _PriceHistoryRepository {
   Future<EtfIntradayNav?> fetchIntradayNav() async {
     return null;
   }
+}
+
+class _EtfReadinessOperationsRepository extends Mock00631LRepository {
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() {
+    return fetchLabData();
+  }
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    return _operationsStatusWithEtfHistory(
+      readyCount: 228,
+      rowCount: 228,
+      tierCounts: const {
+        'long_term': 8,
+        'recent': 220,
+        'unavailable': 0,
+        'error': 0,
+      },
+    );
+  }
+}
+
+class _CatalogHistoryMetadataRepository extends Mock00631LRepository {
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() {
+    return fetchLabData();
+  }
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    return _operationsStatusWithEtfHistory(
+      readyCount: 1,
+      rowCount: 1,
+      tierCounts: const {'recent': 1},
+    );
+  }
+
+  @override
+  Future<EtfCatalog> fetchEtfCatalog() async {
+    final now = DateTime(2026, 6, 11, 10);
+    return EtfCatalog(
+      items: [
+        EtfCatalogItem(
+          code: '00701',
+          name: 'Metadata Ready ETF',
+          marketPrice: 20.5,
+          dataTime: now,
+          targetType: 'ETF',
+          priceHistoryRowCount: 12,
+          priceHistoryCoverageTier: 'recent',
+          priceHistoryCoverageStart: DateTime(2026, 1, 1),
+          priceHistoryCoverageEnd: DateTime(2026, 6, 11),
+          priceHistorySourceStatus: 'static_official',
+        ),
+      ],
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'static_official',
+      sourceContract: 'twse_all_etf_catalog_static_public',
+      sourceUrl: 'local://etf-catalog',
+      lastFetchedAt: now,
+      dataTime: now,
+      isStale: false,
+    );
+  }
+}
+
+EtfOperationsStatus _operationsStatusWithEtfHistory({
+  required int readyCount,
+  required int rowCount,
+  required Map<String, int> tierCounts,
+}) {
+  final now = DateTime(2026, 6, 11, 10);
+  return EtfOperationsStatus(
+    status: EtfDataStatus.cached,
+    sourceStatusLabel: 'static_public_data',
+    sourceContract: '00631l_static_public_operations',
+    sourceUrl: 'local://operations-status',
+    lastFetchedAt: now,
+    sourceUpdatedAt: now,
+    isStale: false,
+    intradaySourceMode: 'backend_required',
+    twseIntradayNavConfigured: false,
+    yuantaIntradayNavConfigured: false,
+    publicApiBaseUrl: '',
+    allowedOrigins: const [],
+    dataRoot: 'web/00631l-static-data',
+    dataPersistenceMode: 'static_public',
+    dataPersistenceWarning:
+        'Static public mode has historical data only; live intraday NAV still needs backend.',
+    dataPathWritable: false,
+    dataPathPersistent: true,
+    holdingsHistoryStatus: 'backend_required',
+    holdingsHistoryItemCount: 0,
+    latestHoldingTradeDate: null,
+    intradayHistoryStatus: 'backend_required',
+    intradaySampleCount: 0,
+    latestIntradayDataTime: null,
+    intradayHistoryDate: null,
+    priceHistoryStatus: 'static_official',
+    priceHistoryRows: 2832,
+    priceHistoryCoverageStart: DateTime(2014, 10, 31),
+    priceHistoryCoverageEnd: DateTime(2026, 6, 18),
+    priceHistoryCompleteFromListing: true,
+    etfCatalogStatus: 'static_official',
+    etfCatalogRowCount: rowCount,
+    etfCatalogDataTime: now,
+    etfPriceHistoryStatus: 'static_official',
+    etfPriceHistoryRowCount: rowCount,
+    etfPriceHistoryReadyCount: readyCount,
+    etfPriceHistoryCoverageTierCounts: tierCounts,
+    etfPriceHistoryDataTime: now,
+    backtestStatus: 'static_official',
+    backtestAvailable: true,
+    positionStatus: 'local_only',
+    collectorOneShotCommand: 'public backend required for live collection',
+    collectorIntradayCommand: 'public backend required for live intraday NAV',
+    envFileExists: false,
+    missingEnvKeys: const ['PUBLIC_API_BASE_URL', 'ALLOWED_ORIGINS'],
+    optionalMissingEnvKeys: const [],
+    dataDirReady: true,
+    exportDirReady: true,
+    backupDirReady: false,
+  );
 }
 
 class _NoHistoryRepository extends Mock00631LRepository {

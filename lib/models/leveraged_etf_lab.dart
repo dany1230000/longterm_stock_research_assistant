@@ -2439,6 +2439,11 @@ class EtfCatalogItem {
     this.outstandingUnitsDelta,
     this.dataTime,
     this.targetType = '',
+    this.priceHistoryRowCount = 0,
+    this.priceHistoryCoverageTier = '',
+    this.priceHistoryCoverageStart,
+    this.priceHistoryCoverageEnd,
+    this.priceHistorySourceStatus = '',
   });
 
   final String code;
@@ -2451,8 +2456,14 @@ class EtfCatalogItem {
   final int? outstandingUnitsDelta;
   final DateTime? dataTime;
   final String targetType;
+  final int priceHistoryRowCount;
+  final String priceHistoryCoverageTier;
+  final DateTime? priceHistoryCoverageStart;
+  final DateTime? priceHistoryCoverageEnd;
+  final String priceHistorySourceStatus;
 
   String get displayName => name.trim().isEmpty ? code : name;
+  bool get hasPriceHistory => priceHistoryRowCount >= 2;
 }
 
 class EtfCatalog {
