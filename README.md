@@ -77,6 +77,8 @@ ETF price-history coverage tiers:
 - `recent`: usable recent rows, but long-range comparison is limited.
 - `unavailable` / `error`: not ready for comparison until data is imported or validation is fixed.
 
+v4.27 makes static export status read ETF coverage tiers from `etf_price_history_index.json` when an older manifest does not contain tier counts. This keeps public static maintenance status backward-compatible.
+
 v3.3 live-public ready status:
 
 - GitHub Pages static mode remains usable without a backend.

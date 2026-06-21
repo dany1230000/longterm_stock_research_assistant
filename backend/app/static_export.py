@@ -218,6 +218,10 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
     warnings = list(manifest.get("warnings") or [])
     failures = list(manifest.get("failures") or [])
     catalog_row_count = int(manifest.get("etfCatalogRowCount") or 0)
+    etf_history_index = _read_optional_json(output / "etf_price_history_index.json")
+    etf_tier_counts = manifest.get("etfPriceHistoryCoverageTierCounts")
+    if not isinstance(etf_tier_counts, dict):
+        etf_tier_counts = etf_history_index.get("coverageTierCounts", {})
     return {
         "sourceStatus": manifest.get("sourceStatus", "unavailable"),
         "sourceContract": STATIC_SOURCE_CONTRACT,
@@ -234,11 +238,9 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         "etfPriceHistoryReadyCount": int(
             manifest.get("etfPriceHistoryReadyCount") or 0
         ),
-        "etfPriceHistoryDataTime": manifest.get("etfPriceHistoryDataTime"),
-        "etfPriceHistoryCoverageTierCounts": manifest.get(
-            "etfPriceHistoryCoverageTierCounts",
-            {},
-        ),
+        "etfPriceHistoryDataTime": manifest.get("etfPriceHistoryDataTime")
+        or etf_history_index.get("dataTime"),
+        "etfPriceHistoryCoverageTierCounts": etf_tier_counts,
         "minimumCatalogRowCount": int(manifest.get("minimumCatalogRowCount") or 0),
         "overallStatus": "FAIL" if failures else "PASS" if row_count >= 2 else "WARN",
         "warnings": warnings,
@@ -374,6 +376,16 @@ def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
         tier = str(item.get("coverageTier") or "unavailable")
         counts[tier] = counts.get(tier, 0) + 1
     return counts
+
+
+def _read_optional_json(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        decoded = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return decoded if isinstance(decoded, dict) else {}
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:

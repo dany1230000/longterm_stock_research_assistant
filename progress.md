@@ -28,3 +28,5 @@
 - Added `--summary-only` for multi-ETF price-history status and switched release check to the concise path.
 - Started v4.26 ETF history coverage tier work.
 - Added long-term/recent/unavailable/error coverage tier counts across backend status, static export, and frontend operations status.
+- Started v4.27 static status tier fallback work.
+- Added fallback reading from `etf_price_history_index.json` when an older static manifest lacks ETF coverage tier counts.

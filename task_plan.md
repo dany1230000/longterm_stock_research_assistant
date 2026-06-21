@@ -36,6 +36,7 @@ Status: in_progress
 - v4.24 added per-symbol incremental updates for generic ETF price-history import.
 - v4.25 keeps release check ETF status output concise while retaining detailed validation commands.
 - v4.26 labels ETF price-history coverage as long-term, recent, unavailable, or error so comparisons do not hide coverage limits.
+- v4.27 keeps static status backward-compatible by reading ETF tier counts from the static index when older manifests lack them.
 - Keep static history separate from live intraday data.
 
 ## Phase 4 - ETF Selection and Comparison

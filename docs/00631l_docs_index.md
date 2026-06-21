@@ -213,6 +213,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF history incremental release: `docs\00631l_v4_24_etf_history_incremental_summary.md`
 - Concise ETF status release: `docs\00631l_v4_25_concise_etf_status_summary.md`
 - ETF history coverage tiers release: `docs\00631l_v4_26_etf_history_coverage_tiers_summary.md`
+- Static status tier fallback release: `docs\00631l_v4_27_static_status_tier_fallback_summary.md`
 
 ## Scope Boundary
 
