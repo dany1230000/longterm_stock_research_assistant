@@ -256,6 +256,68 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertEqual(status["etfPriceHistoryCoverageTierCounts"]["long_term"], 1)
         self.assertEqual(status["etfPriceHistoryCoverageTierCounts"]["recent"], 1)
 
+    def test_static_status_derives_etf_tier_counts_from_legacy_price_files(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            static = root / "static"
+            history = static / "etf_price_history"
+            history.mkdir(parents=True)
+            (static / "manifest.json").write_text(
+                json.dumps(
+                    {
+                        "sourceStatus": "static_official",
+                        "generatedAt": "2026-06-21T00:00:00+00:00",
+                        "rowCount": 3,
+                        "coverageStart": "2026-06-01",
+                        "coverageEnd": "2026-06-03",
+                        "etfPriceHistoryRowCount": 2,
+                        "etfPriceHistoryReadyCount": 2,
+                        "files": {"status": "status.json"},
+                        "warnings": [],
+                        "failures": [],
+                    },
+                    sort_keys=True,
+                ),
+                encoding="utf-8",
+            )
+            (static / "status.json").write_text(
+                json.dumps({"rowCount": 3}, sort_keys=True),
+                encoding="utf-8",
+            )
+            (static / "etf_price_history_index.json").write_text(
+                json.dumps({"rowCount": 2, "readyCount": 2}, sort_keys=True),
+                encoding="utf-8",
+            )
+            (history / "0050.json").write_text(
+                json.dumps(
+                    {
+                        "sourceStatus": "static_official",
+                        "coverageStart": "2019-01-02",
+                        "coverageEnd": "2026-06-15",
+                        "rowCount": 1802,
+                    },
+                    sort_keys=True,
+                ),
+                encoding="utf-8",
+            )
+            (history / "00940.json").write_text(
+                json.dumps(
+                    {
+                        "sourceStatus": "static_official",
+                        "coverageStart": "2024-04-01",
+                        "coverageEnd": "2026-06-15",
+                        "rowCount": 535,
+                    },
+                    sort_keys=True,
+                ),
+                encoding="utf-8",
+            )
+
+            status = static_export_status(static)
+
+        self.assertEqual(status["etfPriceHistoryCoverageTierCounts"]["long_term"], 1)
+        self.assertEqual(status["etfPriceHistoryCoverageTierCounts"]["recent"], 1)
+
     def test_static_export_summary_line_includes_etf_tier_counts(self) -> None:
         line = build_static_export_summary_line(
             {

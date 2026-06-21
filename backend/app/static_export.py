@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from .etf_price_history import DEFAULT_ETF_HISTORY_CODES, EtfPriceHistoryStore
+from .etf_price_history import (
+    DEFAULT_ETF_HISTORY_CODES,
+    LONG_TERM_COVERAGE_MIN_ROWS,
+    LONG_TERM_COVERAGE_START_CUTOFF,
+    EtfPriceHistoryStore,
+)
 from .price_history import PriceHistoryStore, utc_now_iso
 
 
@@ -220,8 +226,10 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
     catalog_row_count = int(manifest.get("etfCatalogRowCount") or 0)
     etf_history_index = _read_optional_json(output / "etf_price_history_index.json")
     etf_tier_counts = manifest.get("etfPriceHistoryCoverageTierCounts")
-    if not isinstance(etf_tier_counts, dict):
+    if not isinstance(etf_tier_counts, dict) or not etf_tier_counts:
         etf_tier_counts = etf_history_index.get("coverageTierCounts", {})
+    if not isinstance(etf_tier_counts, dict) or not etf_tier_counts:
+        etf_tier_counts = _derive_static_etf_tier_counts(output)
     return {
         "sourceStatus": manifest.get("sourceStatus", "unavailable"),
         "sourceContract": STATIC_SOURCE_CONTRACT,
@@ -376,6 +384,49 @@ def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
         tier = str(item.get("coverageTier") or "unavailable")
         counts[tier] = counts.get(tier, 0) + 1
     return counts
+
+
+def _derive_static_etf_tier_counts(output_dir: Path) -> dict[str, int]:
+    history_dir = output_dir / "etf_price_history"
+    if not history_dir.exists():
+        return {}
+    items: list[dict[str, Any]] = []
+    for path in sorted(history_dir.glob("*.json")):
+        payload = _read_optional_json(path)
+        if not payload:
+            continue
+        items.append(
+            {
+                "sourceStatus": payload.get("sourceStatus"),
+                "coverageStart": payload.get("coverageStart"),
+                "rowCount": int(payload.get("rowCount") or 0),
+                "coverageTier": _derive_static_etf_tier(payload),
+            }
+        )
+    return _coverage_tier_counts(items) if items else {}
+
+
+def _derive_static_etf_tier(payload: dict[str, Any]) -> str:
+    if payload.get("sourceStatus") == "error":
+        return "error"
+    row_count = int(payload.get("rowCount") or 0)
+    if row_count < 2 or payload.get("sourceStatus") == "unavailable":
+        return "unavailable"
+    start = _parse_iso_date(str(payload.get("coverageStart") or ""))
+    if (
+        start is not None
+        and start <= LONG_TERM_COVERAGE_START_CUTOFF
+        and row_count >= LONG_TERM_COVERAGE_MIN_ROWS
+    ):
+        return "long_term"
+    return "recent"
+
+
+def _parse_iso_date(value: str):
+    try:
+        return datetime.strptime(value, "%Y-%m-%d").date()
+    except ValueError:
+        return None
 
 
 def _read_optional_json(path: Path) -> dict[str, Any]:

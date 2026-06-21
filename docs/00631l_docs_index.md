@@ -65,6 +65,7 @@ This is the main entry point for 00631L lab documentation.
 - Comparison basket v4.19 summary: `docs\00631l_v4_19_comparison_basket_summary.md`
 - Compact backtest and position v4.20 summary: `docs\00631l_v4_20_backtest_position_compact_summary.md`
 - Static export summary line v4.28: `docs\00631l_v4_28_static_export_summary_line.md`
+- Legacy static tier fallback v4.29: `docs\00631l_v4_29_legacy_static_tier_summary.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`

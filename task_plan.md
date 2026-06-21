@@ -38,6 +38,7 @@ Status: in_progress
 - v4.26 labels ETF price-history coverage as long-term, recent, unavailable, or error so comparisons do not hide coverage limits.
 - v4.27 keeps static status backward-compatible by reading ETF tier counts from the static index when older manifests lack them.
 - v4.28 prints ETF price-history readiness and tier counts in the static export CLI summary line.
+- v4.29 derives ETF coverage tier counts from legacy static ETF JSON metadata when older static exports lack manifest/index tier counts.
 - Keep static history separate from live intraday data.
 
 ## Phase 4 - ETF Selection and Comparison
