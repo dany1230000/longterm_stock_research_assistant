@@ -41,6 +41,24 @@ void main() {
     expect(find.text('官方曝險'), findsOneWidget);
     expect(find.text('官方 NAV'), findsNothing);
     expect(find.textContaining('Mock 預設'), findsWidgets);
+    final quoteMetaStrip = find.byKey(
+      const ValueKey('00631l-quote-meta-strip'),
+    );
+    expect(quoteMetaStrip, findsOneWidget);
+    expect(
+      find.descendant(
+        of: quoteMetaStrip,
+        matching: find.text('前日淨值'),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: quoteMetaStrip,
+        matching: find.text('模式'),
+      ),
+      findsNothing,
+    );
     expect(find.text('總覽'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);

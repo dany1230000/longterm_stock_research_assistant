@@ -1339,9 +1339,6 @@ class _CompactQuoteHeader extends StatelessWidget {
                     latestHistoryPoint != null
                 ? '歷史收盤'
                 : _statusDisplay(quoteStatus);
-    final backendLabel = data.operationsStatus.backendDisconnected
-        ? '後端未連線'
-        : data.operationsStatus.backendConnectionLabel;
     final marketSession = selectedEtf.is00631L
         ? data.intradayNav?.marketSession() ??
             IntradayMarketSession.evaluate(sourceAvailable: false)
@@ -1441,19 +1438,10 @@ class _CompactQuoteHeader extends StatelessWidget {
                         '${marketSession.dataFreshnessLabel} · ${marketSession.ageText}',
                   ),
                 _QuoteMetaItem(
-                  label: '前日淨值',
-                  value: _price(selectedEtf.previousNav),
-                ),
-                _QuoteMetaItem(
                   label: '歷史資料',
                   value: history.rowCount >= 2
                       ? '${formatInteger(history.rowCount)} 筆'
                       : '尚無',
-                ),
-                _QuoteMetaItem(
-                  label: '模式',
-                  value: _frontendDataModeDisplay,
-                  caption: selectedEtf.is00631L ? backendLabel : 'ETF catalog',
                 ),
               ],
             ),
@@ -1484,6 +1472,7 @@ class _QuoteMetaStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      key: const ValueKey('00631l-quote-meta-strip'),
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
       child: Row(
