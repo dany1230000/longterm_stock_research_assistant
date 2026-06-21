@@ -642,6 +642,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('0050 AI 快覽'), findsOneWidget);
     expect(find.textContaining('元大台灣50'), findsWidgets);
+    expect(find.text('最新交易日'), findsOneWidget);
+    expect(find.text('日變動'), findsOneWidget);
+    expect(find.text('回撤'), findsOneWidget);
+    expect(find.textContaining('2026/06/03'), findsWidgets);
     _expectNoTradingActionText();
   });
 

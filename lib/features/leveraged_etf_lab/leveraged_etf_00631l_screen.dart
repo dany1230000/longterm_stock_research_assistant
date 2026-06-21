@@ -6192,8 +6192,16 @@ class _SelectedEtfAiSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final history = selectedEtf.priceHistory.completenessSummary();
     final performance = selectedEtf.priceHistory.performance;
+    final latestDate = _dateOrDash(history.latest?.date);
+    final latestCloseChangeText = history.latestCloseChange == null
+        ? 'unavailable'
+        : '${history.latestCloseChange! >= 0 ? '+' : ''}${history.latestCloseChange!.toStringAsFixed(2)}';
+    final latestMove = history.latestCloseChange == null
+        ? '日變動資料不足'
+        : '最新交易日 $latestDate，日變動 $latestCloseChangeText / ${formatSignedNullablePercent(history.latestDailyReturnPct)}。';
     final bullets = [
       '${selectedEtf.code} ${selectedEtf.name} 目前使用 ETF catalog 與 price history 產生摘要。',
+      latestMove,
       '歷史 coverage ${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}，共 ${formatInteger(history.rowCount)} 筆。',
       '最新收盤 ${_price(history.latest?.close)}；區間累積報酬 ${formatSignedNullablePercent(performance.totalReturnPct)}，最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}。',
       selectedEtf.premiumDiscountPct == null
@@ -6219,12 +6227,20 @@ class _SelectedEtfAiSection extends StatelessWidget {
               value: formatInteger(history.rowCount),
             ),
             _SectionHeaderMetric(
+              label: '最新交易日',
+              value: latestDate,
+            ),
+            _SectionHeaderMetric(
               label: '最新收盤',
               value: _price(history.latest?.close),
             ),
             _SectionHeaderMetric(
-              label: '累積報酬',
-              value: formatSignedNullablePercent(performance.totalReturnPct),
+              label: '日變動',
+              value: formatSignedNullablePercent(history.latestDailyReturnPct),
+            ),
+            _SectionHeaderMetric(
+              label: '回撤',
+              value: formatSignedNullablePercent(performance.maxDrawdownPct),
             ),
             const _SectionHeaderMetric(
               label: '性質',
