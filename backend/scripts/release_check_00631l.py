@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -204,6 +205,9 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_9_etf_history_selection_summary.md",
         "docs/00631l_v4_10_etf_history_comparison_summary.md",
         "docs/00631l_v4_11_etf_comparison_basket_summary.md",
+        "docs/00631l_v4_28_static_export_summary_line.md",
+        "docs/00631l_v4_29_legacy_static_tier_summary.md",
+        "docs/00631l_v4_30_static_tier_release_guard.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
@@ -409,6 +413,13 @@ def _run_command(name: str, command: list[str]) -> dict[str, Any]:
     else:
         status = "PASS"
         message = "ok"
+    if (
+        name == "static_public_data"
+        and status != "FAIL"
+        and not _static_summary_has_usable_tiers(stdout)
+    ):
+        status = "FAIL"
+        message = "ETF history tiers unavailable despite ready static ETF history"
     return {
         "name": name,
         "command": " ".join(command),
@@ -499,6 +510,15 @@ def _has_overall(text: str, status: str) -> bool:
         or f"overallStatus {status}" in text
         or f"overallStatus={status}" in text
     )
+
+
+def _static_summary_has_usable_tiers(text: str) -> bool:
+    if "tiers=not_available" not in text:
+        return True
+    match = re.search(r"\betfReady=(\d+)\b", text)
+    if match is None:
+        return True
+    return int(match.group(1)) == 0
 
 
 def _decode(data: bytes) -> str:

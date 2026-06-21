@@ -83,6 +83,8 @@ v4.28 adds ETF price-history readiness and coverage tier counts to the final `[s
 
 v4.29 lets static status derive ETF coverage tier counts from older `web\00631l-static-data\etf_price_history\*.json` files when both manifest and index metadata are missing tier counts. It is read-only and does not change generated static data.
 
+v4.30 adds a release-check guard so static-public ETF history cannot be ready while the final summary line hides coverage tiers as unavailable.
+
 v3.3 live-public ready status:
 
 - GitHub Pages static mode remains usable without a backend.

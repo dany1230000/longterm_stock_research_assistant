@@ -14,6 +14,7 @@ from backend.scripts.release_check_00631l import (
     _has_overall,
     _iter_text_files,
     _required_files_check,
+    _static_summary_has_usable_tiers,
 )
 
 
@@ -56,6 +57,25 @@ class ReleaseCheckTests(unittest.TestCase):
         )
 
         self.assertIn('"--summary-only"', source)
+
+    def test_static_summary_tier_guard_requires_tiers_when_etf_history_exists(self) -> None:
+        self.assertTrue(
+            _static_summary_has_usable_tiers(
+                "[summary] overallStatus=PASS rows=2832 etfReady=15 "
+                "tiers=long_term:8,recent:220,unavailable:0,error:0"
+            )
+        )
+        self.assertFalse(
+            _static_summary_has_usable_tiers(
+                "[summary] overallStatus=PASS rows=2832 etfReady=15 "
+                "tiers=not_available"
+            )
+        )
+        self.assertTrue(
+            _static_summary_has_usable_tiers(
+                "[summary] overallStatus=WARN rows=0 etfReady=0 tiers=not_available"
+            )
+        )
 
     def test_deploy_precheck_fails_when_required_files_are_missing(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
