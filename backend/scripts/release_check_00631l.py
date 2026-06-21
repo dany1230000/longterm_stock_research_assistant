@@ -212,6 +212,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_32_search_readiness_metadata.md",
         "docs/00631l_v4_33_search_sheet_wording.md",
         "docs/00631l_v4_34_etf_history_metadata_badge.md",
+        "docs/00631l_v4_35_selected_history_quality_card.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

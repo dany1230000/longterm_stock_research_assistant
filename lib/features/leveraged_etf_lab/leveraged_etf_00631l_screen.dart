@@ -4026,6 +4026,12 @@ class _HistorySection extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 10),
+        _SelectedHistoryQualityCard(
+          code: selectedEtfCode,
+          name: selectedName,
+          priceHistory: priceHistory,
+        ),
         const SizedBox(height: 12),
         _SectionBlock(
           title: '價格歷史',
@@ -4102,6 +4108,153 @@ class _HistorySection extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _SelectedHistoryQualityCard extends StatelessWidget {
+  const _SelectedHistoryQualityCard({
+    required this.code,
+    required this.name,
+    required this.priceHistory,
+  });
+
+  final String code;
+  final String name;
+  final EtfPriceHistory priceHistory;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final summary = priceHistory.completenessSummary();
+    final hasHistory = summary.rowCount >= 2;
+    final coverage = hasHistory
+        ? '${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}'
+        : '尚無';
+    final priceField = summary.hasAdjustedClose ? 'adjustedClose' : 'close';
+    final adjustmentLabel = summary.hasAdjustedClose
+        ? '調整價狀態：使用調整價'
+        : '調整價狀態：原始收盤';
+    final coverageLabel =
+        summary.isCompleteFromListing ? '完整上市日起' : '部分區間';
+
+    return Card(
+      key: const ValueKey('00631l-selected-history-quality-card'),
+      elevation: 0,
+      color: theme.colorScheme.surfaceContainerHigh,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$code 歷史資料',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _CompactTextBadge(label: priceHistory.sourceStatusLabel),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _CompactTextBadge(
+                  label: hasHistory
+                      ? '${formatInteger(summary.rowCount)} 筆'
+                      : '尚無歷史',
+                ),
+                _CompactTextBadge(label: coverageLabel),
+                _CompactTextBadge(label: '價格欄位 $priceField'),
+              ],
+            ),
+            const SizedBox(height: 8),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final compact = constraints.maxWidth < 520;
+                final itemWidth = compact
+                    ? (constraints.maxWidth - 8) / 2
+                    : (constraints.maxWidth - 24) / 4;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    SizedBox(
+                      width: itemWidth,
+                      child: _SectionHeaderMetricChip(
+                        metric: _SectionHeaderMetric(
+                          label: '資料區間',
+                          value: coverage,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _SectionHeaderMetricChip(
+                        metric: _SectionHeaderMetric(
+                          label: '最新收盤',
+                          value: _price(summary.latest?.performanceClose),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _SectionHeaderMetricChip(
+                        metric: _SectionHeaderMetric(
+                          label: '調整價狀態',
+                          value: adjustmentLabel.replaceFirst('調整價狀態：', ''),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _SectionHeaderMetricChip(
+                        metric: _SectionHeaderMetric(
+                          label: '資料來源',
+                          value: priceHistory.sourceStatusLabel,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '$adjustmentLabel；回測只使用目前 coverage 內的已載入收盤資料，回測不代表未來表現。',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                height: 1.35,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

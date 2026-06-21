@@ -479,6 +479,14 @@ void main() {
     expect(find.text('0050'), findsWidgets);
     expect(find.textContaining('元大台灣50'), findsWidgets);
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-selected-history-quality-card')),
+      findsOneWidget,
+    );
+    expect(find.text('0050 歷史資料'), findsOneWidget);
+    expect(find.text('3 筆'), findsWidgets);
+    expect(find.textContaining('2025/06/03 - 2026/06/03'), findsWidgets);
+    expect(find.text('調整價狀態'), findsOneWidget);
     expect(find.byKey(const ValueKey('00631l-backtest-view')), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-etf-history-comparison')),
@@ -504,6 +512,10 @@ void main() {
 
     await tester.drag(find.byType(ListView).first, const Offset(0, -1720));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(
       find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
     );
@@ -513,6 +525,10 @@ void main() {
     );
     expect(selectedSummaryAfterDeselect.data, isNot(contains('0050')));
 
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-etf-comparison-filter-dividend')),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(
       find.byKey(const ValueKey('00631l-etf-comparison-filter-dividend')),
     );
