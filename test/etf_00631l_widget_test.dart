@@ -78,7 +78,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
-    expect(find.textContaining('左上角代號搜尋可查 ETF catalog'), findsOneWidget);
+    expect(find.textContaining('可切換研究標的'), findsOneWidget);
     expect(find.text('可用歷史 15'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
@@ -103,7 +103,7 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
     );
-    expect(find.textContaining('已匯入歷史價格'), findsOneWidget);
+    expect(find.textContaining('可查看歷史與回測'), findsOneWidget);
     expect(find.text('歷史/回測可用'), findsWidgets);
 
     await tester.enterText(

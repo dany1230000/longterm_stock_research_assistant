@@ -893,7 +893,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '左上角代號搜尋可查 ETF catalog，也可開啟內建股票研究資料。',
+                        '輸入 ETF 代號、名稱或個股代號；ETF 可切換研究標的。',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: _marketMutedTextColor(context),
                               fontWeight: FontWeight.w700,
@@ -929,7 +929,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                         icon: const Icon(Icons.close),
                       ),
                 labelText: '輸入代號或名稱',
-                hintText: '00631L、0050、00878',
+                hintText: '00631L、0050、00878、2330',
                 border: const OutlineInputBorder(),
               ),
             ),
@@ -939,8 +939,8 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                 'catalog ${catalog.sourceStatusLabel}',
                 'rows ${formatInteger(catalog.rowCount)}',
                 '可用歷史 ${formatInteger(readyHistoryCount)}',
-                if (query.isEmpty) '常用代號' else 'ETF ${visibleItems.length}',
-                if (query.isNotEmpty) '股票 ${stockItems.length}',
+                if (query.isEmpty) '熱門清單' else 'ETF ${visibleItems.length}',
+                if (query.isNotEmpty) '個股 ${stockItems.length}',
               ],
             ),
             const SizedBox(height: 10),
@@ -9012,9 +9012,8 @@ _EtfHistoryReadiness _etfHistoryReadiness(EtfCatalogItem item) {
   return _EtfHistoryReadiness(
     hasHistory: hasHistory,
     badgeLabel: hasHistory ? '歷史/回測可用' : '僅 catalog',
-    caption: hasHistory
-        ? '已匯入歷史價格；切換後可看 coverage 與回測。'
-        : '尚未匯入可驗證歷史價格；只能顯示 catalog 欄位。',
+    caption:
+        hasHistory ? '已匯入歷史價格；切換後可查看歷史與回測。' : '尚未匯入可驗證歷史價格；只能顯示 catalog 欄位。',
     trailingLabel: hasHistory ? '可切換' : 'catalog',
   );
 }

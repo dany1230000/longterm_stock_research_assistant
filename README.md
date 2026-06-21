@@ -89,6 +89,8 @@ v4.31 reconciles legacy static ETF history row/ready counts with derived tier co
 
 v4.32 makes the top-left ETF selector use operations/static price-history readiness metadata, so the UI can reflect the full static ETF history set instead of only the old representative list.
 
+v4.33 cleans up the top-left ETF / stock-code selector wording so the title, input, ready count, and result captions read like production UI instead of legacy debug text.
+
 v3.3 live-public ready status:
 
 - GitHub Pages static mode remains usable without a backend.

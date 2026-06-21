@@ -210,6 +210,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_30_static_tier_release_guard.md",
         "docs/00631l_v4_31_legacy_static_count_reconcile.md",
         "docs/00631l_v4_32_search_readiness_metadata.md",
+        "docs/00631l_v4_33_search_sheet_wording.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
