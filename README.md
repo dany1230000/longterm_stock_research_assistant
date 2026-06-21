@@ -977,6 +977,8 @@ v4.21 補強 AI 分析頁的當日資料狀態：先顯示 readiness、backend/s
 
 v4.22 將 00631L 歷史價格與 static public export 的預設更新改為 incremental，只回抓最新 cached 月份；需要全量回補時再使用 `--full-refresh`。這讓日常更新更快，也降低舊月份網路 timeout 對 daily flow 的干擾。
 
+v4.23 強化 GitHub Pages static build：CI 若沒有 `backend/data`，會先載入 committed seed history，再做 incremental update，避免 public build 嘗試全量抓取。
+
 ## 下一步
 
 - 建立資料授權清單與資料欄位規格。

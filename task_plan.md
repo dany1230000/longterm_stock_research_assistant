@@ -32,6 +32,7 @@ Status: in_progress
 - Add stronger validation for selected ETF histories.
 - Surface coverage, missing data, split adjustment, and source status in a compact user-facing way.
 - v4.22 changed 00631L price-history and static export updates to incremental-by-default, with `--full-refresh` for explicit full-range refreshes.
+- v4.23 made static export merge committed seed history before incremental update, so CI runners without local data avoid full-range refreshes.
 - Keep static history separate from live intraday data.
 
 ## Phase 4 - ETF Selection and Comparison

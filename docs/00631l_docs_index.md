@@ -209,6 +209,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Backtest/position compact release: `docs\00631l_v4_20_backtest_position_compact_summary.md`
 - AI daily clarity release: `docs\00631l_v4_21_ai_daily_clarity_summary.md`
 - Incremental price update release: `docs\00631l_v4_22_incremental_price_update_summary.md`
+- Static seed-first export release: `docs\00631l_v4_23_static_seed_first_summary.md`
 
 ## Scope Boundary
 

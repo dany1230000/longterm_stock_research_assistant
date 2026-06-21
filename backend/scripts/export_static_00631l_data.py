@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import json
 from pathlib import Path
 import sys
@@ -110,18 +110,16 @@ def main() -> int:
     store = PriceHistoryStore(args.price_history_path)
     warnings: list[str] = []
     if args.update:
-        from datetime import date
-
         default_start = date(2014, 10, 31)
-        if args.start_date:
-            start = datetime.strptime(args.start_date, "%Y-%m-%d").date()
-            update_mode = "custom"
-        elif args.full_refresh:
-            start = default_start
-            update_mode = "full"
-        else:
-            start = store.default_incremental_start_date(default_start=default_start)
-            update_mode = "incremental"
+        start, update_mode = _prepare_price_history_update_start(
+            store=store,
+            seed_path=Path(args.seed_price_history_path),
+            min_row_count=args.min_row_count,
+            warnings=warnings,
+            start_date_text=args.start_date,
+            full_refresh=args.full_refresh,
+            default_start=default_start,
+        )
         end = (
             datetime.strptime(args.end_date, "%Y-%m-%d").date()
             if args.end_date
@@ -198,6 +196,29 @@ def main() -> int:
         f"output={payload['outputDir']}"
     )
     return 1 if payload["overallStatus"] == "FAIL" else 0
+
+
+def _prepare_price_history_update_start(
+    *,
+    store: PriceHistoryStore,
+    seed_path: Path,
+    min_row_count: int,
+    warnings: list[str],
+    start_date_text: str,
+    full_refresh: bool,
+    default_start: date,
+) -> tuple[date, str]:
+    if start_date_text:
+        return datetime.strptime(start_date_text, "%Y-%m-%d").date(), "custom"
+    if full_refresh:
+        return default_start, "full"
+    _merge_seed_if_needed(
+        store=store,
+        seed_path=seed_path,
+        min_row_count=min_row_count,
+        warnings=warnings,
+    )
+    return store.default_incremental_start_date(default_start=default_start), "incremental"
 
 
 def _load_etf_catalog_payload(

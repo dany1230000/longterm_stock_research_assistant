@@ -20,3 +20,5 @@
 - Added AI daily status, source/time, and program-action summary blocks.
 - Started v4.22 historical price update reliability work.
 - Changed 00631L price-history and static export updates to default incremental mode from the latest cached month.
+- Started v4.23 static seed-first export hardening.
+- Added CI-like test coverage for empty local cache plus committed seed history before static export update.

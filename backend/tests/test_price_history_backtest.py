@@ -15,6 +15,7 @@ from backend.app.static_export import export_static_00631l_data, static_export_s
 from backend.scripts.export_static_00631l_data import (
     _merge_etf_price_history_seed_if_needed,
     _merge_seed_if_needed,
+    _prepare_price_history_update_start,
 )
 
 
@@ -261,6 +262,35 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
 
             self.assertEqual(result["overallStatus"], "PASS")
             self.assertEqual(result["rowCount"], 3)
+            self.assertTrue(any("seedPriceHistoryMerged" in item for item in warnings))
+
+    def test_static_update_start_merges_seed_before_incremental_fetch(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+            seed = PriceHistoryStore(root / "seed.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            seed.save_points(rows)
+            warnings: list[str] = []
+
+            start, mode = _prepare_price_history_update_start(
+                store=store,
+                seed_path=seed.path,
+                min_row_count=3,
+                warnings=warnings,
+                start_date_text="",
+                full_refresh=False,
+                default_start=date(2014, 10, 31),
+            )
+
+            self.assertEqual(mode, "incremental")
+            self.assertEqual(start, date(2026, 6, 1))
+            self.assertEqual(
+                store.status_response(fetched_at="2026-06-11T00:00:00+00:00")[
+                    "rowCount"
+                ],
+                3,
+            )
             self.assertTrue(any("seedPriceHistoryMerged" in item for item in warnings))
 
     def test_static_export_merges_seeded_multi_etf_price_history(self) -> None:
