@@ -4340,6 +4340,15 @@ class _FilterablePriceHistoryBlockState
             '完整筆數 ${formatInteger(fullSummary.rowCount)}',
           ],
         ),
+        const SizedBox(height: 6),
+        Text(
+          '圖表區間 ${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}；橫軸顯示起點 / 中點 / 終點；點擊圖表可查看完整日期與數值。',
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w800,
+                height: 1.35,
+              ),
+        ),
         const SizedBox(height: 12),
         _ResponsiveMetricGrid(
           cards: [
@@ -8636,7 +8645,7 @@ class _ChartTouchDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = point == null || value == null
         ? '點擊圖表可查看完整日期與數值'
-        : '${formatTaiwanDate(point!.date)}  ${_compactChartValue(value!)}';
+        : '選取日期 ${formatTaiwanDate(point!.date)} · 數值 ${_compactChartValue(value!)}';
     return Text(
       text,
       maxLines: 1,
