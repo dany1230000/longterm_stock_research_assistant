@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -130,6 +131,32 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(rows[1]["adjustmentFactor"], 1.0)
         self.assertEqual(status["priceField"], "adjustedClose")
         self.assertEqual(status["validationStatus"], "PASS")
+
+    def test_multi_etf_store_defaults_incremental_update_to_latest_month(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = EtfPriceHistoryStore(Path(temp_dir))
+            store.save_points(
+                "0050",
+                [
+                    {
+                        "date": "2026-06-15",
+                        "open": 50,
+                        "high": 51,
+                        "low": 49,
+                        "close": 50.5,
+                        "volume": 1000,
+                        "sourceUrl": "fixture://0050",
+                    }
+                ],
+            )
+
+            self.assertEqual(
+                store.default_incremental_start_date(
+                    "0050",
+                    default_start=date(2019, 1, 1),
+                ),
+                date(2026, 6, 1),
+            )
 
     def test_multi_etf_validation_catches_missing_split_adjustment(self) -> None:
         validation = validate_etf_price_records(

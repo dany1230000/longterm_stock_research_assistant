@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import json
 from pathlib import Path
 import sys
@@ -37,8 +37,13 @@ def main() -> int:
         default=0,
         help="Maximum catalog symbols to import. 0 means all catalog symbols.",
     )
-    parser.add_argument("--start-date", default="2019-01-01")
+    parser.add_argument("--start-date", default="")
     parser.add_argument("--end-date", default="")
+    parser.add_argument(
+        "--full-refresh",
+        action="store_true",
+        help="Fetch from 2019-01-01 instead of each ETF's latest cached month.",
+    )
     parser.add_argument("--output-dir", default=settings.etf_price_history_dir)
     parser.add_argument("--status-only", action="store_true")
     parser.add_argument(
@@ -70,7 +75,12 @@ def main() -> int:
         print("FAIL no ETF codes were resolved for import.")
         return 1
 
-    start = datetime.strptime(args.start_date, "%Y-%m-%d").date()
+    default_start = date(2019, 1, 1)
+    explicit_start = (
+        datetime.strptime(args.start_date, "%Y-%m-%d").date()
+        if args.start_date
+        else None
+    )
     end = (
         datetime.strptime(args.end_date, "%Y-%m-%d").date()
         if args.end_date
@@ -82,6 +92,18 @@ def main() -> int:
     fetch_failures: list[str] = []
     validation_failures: list[str] = []
     for code in codes:
+        if explicit_start is not None:
+            start = explicit_start
+            update_mode = "custom"
+        elif args.full_refresh:
+            start = default_start
+            update_mode = "full"
+        else:
+            start = store.default_incremental_start_date(
+                code,
+                default_start=default_start,
+            )
+            update_mode = "incremental"
         try:
             fetched = fetch_etf_price_history(
                 code=code,
@@ -114,6 +136,7 @@ def main() -> int:
                     "fetchedRows": fetched.get("rowCount"),
                     "savedRows": saved,
                     "normalizedRows": normalized_rows,
+                    "updateMode": update_mode,
                     "coverageStart": status.get("coverageStart"),
                     "coverageEnd": status.get("coverageEnd"),
                     "rowCount": status.get("rowCount"),

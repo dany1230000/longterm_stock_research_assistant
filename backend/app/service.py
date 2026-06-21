@@ -653,12 +653,22 @@ class Etf00631LService:
         requested_codes = parse_code_list(codes or "")
         if not requested_codes:
             requested_codes = list(DEFAULT_ETF_HISTORY_CODES)
-        start = _parse_date(start_date) or date(2019, 1, 1)
+        parsed_start = _parse_date(start_date)
+        default_start = date(2019, 1, 1)
         end = _parse_date(end_date) or datetime.now(timezone.utc).date()
         items: list[dict[str, Any]] = []
         warnings: list[str] = []
         failures: list[str] = []
         for code in requested_codes:
+            if parsed_start is not None:
+                start = parsed_start
+                update_mode = "custom"
+            else:
+                start = self._etf_price_history_store.default_incremental_start_date(
+                    code,
+                    default_start=default_start,
+                )
+                update_mode = "incremental"
             try:
                 fetched = fetch_etf_price_history(
                     code=code,
@@ -696,6 +706,7 @@ class Etf00631LService:
                         "fetchedRows": fetched.get("rowCount"),
                         "savedRows": saved,
                         "normalizedRows": normalized_rows,
+                        "updateMode": update_mode,
                         "coverageStart": status.get("coverageStart"),
                         "coverageEnd": status.get("coverageEnd"),
                         "rowCount": status.get("rowCount"),

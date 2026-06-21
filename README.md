@@ -979,6 +979,8 @@ v4.22 將 00631L 歷史價格與 static public export 的預設更新改為 incr
 
 v4.23 強化 GitHub Pages static build：CI 若沒有 `backend/data`，會先載入 committed seed history，再做 incremental update，避免 public build 嘗試全量抓取。
 
+v4.24 將泛用 ETF price-history import 也改成每檔 incremental 預設，並保留 `--full-refresh` 作為明確回補選項。這是 ETF 搜尋、切換與未來比較頁的資料穩定性基礎。
+
 ## 下一步
 
 - 建立資料授權清單與資料欄位規格。

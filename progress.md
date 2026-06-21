@@ -22,3 +22,5 @@
 - Changed 00631L price-history and static export updates to default incremental mode from the latest cached month.
 - Started v4.23 static seed-first export hardening.
 - Added CI-like test coverage for empty local cache plus committed seed history before static export update.
+- Started v4.24 generic ETF history incremental update work.
+- Added per-symbol incremental update starts for ETF price-history imports and verified 0050 incremental refresh.
