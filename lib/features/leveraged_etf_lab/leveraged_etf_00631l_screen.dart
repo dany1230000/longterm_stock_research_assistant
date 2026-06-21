@@ -2721,14 +2721,14 @@ class _OverviewDataQualityPanel extends StatelessWidget {
         caption: adjustmentCaption,
       ),
       _AtAGlanceMetricData(
-        label: 'coverage',
+        label: '覆蓋區間',
         value: summary.rowCount >= 2
             ? '${formatInteger(summary.rowCount)} 筆'
             : '資料不足',
         caption: coverageCaption,
       ),
       _AtAGlanceMetricData(
-        label: 'source',
+        label: '資料來源',
         value: history.sourceStatusLabel,
         caption: summary.isCompleteFromListing ? '上市日起完整' : '依 cache 範圍',
       ),
@@ -2762,6 +2762,16 @@ class _OverviewDataQualityPanel extends StatelessWidget {
                 ),
                 _CompactTextBadge(label: selectedEtf.code),
               ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '目前檔案 ${selectedEtf.code}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    fontWeight: FontWeight.w800,
+                  ),
             ),
             const SizedBox(height: 6),
             _AtAGlanceMetricGrid(metrics: metrics),

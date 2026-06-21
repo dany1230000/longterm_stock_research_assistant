@@ -75,6 +75,7 @@ This is the main entry point for 00631L lab documentation.
 - Chart date guidance v4.36: `docs\00631l_v4_36_chart_date_guidance.md`
 - Manual comparison default v4.37: `docs\00631l_v4_37_manual_comparison_default.md`
 - Compact quote meta v4.38: `docs\00631l_v4_38_compact_quote_meta.md`
+- Selected overview quality v4.39: `docs\00631l_v4_39_selected_overview_quality.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`

@@ -87,6 +87,8 @@ v4.37 changes ETF comparison to start with the currently selected ETF only; user
 
 v4.38 trims the quote header metadata so the first screen focuses on estimated NAV, session/time, and history readiness; previous NAV and frontend mode remain in detail/status sections.
 
+v4.39 makes the overview data-quality card follow the selected ETF, including the current code, coverage range, data source, and price field.
+
 v4.28 adds ETF price-history readiness and coverage tier counts to the final `[summary]` line printed by `scripts\00631l_export_static_data.cmd --status-only`, so daily logs can be checked without opening the JSON payload.
 
 v4.29 lets static status derive ETF coverage tier counts from older `web\00631l-static-data\etf_price_history\*.json` files when both manifest and index metadata are missing tier counts. It is read-only and does not change generated static data.
