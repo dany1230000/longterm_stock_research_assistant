@@ -16,3 +16,5 @@
 - Added guidance that ETF comparison is a 1-5 item user-selected basket and covered chip toggling with a widget test.
 - Started v4.20 backtest and position compact UX work.
 - Added compact status rows for backtest parameters and local-only position storage status.
+- Started v4.21 AI daily clarity work.
+- Added AI daily status, source/time, and program-action summary blocks.

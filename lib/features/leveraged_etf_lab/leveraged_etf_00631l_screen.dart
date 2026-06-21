@@ -5892,6 +5892,8 @@ class _AiSection extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
+              _AiDailyStatusPanel(data: data, summary: summary),
+              const SizedBox(height: 12),
               _AiSignalGrid(data: data, summary: summary),
               const SizedBox(height: 12),
               Text(
@@ -5933,6 +5935,78 @@ class _AiSection extends StatelessWidget {
             ],
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _AiDailyStatusPanel extends StatelessWidget {
+  const _AiDailyStatusPanel({required this.data, required this.summary});
+
+  final Etf00631LLabData data;
+  final EtfAiAnalysisSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final price = data.priceHistory.completenessSummary();
+    final intradayTime = _intradayDataTimeText(data.intradayNav);
+    final holdingsDate = _dateOrDash(_latestHoldingsDate(data));
+    final generatedAt = formatTaiwanDateTimeSeconds(summary.generatedAt);
+    final dataTime = summary.dataTime == null
+        ? 'unavailable'
+        : formatTaiwanDateTimeSeconds(summary.dataTime!);
+    final actions = summary.actionItems.isEmpty
+        ? const ['目前沒有程式操作項目；請保留資料時間檢查。']
+        : summary.actionItems.take(3).toList(growable: false);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '今日資料狀態',
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+        ),
+        const SizedBox(height: 8),
+        _BulletLine(
+          text:
+              '整體 readiness ${summary.readinessLabel}；backend ${data.operationsStatus.backendConnectionLabel}；price history ${data.priceHistory.sourceStatusLabel}。',
+          icon: Icons.fact_check_outlined,
+        ),
+        _BulletLine(
+          text:
+              'official holdings tradeDate $holdingsDate；盤中 NAV dataTime $intradayTime；兩者更新頻率不同。',
+          icon: Icons.schedule_outlined,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          '資料來源與時間',
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: 8),
+        _BulletLine(
+          text:
+              'AI source ${summary.source}；analysis generatedAt $generatedAt；analysis dataTime $dataTime。',
+          icon: Icons.psychology_alt_outlined,
+        ),
+        _BulletLine(
+          text:
+              '歷史價格 coverage ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，共 ${formatInteger(price.rowCount)} 筆。',
+          icon: Icons.timeline_outlined,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          '缺口與下一步',
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: 8),
+        for (final action in actions)
+          _BulletLine(text: action, icon: Icons.task_alt_outlined),
       ],
     );
   }

@@ -591,6 +591,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('今日 AI 快覽'), findsOneWidget);
     expect(find.text('今日 AI 分析摘要'), findsOneWidget);
+    expect(find.text('今日資料狀態'), findsOneWidget);
+    expect(find.text('資料來源與時間'), findsOneWidget);
+    expect(find.text('缺口與下一步'), findsOneWidget);
     expect(find.text('資料狀態'), findsWidgets);
     expect(find.text('內容物重點'), findsOneWidget);
     expect(find.text('折溢價'), findsWidgets);

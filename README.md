@@ -973,6 +973,8 @@ App 文案必須維持研究參考、觀察清單、條件篩選結果、歷史�
 
 詳細設計與資料限制見 `docs/00631l_lab.md`。此頁只針對 00631L，不擴大成全市場正二或所有槓桿 ETF。官方每日內容物與盤中估算資料分開標示；若 live source 被 CORS 阻擋，需透過 backend/proxy 接入，不能把 mock 資料偽裝成官方即時資料。
 
+v4.21 補強 AI 分析頁的當日資料狀態：先顯示 readiness、backend/static/mock 狀態、official holdings 日期、盤中 NAV 時間、歷史 coverage 與需要的程式操作。AI 仍採 rule_based，僅解釋資料狀態與缺口，非買賣建議。
+
 ## 下一步
 
 - 建立資料授權清單與資料欄位規格。

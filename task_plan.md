@@ -55,9 +55,10 @@ Status: in_progress
 
 ## Phase 6 - AI Daily Analysis
 
-Status: pending
+Status: in_progress
 
 - Make rule-based AI focus on today's data state, holdings changes, intraday status, historical context, and app actions.
+- v4.21 added a compact AI daily briefing for readiness, data source/time, coverage, and program-action items.
 - Keep external LLM as a disabled adapter only.
 - Keep all output descriptive and non-instructional.
 

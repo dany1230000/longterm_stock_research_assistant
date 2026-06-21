@@ -206,6 +206,8 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF comparison foundation release: `docs\00631l_v4_5_etf_comparison_foundation_summary.md`
 - Header symbol search release: `docs\00631l_v4_6_header_symbol_search_summary.md`
 - ETF price validation and split-adjustment release: `docs\00631l_v4_12_etf_price_validation_summary.md`
+- Backtest/position compact release: `docs\00631l_v4_20_backtest_position_compact_summary.md`
+- AI daily clarity release: `docs\00631l_v4_21_ai_daily_clarity_summary.md`
 
 ## Scope Boundary
 
