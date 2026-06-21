@@ -219,6 +219,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_39_selected_overview_quality.md",
         "docs/00631l_v4_40_selected_etf_ai_daily_context.md",
         "docs/00631l_v4_41_selected_etf_split_caveat.md",
+        "docs/00631l_v4_42_position_source_context.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

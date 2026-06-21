@@ -78,6 +78,7 @@ This is the main entry point for 00631L lab documentation.
 - Selected overview quality v4.39: `docs\00631l_v4_39_selected_overview_quality.md`
 - Selected ETF AI daily context v4.40: `docs\00631l_v4_40_selected_etf_ai_daily_context.md`
 - Selected ETF split caveat v4.41: `docs\00631l_v4_41_selected_etf_split_caveat.md`
+- Position source context v4.42: `docs\00631l_v4_42_position_source_context.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`

@@ -637,6 +637,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('0050'), findsWidgets);
     expect(find.textContaining('local-only'), findsWidgets);
+    expect(find.text('目前標的 0050'), findsWidgets);
+    expect(find.textContaining('行情來源'), findsWidgets);
+    expect(find.text('歷史來源 cached'), findsWidgets);
 
     await _tapSection(tester, 'ai');
     await tester.pumpAndSettle();
