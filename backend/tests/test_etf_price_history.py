@@ -15,6 +15,7 @@ from backend.app.etf_price_history import (
 )
 from backend.app.main import create_app
 from backend.app.service import Etf00631LService
+from backend.scripts.import_etf_price_history import build_status_summary_response
 
 
 class EtfPriceHistoryTests(unittest.TestCase):
@@ -302,6 +303,53 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(payload["rowCount"], 2)
         self.assertEqual(payload["readyCount"], 2)
         self.assertEqual([item["code"] for item in payload["items"]], ["0050", "00878"])
+
+    def test_status_summary_omits_full_item_dump(self) -> None:
+        payload = {
+            "sourceStatus": "cached",
+            "sourceContract": "twse_multi_etf_price_history_index",
+            "sourceUrl": "local://fixture",
+            "fetchedAt": "2026-06-21T00:00:00+00:00",
+            "sourceUpdatedAt": "2026-06-18",
+            "dataTime": "2026-06-18",
+            "rowCount": 3,
+            "readyCount": 2,
+            "validationFailureCount": 0,
+            "validationWarningCount": 1,
+            "items": [
+                {
+                    "code": "0050",
+                    "coverageStart": "2019-01-02",
+                    "coverageEnd": "2026-06-18",
+                    "rowCount": 1800,
+                    "validationStatus": "PASS",
+                },
+                {
+                    "code": "0056",
+                    "coverageStart": "2019-01-02",
+                    "coverageEnd": "2026-06-18",
+                    "rowCount": 1800,
+                    "validationStatus": "PASS",
+                },
+                {
+                    "code": "00878",
+                    "coverageStart": None,
+                    "coverageEnd": None,
+                    "rowCount": 0,
+                    "validationStatus": "WARN",
+                },
+            ],
+        }
+
+        summary = build_status_summary_response(payload, sample_size=2)
+
+        self.assertNotIn("items", summary)
+        self.assertEqual(summary["rowCount"], 3)
+        self.assertEqual(summary["readyCount"], 2)
+        self.assertEqual(summary["coverageStart"], "2019-01-02")
+        self.assertEqual(summary["coverageEnd"], "2026-06-18")
+        self.assertEqual(summary["sampleCodes"], ["0050", "0056"])
+        self.assertEqual(summary["suppressedItemCount"], 1)
 
     def test_endpoints_update_and_read_multi_etf_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

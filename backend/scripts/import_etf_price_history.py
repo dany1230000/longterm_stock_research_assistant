@@ -47,6 +47,11 @@ def main() -> int:
     parser.add_argument("--output-dir", default=settings.etf_price_history_dir)
     parser.add_argument("--status-only", action="store_true")
     parser.add_argument(
+        "--summary-only",
+        action="store_true",
+        help="With --status-only, print a compact index summary without every ETF item.",
+    )
+    parser.add_argument(
         "--allow-partial",
         action="store_true",
         help=(
@@ -58,14 +63,19 @@ def main() -> int:
 
     store = EtfPriceHistoryStore(args.output_dir)
     if args.status_only:
-        payload = store.index_response(fetched_at=utc_now_iso())
+        index_payload = store.index_response(fetched_at=utc_now_iso())
+        payload = (
+            build_status_summary_response(index_payload)
+            if args.summary_only
+            else index_payload
+        )
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
-        validation_failures = int(payload.get("validationFailureCount") or 0)
+        validation_failures = int(index_payload.get("validationFailureCount") or 0)
         print(
             "[summary] "
-            f"overallStatus={'FAIL' if validation_failures else 'PASS' if payload.get('readyCount', 0) else 'WARN'} "
-            f"symbols={payload.get('rowCount', 0)} "
-            f"ready={payload.get('readyCount', 0)} "
+            f"overallStatus={'FAIL' if validation_failures else 'PASS' if index_payload.get('readyCount', 0) else 'WARN'} "
+            f"symbols={index_payload.get('rowCount', 0)} "
+            f"ready={index_payload.get('readyCount', 0)} "
             f"validationFailures={validation_failures}"
         )
         return 1 if validation_failures else 0
@@ -198,6 +208,42 @@ def _resolve_codes(args: argparse.Namespace) -> list[str]:
         return parse_code_list(args.codes)
     payload = load_etf_catalog(args.catalog_path, fetched_at=utc_now_iso())
     return catalog_codes(payload, limit=args.limit)
+
+
+def build_status_summary_response(
+    payload: dict[str, object],
+    *,
+    sample_size: int = 12,
+) -> dict[str, object]:
+    items = [item for item in payload.get("items", []) if isinstance(item, dict)]
+    starts = [
+        str(item.get("coverageStart"))
+        for item in items
+        if item.get("coverageStart")
+    ]
+    ends = [
+        str(item.get("coverageEnd"))
+        for item in items
+        if item.get("coverageEnd")
+    ]
+    sample_items = items[: max(sample_size, 0)]
+    return {
+        "sourceStatus": payload.get("sourceStatus"),
+        "sourceContract": payload.get("sourceContract"),
+        "sourceUrl": payload.get("sourceUrl"),
+        "fetchedAt": payload.get("fetchedAt"),
+        "sourceUpdatedAt": payload.get("sourceUpdatedAt"),
+        "dataTime": payload.get("dataTime"),
+        "rowCount": payload.get("rowCount", 0),
+        "readyCount": payload.get("readyCount", 0),
+        "coverageStart": min(starts) if starts else None,
+        "coverageEnd": max(ends) if ends else None,
+        "validationFailureCount": payload.get("validationFailureCount", 0),
+        "validationWarningCount": payload.get("validationWarningCount", 0),
+        "validationFailures": payload.get("validationFailures", []),
+        "sampleCodes": [str(item.get("code")) for item in sample_items if item.get("code")],
+        "suppressedItemCount": max(len(items) - len(sample_items), 0),
+    }
 
 
 if __name__ == "__main__":

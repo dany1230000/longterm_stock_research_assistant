@@ -62,6 +62,15 @@ scripts\00631l_build_web_public.cmd
 scripts\00631l_build_pages_static.cmd
 ```
 
+Multi-ETF price-history status:
+
+```cmd
+scripts\00631l_import_etf_price_history.cmd --status-only --summary-only
+scripts\00631l_validate_etf_price_history.cmd
+```
+
+Use `--summary-only` for daily rowCount/readyCount/coverage checks. Use the validation command when full per-ETF detail is needed.
+
 v3.3 live-public ready status:
 
 - GitHub Pages static mode remains usable without a backend.

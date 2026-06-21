@@ -34,6 +34,7 @@ Status: in_progress
 - v4.22 changed 00631L price-history and static export updates to incremental-by-default, with `--full-refresh` for explicit full-range refreshes.
 - v4.23 made static export merge committed seed history before incremental update, so CI runners without local data avoid full-range refreshes.
 - v4.24 added per-symbol incremental updates for generic ETF price-history import.
+- v4.25 keeps release check ETF status output concise while retaining detailed validation commands.
 - Keep static history separate from live intraday data.
 
 ## Phase 4 - ETF Selection and Comparison

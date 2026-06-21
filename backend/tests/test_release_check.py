@@ -10,6 +10,7 @@ from backend.scripts.check_public_config_00631l import (
 )
 from backend.scripts.deploy_precheck_00631l import run_deploy_precheck
 from backend.scripts.release_check_00631l import (
+    ROOT,
     _has_overall,
     _iter_text_files,
     _required_files_check,
@@ -48,6 +49,13 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertTrue(_has_overall("overallStatus WARN", "WARN"))
         self.assertTrue(_has_overall('{"overallStatus": "PASS"}', "PASS"))
         self.assertFalse(_has_overall("[summary] overallStatus=PASS", "FAIL"))
+
+    def test_release_check_uses_concise_etf_history_status(self) -> None:
+        source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
+            encoding="utf-8",
+        )
+
+        self.assertIn('"--summary-only"', source)
 
     def test_deploy_precheck_fails_when_required_files_are_missing(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

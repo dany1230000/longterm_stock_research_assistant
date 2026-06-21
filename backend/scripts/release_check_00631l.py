@@ -83,7 +83,13 @@ def main() -> int:
         ),
         _run_command(
             "etf_price_history_status",
-            ["cmd", "/c", "scripts\\00631l_import_etf_price_history.cmd", "--status-only"],
+            [
+                "cmd",
+                "/c",
+                "scripts\\00631l_import_etf_price_history.cmd",
+                "--status-only",
+                "--summary-only",
+            ],
         ),
         _run_command("smoke", ["py", "backend\\scripts\\smoke_00631l_live.py"]),
         _forbidden_wording_scan(),

@@ -211,6 +211,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Incremental price update release: `docs\00631l_v4_22_incremental_price_update_summary.md`
 - Static seed-first export release: `docs\00631l_v4_23_static_seed_first_summary.md`
 - ETF history incremental release: `docs\00631l_v4_24_etf_history_incremental_summary.md`
+- Concise ETF status release: `docs\00631l_v4_25_concise_etf_status_summary.md`
 
 ## Scope Boundary
 

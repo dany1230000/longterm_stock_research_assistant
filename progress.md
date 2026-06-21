@@ -24,3 +24,5 @@
 - Added CI-like test coverage for empty local cache plus committed seed history before static export update.
 - Started v4.24 generic ETF history incremental update work.
 - Added per-symbol incremental update starts for ETF price-history imports and verified 0050 incremental refresh.
+- Started v4.25 concise ETF status output work.
+- Added `--summary-only` for multi-ETF price-history status and switched release check to the concise path.
