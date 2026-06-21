@@ -36,3 +36,5 @@
 - Added read-only tier derivation from older static ETF price JSON files when manifest/index tier metadata is absent.
 - Started v4.30 static tier release guard work.
 - Added release-check validation that ready static ETF history must expose usable coverage tier summary metadata.
+- Started v4.31 legacy static count reconcile work.
+- Made static status derive legacy ETF row/ready counts together with tier counts for consistent maintenance output.

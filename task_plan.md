@@ -40,6 +40,7 @@ Status: in_progress
 - v4.28 prints ETF price-history readiness and tier counts in the static export CLI summary line.
 - v4.29 derives ETF coverage tier counts from legacy static ETF JSON metadata when older static exports lack manifest/index tier counts.
 - v4.30 adds a release-check guard for missing static ETF tier summaries when ETF history is ready.
+- v4.31 reconciles legacy static ETF row/ready counts with derived coverage tier counts.
 - Keep static history separate from live intraday data.
 
 ## Phase 4 - ETF Selection and Comparison

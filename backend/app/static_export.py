@@ -226,10 +226,17 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
     catalog_row_count = int(manifest.get("etfCatalogRowCount") or 0)
     etf_history_index = _read_optional_json(output / "etf_price_history_index.json")
     etf_tier_counts = manifest.get("etfPriceHistoryCoverageTierCounts")
+    legacy_etf_summary: dict[str, Any] = {}
     if not isinstance(etf_tier_counts, dict) or not etf_tier_counts:
         etf_tier_counts = etf_history_index.get("coverageTierCounts", {})
     if not isinstance(etf_tier_counts, dict) or not etf_tier_counts:
-        etf_tier_counts = _derive_static_etf_tier_counts(output)
+        legacy_etf_summary = _derive_static_etf_summary(output)
+        etf_tier_counts = legacy_etf_summary.get("coverageTierCounts", {})
+    etf_history_row_count = int(manifest.get("etfPriceHistoryRowCount") or 0)
+    etf_history_ready_count = int(manifest.get("etfPriceHistoryReadyCount") or 0)
+    if legacy_etf_summary and int(legacy_etf_summary.get("rowCount") or 0) > etf_history_row_count:
+        etf_history_row_count = int(legacy_etf_summary.get("rowCount") or 0)
+        etf_history_ready_count = int(legacy_etf_summary.get("readyCount") or 0)
     return {
         "sourceStatus": manifest.get("sourceStatus", "unavailable"),
         "sourceContract": STATIC_SOURCE_CONTRACT,
@@ -242,12 +249,11 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         "isCompleteFromListing": manifest.get("isCompleteFromListing") is True,
         "etfCatalogRowCount": catalog_row_count,
         "etfCatalogDataTime": manifest.get("etfCatalogDataTime"),
-        "etfPriceHistoryRowCount": int(manifest.get("etfPriceHistoryRowCount") or 0),
-        "etfPriceHistoryReadyCount": int(
-            manifest.get("etfPriceHistoryReadyCount") or 0
-        ),
+        "etfPriceHistoryRowCount": etf_history_row_count,
+        "etfPriceHistoryReadyCount": etf_history_ready_count,
         "etfPriceHistoryDataTime": manifest.get("etfPriceHistoryDataTime")
-        or etf_history_index.get("dataTime"),
+        or etf_history_index.get("dataTime")
+        or legacy_etf_summary.get("dataTime"),
         "etfPriceHistoryCoverageTierCounts": etf_tier_counts,
         "minimumCatalogRowCount": int(manifest.get("minimumCatalogRowCount") or 0),
         "overallStatus": "FAIL" if failures else "PASS" if row_count >= 2 else "WARN",
@@ -386,15 +392,19 @@ def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
     return counts
 
 
-def _derive_static_etf_tier_counts(output_dir: Path) -> dict[str, int]:
+def _derive_static_etf_summary(output_dir: Path) -> dict[str, Any]:
     history_dir = output_dir / "etf_price_history"
     if not history_dir.exists():
         return {}
     items: list[dict[str, Any]] = []
+    latest: str | None = None
     for path in sorted(history_dir.glob("*.json")):
         payload = _read_optional_json(path)
         if not payload:
             continue
+        coverage_end = payload.get("coverageEnd")
+        if coverage_end and (latest is None or str(coverage_end) > latest):
+            latest = str(coverage_end)
         items.append(
             {
                 "sourceStatus": payload.get("sourceStatus"),
@@ -403,7 +413,14 @@ def _derive_static_etf_tier_counts(output_dir: Path) -> dict[str, int]:
                 "coverageTier": _derive_static_etf_tier(payload),
             }
         )
-    return _coverage_tier_counts(items) if items else {}
+    if not items:
+        return {}
+    return {
+        "rowCount": len(items),
+        "readyCount": sum(1 for item in items if int(item.get("rowCount") or 0) >= 2),
+        "dataTime": latest,
+        "coverageTierCounts": _coverage_tier_counts(items),
+    }
 
 
 def _derive_static_etf_tier(payload: dict[str, Any]) -> str:

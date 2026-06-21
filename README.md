@@ -85,6 +85,8 @@ v4.29 lets static status derive ETF coverage tier counts from older `web\00631l-
 
 v4.30 adds a release-check guard so static-public ETF history cannot be ready while the final summary line hides coverage tiers as unavailable.
 
+v4.31 reconciles legacy static ETF history row/ready counts with derived tier counts, so `scripts\00631l_export_static_data.cmd --status-only` reports consistent ETF history availability.
+
 v3.3 live-public ready status:
 
 - GitHub Pages static mode remains usable without a backend.
