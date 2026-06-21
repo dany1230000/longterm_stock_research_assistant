@@ -1256,6 +1256,7 @@ class EtfOperationsStatus {
     this.etfPriceHistoryStatus = 'unavailable',
     this.etfPriceHistoryRowCount = 0,
     this.etfPriceHistoryReadyCount = 0,
+    this.etfPriceHistoryCoverageTierCounts = const {},
     this.etfPriceHistoryDataTime,
     this.backtestStatus = 'unavailable',
     this.backtestAvailable = false,
@@ -1412,6 +1413,7 @@ class EtfOperationsStatus {
   final String etfPriceHistoryStatus;
   final int etfPriceHistoryRowCount;
   final int etfPriceHistoryReadyCount;
+  final Map<String, int> etfPriceHistoryCoverageTierCounts;
   final DateTime? etfPriceHistoryDataTime;
   final String backtestStatus;
   final bool backtestAvailable;

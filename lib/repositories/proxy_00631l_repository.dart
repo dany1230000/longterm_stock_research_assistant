@@ -343,6 +343,9 @@ class Proxy00631LRepository extends Official00631LRepository {
       ),
       etfPriceHistoryRowCount: _int(etfPriceHistory['rowCount']),
       etfPriceHistoryReadyCount: _int(etfPriceHistory['readyCount']),
+      etfPriceHistoryCoverageTierCounts: _intMap(
+        etfPriceHistory['coverageTierCounts'],
+      ),
       etfPriceHistoryDataTime:
           _wallClockDateTime(etfPriceHistory['dataTime']) ??
               _nullableDate(etfPriceHistory['dataTime']),
@@ -567,6 +570,17 @@ List<String> _stringList(Object? value) {
     for (final item in _list(value))
       if (item != null) item.toString(),
   ];
+}
+
+Map<String, int> _intMap(Object? value) {
+  if (value is! Map) {
+    return const {};
+  }
+  return value.map((key, item) {
+    final number =
+        item is num ? item.toInt() : int.tryParse(item.toString()) ?? 0;
+    return MapEntry(key.toString(), number);
+  });
 }
 
 String _rawStatus(Map<String, dynamic> payload) {

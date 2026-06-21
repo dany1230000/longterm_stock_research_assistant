@@ -197,6 +197,8 @@ void main() {
     expect(status.etfPriceHistoryStatus, 'cached');
     expect(status.etfPriceHistoryRowCount, 5);
     expect(status.etfPriceHistoryReadyCount, 5);
+    expect(status.etfPriceHistoryCoverageTierCounts['long_term'], 2);
+    expect(status.etfPriceHistoryCoverageTierCounts['recent'], 3);
     expect(status.etfPriceHistoryDataTime, DateTime(2026, 6, 12));
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
     expect(status.publicApiBaseUrl, 'https://api.example.com');
@@ -315,6 +317,7 @@ void main() {
     expect(status.etfCatalogDataTime, DateTime(2026, 6, 12, 13, 31));
     expect(status.etfPriceHistoryStatus, 'static_official');
     expect(status.etfPriceHistoryReadyCount, 1);
+    expect(status.etfPriceHistoryCoverageTierCounts['recent'], 1);
     expect(status.backtestAvailable, isTrue);
     expect(status.backendConnectionLabel, 'static public data');
     expect(analysis.sourceStatusLabel, 'static_official');
@@ -840,6 +843,12 @@ Map<String, Object?> _operationsStatusPayload() {
       'sourceContract': 'twse_multi_etf_price_history_index',
       'rowCount': 5,
       'readyCount': 5,
+      'coverageTierCounts': {
+        'long_term': 2,
+        'recent': 3,
+        'unavailable': 0,
+        'error': 0,
+      },
       'dataTime': '2026-06-12',
       'isStale': false,
       'errorMessage': null,
@@ -1110,6 +1119,12 @@ Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
     'dataTime': '2026-06-03',
     'rowCount': 1,
     'readyCount': 1,
+    'coverageTierCounts': {
+      'long_term': 0,
+      'recent': 1,
+      'unavailable': 0,
+      'error': 0,
+    },
     'items': [
       {
         'code': '0050',

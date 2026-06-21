@@ -108,6 +108,8 @@ class Static00631LRepository extends Mock00631LRepository {
         _string(etfHistoryPayload?['sourceStatus'], fallback: 'unavailable');
     final etfHistoryRowCount = _int(etfHistoryPayload?['rowCount']);
     final etfHistoryReadyCount = _int(etfHistoryPayload?['readyCount']);
+    final etfHistoryCoverageTierCounts =
+        _intMap(etfHistoryPayload?['coverageTierCounts']);
     final etfHistoryDataTime = _date(etfHistoryPayload?['dataTime']) ??
         _wallClockDateTime(etfHistoryPayload?['dataTime']);
     if (statusPayload == null) {
@@ -124,6 +126,7 @@ class Static00631LRepository extends Mock00631LRepository {
         etfPriceHistoryStatus: etfHistoryRawStatus,
         etfPriceHistoryRowCount: etfHistoryRowCount,
         etfPriceHistoryReadyCount: etfHistoryReadyCount,
+        etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
         etfPriceHistoryDataTime: etfHistoryDataTime,
         errorMessage: 'Static public status.json is unavailable.',
       );
@@ -145,6 +148,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryStatus: etfHistoryRawStatus,
       etfPriceHistoryRowCount: etfHistoryRowCount,
       etfPriceHistoryReadyCount: etfHistoryReadyCount,
+      etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
       etfPriceHistoryDataTime: etfHistoryDataTime,
       errorMessage: rowCount >= 2
           ? null
@@ -167,6 +171,7 @@ class Static00631LRepository extends Mock00631LRepository {
     String etfPriceHistoryStatus = 'unavailable',
     int etfPriceHistoryRowCount = 0,
     int etfPriceHistoryReadyCount = 0,
+    Map<String, int> etfPriceHistoryCoverageTierCounts = const {},
     DateTime? etfPriceHistoryDataTime,
     String? errorMessage,
   }) {
@@ -210,6 +215,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryStatus: etfPriceHistoryStatus,
       etfPriceHistoryRowCount: etfPriceHistoryRowCount,
       etfPriceHistoryReadyCount: etfPriceHistoryReadyCount,
+      etfPriceHistoryCoverageTierCounts: etfPriceHistoryCoverageTierCounts,
       etfPriceHistoryDataTime: etfPriceHistoryDataTime,
       backtestStatus: rowCount >= 2 ? 'static_official' : 'unavailable',
       backtestAvailable: rowCount >= 2,
@@ -428,6 +434,17 @@ List<Object?> _list(Object? value) {
     return value.cast<Object?>();
   }
   return const [];
+}
+
+Map<String, int> _intMap(Object? value) {
+  if (value is! Map) {
+    return const {};
+  }
+  return value.map((key, item) {
+    final number =
+        item is num ? item.toInt() : int.tryParse(item.toString()) ?? 0;
+    return MapEntry(key.toString(), number);
+  });
 }
 
 String _string(Object? value, {String fallback = ''}) {

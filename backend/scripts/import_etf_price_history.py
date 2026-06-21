@@ -227,6 +227,9 @@ def build_status_summary_response(
         if item.get("coverageEnd")
     ]
     sample_items = items[: max(sample_size, 0)]
+    tier_counts = payload.get("coverageTierCounts")
+    if not isinstance(tier_counts, dict):
+        tier_counts = _coverage_tier_counts(items)
     return {
         "sourceStatus": payload.get("sourceStatus"),
         "sourceContract": payload.get("sourceContract"),
@@ -241,9 +244,18 @@ def build_status_summary_response(
         "validationFailureCount": payload.get("validationFailureCount", 0),
         "validationWarningCount": payload.get("validationWarningCount", 0),
         "validationFailures": payload.get("validationFailures", []),
+        "coverageTierCounts": tier_counts,
         "sampleCodes": [str(item.get("code")) for item in sample_items if item.get("code")],
         "suppressedItemCount": max(len(items) - len(sample_items), 0),
     }
+
+
+def _coverage_tier_counts(items: list[dict[str, object]]) -> dict[str, int]:
+    counts = {"long_term": 0, "recent": 0, "unavailable": 0, "error": 0}
+    for item in items:
+        tier = str(item.get("coverageTier") or "unavailable")
+        counts[tier] = counts.get(tier, 0) + 1
+    return counts
 
 
 if __name__ == "__main__":

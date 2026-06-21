@@ -26,3 +26,5 @@
 - Added per-symbol incremental update starts for ETF price-history imports and verified 0050 incremental refresh.
 - Started v4.25 concise ETF status output work.
 - Added `--summary-only` for multi-ETF price-history status and switched release check to the concise path.
+- Started v4.26 ETF history coverage tier work.
+- Added long-term/recent/unavailable/error coverage tier counts across backend status, static export, and frontend operations status.

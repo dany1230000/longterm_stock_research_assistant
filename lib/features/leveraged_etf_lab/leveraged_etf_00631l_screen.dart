@@ -9538,12 +9538,20 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
       label: 'ETF history',
       status: data.operationsStatus.etfPriceHistoryStatus,
       detail:
-          'ready ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / symbols ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}; dataTime ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}.',
+          'ready ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / symbols ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}; ${_etfCoverageTierDetail(data.operationsStatus)}; dataTime ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}.',
       action: data.operationsStatus.etfPriceHistoryReadyCount > 0
           ? 'ETF price history imported for comparison data foundation.'
           : 'Run scripts\\00631l_import_etf_price_history.cmd to import selected ETF price history.',
     ),
   ];
+}
+
+String _etfCoverageTierDetail(EtfOperationsStatus status) {
+  final counts = status.etfPriceHistoryCoverageTierCounts;
+  if (counts.isEmpty) {
+    return 'coverage tier unavailable';
+  }
+  return 'long-term ${formatInteger(counts['long_term'] ?? 0)}, recent ${formatInteger(counts['recent'] ?? 0)}, unavailable ${formatInteger(counts['unavailable'] ?? 0)}, error ${formatInteger(counts['error'] ?? 0)}';
 }
 
 List<_StatusItem> _holdingsCoverageItems(Etf00631LLabData data) {

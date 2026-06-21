@@ -36,6 +36,8 @@ DEFAULT_ETF_HISTORY_CODES = (
 ETF_PRICE_HISTORY_CONTRACT = "twse_multi_etf_stock_day"
 ETF_PRICE_VALIDATION_CONTRACT = "twse_multi_etf_price_history_validation"
 ETF_PRICE_ADJUSTMENT_METHOD = "known_etf_split_events"
+LONG_TERM_COVERAGE_MIN_ROWS = 1000
+LONG_TERM_COVERAGE_START_CUTOFF = date(2020, 1, 31)
 ETF_PRICE_ADJUSTMENT_EVENTS_BY_CODE: dict[str, list[dict[str, Any]]] = {
     "0050": [
         {
@@ -189,6 +191,8 @@ class EtfPriceHistoryStore:
                 "dataTime": None,
                 "coverageStart": None,
                 "coverageEnd": None,
+                "coverageTier": "unavailable",
+                "coverageNote": "No saved local price history for this ETF.",
                 "rowCount": 0,
                 "isStale": True,
                 "priceField": _price_field_for_code(normalized),
@@ -204,6 +208,11 @@ class EtfPriceHistoryStore:
         end_date = _parse_iso_date(coverage_end)
         today = datetime.now(timezone.utc).date()
         validation = validate_etf_price_records(normalized, records)
+        coverage_tier = _coverage_tier(
+            coverage_start=coverage_start,
+            row_count=len(records),
+            validation_failure_count=int(validation["failureCount"]),
+        )
         return {
             "code": normalized,
             "sourceStatus": "error"
@@ -216,6 +225,8 @@ class EtfPriceHistoryStore:
             "dataTime": coverage_end,
             "coverageStart": coverage_start,
             "coverageEnd": coverage_end,
+            "coverageTier": coverage_tier,
+            "coverageNote": _coverage_note(coverage_tier),
             "rowCount": len(records),
             "isStale": True if end_date is None else (today - end_date).days > 7,
             "priceField": _price_field_for_code(normalized),
@@ -255,6 +266,7 @@ class EtfPriceHistoryStore:
             for item in items
             for failure in (item.get("validation") or {}).get("failures", [])
         ]
+        tier_counts = _coverage_tier_counts(items)
         return {
             "sourceStatus": "error"
             if validation_failure_count
@@ -267,6 +279,7 @@ class EtfPriceHistoryStore:
             "isStale": not bool(ready_items),
             "rowCount": len(items),
             "readyCount": len(ready_items),
+            "coverageTierCounts": tier_counts,
             "validationFailureCount": validation_failure_count,
             "validationWarningCount": validation_warning_count,
             "validationFailures": validation_failures,
@@ -335,6 +348,44 @@ def catalog_codes(payload: dict[str, Any], *, limit: int | None = None) -> list[
                 codes.append(code)
     unique = list(dict.fromkeys(codes))
     return unique if limit is None or limit <= 0 else unique[:limit]
+
+
+def _coverage_tier(
+    *,
+    coverage_start: str | None,
+    row_count: int,
+    validation_failure_count: int,
+) -> str:
+    if validation_failure_count > 0:
+        return "error"
+    if row_count < 2:
+        return "unavailable"
+    start = _parse_iso_date(str(coverage_start or ""))
+    if (
+        start is not None
+        and start <= LONG_TERM_COVERAGE_START_CUTOFF
+        and row_count >= LONG_TERM_COVERAGE_MIN_ROWS
+    ):
+        return "long_term"
+    return "recent"
+
+
+def _coverage_note(tier: str) -> str:
+    if tier == "long_term":
+        return "Long-term ETF price history is available for comparison and backtest context."
+    if tier == "recent":
+        return "Only recent ETF price history is available; long-range comparison is limited."
+    if tier == "error":
+        return "ETF price history failed validation."
+    return "No saved local price history for this ETF."
+
+
+def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
+    counts = {"long_term": 0, "recent": 0, "unavailable": 0, "error": 0}
+    for item in items:
+        tier = str(item.get("coverageTier") or "unavailable")
+        counts[tier] = counts.get(tier, 0) + 1
+    return counts
 
 
 def fetch_etf_price_history(

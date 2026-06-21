@@ -645,6 +645,7 @@ void main() {
     expect(find.text('盤中 NAV / 折溢價'), findsOneWidget);
     expect(find.text('TX live'), findsOneWidget);
     expect(find.text('ETF history'), findsWidgets);
+    expect(find.textContaining('coverage tier'), findsWidgets);
     _expectNoTradingActionText();
   });
 

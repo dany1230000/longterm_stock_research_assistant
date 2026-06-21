@@ -1,7 +1,7 @@
 import json
 import tempfile
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -304,6 +304,24 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(payload["readyCount"], 2)
         self.assertEqual([item["code"] for item in payload["items"]], ["0050", "00878"])
 
+    def test_status_marks_recent_and_long_term_coverage_tiers(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = EtfPriceHistoryStore(Path(temp_dir))
+            store.save_points("0050", _points("0050"))
+            store.save_points("00878", _long_term_points("00878"))
+
+            recent = store.status("0050", fetched_at="2026-06-21T00:00:00+00:00")
+            long_term = store.status(
+                "00878",
+                fetched_at="2026-06-21T00:00:00+00:00",
+            )
+            index = store.index_response(fetched_at="2026-06-21T00:00:00+00:00")
+
+        self.assertEqual(recent["coverageTier"], "recent")
+        self.assertEqual(long_term["coverageTier"], "long_term")
+        self.assertEqual(index["coverageTierCounts"]["recent"], 1)
+        self.assertEqual(index["coverageTierCounts"]["long_term"], 1)
+
     def test_status_summary_omits_full_item_dump(self) -> None:
         payload = {
             "sourceStatus": "cached",
@@ -314,6 +332,7 @@ class EtfPriceHistoryTests(unittest.TestCase):
             "dataTime": "2026-06-18",
             "rowCount": 3,
             "readyCount": 2,
+            "coverageTierCounts": {"long_term": 1, "recent": 1, "unavailable": 1},
             "validationFailureCount": 0,
             "validationWarningCount": 1,
             "items": [
@@ -350,6 +369,7 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(summary["coverageEnd"], "2026-06-18")
         self.assertEqual(summary["sampleCodes"], ["0050", "0056"])
         self.assertEqual(summary["suppressedItemCount"], 1)
+        self.assertEqual(summary["coverageTierCounts"]["long_term"], 1)
 
     def test_endpoints_update_and_read_multi_etf_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -412,6 +432,27 @@ def _points(code: str) -> list[dict[str, object]]:
             "sourceUrl": f"fixture://{code}",
         },
     ]
+
+
+def _long_term_points(code: str) -> list[dict[str, object]]:
+    start = date(2019, 1, 2)
+    points = []
+    for index in range(1100):
+        day = start + timedelta(days=index)
+        price = 20 + index * 0.01
+        points.append(
+            {
+                "code": code,
+                "date": day.isoformat(),
+                "open": price,
+                "high": price + 0.5,
+                "low": price - 0.5,
+                "close": price,
+                "volume": 1000 + index,
+                "sourceUrl": f"fixture://{code}",
+            }
+        )
+    return points
 
 
 def _stock_day_fixture() -> str:

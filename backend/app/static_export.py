@@ -122,6 +122,10 @@ def export_static_00631l_data(
         "etfPriceHistoryRowCount": etf_history_payload["rowCount"],
         "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
+        "etfPriceHistoryCoverageTierCounts": etf_history_payload.get(
+            "coverageTierCounts",
+            {},
+        ),
         "minimumCatalogRowCount": catalog_min_rows,
         "coverageStart": status.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd"),
@@ -153,6 +157,10 @@ def export_static_00631l_data(
         "etfPriceHistoryRowCount": etf_history_payload["rowCount"],
         "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
+        "etfPriceHistoryCoverageTierCounts": etf_history_payload.get(
+            "coverageTierCounts",
+            {},
+        ),
         "minimumCatalogRowCount": catalog_min_rows,
         "warnings": warnings,
         "failures": failures,
@@ -227,6 +235,10 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             manifest.get("etfPriceHistoryReadyCount") or 0
         ),
         "etfPriceHistoryDataTime": manifest.get("etfPriceHistoryDataTime"),
+        "etfPriceHistoryCoverageTierCounts": manifest.get(
+            "etfPriceHistoryCoverageTierCounts",
+            {},
+        ),
         "minimumCatalogRowCount": int(manifest.get("minimumCatalogRowCount") or 0),
         "overallStatus": "FAIL" if failures else "PASS" if row_count >= 2 else "WARN",
         "warnings": warnings,
@@ -337,6 +349,7 @@ def _export_static_etf_price_history(
             warnings.append(f"etfPriceHistoryMissing={code}")
         items.append(status)
 
+    tier_counts = _coverage_tier_counts(items)
     if strict and codes and ready_count == 0:
         failures.append("No selected ETF price history is available for static export.")
 
@@ -347,11 +360,20 @@ def _export_static_etf_price_history(
         "dataTime": latest,
         "rowCount": len(items),
         "readyCount": ready_count,
+        "coverageTierCounts": tier_counts,
         "items": items,
         "errorMessage": None if ready_count else "No selected ETF price history is available.",
     }
     _write_json(output_dir / "etf_price_history_index.json", payload)
     return payload
+
+
+def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
+    counts = {"long_term": 0, "recent": 0, "unavailable": 0, "error": 0}
+    for item in items:
+        tier = str(item.get("coverageTier") or "unavailable")
+        counts[tier] = counts.get(tier, 0) + 1
+    return counts
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:

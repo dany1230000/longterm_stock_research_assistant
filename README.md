@@ -71,6 +71,12 @@ scripts\00631l_validate_etf_price_history.cmd
 
 Use `--summary-only` for daily rowCount/readyCount/coverage checks. Use the validation command when full per-ETF detail is needed.
 
+ETF price-history coverage tiers:
+
+- `long_term`: enough local history for longer-range comparison/backtest context.
+- `recent`: usable recent rows, but long-range comparison is limited.
+- `unavailable` / `error`: not ready for comparison until data is imported or validation is fixed.
+
 v3.3 live-public ready status:
 
 - GitHub Pages static mode remains usable without a backend.

@@ -35,6 +35,7 @@ Status: in_progress
 - v4.23 made static export merge committed seed history before incremental update, so CI runners without local data avoid full-range refreshes.
 - v4.24 added per-symbol incremental updates for generic ETF price-history import.
 - v4.25 keeps release check ETF status output concise while retaining detailed validation commands.
+- v4.26 labels ETF price-history coverage as long-term, recent, unavailable, or error so comparisons do not hide coverage limits.
 - Keep static history separate from live intraday data.
 
 ## Phase 4 - ETF Selection and Comparison
