@@ -313,6 +313,9 @@ void main() {
     expect(find.text('歷史回測'), findsWidgets);
     expect(find.text('開始日期'), findsWidgets);
     expect(find.text('結束日期'), findsWidgets);
+    expect(find.textContaining('回測區間'), findsOneWidget);
+    expect(find.textContaining('策略 定期定額'), findsOneWidget);
+    expect(find.textContaining('樣本'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
     expect(find.text('一次投入'), findsOneWidget);
     expect(find.text('定期定額'), findsWidgets);
@@ -333,6 +336,8 @@ void main() {
     expect(find.text('持倉狀態'), findsOneWidget);
     expect(find.text('尚未輸入持倉'), findsWidgets);
     expect(find.text('輸入持倉資料'), findsOneWidget);
+    expect(find.text('不需登入'), findsOneWidget);
+    expect(find.text('不會上傳'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
     expect(find.text('保存本機資料'), findsOneWidget);
     expect(find.text('匯出 JSON'), findsOneWidget);

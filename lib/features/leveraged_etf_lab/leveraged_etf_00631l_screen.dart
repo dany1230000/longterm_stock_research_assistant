@@ -5230,6 +5230,17 @@ class _BacktestSectionState extends State<_BacktestSection> {
                       onStartTap: _selectStartDate,
                       onEndTap: _selectEndDate,
                     ),
+                    const SizedBox(height: 8),
+                    _StatusWrap(
+                      labels: [
+                        '回測區間 ${_dateOrDash(_startDate)} - ${_dateOrDash(_endDate)}',
+                        _strategy == EtfBacktestStrategy.lumpSum
+                            ? '策略 一次投入'
+                            : '策略 定期定額',
+                        '樣本 ${formatInteger(result.equityCurve.length)}',
+                        '成本 ${_parseDouble(_feeController.text).toStringAsFixed(2)}%',
+                      ],
+                    ),
                     const SizedBox(height: 12),
                     _InputGrid(
                       children: [
@@ -5597,6 +5608,16 @@ class _PositionSectionState extends State<_PositionSection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!_loaded) const LinearProgressIndicator(),
+              _StatusWrap(
+                labels: [
+                  'local-only',
+                  '不需登入',
+                  '不會上傳',
+                  'source ${widget.selectedEtf.sourceStatusLabel}',
+                  '市價 ${_price(widget.selectedEtf.marketPrice)}',
+                ],
+              ),
+              const SizedBox(height: 8),
               if (!input.hasPosition) ...[
                 const _EmptyPanel(
                   title: '尚未輸入持倉',

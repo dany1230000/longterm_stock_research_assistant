@@ -45,12 +45,13 @@ Status: in_progress
 
 ## Phase 5 - Backtest and Position UX
 
-Status: pending
+Status: in_progress
 
 - Default backtest window to one year.
 - Keep start/end dates configurable.
 - Make results compact on mobile.
 - Improve local-only position entry, export, and clear flows.
+- v4.20 added compact status rows for backtest settings and local-only position tracking.
 
 ## Phase 6 - AI Daily Analysis
 

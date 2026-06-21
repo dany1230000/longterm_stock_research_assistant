@@ -174,6 +174,12 @@ v4.19 comparison basket clarity:
 - Widget tests verify that toggling comparison chips updates the selected basket.
 - Summary: `docs\00631l_v4_19_comparison_basket_summary.md`.
 
+v4.20 compact backtest and position pages:
+
+- Backtest now shows a compact status row for date range, strategy, sample count, and cost parameter.
+- Position tracking now shows local-only, no-login, no-upload, source, and market-price status in one row.
+- Summary: `docs\00631l_v4_20_backtest_position_compact_summary.md`.
+
 - The light/dark toggle is a visible `日間` / `夜間` control and rebuilds the 00631L market palette.
 
 v4.3 position, AI, settings, and ETF catalog:
