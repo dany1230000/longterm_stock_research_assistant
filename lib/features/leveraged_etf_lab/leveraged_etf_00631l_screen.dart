@@ -4860,9 +4860,10 @@ class _EtfHistoryComparisonPanelState
 
     final current = _selectedComparisonCodes;
     if (current == null) {
-      final preset = _presetComparisonCodes(_filter, availableMetrics);
-      _selectedComparisonCodes =
-          preset.isNotEmpty ? preset : availableCodes.take(5).toSet();
+      final selectedCode = widget.selectedHistory.code.trim().toUpperCase();
+      _selectedComparisonCodes = availableCodes.contains(selectedCode)
+          ? {selectedCode}
+          : availableCodes.take(1).toSet();
     } else {
       final cleaned = current.where(availableCodes.contains).toSet();
       _selectedComparisonCodes = cleaned.isEmpty

@@ -83,6 +83,8 @@ v4.35 adds a selected ETF history-quality card on the history/backtest page, so 
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.
 
+v4.37 changes ETF comparison to start with the currently selected ETF only; users can add other ETFs with chips or category filters instead of being forced into a 00631L-anchored comparison.
+
 v4.28 adds ETF price-history readiness and coverage tier counts to the final `[summary]` line printed by `scripts\00631l_export_static_data.cmd --status-only`, so daily logs can be checked without opening the JSON payload.
 
 v4.29 lets static status derive ETF coverage tier counts from older `web\00631l-static-data\etf_price_history\*.json` files when both manifest and index metadata are missing tier counts. It is read-only and does not change generated static data.
