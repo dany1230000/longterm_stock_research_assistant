@@ -31,6 +31,7 @@ Status: in_progress
 - v4.17 added model flags and an overview `資料正確性` panel for price field, split adjustment, coverage, row count, and source.
 - Add stronger validation for selected ETF histories.
 - Surface coverage, missing data, split adjustment, and source status in a compact user-facing way.
+- v4.22 changed 00631L price-history and static export updates to incremental-by-default, with `--full-refresh` for explicit full-range refreshes.
 - Keep static history separate from live intraday data.
 
 ## Phase 4 - ETF Selection and Comparison

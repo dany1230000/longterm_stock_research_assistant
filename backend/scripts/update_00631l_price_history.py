@@ -23,10 +23,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Update local official 00631L TWSE price history cache.",
     )
-    parser.add_argument("--start-date", default="2014-10-31")
+    parser.add_argument("--start-date", default="")
     parser.add_argument("--end-date", default="")
     parser.add_argument("--path", default=settings.price_history_path)
     parser.add_argument("--status-only", action="store_true")
+    parser.add_argument(
+        "--full-refresh",
+        action="store_true",
+        help="Fetch from 2014-10-31 instead of the latest cached month.",
+    )
     args = parser.parse_args()
 
     store = PriceHistoryStore(args.path)
@@ -43,7 +48,16 @@ def main() -> int:
 
     from datetime import date, datetime, timezone
 
-    start = datetime.strptime(args.start_date, "%Y-%m-%d").date()
+    default_start = date(2014, 10, 31)
+    if args.start_date:
+        start = datetime.strptime(args.start_date, "%Y-%m-%d").date()
+        update_mode = "custom"
+    elif args.full_refresh:
+        start = default_start
+        update_mode = "full"
+    else:
+        start = store.default_incremental_start_date(default_start=default_start)
+        update_mode = "incremental"
     end = (
         datetime.strptime(args.end_date, "%Y-%m-%d").date()
         if args.end_date
@@ -60,10 +74,12 @@ def main() -> int:
     status = store.status_response(fetched_at=utc_now_iso())
     result = {
         **payload,
+        "updateMode": update_mode,
         "savedRows": saved,
         "historyPath": str(args.path),
         "coverageStart": status.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd"),
+        "fetchedRows": payload.get("rowCount", 0),
         "rowCount": status.get("rowCount"),
     }
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
@@ -71,7 +87,9 @@ def main() -> int:
     print(
         "[summary] "
         f"overallStatus={overall} "
-        f"fetchedRows={result['rowCount']} "
+        f"mode={update_mode} "
+        f"fetchedRows={result['fetchedRows']} "
+        f"totalRows={result['rowCount']} "
         f"savedRows={saved} "
         f"warnings={len(result.get('warnings', []))}"
     )

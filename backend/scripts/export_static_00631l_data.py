@@ -43,8 +43,13 @@ def main() -> int:
     )
     parser.add_argument("--output-dir", default="web/00631l-static-data")
     parser.add_argument("--price-history-path", default=settings.price_history_path)
-    parser.add_argument("--start-date", default="2014-10-31")
+    parser.add_argument("--start-date", default="")
     parser.add_argument("--end-date", default="")
+    parser.add_argument(
+        "--full-refresh",
+        action="store_true",
+        help="Fetch 00631L price history from 2014-10-31 before static export.",
+    )
     parser.add_argument(
         "--seed-price-history-path",
         default=str(ROOT / "backend" / "seeds" / "00631l_price_history_seed.jsonl"),
@@ -105,7 +110,18 @@ def main() -> int:
     store = PriceHistoryStore(args.price_history_path)
     warnings: list[str] = []
     if args.update:
-        start = datetime.strptime(args.start_date, "%Y-%m-%d").date()
+        from datetime import date
+
+        default_start = date(2014, 10, 31)
+        if args.start_date:
+            start = datetime.strptime(args.start_date, "%Y-%m-%d").date()
+            update_mode = "custom"
+        elif args.full_refresh:
+            start = default_start
+            update_mode = "full"
+        else:
+            start = store.default_incremental_start_date(default_start=default_start)
+            update_mode = "incremental"
         end = (
             datetime.strptime(args.end_date, "%Y-%m-%d").date()
             if args.end_date
@@ -125,6 +141,7 @@ def main() -> int:
                 warnings.append(
                     fetched.get("errorMessage") or "TWSE price history update failed."
                 )
+            warnings.append(f"updateMode={update_mode}")
             warnings.append(f"updateSavedRows={saved}")
         except Exception as error:  # noqa: BLE001 - seed fallback keeps Pages deployable.
             warnings.append(f"priceHistoryUpdateFailed={error}")

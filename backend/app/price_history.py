@@ -79,6 +79,15 @@ class PriceHistoryStore:
             key=lambda item: str(item.get("date") or ""),
         )
 
+    def default_incremental_start_date(self, *, default_start: date) -> date:
+        records = self.all()
+        if not records:
+            return default_start
+        latest = _parse_iso_date(str(records[-1].get("date") or ""))
+        if latest is None:
+            return default_start
+        return date(latest.year, latest.month, 1)
+
     def price_response(self, *, limit: int, fetched_at: str) -> dict[str, Any]:
         items = _with_performance_fields(list(reversed(self.recent(limit))))
         status = self.status_response(fetched_at=fetched_at)

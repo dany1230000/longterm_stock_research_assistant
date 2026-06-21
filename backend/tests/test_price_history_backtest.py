@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 from backend.app.backtest import run_backtest
@@ -48,6 +49,17 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             self.assertEqual(len(response["items"]), 3)
             self.assertIn("dailyReturnPct", response["items"][1])
             self.assertEqual(response["priceField"], "adjustedClose")
+
+    def test_price_history_store_defaults_incremental_update_to_latest_month(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = PriceHistoryStore(Path(temp_dir) / "price.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            store.save_points(rows)
+
+            self.assertEqual(
+                store.default_incremental_start_date(default_start=date(2014, 10, 31)),
+                date(2026, 6, 1),
+            )
 
     def test_performance_summary_calculates_return_and_drawdown(self) -> None:
         rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")

@@ -18,3 +18,5 @@
 - Added compact status rows for backtest parameters and local-only position storage status.
 - Started v4.21 AI daily clarity work.
 - Added AI daily status, source/time, and program-action summary blocks.
+- Started v4.22 historical price update reliability work.
+- Changed 00631L price-history and static export updates to default incremental mode from the latest cached month.

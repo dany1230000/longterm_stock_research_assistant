@@ -975,6 +975,8 @@ App 文案必須維持研究參考、觀察清單、條件篩選結果、歷史�
 
 v4.21 補強 AI 分析頁的當日資料狀態：先顯示 readiness、backend/static/mock 狀態、official holdings 日期、盤中 NAV 時間、歷史 coverage 與需要的程式操作。AI 仍採 rule_based，僅解釋資料狀態與缺口，非買賣建議。
 
+v4.22 將 00631L 歷史價格與 static public export 的預設更新改為 incremental，只回抓最新 cached 月份；需要全量回補時再使用 `--full-refresh`。這讓日常更新更快，也降低舊月份網路 timeout 對 daily flow 的干擾。
+
 ## 下一步
 
 - 建立資料授權清單與資料欄位規格。

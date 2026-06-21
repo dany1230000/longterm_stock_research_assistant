@@ -208,6 +208,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF price validation and split-adjustment release: `docs\00631l_v4_12_etf_price_validation_summary.md`
 - Backtest/position compact release: `docs\00631l_v4_20_backtest_position_compact_summary.md`
 - AI daily clarity release: `docs\00631l_v4_21_ai_daily_clarity_summary.md`
+- Incremental price update release: `docs\00631l_v4_22_incremental_price_update_summary.md`
 
 ## Scope Boundary
 

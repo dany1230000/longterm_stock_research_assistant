@@ -560,7 +560,12 @@ class Etf00631LService:
         end_date: str | None = None,
     ) -> dict[str, Any]:
         now = utc_now_iso()
-        start = _parse_date(start_date) or date(2014, 10, 31)
+        default_start = date(2014, 10, 31)
+        parsed_start = _parse_date(start_date)
+        start = parsed_start or self._price_history_store.default_incremental_start_date(
+            default_start=default_start
+        )
+        update_mode = "custom" if parsed_start else "incremental"
         end = _parse_date(end_date) or datetime.now(timezone.utc).date()
         try:
             fetched = fetch_twse_stock_day_range(
@@ -582,6 +587,7 @@ class Etf00631LService:
                 "requestedMonths": fetched["requestedMonths"],
                 "fetchedRows": fetched["rowCount"],
                 "savedRows": saved_count,
+                "updateMode": update_mode,
                 "coverageStart": status.get("coverageStart"),
                 "coverageEnd": status.get("coverageEnd"),
                 "isStale": status.get("isStale"),
