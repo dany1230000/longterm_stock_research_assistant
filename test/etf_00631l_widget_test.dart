@@ -299,9 +299,22 @@ void main() {
     expect(find.text('市價'), findsNothing);
     expect(find.text('歷史資料完整度'), findsWidgets);
     expect(find.text('區間報酬'), findsWidgets);
-    expect(find.text('最近 1 年'), findsWidgets);
-    expect(find.text('最近 3 年'), findsOneWidget);
-    expect(find.text('全部資料'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-history-range-chips')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-range-1y')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-range-3y')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-range-all')),
+      findsOneWidget,
+    );
     expect(find.textContaining('點擊圖表可查看完整日期與數值'), findsWidgets);
     expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsOneWidget);
     expect(find.textContaining('圖表區間 2025/06/03 - 2026/06/03'), findsOneWidget);
@@ -358,6 +371,24 @@ void main() {
     expect(find.textContaining('回測區間'), findsOneWidget);
     expect(find.textContaining('策略 定期定額'), findsOneWidget);
     expect(find.textContaining('樣本'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-backtest-range-chips')),
+      findsOneWidget,
+    );
+    final backtestAllRange =
+        find.byKey(const ValueKey('00631l-backtest-range-all'));
+    await tester.scrollUntilVisible(
+      backtestAllRange,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(backtestAllRange);
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('回測區間 2024/06/03 - 2026/06/03'),
+      findsOneWidget,
+    );
     expect(find.text('市價'), findsNothing);
     expect(find.text('一次投入'), findsOneWidget);
     expect(find.text('定期定額'), findsWidgets);

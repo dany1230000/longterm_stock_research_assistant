@@ -4272,23 +4272,29 @@ class _FilterablePriceHistoryBlockState
           onEndTap: _selectEndDate,
         ),
         const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _RangeActionChip(
-              label: '最近 1 年',
-              onTap: () => _setTrailingYears(1),
-            ),
-            _RangeActionChip(
-              label: '最近 3 年',
-              onTap: () => _setTrailingYears(3),
-            ),
-            _RangeActionChip(
-              label: '全部資料',
-              onTap: _setAllRange,
-            ),
-          ],
+        KeyedSubtree(
+          key: const ValueKey('00631l-history-range-chips'),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _RangeActionChip(
+                key: const ValueKey('00631l-history-range-1y'),
+                label: '最近 1 年',
+                onTap: () => _setTrailingYears(1),
+              ),
+              _RangeActionChip(
+                key: const ValueKey('00631l-history-range-3y'),
+                label: '最近 3 年',
+                onTap: () => _setTrailingYears(3),
+              ),
+              _RangeActionChip(
+                key: const ValueKey('00631l-history-range-all'),
+                label: '全部資料',
+                onTap: _setAllRange,
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 10),
         _StatusWrap(
@@ -4480,7 +4486,11 @@ class _FilterablePriceHistoryBlockState
 }
 
 class _RangeActionChip extends StatelessWidget {
-  const _RangeActionChip({required this.label, required this.onTap});
+  const _RangeActionChip({
+    super.key,
+    required this.label,
+    required this.onTap,
+  });
 
   final String label;
   final VoidCallback onTap;
@@ -5361,6 +5371,31 @@ class _BacktestSectionState extends State<_BacktestSection> {
                       onEndTap: _selectEndDate,
                     ),
                     const SizedBox(height: 8),
+                    KeyedSubtree(
+                      key: const ValueKey('00631l-backtest-range-chips'),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _RangeActionChip(
+                            key: const ValueKey('00631l-backtest-range-1y'),
+                            label: '最近 1 年',
+                            onTap: () => _setTrailingYears(1),
+                          ),
+                          _RangeActionChip(
+                            key: const ValueKey('00631l-backtest-range-3y'),
+                            label: '最近 3 年',
+                            onTap: () => _setTrailingYears(3),
+                          ),
+                          _RangeActionChip(
+                            key: const ValueKey('00631l-backtest-range-all'),
+                            label: '全部資料',
+                            onTap: _setAllRange,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     _StatusWrap(
                       labels: [
                         '回測區間 ${_dateOrDash(_startDate)} - ${_dateOrDash(_endDate)}',
@@ -5484,6 +5519,28 @@ class _BacktestSectionState extends State<_BacktestSection> {
       if (_startDate != null && _startDate!.isAfter(picked)) {
         _startDate = picked;
       }
+    });
+  }
+
+  void _setTrailingYears(int years) {
+    final last = _historyLastDate(widget.priceHistory);
+    if (last == null) {
+      return;
+    }
+    setState(() {
+      _endDate = last;
+      _startDate = _defaultTrailingStart(
+        first: _historyFirstDate(widget.priceHistory),
+        end: last,
+        years: years,
+      );
+    });
+  }
+
+  void _setAllRange() {
+    setState(() {
+      _startDate = _historyFirstDate(widget.priceHistory);
+      _endDate = _historyLastDate(widget.priceHistory);
     });
   }
 }

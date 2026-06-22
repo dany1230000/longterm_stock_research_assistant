@@ -223,6 +223,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_43_chart_first_overview.md",
         "docs/00631l_v4_44_compact_quote_meta_line.md",
         "docs/00631l_v4_45_selected_quote_source_label.md",
+        "docs/00631l_v4_46_backtest_range_chips.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

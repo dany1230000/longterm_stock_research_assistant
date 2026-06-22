@@ -101,6 +101,8 @@ v4.44 compresses the quote metadata strip into one horizontal text line, keeping
 
 v4.45 makes selected ETF quote captions distinguish catalog market price from historical-close fallback, so source labels stay tied to the value actually shown.
 
+v4.46 adds dedicated backtest range chips for latest 1 year, latest 3 years, and full loaded coverage, while keeping custom start/end date buttons.
+
 v4.28 adds ETF price-history readiness and coverage tier counts to the final `[summary]` line printed by `scripts\00631l_export_static_data.cmd --status-only`, so daily logs can be checked without opening the JSON payload.
 
 v4.29 lets static status derive ETF coverage tier counts from older `web\00631l-static-data\etf_price_history\*.json` files when both manifest and index metadata are missing tier counts. It is read-only and does not change generated static data.
