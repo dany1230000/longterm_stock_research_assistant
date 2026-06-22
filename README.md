@@ -95,6 +95,8 @@ v4.41 surfaces selected ETF price-field and split-adjustment status inside the A
 
 v4.42 separates quote source and historical source on the local-only position page, and labels the currently selected ETF before any position estimate.
 
+v4.43 moves the always-visible overview chart directly below the compact quote header, so the first screen shows current context and recent movement before lower-priority data-quality cards.
+
 v4.28 adds ETF price-history readiness and coverage tier counts to the final `[summary]` line printed by `scripts\00631l_export_static_data.cmd --status-only`, so daily logs can be checked without opening the JSON payload.
 
 v4.29 lets static status derive ETF coverage tier counts from older `web\00631l-static-data\etf_price_history\*.json` files when both manifest and index metadata are missing tier counts. It is read-only and does not change generated static data.

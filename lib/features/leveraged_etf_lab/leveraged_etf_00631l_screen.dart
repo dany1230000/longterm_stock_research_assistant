@@ -2397,6 +2397,16 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
+        _AlwaysExpandedPanel(
+          title: selectedEtf.is00631L ? '圖表與曝險' : '價格圖表',
+          subtitle: selectedEtf.is00631L
+              ? '近一年收盤與官方每日曝險；需要比較時再展開。'
+              : '${selectedEtf.code} 近一年收盤與歷史資料狀態。',
+          child: selectedEtf.is00631L
+              ? _OverviewSignalPanel(data: data)
+              : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
+        ),
+        const SizedBox(height: 8),
         if (selectedEtf.is00631L)
           _OverviewAtAGlancePanel(data: data)
         else
@@ -2408,16 +2418,6 @@ class _OverviewSection extends StatelessWidget {
           _OverviewHoldingsDigestPanel(data: data),
           const SizedBox(height: 8),
         ],
-        _AlwaysExpandedPanel(
-          title: selectedEtf.is00631L ? '圖表與曝險' : '價格圖表',
-          subtitle: selectedEtf.is00631L
-              ? '近一年收盤與官方每日曝險；需要比較時再展開。'
-              : '${selectedEtf.code} 近一年收盤與歷史資料狀態。',
-          child: selectedEtf.is00631L
-              ? _OverviewSignalPanel(data: data)
-              : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
-        ),
-        const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '更多資料',
           subtitle: selectedEtf.is00631L
