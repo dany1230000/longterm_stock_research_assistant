@@ -89,6 +89,8 @@ v4.51 lets the public backend read `backend/seeds/00631l_price_history_seed.json
 
 v4.52 applies the same seed fallback to multi-ETF price histories. Public backend ETF search, selected ETF history, and comparison context can read `backend/seeds/etf_price_history_seed/` before the persistent volume is populated; seed-only ETF histories are labeled `static_official`.
 
+v4.53 extends public backend remote maintenance so `daily` / `all` mode also runs the multi-ETF history update and status check. This helps a deployed backend fill persistent ETF history cache rows instead of relying only on committed seed fallback.
+
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.
@@ -152,7 +154,7 @@ Remote maintenance:
 scripts\00631l_remote_maintenance.cmd --mode all
 ```
 
-GitHub Actions also runs `.github/workflows/00631l_backend_maintenance.yml` to wake the public backend, collect intraday status, update official price history, and verify key public endpoints. Details: `docs\00631l_remote_maintenance.md`.
+GitHub Actions also runs `.github/workflows/00631l_backend_maintenance.yml` to wake the public backend, collect intraday status, update official 00631L price history, update the selected ETF basket history, and verify key public endpoints. Details: `docs\00631l_remote_maintenance.md`.
 
 v3.47 split-adjusted history:
 

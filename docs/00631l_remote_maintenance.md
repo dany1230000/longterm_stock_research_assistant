@@ -118,3 +118,24 @@ scripts\00631l_remote_maintenance.cmd --base-url https://your-backend.example.co
 - 遠端維護不會執行任何交易功能。
 - 若 Render free instance cold start，第一次檢查可能較慢。
 - 若 public backend 沒有 persistent volume，history、report、export、backup 可能隨重啟消失。
+## v4.53 multi-ETF history maintenance
+
+Daily remote maintenance now also calls:
+
+```text
+POST /api/etf/history/update
+GET /api/etf/history/status
+```
+
+This is separate from the 00631L listing-history update. It keeps the selected ETF basket history cache warm on the public backend, while v4.52 seed fallback remains available when a persistent volume is empty.
+
+Log fields to watch:
+
+- `readyCount`
+- `rowCount`
+- `coverageTierCounts`
+- `validationFailureCount`
+- `validationWarningCount`
+- `sourceUpdatedAt`
+
+If `readyCount` is 0 or validation failures are present, the remote maintenance script returns `WARN` with `failures=[]` unless the endpoint itself fails.

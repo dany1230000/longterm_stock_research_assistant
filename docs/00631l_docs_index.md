@@ -89,6 +89,7 @@ This is the main entry point for 00631L lab documentation.
 - Selected search state v4.50: `docs\00631l_v4_50_selected_search_state.md`
 - Backend seed history fallback v4.51: `docs\00631l_v4_51_backend_seed_history_fallback.md`
 - Backend ETF seed history fallback v4.52: `docs\00631l_v4_52_backend_etf_seed_history_fallback.md`
+- Remote ETF history maintenance v4.53: `docs\00631l_v4_53_remote_etf_history_maintenance.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`
@@ -244,6 +245,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Static status tier fallback release: `docs\00631l_v4_27_static_status_tier_fallback_summary.md`
 - Backend seed history fallback release: `docs\00631l_v4_51_backend_seed_history_fallback.md`
 - Backend ETF seed history fallback release: `docs\00631l_v4_52_backend_etf_seed_history_fallback.md`
+- Remote ETF history maintenance release: `docs\00631l_v4_53_remote_etf_history_maintenance.md`
 
 ## Scope Boundary
 

@@ -63,6 +63,8 @@ ETF_PRICE_HISTORY_SEED_DIR=backend/seeds/etf_price_history_seed
 
 `ETF_PRICE_HISTORY_SEED_DIR` provides the same fallback for selected ETF histories and comparison context. Seed-only multi-ETF rows are also labeled `static_official`.
 
+Remote maintenance v4.53 also calls `POST /api/etf/history/update` and `GET /api/etf/history/status` in daily mode. That lets a public backend fill local persistent ETF history cache rows after deployment instead of relying only on seed files.
+
 ## Docker / VPS
 
 Production run:

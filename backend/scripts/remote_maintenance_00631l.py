@@ -89,6 +89,20 @@ ENDPOINTS = [
         mode="daily",
         description="price history performance statistics",
     ),
+    MaintenanceEndpoint(
+        name="etf_history_update",
+        method="POST",
+        path="/api/etf/history/update",
+        mode="daily",
+        description="selected ETF basket price history update",
+    ),
+    MaintenanceEndpoint(
+        name="etf_history_status",
+        method="GET",
+        path="/api/etf/history/status",
+        mode="daily",
+        description="multi-ETF price history readiness index",
+    ),
 ]
 
 
@@ -223,6 +237,22 @@ def _assess_response(
         source_status = str(payload.get("sourceStatus") or "")
         if source_status in {"unavailable", "error"}:
             warnings.append("price history update did not return official data")
+    elif endpoint.name == "etf_history_update":
+        source_status = str(payload.get("sourceStatus") or "")
+        if source_status in {"unavailable", "error"}:
+            warnings.append("ETF history update did not return usable data")
+        if int(payload.get("readyCount") or 0) < 1:
+            warnings.append("ETF history update has no ready symbols")
+        if int(payload.get("validationFailureCount") or 0) > 0:
+            warnings.append("ETF history update has validation failures")
+    elif endpoint.name == "etf_history_status":
+        if int(payload.get("readyCount") or 0) < 1:
+            warnings.append("ETF history index has no ready symbols")
+        if int(payload.get("validationFailureCount") or 0) > 0:
+            warnings.append("ETF history index has validation failures")
+        source_status = str(payload.get("sourceStatus") or "")
+        if source_status in {"unavailable", "error"}:
+            warnings.append("ETF history index sourceStatus is unavailable")
     elif endpoint.name == "holdings":
         source_status = str(payload.get("sourceStatus") or "")
         if source_status in {"unavailable", "error"}:
@@ -297,6 +327,25 @@ def _payload_summary(name: str, payload: dict[str, Any]) -> dict[str, Any]:
             "coverageStart": payload.get("coverageStart"),
             "coverageEnd": payload.get("coverageEnd"),
         }
+    if name == "etf_history_update":
+        return {
+            "sourceStatus": payload.get("sourceStatus"),
+            "readyCount": payload.get("readyCount"),
+            "validationFailureCount": payload.get("validationFailureCount"),
+            "validationWarningCount": payload.get("validationWarningCount"),
+            "sourceUpdatedAt": payload.get("sourceUpdatedAt"),
+            "dataTime": payload.get("dataTime"),
+        }
+    if name == "etf_history_status":
+        return {
+            "sourceStatus": payload.get("sourceStatus"),
+            "readyCount": payload.get("readyCount"),
+            "rowCount": payload.get("rowCount"),
+            "coverageTierCounts": payload.get("coverageTierCounts"),
+            "validationFailureCount": payload.get("validationFailureCount"),
+            "validationWarningCount": payload.get("validationWarningCount"),
+            "sourceUpdatedAt": payload.get("sourceUpdatedAt"),
+        }
     return {
         "sourceStatus": payload.get("sourceStatus"),
         "dataTime": payload.get("dataTime"),
@@ -311,6 +360,8 @@ def _request_json(
 ) -> dict[str, Any]:
     if endpoint.name == "history_update":
         return _request_history_update(base_url, timeout_seconds)
+    if endpoint.name == "etf_history_update":
+        return _request_etf_history_update(base_url, timeout_seconds)
     return _request_once(base_url, endpoint.path, endpoint.method, timeout_seconds)
 
 
@@ -426,6 +477,68 @@ def _request_history_update(base_url: str, timeout_seconds: int) -> dict[str, An
             "errorMessage": error_message,
         },
     }
+
+
+def _request_etf_history_update(base_url: str, timeout_seconds: int) -> dict[str, Any]:
+    update_response = _request_once(
+        base_url,
+        "/api/etf/history/update",
+        "POST",
+        timeout_seconds,
+    )
+    update_payload = (
+        update_response.get("payload")
+        if isinstance(update_response.get("payload"), dict)
+        else {}
+    )
+    status_response = _request_once(
+        base_url,
+        "/api/etf/history/status",
+        "GET",
+        timeout_seconds,
+    )
+    status_payload = (
+        status_response.get("payload")
+        if isinstance(status_response.get("payload"), dict)
+        else {}
+    )
+    update_status = int(update_response.get("httpStatus") or 0)
+    status_status = int(status_response.get("httpStatus") or 0)
+    http_status = update_status
+    if update_status < 200 or update_status >= 300:
+        http_status = update_status
+    elif status_status < 200 or status_status >= 300:
+        http_status = status_status
+    payload = {
+        "sourceStatus": update_payload.get("sourceStatus"),
+        "sourceContract": "00631l_remote_etf_history_update",
+        "sourceUrl": update_payload.get("sourceUrl"),
+        "fetchedAt": update_payload.get("fetchedAt"),
+        "sourceUpdatedAt": status_payload.get("sourceUpdatedAt")
+        or update_payload.get("sourceUpdatedAt"),
+        "dataTime": status_payload.get("dataTime") or update_payload.get("dataTime"),
+        "requestedCodes": update_payload.get("requestedCodes"),
+        "readyCount": status_payload.get("readyCount")
+        if status_payload.get("readyCount") is not None
+        else update_payload.get("readyCount"),
+        "rowCount": status_payload.get("rowCount"),
+        "coverageTierCounts": status_payload.get("coverageTierCounts"),
+        "validationFailureCount": status_payload.get("validationFailureCount")
+        if status_payload.get("validationFailureCount") is not None
+        else update_payload.get("validationFailureCount"),
+        "validationWarningCount": status_payload.get("validationWarningCount")
+        if status_payload.get("validationWarningCount") is not None
+        else update_payload.get("validationWarningCount"),
+        "updateErrorMessage": update_payload.get("errorMessage"),
+        "statusErrorMessage": status_payload.get("errorMessage"),
+    }
+    errors = [
+        str(value)
+        for value in (payload["updateErrorMessage"], payload["statusErrorMessage"])
+        if value
+    ]
+    payload["errorMessage"] = "; ".join(errors) if errors else None
+    return {"httpStatus": http_status, "payload": payload}
 
 
 def _history_update_ranges(

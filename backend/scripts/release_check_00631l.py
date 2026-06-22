@@ -230,6 +230,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_50_selected_search_state.md",
         "docs/00631l_v4_51_backend_seed_history_fallback.md",
         "docs/00631l_v4_52_backend_etf_seed_history_fallback.md",
+        "docs/00631l_v4_53_remote_etf_history_maintenance.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

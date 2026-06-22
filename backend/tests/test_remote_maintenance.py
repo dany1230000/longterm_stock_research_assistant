@@ -22,7 +22,87 @@ class RemoteMaintenanceTests(unittest.TestCase):
         self.assertIn("health", names)
         self.assertIn("intraday_nav", names)
         self.assertIn("history_update", names)
+        self.assertIn("etf_history_update", names)
+        self.assertIn("etf_history_status", names)
         self.assertEqual(payload["baseUrl"], "https://example.com")
+
+    def test_daily_runs_multi_etf_history_maintenance(self) -> None:
+        called: list[str] = []
+
+        def requester(
+            base_url: str,
+            endpoint: MaintenanceEndpoint,
+            timeout_seconds: int,
+        ) -> dict:
+            called.append(endpoint.name)
+            if endpoint.name == "ready":
+                return {"httpStatus": 200, "payload": {"overallStatus": "PASS"}}
+            if endpoint.name == "history_status":
+                return {"httpStatus": 200, "payload": {"rowCount": 2800}}
+            if endpoint.name == "etf_history_update":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": 15,
+                        "validationFailureCount": 0,
+                    },
+                }
+            if endpoint.name == "etf_history_status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": 15,
+                        "rowCount": 15,
+                        "validationFailureCount": 0,
+                    },
+                }
+            return {"httpStatus": 200, "payload": {"sourceStatus": "official"}}
+
+        payload = run_remote_maintenance(
+            base_url="https://example.com",
+            mode="daily",
+            requester=requester,
+        )
+
+        self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertIn("etf_history_update", called)
+        self.assertIn("etf_history_status", called)
+
+    def test_daily_warns_when_multi_etf_history_has_no_ready_rows(self) -> None:
+        def requester(
+            base_url: str,
+            endpoint: MaintenanceEndpoint,
+            timeout_seconds: int,
+        ) -> dict:
+            if endpoint.name == "ready":
+                return {"httpStatus": 200, "payload": {"overallStatus": "PASS"}}
+            if endpoint.name == "history_status":
+                return {"httpStatus": 200, "payload": {"rowCount": 2800}}
+            if endpoint.name == "etf_history_status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": 0,
+                        "rowCount": 0,
+                        "validationFailureCount": 0,
+                    },
+                }
+            return {"httpStatus": 200, "payload": {"sourceStatus": "official"}}
+
+        payload = run_remote_maintenance(
+            base_url="https://example.com",
+            mode="daily",
+            requester=requester,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["failures"], [])
+        self.assertTrue(
+            any("etf_history_status" in item for item in payload["warnings"])
+        )
 
     def test_intraday_warns_when_nav_is_unavailable(self) -> None:
         def requester(
