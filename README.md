@@ -79,6 +79,8 @@ ETF price-history coverage tiers:
 
 v4.27 makes static export status read ETF coverage tiers from `etf_price_history_index.json` when an older manifest does not contain tier counts. This keeps public static maintenance status backward-compatible.
 
+v4.48 keeps the AI page concise on mobile: current-day bullets and program actions stay visible, while the complete data briefing moves into an expandable detail panel.
+
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.

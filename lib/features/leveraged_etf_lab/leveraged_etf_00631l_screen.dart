@@ -5984,6 +5984,12 @@ class _AiSection extends StatelessWidget {
       return _SelectedEtfAiSection(selectedEtf: selectedEtf);
     }
     final summary = data.aiAnalysis;
+    final visibleBullets = summary.bullets.take(3).toList(growable: false);
+    final visibleActions = summary.actionItems.isEmpty
+        ? const ['目前沒有程式操作項目；請保留資料時間檢查。']
+        : summary.actionItems.take(3).toList(growable: false);
+    final hiddenBullets = summary.bullets.skip(3).toList(growable: false);
+    final hiddenActions = summary.actionItems.skip(3).toList(growable: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -6050,7 +6056,7 @@ class _AiSection extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 8),
-              for (final bullet in summary.bullets)
+              for (final bullet in visibleBullets)
                 _BulletLine(text: bullet, icon: Icons.insights_outlined),
               const SizedBox(height: 8),
               Text(
@@ -6060,20 +6066,65 @@ class _AiSection extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 8),
-              for (final action in summary.actionItems)
+              for (final action in visibleActions)
                 _BulletLine(text: action, icon: Icons.task_alt_outlined),
-              const Divider(height: 24),
-              Text(
-                '完整資料日報',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
+              const SizedBox(height: 12),
+              _CompactExpansionPanel(
+                title: '完整資料日報',
+                subtitle: '展開查看全部 AI 條目、維護狀態與資料完整度。',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (hiddenBullets.isNotEmpty) ...[
+                      Text(
+                        '其餘 AI 條目',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 8),
+                      for (final bullet in hiddenBullets)
+                        _BulletLine(
+                          text: bullet,
+                          icon: Icons.insights_outlined,
+                        ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (hiddenActions.isNotEmpty) ...[
+                      Text(
+                        '其餘程式操作',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 8),
+                      for (final action in hiddenActions)
+                        _BulletLine(
+                          text: action,
+                          icon: Icons.task_alt_outlined,
+                        ),
+                      const SizedBox(height: 8),
+                    ],
+                    Text(
+                      '完整資料摘要',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w900),
                     ),
+                    const SizedBox(height: 8),
+                    for (final bullet in _completeDataBriefing(data))
+                      _BulletLine(
+                        text: bullet,
+                        icon: Icons.analytics_outlined,
+                      ),
+                    const SizedBox(height: 8),
+                    const Text('非買賣建議。'),
+                  ],
+                ),
               ),
-              const SizedBox(height: 8),
-              for (final bullet in _completeDataBriefing(data))
-                _BulletLine(text: bullet, icon: Icons.analytics_outlined),
-              const SizedBox(height: 8),
-              const Text('非買賣建議。'),
             ],
           ),
         ),

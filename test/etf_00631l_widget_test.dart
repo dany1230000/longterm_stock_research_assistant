@@ -770,6 +770,16 @@ void main() {
     expect(find.text('折溢價'), findsWidgets);
     expect(find.text('今日重點'), findsOneWidget);
     expect(find.text('完整資料日報'), findsOneWidget);
+    expect(find.textContaining('價格歷史共'), findsNothing);
+    await tester.scrollUntilVisible(
+      find.text('完整資料日報'),
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('完整資料日報'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('價格歷史共'), findsOneWidget);
     expect(find.textContaining('rule_based'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);
 
