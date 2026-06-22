@@ -1,9 +1,11 @@
 import unittest
 from datetime import date
+from unittest.mock import patch
 
 from backend.scripts.remote_maintenance_00631l import (
     MaintenanceEndpoint,
     _history_update_ranges,
+    _request_etf_history_update,
     run_remote_maintenance,
 )
 
@@ -69,6 +71,47 @@ class RemoteMaintenanceTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "PASS")
         self.assertIn("etf_history_update", called)
         self.assertIn("etf_history_status", called)
+
+    def test_remote_etf_history_update_can_request_catalog_batch(self) -> None:
+        requested_paths: list[str] = []
+
+        def fake_request(base_url: str, path: str, method: str, timeout_seconds: int) -> dict:
+            requested_paths.append(path)
+            if path.startswith("/api/etf/history/update"):
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": 2,
+                        "validationFailureCount": 0,
+                    },
+                }
+            return {
+                "httpStatus": 200,
+                "payload": {
+                    "sourceStatus": "cached",
+                    "readyCount": 2,
+                    "rowCount": 2,
+                    "validationFailureCount": 0,
+                },
+            }
+
+        with patch(
+            "backend.scripts.remote_maintenance_00631l._request_once",
+            side_effect=fake_request,
+        ):
+            response = _request_etf_history_update(
+                "https://example.com",
+                120,
+                from_catalog=True,
+                limit=25,
+                offset=50,
+            )
+
+        self.assertEqual(response["httpStatus"], 200)
+        self.assertIn("fromCatalog=true", requested_paths[0])
+        self.assertIn("limit=25", requested_paths[0])
+        self.assertIn("offset=50", requested_paths[0])
 
     def test_daily_warns_when_multi_etf_history_has_no_ready_rows(self) -> None:
         def requester(

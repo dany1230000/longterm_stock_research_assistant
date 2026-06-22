@@ -55,6 +55,7 @@ scripts\00631l_backend_prod_check.cmd
 scripts\00631l_backend_docker_check.cmd
 scripts\00631l_remote_maintenance.cmd --dry-run
 scripts\00631l_remote_maintenance.cmd --mode all
+scripts\00631l_remote_maintenance.cmd --mode daily --etf-from-catalog --etf-limit 50 --etf-offset 0 --soft-fail
 scripts\00631l_public_backend_status.cmd
 scripts\00631l_compare_public_freshness.cmd --soft-fail
 scripts\00631l_export_static_data.cmd --status-only
@@ -98,6 +99,8 @@ v4.54 replaces stale hard-coded backend version text with release metadata from 
 v4.55 adds `scripts\00631l_public_backend_status.cmd`, a read-only public backend status check for `/health`, `/ready`, 00631L history, and multi-ETF history readiness.
 
 v4.56 adds `scripts\00631l_compare_public_freshness.cmd`, a read-only comparison between public backend history, local history, and GitHub Pages static data.
+
+v4.57 adds catalog-batch remote ETF history maintenance. `POST /api/etf/history/update` now supports `fromCatalog=true`, `limit`, and `offset` so a deployed backend can fill ETF history in controlled batches.
 
 Next direction is tracked in `docs\00631l_next_direction.md`: data trust, public operations, mobile UX, and analysis quality.
 

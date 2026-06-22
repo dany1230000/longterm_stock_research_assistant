@@ -156,11 +156,17 @@ def create_app(
         codes: str | None = None,
         startDate: str | None = None,
         endDate: str | None = None,
+        fromCatalog: bool = False,
+        limit: int = Query(0, ge=0, le=500),
+        offset: int = Query(0, ge=0),
     ) -> dict:
         return current_service().etf_price_history_update(
             codes=codes,
             start_date=startDate,
             end_date=endDate,
+            from_catalog=fromCatalog,
+            limit=limit,
+            offset=offset,
         )
 
     @fastapi_app.get("/api/etf/00631l/backtest/defaults")

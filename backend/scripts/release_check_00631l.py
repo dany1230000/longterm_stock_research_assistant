@@ -43,6 +43,20 @@ def main() -> int:
             ["cmd", "/c", "scripts\\00631l_remote_maintenance.cmd", "--dry-run"],
         ),
         _run_command(
+            "remote_catalog_batch_dry_run",
+            [
+                "cmd",
+                "/c",
+                "scripts\\00631l_remote_maintenance.cmd",
+                "--mode",
+                "daily",
+                "--etf-from-catalog",
+                "--etf-limit",
+                "50",
+                "--dry-run",
+            ],
+        ),
+        _run_command(
             "public_backend_status_dry_run",
             ["cmd", "/c", "scripts\\00631l_public_backend_status.cmd", "--dry-run"],
         ),
@@ -243,6 +257,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_54_backend_release_metadata.md",
         "docs/00631l_v4_55_public_backend_status_check.md",
         "docs/00631l_v4_56_public_data_freshness.md",
+        "docs/00631l_v4_57_catalog_batch_remote_maintenance.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

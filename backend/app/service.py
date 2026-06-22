@@ -654,11 +654,50 @@ class Etf00631LService:
         codes: str | None = None,
         start_date: str | None = None,
         end_date: str | None = None,
+        from_catalog: bool = False,
+        limit: int = 0,
+        offset: int = 0,
     ) -> dict[str, Any]:
         now = utc_now_iso()
         requested_codes = parse_code_list(codes or "")
-        if not requested_codes:
+        catalog_row_count = 0
+        if not requested_codes and from_catalog:
+            catalog = load_etf_catalog(self._config.etf_catalog_path, fetched_at=now)
+            catalog_items = catalog.get("items") if isinstance(catalog.get("items"), list) else []
+            catalog_row_count = int(catalog.get("rowCount") or len(catalog_items))
+            catalog_codes = [
+                normalize_etf_code(str(item.get("code") or ""))
+                for item in catalog_items
+                if isinstance(item, dict)
+            ]
+            catalog_codes = [code for code in catalog_codes if code]
+            start_index = max(0, int(offset or 0))
+            page_limit = max(1, int(limit or 50))
+            requested_codes = catalog_codes[start_index : start_index + page_limit]
+        if not requested_codes and not from_catalog:
             requested_codes = list(DEFAULT_ETF_HISTORY_CODES)
+        if not requested_codes:
+            return {
+                "sourceStatus": "unavailable",
+                "sourceContract": "twse_multi_etf_price_history_update",
+                "sourceUrl": self._config.twse_price_history_url_template,
+                "fetchedAt": now,
+                "sourceUpdatedAt": None,
+                "dataTime": None,
+                "requestedCodes": [],
+                "updatedCount": 0,
+                "readyCount": 0,
+                "validationFailureCount": 0,
+                "validationWarningCount": 0,
+                "fromCatalog": from_catalog,
+                "catalogRowCount": catalog_row_count,
+                "limit": int(limit or 0),
+                "offset": int(offset or 0),
+                "items": [],
+                "warnings": [],
+                "failures": ["No ETF codes were selected for history update."],
+                "errorMessage": "No ETF codes were selected for history update.",
+            }
         parsed_start = _parse_date(start_date)
         default_start = date(2019, 1, 1)
         end = _parse_date(end_date) or datetime.now(timezone.utc).date()
@@ -751,6 +790,10 @@ class Etf00631LService:
             "readyCount": index.get("readyCount", 0),
             "validationFailureCount": index.get("validationFailureCount", 0),
             "validationWarningCount": index.get("validationWarningCount", 0),
+            "fromCatalog": from_catalog,
+            "catalogRowCount": catalog_row_count,
+            "limit": int(limit or 0),
+            "offset": int(offset or 0),
             "items": items,
             "warnings": warnings,
             "failures": failures,

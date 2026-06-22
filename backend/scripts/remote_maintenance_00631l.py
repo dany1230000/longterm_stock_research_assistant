@@ -115,6 +115,9 @@ def run_remote_maintenance(
     mode: str,
     timeout_seconds: int = 120,
     dry_run: bool = False,
+    etf_from_catalog: bool = False,
+    etf_limit: int = 0,
+    etf_offset: int = 0,
     requester: RequestFn | None = None,
 ) -> dict[str, Any]:
     normalized_base_url = _normalize_base_url(base_url)
@@ -141,7 +144,16 @@ def run_remote_maintenance(
             dry_run=True,
         )
 
-    request = requester or _request_json
+    request = requester or (
+        lambda base, endpoint, timeout: _request_json(
+            base,
+            endpoint,
+            timeout,
+            etf_from_catalog=etf_from_catalog,
+            etf_limit=etf_limit,
+            etf_offset=etf_offset,
+        )
+    )
     steps = []
     for endpoint in selected:
         try:
@@ -357,11 +369,21 @@ def _request_json(
     base_url: str,
     endpoint: MaintenanceEndpoint,
     timeout_seconds: int,
+    *,
+    etf_from_catalog: bool = False,
+    etf_limit: int = 0,
+    etf_offset: int = 0,
 ) -> dict[str, Any]:
     if endpoint.name == "history_update":
         return _request_history_update(base_url, timeout_seconds)
     if endpoint.name == "etf_history_update":
-        return _request_etf_history_update(base_url, timeout_seconds)
+        return _request_etf_history_update(
+            base_url,
+            timeout_seconds,
+            from_catalog=etf_from_catalog,
+            limit=etf_limit,
+            offset=etf_offset,
+        )
     return _request_once(base_url, endpoint.path, endpoint.method, timeout_seconds)
 
 
@@ -479,10 +501,31 @@ def _request_history_update(base_url: str, timeout_seconds: int) -> dict[str, An
     }
 
 
-def _request_etf_history_update(base_url: str, timeout_seconds: int) -> dict[str, Any]:
+def _request_etf_history_update(
+    base_url: str,
+    timeout_seconds: int,
+    *,
+    from_catalog: bool = False,
+    limit: int = 0,
+    offset: int = 0,
+) -> dict[str, Any]:
+    query = urllib.parse.urlencode(
+        {
+            key: value
+            for key, value in {
+                "fromCatalog": "true" if from_catalog else "",
+                "limit": max(0, int(limit or 0)) if from_catalog else 0,
+                "offset": max(0, int(offset or 0)) if from_catalog else 0,
+            }.items()
+            if value not in {"", 0}
+        }
+    )
+    update_path = "/api/etf/history/update"
+    if query:
+        update_path = f"{update_path}?{query}"
     update_response = _request_once(
         base_url,
-        "/api/etf/history/update",
+        update_path,
         "POST",
         timeout_seconds,
     )
@@ -636,6 +679,23 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Return exit code 0 even when the summary is FAIL.",
     )
+    parser.add_argument(
+        "--etf-from-catalog",
+        action="store_true",
+        help="Update ETF history from cached ETF catalog instead of the default basket.",
+    )
+    parser.add_argument(
+        "--etf-limit",
+        type=int,
+        default=0,
+        help="Catalog batch size for --etf-from-catalog. Backend defaults to 50 when omitted.",
+    )
+    parser.add_argument(
+        "--etf-offset",
+        type=int,
+        default=0,
+        help="Catalog batch offset for --etf-from-catalog.",
+    )
     return parser.parse_args()
 
 
@@ -646,6 +706,9 @@ def main() -> int:
         mode=args.mode,
         timeout_seconds=max(1, args.timeout_seconds),
         dry_run=args.dry_run,
+        etf_from_catalog=args.etf_from_catalog,
+        etf_limit=max(0, args.etf_limit),
+        etf_offset=max(0, args.etf_offset),
     )
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
     print(
