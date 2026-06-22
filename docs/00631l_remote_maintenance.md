@@ -139,3 +139,13 @@ Log fields to watch:
 - `sourceUpdatedAt`
 
 If `readyCount` is 0 or validation failures are present, the remote maintenance script returns `WARN` with `failures=[]` unless the endpoint itself fails.
+
+## v4.59 transient retry
+
+Use retry flags when the public backend is deployed on a platform that can briefly return `502`, `503`, or `504` during cold starts or load transitions:
+
+```cmd
+scripts\00631l_remote_maintenance.cmd --mode daily --etf-from-catalog --etf-limit 50 --etf-offset 0 --retry-count 2 --retry-delay-seconds 3 --soft-fail
+```
+
+Retry applies to read-only `GET` checks. Update `POST` calls are not blindly repeated. If an update completes but the follow-up status check is temporarily unavailable, the script reports `WARN` with `postCheckHttpStatus` instead of hiding the successful update behind a hard failure.

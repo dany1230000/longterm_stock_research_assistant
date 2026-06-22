@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -107,6 +108,10 @@ ENDPOINTS = [
 
 
 RequestFn = Callable[[str, MaintenanceEndpoint, int], dict[str, Any]]
+SleepFn = Callable[[float], None]
+
+TRANSIENT_HTTP_STATUSES = {429, 500, 502, 503, 504}
+NON_CRITICAL_GET_ENDPOINTS = {"operations_status", "analysis_summary"}
 
 
 def run_remote_maintenance(
@@ -118,6 +123,9 @@ def run_remote_maintenance(
     etf_from_catalog: bool = False,
     etf_limit: int = 0,
     etf_offset: int = 0,
+    retry_count: int = 1,
+    retry_delay_seconds: float = 2.0,
+    sleep_fn: SleepFn = time.sleep,
     requester: RequestFn | None = None,
 ) -> dict[str, Any]:
     normalized_base_url = _normalize_base_url(base_url)
@@ -152,12 +160,23 @@ def run_remote_maintenance(
             etf_from_catalog=etf_from_catalog,
             etf_limit=etf_limit,
             etf_offset=etf_offset,
+            retry_count=retry_count,
+            retry_delay_seconds=retry_delay_seconds,
+            sleep_fn=sleep_fn,
         )
     )
     steps = []
     for endpoint in selected:
         try:
-            response = request(normalized_base_url, endpoint, timeout_seconds)
+            response = _request_with_retries(
+                request,
+                normalized_base_url,
+                endpoint,
+                timeout_seconds,
+                retry_count=max(0, retry_count),
+                retry_delay_seconds=max(0.0, retry_delay_seconds),
+                sleep_fn=sleep_fn,
+            )
             steps.append(_assess_response(endpoint, response))
         except Exception as error:  # noqa: BLE001 - operational script should summarize all failures.
             steps.append(
@@ -225,7 +244,12 @@ def _assess_response(
     warnings: list[str] = []
 
     if http_status < 200 or http_status >= 300:
-        failures.append(f"HTTP {http_status}")
+        if endpoint.name in NON_CRITICAL_GET_ENDPOINTS and http_status in TRANSIENT_HTTP_STATUSES:
+            warnings.append(
+                f"transient HTTP {http_status}; read-only status can be retried"
+            )
+        else:
+            failures.append(f"HTTP {http_status}")
 
     if endpoint.name == "ready":
         ready_status = str(payload.get("overallStatus") or "")
@@ -249,10 +273,20 @@ def _assess_response(
         source_status = str(payload.get("sourceStatus") or "")
         if source_status in {"unavailable", "error"}:
             warnings.append("price history update did not return official data")
+        post_check_status = int(payload.get("postCheckHttpStatus") or 0)
+        if post_check_status in TRANSIENT_HTTP_STATUSES:
+            warnings.append(
+                f"price history post-check returned transient HTTP {post_check_status}"
+            )
     elif endpoint.name == "etf_history_update":
         source_status = str(payload.get("sourceStatus") or "")
         if source_status in {"unavailable", "error"}:
             warnings.append("ETF history update did not return usable data")
+        post_check_status = int(payload.get("postCheckHttpStatus") or 0)
+        if post_check_status in TRANSIENT_HTTP_STATUSES:
+            warnings.append(
+                f"ETF history post-check returned transient HTTP {post_check_status}"
+            )
         if int(payload.get("readyCount") or 0) < 1:
             warnings.append("ETF history update has no ready symbols")
         if int(payload.get("validationFailureCount") or 0) > 0:
@@ -324,6 +358,8 @@ def _payload_summary(name: str, payload: dict[str, Any]) -> dict[str, Any]:
             "savedRows": payload.get("savedRows"),
             "coverageStart": payload.get("coverageStart"),
             "coverageEnd": payload.get("coverageEnd"),
+            "postCheckHttpStatus": payload.get("postCheckHttpStatus"),
+            "postCheckRetryAttempts": payload.get("postCheckRetryAttempts"),
         }
     if name == "history_status":
         return {
@@ -347,6 +383,9 @@ def _payload_summary(name: str, payload: dict[str, Any]) -> dict[str, Any]:
             "validationWarningCount": payload.get("validationWarningCount"),
             "sourceUpdatedAt": payload.get("sourceUpdatedAt"),
             "dataTime": payload.get("dataTime"),
+            "updateHttpStatus": payload.get("updateHttpStatus"),
+            "postCheckHttpStatus": payload.get("postCheckHttpStatus"),
+            "postCheckRetryAttempts": payload.get("postCheckRetryAttempts"),
         }
     if name == "etf_history_status":
         return {
@@ -373,9 +412,18 @@ def _request_json(
     etf_from_catalog: bool = False,
     etf_limit: int = 0,
     etf_offset: int = 0,
+    retry_count: int = 1,
+    retry_delay_seconds: float = 2.0,
+    sleep_fn: SleepFn = time.sleep,
 ) -> dict[str, Any]:
     if endpoint.name == "history_update":
-        return _request_history_update(base_url, timeout_seconds)
+        return _request_history_update(
+            base_url,
+            timeout_seconds,
+            retry_count=retry_count,
+            retry_delay_seconds=retry_delay_seconds,
+            sleep_fn=sleep_fn,
+        )
     if endpoint.name == "etf_history_update":
         return _request_etf_history_update(
             base_url,
@@ -383,8 +431,59 @@ def _request_json(
             from_catalog=etf_from_catalog,
             limit=etf_limit,
             offset=etf_offset,
+            retry_count=retry_count,
+            retry_delay_seconds=retry_delay_seconds,
+            sleep_fn=sleep_fn,
         )
     return _request_once(base_url, endpoint.path, endpoint.method, timeout_seconds)
+
+
+def _request_with_retries(
+    request: RequestFn,
+    base_url: str,
+    endpoint: MaintenanceEndpoint,
+    timeout_seconds: int,
+    *,
+    retry_count: int,
+    retry_delay_seconds: float,
+    sleep_fn: SleepFn,
+) -> dict[str, Any]:
+    attempts = max(1, retry_count + 1) if endpoint.method == "GET" else 1
+    response: dict[str, Any] | None = None
+    for attempt in range(attempts):
+        response = request(base_url, endpoint, timeout_seconds)
+        http_status = int(response.get("httpStatus") or 0)
+        if http_status not in TRANSIENT_HTTP_STATUSES or attempt == attempts - 1:
+            if attempt > 0:
+                response = dict(response)
+                response["retryAttempts"] = attempt
+            return response
+        sleep_fn(retry_delay_seconds)
+    return response or {"httpStatus": None, "payload": {}}
+
+
+def _request_once_with_retries(
+    base_url: str,
+    path: str,
+    method: str,
+    timeout_seconds: int,
+    *,
+    retry_count: int,
+    retry_delay_seconds: float,
+    sleep_fn: SleepFn,
+) -> dict[str, Any]:
+    attempts = max(1, retry_count + 1) if method == "GET" else 1
+    response: dict[str, Any] | None = None
+    for attempt in range(attempts):
+        response = _request_once(base_url, path, method, timeout_seconds)
+        http_status = int(response.get("httpStatus") or 0)
+        if http_status not in TRANSIENT_HTTP_STATUSES or attempt == attempts - 1:
+            if attempt > 0:
+                response = dict(response)
+                response["retryAttempts"] = attempt
+            return response
+        sleep_fn(retry_delay_seconds)
+    return response or {"httpStatus": None, "payload": {}}
 
 
 def _request_once(
@@ -419,7 +518,14 @@ def _request_once(
         return {"httpStatus": error.code, "payload": payload}
 
 
-def _request_history_update(base_url: str, timeout_seconds: int) -> dict[str, Any]:
+def _request_history_update(
+    base_url: str,
+    timeout_seconds: int,
+    *,
+    retry_count: int = 1,
+    retry_delay_seconds: float = 2.0,
+    sleep_fn: SleepFn = time.sleep,
+) -> dict[str, Any]:
     today = datetime.now(timezone.utc).date()
     status_response = _request_once(
         base_url,
@@ -470,11 +576,14 @@ def _request_history_update(base_url: str, timeout_seconds: int) -> dict[str, An
                 f"{start.isoformat()}..{end.isoformat()}: sourceStatus={payload.get('sourceStatus')}"
             )
 
-    final_status = _request_once(
+    final_status = _request_once_with_retries(
         base_url,
         "/api/etf/00631l/history/status",
         "GET",
         timeout_seconds,
+        retry_count=retry_count,
+        retry_delay_seconds=retry_delay_seconds,
+        sleep_fn=sleep_fn,
     )
     final_payload = (
         final_status.get("payload")
@@ -492,6 +601,8 @@ def _request_history_update(base_url: str, timeout_seconds: int) -> dict[str, An
             "chunkCount": len(chunks),
             "chunks": chunks,
             "warnings": warnings,
+            "postCheckHttpStatus": final_status.get("httpStatus"),
+            "postCheckRetryAttempts": final_status.get("retryAttempts", 0),
             "rowCount": final_payload.get("rowCount"),
             "coverageStart": final_payload.get("coverageStart"),
             "coverageEnd": final_payload.get("coverageEnd"),
@@ -508,6 +619,9 @@ def _request_etf_history_update(
     from_catalog: bool = False,
     limit: int = 0,
     offset: int = 0,
+    retry_count: int = 1,
+    retry_delay_seconds: float = 2.0,
+    sleep_fn: SleepFn = time.sleep,
 ) -> dict[str, Any]:
     query = urllib.parse.urlencode(
         {
@@ -534,11 +648,14 @@ def _request_etf_history_update(
         if isinstance(update_response.get("payload"), dict)
         else {}
     )
-    status_response = _request_once(
+    status_response = _request_once_with_retries(
         base_url,
         "/api/etf/history/status",
         "GET",
         timeout_seconds,
+        retry_count=retry_count,
+        retry_delay_seconds=retry_delay_seconds,
+        sleep_fn=sleep_fn,
     )
     status_payload = (
         status_response.get("payload")
@@ -550,13 +667,14 @@ def _request_etf_history_update(
     http_status = update_status
     if update_status < 200 or update_status >= 300:
         http_status = update_status
-    elif status_status < 200 or status_status >= 300:
-        http_status = status_status
     payload = {
         "sourceStatus": update_payload.get("sourceStatus"),
         "sourceContract": "00631l_remote_etf_history_update",
         "sourceUrl": update_payload.get("sourceUrl"),
         "fetchedAt": update_payload.get("fetchedAt"),
+        "updateHttpStatus": update_status,
+        "postCheckHttpStatus": status_status,
+        "postCheckRetryAttempts": status_response.get("retryAttempts", 0),
         "sourceUpdatedAt": status_payload.get("sourceUpdatedAt")
         or update_payload.get("sourceUpdatedAt"),
         "dataTime": status_payload.get("dataTime") or update_payload.get("dataTime"),
@@ -696,6 +814,18 @@ def _parse_args() -> argparse.Namespace:
         default=0,
         help="Catalog batch offset for --etf-from-catalog.",
     )
+    parser.add_argument(
+        "--retry-count",
+        type=int,
+        default=1,
+        help="Retry count for transient read-only HTTP failures.",
+    )
+    parser.add_argument(
+        "--retry-delay-seconds",
+        type=float,
+        default=2.0,
+        help="Delay between transient read-only HTTP retries.",
+    )
     return parser.parse_args()
 
 
@@ -709,6 +839,8 @@ def main() -> int:
         etf_from_catalog=args.etf_from_catalog,
         etf_limit=max(0, args.etf_limit),
         etf_offset=max(0, args.etf_offset),
+        retry_count=max(0, args.retry_count),
+        retry_delay_seconds=max(0.0, args.retry_delay_seconds),
     )
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
     print(

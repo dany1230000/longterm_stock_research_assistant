@@ -56,6 +56,7 @@ scripts\00631l_backend_docker_check.cmd
 scripts\00631l_remote_maintenance.cmd --dry-run
 scripts\00631l_remote_maintenance.cmd --mode all
 scripts\00631l_remote_maintenance.cmd --mode daily --etf-from-catalog --etf-limit 50 --etf-offset 0 --soft-fail
+scripts\00631l_remote_maintenance.cmd --mode daily --etf-from-catalog --etf-limit 50 --etf-offset 0 --retry-count 2 --retry-delay-seconds 3 --soft-fail
 scripts\00631l_public_backend_status.cmd
 scripts\00631l_compare_public_freshness.cmd --soft-fail
 scripts\00631l_export_static_data.cmd --status-only
@@ -103,6 +104,10 @@ v4.56 adds `scripts\00631l_compare_public_freshness.cmd`, a read-only comparison
 v4.57 adds catalog-batch remote ETF history maintenance. `POST /api/etf/history/update` now supports `fromCatalog=true`, `limit`, and `offset` so a deployed backend can fill ETF history in controlled batches.
 
 v4.58 refreshes backend release metadata defaults so `/health` does not fall back to an older v4.54 label when deployment env vars are missing.
+
+v4.59 hardens public remote maintenance with read-only retries and post-check metadata, so temporary public-backend `502/503` status reads are WARNs when core updates complete.
+
+v4.60 lets a public backend use `backend/seeds/twse_etf_catalog_seed.json` when `ETF_CATALOG_PATH` has not been imported yet. Seed-backed catalog data is labeled `static_official`, and catalog-batch maintenance can start filling ETF histories before the persistent catalog cache exists.
 
 Next direction is tracked in `docs\00631l_next_direction.md`: data trust, public operations, mobile UX, and analysis quality.
 

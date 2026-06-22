@@ -443,11 +443,19 @@ class Etf00631LService:
 
     def etf_catalog(self) -> dict[str, Any]:
         now = utc_now_iso()
-        return load_etf_catalog(self._config.etf_catalog_path, fetched_at=now)
+        return load_etf_catalog(
+            self._config.etf_catalog_path,
+            fetched_at=now,
+            seed_path=self._config.etf_catalog_seed_path,
+        )
 
     def etf_catalog_status(self) -> dict[str, Any]:
         now = utc_now_iso()
-        return etf_catalog_status(self._config.etf_catalog_path, fetched_at=now)
+        return etf_catalog_status(
+            self._config.etf_catalog_path,
+            fetched_at=now,
+            seed_path=self._config.etf_catalog_seed_path,
+        )
 
     def etf_catalog_import(self) -> dict[str, Any]:
         now = utc_now_iso()
@@ -662,7 +670,11 @@ class Etf00631LService:
         requested_codes = parse_code_list(codes or "")
         catalog_row_count = 0
         if not requested_codes and from_catalog:
-            catalog = load_etf_catalog(self._config.etf_catalog_path, fetched_at=now)
+            catalog = load_etf_catalog(
+                self._config.etf_catalog_path,
+                fetched_at=now,
+                seed_path=self._config.etf_catalog_seed_path,
+            )
             catalog_items = catalog.get("items") if isinstance(catalog.get("items"), list) else []
             catalog_row_count = int(catalog.get("rowCount") or len(catalog_items))
             catalog_codes = [

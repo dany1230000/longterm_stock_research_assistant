@@ -95,6 +95,8 @@ This is the main entry point for 00631L lab documentation.
 - Public data freshness comparison v4.56: `docs\00631l_v4_56_public_data_freshness.md`
 - Catalog-batch remote maintenance v4.57: `docs\00631l_v4_57_catalog_batch_remote_maintenance.md`
 - Backend release defaults v4.58: `docs\00631l_v4_58_backend_release_defaults.md`
+- Remote retry and post-check v4.59: `docs\00631l_v4_59_remote_retry_postcheck.md`
+- Catalog seed fallback v4.60: `docs\00631l_v4_60_catalog_seed_fallback.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

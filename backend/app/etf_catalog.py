@@ -65,9 +65,17 @@ def save_etf_catalog(payload: dict[str, Any], path: str | Path) -> None:
     target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def load_etf_catalog(path: str | Path, *, fetched_at: str) -> dict[str, Any]:
+def load_etf_catalog(
+    path: str | Path,
+    *,
+    fetched_at: str,
+    seed_path: str | Path | None = None,
+) -> dict[str, Any]:
     target = Path(path)
     if not target.exists():
+        seed_payload = _load_seed_catalog(seed_path, fetched_at=fetched_at)
+        if seed_payload is not None:
+            return seed_payload
         return _catalog_error(
             f"local://{target}",
             fetched_at,
@@ -90,6 +98,10 @@ def load_etf_catalog(path: str | Path, *, fetched_at: str) -> dict[str, Any]:
             "ETF catalog file is not a JSON object.",
             source_status="error",
         )
+    if not decoded.get("items"):
+        seed_payload = _load_seed_catalog(seed_path, fetched_at=fetched_at)
+        if seed_payload is not None:
+            return seed_payload
     payload = dict(decoded)
     payload["sourceStatus"] = "cached" if payload.get("items") else "unavailable"
     payload["fetchedAt"] = fetched_at
@@ -100,8 +112,13 @@ def load_etf_catalog(path: str | Path, *, fetched_at: str) -> dict[str, Any]:
     return payload
 
 
-def etf_catalog_status(path: str | Path, *, fetched_at: str) -> dict[str, Any]:
-    payload = load_etf_catalog(path, fetched_at=fetched_at)
+def etf_catalog_status(
+    path: str | Path,
+    *,
+    fetched_at: str,
+    seed_path: str | Path | None = None,
+) -> dict[str, Any]:
+    payload = load_etf_catalog(path, fetched_at=fetched_at, seed_path=seed_path)
     return {
         "sourceStatus": payload.get("sourceStatus"),
         "sourceContract": payload.get("sourceContract"),
@@ -113,6 +130,32 @@ def etf_catalog_status(path: str | Path, *, fetched_at: str) -> dict[str, Any]:
         "rowCount": payload.get("rowCount", 0),
         "errorMessage": payload.get("errorMessage"),
     }
+
+
+def _load_seed_catalog(
+    seed_path: str | Path | None,
+    *,
+    fetched_at: str,
+) -> dict[str, Any] | None:
+    if not seed_path:
+        return None
+    target = Path(seed_path)
+    if not target.exists():
+        return None
+    try:
+        decoded = json.loads(target.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(decoded, dict) or not decoded.get("items"):
+        return None
+    payload = dict(decoded)
+    payload["sourceStatus"] = "static_official"
+    payload["sourceContract"] = payload.get("sourceContract") or "twse_all_etf_catalog"
+    payload["sourceUrl"] = f"seed://twse-etf-catalog"
+    payload["fetchedAt"] = fetched_at
+    payload["rowCount"] = int(payload.get("rowCount") or len(payload.get("items") or []))
+    payload["errorMessage"] = None
+    return payload
 
 
 def _catalog_error(

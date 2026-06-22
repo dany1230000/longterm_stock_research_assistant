@@ -57,11 +57,11 @@ def _data_path(name: str, filename: str) -> str:
 class Settings:
     backend_app_version: str = os.getenv(
         "00631L_BACKEND_APP_VERSION",
-        "4.58-release-defaults",
+        "4.60-catalog-seed-fallback",
     ).strip()
     backend_release_tag: str = os.getenv(
         "00631L_BACKEND_RELEASE_TAG",
-        "00631l-lab-v4.58-release-defaults",
+        "00631l-lab-v4.60-catalog-seed-fallback",
     ).strip()
     backend_git_sha: str = os.getenv("00631L_BACKEND_GIT_SHA", "").strip()
     backend_build_time: str = os.getenv("00631L_BACKEND_BUILD_TIME", "").strip()
@@ -123,6 +123,10 @@ class Settings:
     etf_catalog_path: str = os.getenv(
         "ETF_CATALOG_PATH",
         _data_path("ETF_CATALOG_PATH", "twse_etf_catalog.json"),
+    )
+    etf_catalog_seed_path: str = os.getenv(
+        "ETF_CATALOG_SEED_PATH",
+        str(_SEED_ROOT / "twse_etf_catalog_seed.json"),
     )
     etf_price_history_dir: str = os.getenv(
         "ETF_PRICE_HISTORY_DIR",

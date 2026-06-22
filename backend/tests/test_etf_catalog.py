@@ -59,6 +59,46 @@ class EtfCatalogTests(unittest.TestCase):
         self.assertEqual(status["sourceStatus"], "cached")
         self.assertEqual(status["rowCount"], 1)
 
+    def test_catalog_loads_seed_when_local_file_is_missing(self) -> None:
+        import tempfile
+
+        payload = {
+            "sourceStatus": "official",
+            "sourceContract": "twse_all_etf_catalog",
+            "sourceUrl": "fixture://twse/all_etf",
+            "fetchedAt": "2026-06-12T05:31:20+00:00",
+            "sourceUpdatedAt": "2026-06-12T13:31:00+08:00",
+            "dataTime": "2026-06-12T13:31:00+08:00",
+            "isStale": False,
+            "rowCount": 2,
+            "items": [
+                {"code": "0050", "name": "ETF A"},
+                {"code": "00631L", "name": "ETF B"},
+            ],
+            "errorMessage": None,
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            seed_path = root / "seed_catalog.json"
+            save_etf_catalog(payload, seed_path)
+            loaded = load_etf_catalog(
+                root / "missing_catalog.json",
+                fetched_at="2026-06-12T05:32:00+00:00",
+                seed_path=seed_path,
+            )
+            status = etf_catalog_status(
+                root / "missing_catalog.json",
+                fetched_at="2026-06-12T05:32:00+00:00",
+                seed_path=seed_path,
+            )
+
+        self.assertEqual(loaded["sourceStatus"], "static_official")
+        self.assertEqual(loaded["sourceUrl"], "seed://twse-etf-catalog")
+        self.assertEqual(loaded["rowCount"], 2)
+        self.assertEqual(status["sourceStatus"], "static_official")
+        self.assertEqual(status["rowCount"], 2)
+
 
 if __name__ == "__main__":
     unittest.main()

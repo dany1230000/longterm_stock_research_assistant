@@ -56,6 +56,9 @@ class PublicDataFreshnessTests(unittest.TestCase):
         self.assertTrue(
             any("remote maintenance" in item for item in payload["actionItems"])
         )
+        self.assertTrue(
+            any("--etf-from-catalog" in item for item in payload["actionItems"])
+        )
 
     def test_passes_when_public_static_and_local_are_aligned(self) -> None:
         public = {

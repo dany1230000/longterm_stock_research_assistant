@@ -140,7 +140,8 @@ def compare_public_data_freshness(
             f"by {public_etf_ready_lag}"
         )
         action_items.append(
-            "Run remote maintenance: scripts\\00631l_remote_maintenance.cmd --mode daily"
+            "Run catalog batch maintenance: scripts\\00631l_remote_maintenance.cmd "
+            "--mode daily --etf-from-catalog --etf-limit 50 --etf-offset 0 --soft-fail"
         )
     if local_rows < 2:
         warnings.append("local 00631L price history has fewer than 2 rows")

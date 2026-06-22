@@ -535,6 +535,59 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(payload["catalogRowCount"], 3)
         self.assertEqual(payload["limit"], 2)
 
+    def test_endpoint_updates_multi_etf_history_from_seed_catalog(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            seed_catalog_path = root / "seed_catalog.json"
+            save_etf_catalog(
+                {
+                    "sourceStatus": "official",
+                    "sourceContract": "twse_all_etf_catalog",
+                    "sourceUrl": "fixture://catalog",
+                    "fetchedAt": "2026-06-22T00:00:00+00:00",
+                    "rowCount": 3,
+                    "items": [
+                        {"code": "0050", "name": "ETF A"},
+                        {"code": "006208", "name": "ETF B"},
+                        {"code": "00878", "name": "ETF C"},
+                    ],
+                },
+                seed_catalog_path,
+            )
+            config = Settings(
+                twse_price_history_url_template=(
+                    "https://example.test/STOCK_DAY?stockNo={symbol}&date={yyyymmdd}"
+                ),
+                etf_catalog_path=str(root / "missing_catalog.json"),
+                etf_catalog_seed_path=str(seed_catalog_path),
+                etf_price_history_dir=str(root / "etf_history"),
+            )
+            service = Etf00631LService(
+                config=config,
+                fetcher=lambda url, timeout: _stock_day_fixture(),
+                etf_price_history_store=EtfPriceHistoryStore(root / "etf_history"),
+            )
+            client = TestClient(create_app(app_config=config, app_service=service))
+
+            update = client.post(
+                "/api/etf/history/update",
+                params={
+                    "fromCatalog": "true",
+                    "limit": "2",
+                    "startDate": "2026-06-01",
+                    "endDate": "2026-06-30",
+                },
+            )
+            catalog_status = client.get("/api/etf/catalog/status")
+
+        self.assertEqual(update.status_code, 200)
+        payload = update.json()
+        self.assertEqual(payload["sourceStatus"], "cached")
+        self.assertEqual(payload["requestedCodes"], ["0050", "006208"])
+        self.assertTrue(payload["fromCatalog"])
+        self.assertEqual(payload["catalogRowCount"], 3)
+        self.assertEqual(catalog_status.json()["sourceStatus"], "static_official")
+
     def test_endpoints_read_seeded_multi_etf_history_when_local_cache_empty(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
