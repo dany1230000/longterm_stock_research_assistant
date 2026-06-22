@@ -81,6 +81,7 @@ This is the main entry point for 00631L lab documentation.
 - Position source context v4.42: `docs\00631l_v4_42_position_source_context.md`
 - Chart-first overview v4.43: `docs\00631l_v4_43_chart_first_overview.md`
 - Compact quote meta line v4.44: `docs\00631l_v4_44_compact_quote_meta_line.md`
+- Selected quote source label v4.45: `docs\00631l_v4_45_selected_quote_source_label.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`

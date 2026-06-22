@@ -635,6 +635,7 @@ void main() {
     expect(find.text('目前檔案 0050'), findsOneWidget);
     expect(find.text('資料來源'), findsOneWidget);
     expect(find.textContaining('2025/06/03 - 2026/06/03'), findsWidgets);
+    expect(find.textContaining('市價 · catalog'), findsWidgets);
     expect(find.text('官方內容物重點'), findsNothing);
 
     await _tapSection(tester, 'position');
@@ -655,6 +656,33 @@ void main() {
     expect(find.textContaining('價格欄位 close'), findsWidgets);
     expect(find.textContaining('分割調整 未套用'), findsWidgets);
     expect(find.textContaining('2026/06/03'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('selected ETF quote labels historical close fallback',
+      (tester) async {
+    await _pumpLab(tester, _CatalogWithoutQuoteRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '0050',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
+    );
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+
+    await _tapSection(tester, 'overview');
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('0050 元大台灣50'), findsWidgets);
+    expect(find.textContaining('市價 · 歷史收盤'), findsWidgets);
+    expect(find.textContaining('市價 · catalog'), findsNothing);
     _expectNoTradingActionText();
   });
 
@@ -962,6 +990,35 @@ class _StaticHistoryOnlyRepository extends _PriceHistoryRepository {
   @override
   Future<EtfIntradayNav?> fetchIntradayNav() async {
     return null;
+  }
+}
+
+class _CatalogWithoutQuoteRepository extends _PriceHistoryRepository {
+  @override
+  Future<EtfCatalog> fetchEtfCatalog() async {
+    final now = DateTime(2026, 6, 11, 10);
+    return EtfCatalog(
+      items: [
+        EtfCatalogItem(
+          code: '0050',
+          name: '元大台灣50',
+          dataTime: now,
+          targetType: 'ETF',
+          priceHistoryRowCount: 3,
+          priceHistoryCoverageTier: 'recent',
+          priceHistoryCoverageStart: DateTime(2025, 6, 3),
+          priceHistoryCoverageEnd: DateTime(2026, 6, 3),
+          priceHistorySourceStatus: 'cached',
+        ),
+      ],
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'cached',
+      sourceContract: 'twse_all_etf_catalog_test',
+      sourceUrl: 'local://etf-catalog-without-quote',
+      lastFetchedAt: now,
+      dataTime: now,
+      isStale: false,
+    );
   }
 }
 

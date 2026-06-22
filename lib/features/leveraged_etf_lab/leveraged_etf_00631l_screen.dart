@@ -1332,24 +1332,32 @@ class _CompactQuoteHeader extends StatelessWidget {
     final latestHistoryPoint = history.latest;
     final quoteValue = selectedEtf.marketPrice ?? latestHistoryPoint?.close;
     final quoteStatus = selectedEtf.sourceStatusLabel;
-    final quoteStatusDisplay =
-        !selectedEtf.is00631L && selectedEtf.catalogItem != null
-            ? 'catalog'
-            : selectedEtf.dataTime == latestHistoryPoint?.date &&
-                    latestHistoryPoint != null
-                ? '歷史收盤'
-                : _statusDisplay(quoteStatus);
+    final usesLiveQuote =
+        selectedEtf.is00631L && data.intradayNav?.marketPrice != null;
+    final usesCatalogQuote =
+        !selectedEtf.is00631L && selectedEtf.catalogItem?.marketPrice != null;
+    final usesHistoryQuote = !usesLiveQuote &&
+        !usesCatalogQuote &&
+        latestHistoryPoint != null &&
+        quoteValue == latestHistoryPoint.close;
+    final quoteStatusDisplay = usesCatalogQuote
+        ? 'catalog'
+        : usesHistoryQuote
+            ? '歷史收盤'
+            : _statusDisplay(quoteStatus);
     final marketSession = selectedEtf.is00631L
         ? data.intradayNav?.marketSession() ??
             IntradayMarketSession.evaluate(sourceAvailable: false)
         : null;
-    final quoteCaptionDisplay = selectedEtf.dataTime == null
-        ? latestHistoryPoint == null
-            ? '市價 · 盤中資料暫無'
-            : '市價 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
-        : selectedEtf.is00631L
-            ? '市價 · ${marketSession!.phaseLabel} ${_sourceTimeText(selectedEtf.dataTime!)}'
-            : '市價 · catalog ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
+    final quoteCaptionDisplay = usesLiveQuote && selectedEtf.dataTime != null
+        ? '市價 · ${marketSession!.phaseLabel} ${_sourceTimeText(selectedEtf.dataTime!)}'
+        : usesCatalogQuote && selectedEtf.catalogItem?.dataTime != null
+            ? '市價 · catalog ${formatTaiwanDateTimeSeconds(selectedEtf.catalogItem!.dataTime!)}'
+            : usesHistoryQuote
+                ? '市價 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
+                : selectedEtf.dataTime == null
+                    ? '市價 · 盤中資料暫無'
+                    : '市價 · ${_statusDisplay(quoteStatus)} ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
     return DecoratedBox(
       decoration: BoxDecoration(
