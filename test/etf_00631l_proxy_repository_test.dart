@@ -201,6 +201,9 @@ void main() {
     expect(status.etfPriceHistoryCoverageTierCounts['recent'], 3);
     expect(status.etfPriceHistoryDataTime, DateTime(2026, 6, 12));
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
+    expect(status.backendAppVersion, '4.54-test');
+    expect(status.backendReleaseTag, '00631l-lab-v4.54-test');
+    expect(status.backendGitSha, 'abc123');
     expect(status.publicApiBaseUrl, 'https://api.example.com');
     expect(status.allowedOrigins, ['https://00631l.example.com']);
     expect(status.dataRoot, '/data');
@@ -962,6 +965,13 @@ Map<String, Object?> _operationsStatusPayload() {
     },
     'backendHealth': {
       'sourceContract': '00631l_backend_health',
+      'appVersion': '4.54-test',
+      'release': {
+        'version': '4.54-test',
+        'tag': '00631l-lab-v4.54-test',
+        'gitSha': 'abc123',
+        'buildTime': '2026-06-22T20:45:00+08:00',
+      },
       'publicApiBaseUrl': 'https://api.example.com',
       'allowedOrigins': ['https://00631l.example.com'],
     },

@@ -6752,6 +6752,16 @@ class _SettingsSection extends StatelessWidget {
                     : 'backend reachable。',
               ),
               _StatusItem(
+                label: 'backend release',
+                status: status.backendAppVersion.isEmpty
+                    ? 'unknown'
+                    : status.backendAppVersion,
+                detail: status.backendReleaseLabel,
+                action: status.backendGitSha.isEmpty
+                    ? 'set 00631L_BACKEND_GIT_SHA during deployment for exact build trace.'
+                    : 'git ${status.backendGitSha}',
+              ),
+              _StatusItem(
                 label: 'official holdings',
                 status: status.holdingsHistoryStatus,
                 detail:

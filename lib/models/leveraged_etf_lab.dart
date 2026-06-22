@@ -1231,6 +1231,10 @@ class EtfOperationsStatus {
     required this.intradaySourceMode,
     required this.twseIntradayNavConfigured,
     required this.yuantaIntradayNavConfigured,
+    this.backendAppVersion = '',
+    this.backendReleaseTag = '',
+    this.backendGitSha = '',
+    this.backendBuildTime,
     this.publicApiBaseUrl = '',
     this.allowedOrigins = const [],
     this.dataRoot = '',
@@ -1388,6 +1392,10 @@ class EtfOperationsStatus {
   final String intradaySourceMode;
   final bool twseIntradayNavConfigured;
   final bool yuantaIntradayNavConfigured;
+  final String backendAppVersion;
+  final String backendReleaseTag;
+  final String backendGitSha;
+  final DateTime? backendBuildTime;
   final String publicApiBaseUrl;
   final List<String> allowedOrigins;
   final String dataRoot;
@@ -1534,6 +1542,17 @@ class EtfOperationsStatus {
       return errorMessage ?? 'operations status unavailable';
     }
     return 'operations/status response received';
+  }
+
+  String get backendReleaseLabel {
+    final version = backendAppVersion.trim().isEmpty
+        ? 'backend version unknown'
+        : backendAppVersion.trim();
+    final tag = backendReleaseTag.trim();
+    if (tag.isEmpty) {
+      return version;
+    }
+    return '$version · $tag';
   }
 
   EtfDailyReadinessSummary get dailyReadinessSummary {

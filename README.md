@@ -91,6 +91,10 @@ v4.52 applies the same seed fallback to multi-ETF price histories. Public backen
 
 v4.53 extends public backend remote maintenance so `daily` / `all` mode also runs the multi-ETF history update and status check. This helps a deployed backend fill persistent ETF history cache rows instead of relying only on committed seed fallback.
 
+v4.54 replaces stale hard-coded backend version text with release metadata from config/env. `/health`, operations/status, and the app settings/status view can now show the backend version, release tag, git sha, and build time when deployment supplies them.
+
+Next direction is tracked in `docs\00631l_next_direction.md`: data trust, public operations, mobile UX, and analysis quality.
+
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.

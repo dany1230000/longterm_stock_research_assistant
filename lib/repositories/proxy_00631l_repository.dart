@@ -272,6 +272,9 @@ class Proxy00631LRepository extends Official00631LRepository {
     final backtest = _map(payload['backtest']);
     final position = _map(payload['position']);
     final backendHealth = _map(payload['backendHealth']);
+    final backendRelease = _map(
+      backendHealth['release'] ?? config['backendRelease'],
+    );
     final dataDirectoryHealth = _map(payload['dataDirectoryHealth']);
     final persistence = _map(dataDirectoryHealth['persistence']);
     final collector = _map(payload['collector']);
@@ -289,6 +292,12 @@ class Proxy00631LRepository extends Official00631LRepository {
       twseIntradayNavConfigured: config['twseIntradayNavConfigured'] == true,
       yuantaIntradayNavConfigured:
           config['yuantaIntradayNavConfigured'] == true,
+      backendAppVersion: _string(
+        backendRelease['version'] ?? backendHealth['appVersion'],
+      ),
+      backendReleaseTag: _string(backendRelease['tag']),
+      backendGitSha: _string(backendRelease['gitSha']),
+      backendBuildTime: _wallClockDateTime(backendRelease['buildTime']),
       publicApiBaseUrl: _string(
         config['publicApiBaseUrl'] ?? backendHealth['publicApiBaseUrl'],
       ),

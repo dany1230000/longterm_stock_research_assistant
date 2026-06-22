@@ -55,6 +55,16 @@ def _data_path(name: str, filename: str) -> str:
 
 @dataclass(frozen=True)
 class Settings:
+    backend_app_version: str = os.getenv(
+        "00631L_BACKEND_APP_VERSION",
+        "4.54-release-metadata",
+    ).strip()
+    backend_release_tag: str = os.getenv(
+        "00631L_BACKEND_RELEASE_TAG",
+        "00631l-lab-v4.54-release-metadata",
+    ).strip()
+    backend_git_sha: str = os.getenv("00631L_BACKEND_GIT_SHA", "").strip()
+    backend_build_time: str = os.getenv("00631L_BACKEND_BUILD_TIME", "").strip()
     public_api_base_url: str = os.getenv("PUBLIC_API_BASE_URL", "").strip()
     allowed_origins: tuple[str, ...] = _env_csv("ALLOWED_ORIGINS")
     data_dir: str = os.getenv("00631L_DATA_DIR", str(_DATA_ROOT))

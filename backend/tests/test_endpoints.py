@@ -39,12 +39,40 @@ class EndpointTests(unittest.TestCase):
         self.assertEqual(payload["status"], "ok")
         self.assertIn("serverTime", payload)
         self.assertEqual(payload["sourceContract"], "00631l_backend_health")
+        self.assertNotEqual(payload["appVersion"], "3.4-live-backend")
+        self.assertEqual(payload["release"]["version"], payload["appVersion"])
+        self.assertIn("tag", payload["release"])
+        self.assertIn("buildTime", payload["release"])
+        self.assertIn("gitSha", payload["release"])
         self.assertEqual(payload["scope"], "00631L only")
         self.assertIn("liveSourceConfigured", payload)
         self.assertIn("localState", payload)
         self.assertIn("operationsStatus", payload["endpoints"])
         self.assertIn("analysisSummary", payload["endpoints"])
         self.assertIn("readiness", payload["endpoints"])
+
+    def test_health_uses_configured_release_metadata(self) -> None:
+        service = Etf00631LService(
+            config=Settings(
+                backend_app_version="4.54-test",
+                backend_release_tag="00631l-lab-v4.54-test",
+                backend_git_sha="abc123",
+                backend_build_time="2026-06-22T20:45:00+08:00",
+            ),
+            cache=TimedMemoryCache(),
+        )
+        client = TestClient(main_module.create_app(app_service=service))
+
+        payload = client.get("/health").json()
+
+        self.assertEqual(payload["appVersion"], "4.54-test")
+        self.assertEqual(payload["release"]["version"], "4.54-test")
+        self.assertEqual(payload["release"]["tag"], "00631l-lab-v4.54-test")
+        self.assertEqual(payload["release"]["gitSha"], "abc123")
+        self.assertEqual(
+            payload["release"]["buildTime"],
+            "2026-06-22T20:45:00+08:00",
+        )
 
     def test_ready_endpoint_reports_public_persistent_config(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

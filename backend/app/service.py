@@ -97,11 +97,13 @@ class Etf00631LService:
     def health_status(self, *, server_time: str | None = None) -> dict[str, Any]:
         now = server_time or utc_now_iso()
         env_status = self._env_status()
+        release = self._release_metadata()
         return {
             "status": "ok",
             "serverTime": now,
             "appName": "00631L lab backend",
-            "appVersion": "3.4-live-backend",
+            "appVersion": release["version"],
+            "release": release,
             "sourceContract": "00631l_backend_health",
             "scope": "00631L only",
             "publicApiBaseUrl": self._config.public_api_base_url,
@@ -821,6 +823,7 @@ class Etf00631LService:
             "isStale": source_status != "cached",
             "errorMessage": "; ".join(str(error) for error in errors) if errors else None,
             "config": {
+                "backendRelease": self._release_metadata(),
                 "publicApiBaseUrl": self._config.public_api_base_url,
                 "allowedOrigins": list(self._config.allowed_origins),
                 "dataDir": self._config.data_dir,
@@ -965,6 +968,14 @@ class Etf00631LService:
                     "--skip-holdings --samples 20 --interval-seconds 15"
                 ),
             },
+        }
+
+    def _release_metadata(self) -> dict[str, Any]:
+        return {
+            "version": self._config.backend_app_version,
+            "tag": self._config.backend_release_tag,
+            "gitSha": self._config.backend_git_sha,
+            "buildTime": self._config.backend_build_time,
         }
 
     def analysis_summary(self) -> dict[str, Any]:
