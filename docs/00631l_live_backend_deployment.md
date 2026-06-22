@@ -51,6 +51,7 @@ ETF_PRICE_HISTORY_DIR=/data/00631l/etf_price_history
 00631L_PRICE_HISTORY_PATH=/data/00631l/00631l_price_history.jsonl
 00631L_PRICE_HISTORY_SEED_PATH=backend/seeds/00631l_price_history_seed.jsonl
 ETF_PRICE_HISTORY_DIR=/data/00631l/etf_price_history
+ETF_PRICE_HISTORY_SEED_DIR=backend/seeds/etf_price_history_seed
 00631L_HISTORY_EXPORT_DIR=/data/00631l/exports
 00631L_BACKUP_DIR=/data/00631l/backups
 00631L_REPORT_DIR=/data/00631l/reports
@@ -59,6 +60,8 @@ ETF_PRICE_HISTORY_DIR=/data/00631l/etf_price_history
 `ALLOWED_ORIGINS` 只填 origin，不填路徑。GitHub Pages 專案頁的 origin 是 `https://dany1230000.github.io`。
 
 `00631L_PRICE_HISTORY_SEED_PATH` is the committed official-history seed used when a new public backend has an empty persistent volume. Seed-only history is labeled `static_official`, not live intraday data. After history maintenance saves local rows, local cache rows override same-date seed rows.
+
+`ETF_PRICE_HISTORY_SEED_DIR` provides the same fallback for selected ETF histories and comparison context. Seed-only multi-ETF rows are also labeled `static_official`.
 
 ## Docker / VPS
 

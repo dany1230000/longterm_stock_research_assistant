@@ -57,8 +57,9 @@ ETF_PRICE_ADJUSTMENT_EVENTS_BY_CODE: dict[str, list[dict[str, Any]]] = {
 
 
 class EtfPriceHistoryStore:
-    def __init__(self, root_dir: str | Path) -> None:
+    def __init__(self, root_dir: str | Path, *, seed_dir: str | Path | None = None) -> None:
         self.root_dir = Path(root_dir)
+        self.seed_dir = Path(seed_dir) if seed_dir else None
 
     def path_for(self, code: str) -> Path:
         normalized = normalize_etf_code(code)
@@ -66,20 +67,35 @@ class EtfPriceHistoryStore:
             raise ValueError("ETF code is required")
         return self.root_dir / f"{normalized}.jsonl"
 
+    def seed_path_for(self, code: str) -> Path | None:
+        if self.seed_dir is None:
+            return None
+        normalized = normalize_etf_code(code)
+        if not normalized:
+            raise ValueError("ETF code is required")
+        return self.seed_dir / f"{normalized}.jsonl"
+
     def codes(self) -> list[str]:
-        if not self.root_dir.exists():
-            return []
-        return sorted(
+        local_codes = {
             normalize_etf_code(path.stem)
             for path in self.root_dir.glob("*.jsonl")
             if normalize_etf_code(path.stem)
-        )
+        } if self.root_dir.exists() else set()
+        seed_codes = {
+            normalize_etf_code(path.stem)
+            for path in self.seed_dir.glob("*.jsonl")
+            if normalize_etf_code(path.stem)
+        } if self.seed_dir is not None and self.seed_dir.exists() else set()
+        return sorted(local_codes | seed_codes)
 
     def save_points(self, code: str, points: list[dict[str, Any]]) -> int:
         normalized = normalize_etf_code(code)
         if not normalized:
             return 0
-        records = {str(record.get("date")): record for record in self.all(normalized)}
+        records = {
+            str(record.get("date")): record
+            for record in self._local_records(normalized)
+        }
         changed = 0
         for point in points:
             day = str(point.get("date") or "")
@@ -97,7 +113,7 @@ class EtfPriceHistoryStore:
         normalized = normalize_etf_code(code)
         if not normalized:
             return 0
-        raw_records = self._read_raw_records(normalized)
+        raw_records = self._read_local_raw_records(normalized)
         normalized_records = [_record(normalized, record) for record in raw_records]
         if raw_records != normalized_records:
             self._write_records(normalized, normalized_records)
@@ -179,13 +195,14 @@ class EtfPriceHistoryStore:
     def status(self, code: str, *, fetched_at: str) -> dict[str, Any]:
         normalized = normalize_etf_code(code)
         records = self.all(normalized)
+        source_info = self._source_info(normalized)
         if not records:
             validation = validate_etf_price_records(normalized, records)
             return {
                 "code": normalized,
                 "sourceStatus": "unavailable",
                 "sourceContract": "twse_multi_etf_price_history_status",
-                "sourceUrl": f"local://etf-price-history/{normalized}",
+                "sourceUrl": source_info["sourceUrl"],
                 "fetchedAt": fetched_at,
                 "sourceUpdatedAt": None,
                 "dataTime": None,
@@ -217,9 +234,9 @@ class EtfPriceHistoryStore:
             "code": normalized,
             "sourceStatus": "error"
             if validation["failureCount"]
-            else "cached",
+            else source_info["sourceStatus"],
             "sourceContract": "twse_multi_etf_price_history_status",
-            "sourceUrl": f"local://etf-price-history/{normalized}",
+            "sourceUrl": source_info["sourceUrl"],
             "fetchedAt": fetched_at,
             "sourceUpdatedAt": coverage_end,
             "dataTime": coverage_end,
@@ -242,8 +259,8 @@ class EtfPriceHistoryStore:
 
     def index_response(self, *, fetched_at: str) -> dict[str, Any]:
         items = [
-            self.status(path.stem, fetched_at=fetched_at)
-            for path in sorted(self.root_dir.glob("*.jsonl"))
+            self.status(code, fetched_at=fetched_at)
+            for code in self.codes()
         ]
         ready_items = [
             item
@@ -267,12 +284,23 @@ class EtfPriceHistoryStore:
             for failure in (item.get("validation") or {}).get("failures", [])
         ]
         tier_counts = _coverage_tier_counts(items)
+        has_local = any(self._has_local_records(str(item.get("code") or "")) for item in items)
+        source_status = "error" if validation_failure_count else (
+            "cached" if has_local and ready_items else "static_official" if ready_items else "unavailable"
+        )
+        source_url = (
+            "local+seed://etf-price-history"
+            if has_local and self._has_seed_codes()
+            else "local://etf-price-history"
+            if has_local
+            else "seed://etf-price-history"
+            if self._has_seed_codes()
+            else f"local://{self.root_dir}"
+        )
         return {
-            "sourceStatus": "error"
-            if validation_failure_count
-            else "cached" if ready_items else "unavailable",
+            "sourceStatus": source_status,
             "sourceContract": "twse_multi_etf_price_history_index",
-            "sourceUrl": f"local://{self.root_dir}",
+            "sourceUrl": source_url,
             "fetchedAt": fetched_at,
             "sourceUpdatedAt": latest,
             "dataTime": latest,
@@ -304,8 +332,36 @@ class EtfPriceHistoryStore:
         temp_path.replace(path)
 
     def _read_raw_records(self, code: str) -> list[dict[str, Any]]:
+        normalized = normalize_etf_code(code)
+        seed_records = self._read_seed_raw_records(normalized)
+        local_records = self._read_local_raw_records(normalized)
+        if not seed_records:
+            return local_records
+        if not local_records:
+            return seed_records
+        merged = {str(record.get("date")): record for record in seed_records}
+        for record in local_records:
+            day = str(record.get("date") or "")
+            if day:
+                merged[day] = record
+        return sorted(merged.values(), key=lambda item: str(item.get("date") or ""))
+
+    def _local_records(self, code: str) -> list[dict[str, Any]]:
+        normalized = normalize_etf_code(code)
+        return [_record(normalized, decoded) for decoded in self._read_local_raw_records(normalized)]
+
+    def _read_local_raw_records(self, code: str) -> list[dict[str, Any]]:
         path = self.path_for(code)
-        if not path.exists():
+        return self._read_raw_records_from_path(path)
+
+    def _read_seed_raw_records(self, code: str) -> list[dict[str, Any]]:
+        path = self.seed_path_for(code)
+        if path is None:
+            return []
+        return self._read_raw_records_from_path(path)
+
+    def _read_raw_records_from_path(self, path: Path) -> list[dict[str, Any]]:
+        if not path.exists() or not path.is_file():
             return []
         records: list[dict[str, Any]] = []
         for line in path.read_text(encoding="utf-8").splitlines():
@@ -318,6 +374,41 @@ class EtfPriceHistoryStore:
             if isinstance(decoded, dict):
                 records.append(decoded)
         return records
+
+    def _source_info(self, code: str) -> dict[str, str]:
+        normalized = normalize_etf_code(code)
+        has_local = self._has_local_records(normalized)
+        has_seed = self._has_seed_records(normalized)
+        if has_local and has_seed:
+            return {
+                "sourceStatus": "cached",
+                "sourceUrl": f"local+seed://etf-price-history/{normalized}",
+            }
+        if has_local:
+            return {
+                "sourceStatus": "cached",
+                "sourceUrl": f"local://etf-price-history/{normalized}",
+            }
+        if has_seed:
+            return {
+                "sourceStatus": "static_official",
+                "sourceUrl": f"seed://etf-price-history/{normalized}",
+            }
+        return {
+            "sourceStatus": "unavailable",
+            "sourceUrl": f"local://etf-price-history/{normalized}",
+        }
+
+    def _has_local_records(self, code: str) -> bool:
+        return bool(self._read_local_raw_records(code))
+
+    def _has_seed_records(self, code: str) -> bool:
+        return bool(self._read_seed_raw_records(code))
+
+    def _has_seed_codes(self) -> bool:
+        return self.seed_dir is not None and self.seed_dir.exists() and any(
+            normalize_etf_code(path.stem) for path in self.seed_dir.glob("*.jsonl")
+        )
 
 
 def normalize_etf_code(value: str) -> str:

@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from datetime import date, timedelta
@@ -304,6 +306,79 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(payload["readyCount"], 2)
         self.assertEqual([item["code"] for item in payload["items"]], ["0050", "00878"])
 
+    def test_multi_etf_store_reads_seed_when_local_cache_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            seed_store = EtfPriceHistoryStore(root / "seed")
+            seed_store.save_points("0050", _points("0050"))
+
+            store = EtfPriceHistoryStore(root / "local", seed_dir=seed_store.root_dir)
+            status = store.status("0050", fetched_at="2026-06-21T00:00:00+00:00")
+            price = store.price_response(
+                code="0050",
+                limit=30,
+                fetched_at="2026-06-21T00:00:00+00:00",
+            )
+            index = store.index_response(fetched_at="2026-06-21T00:00:00+00:00")
+
+        self.assertEqual(status["sourceStatus"], "static_official")
+        self.assertEqual(status["sourceUrl"], "seed://etf-price-history/0050")
+        self.assertEqual(status["rowCount"], 2)
+        self.assertEqual(price["sourceStatus"], "static_official")
+        self.assertEqual(len(price["items"]), 2)
+        self.assertEqual(index["sourceStatus"], "static_official")
+        self.assertEqual(index["readyCount"], 1)
+        self.assertEqual(index["items"][0]["code"], "0050")
+
+    def test_multi_etf_store_merges_seed_with_local_cache(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            seed_store = EtfPriceHistoryStore(root / "seed")
+            seed_store.save_points("0050", _points("0050"))
+
+            store = EtfPriceHistoryStore(root / "local", seed_dir=seed_store.root_dir)
+            saved = store.save_points(
+                "0050",
+                [
+                    {
+                        "code": "0050",
+                        "date": "2026-06-02",
+                        "open": 12,
+                        "high": 13,
+                        "low": 11,
+                        "close": 12.5,
+                        "volume": 2200,
+                        "sourceUrl": "fixture://local",
+                    },
+                    {
+                        "code": "0050",
+                        "date": "2026-06-03",
+                        "open": 13,
+                        "high": 14,
+                        "low": 12,
+                        "close": 13.5,
+                        "volume": 2300,
+                        "sourceUrl": "fixture://local",
+                    },
+                ],
+            )
+            records = store.all("0050")
+            status = store.status("0050", fetched_at="2026-06-21T00:00:00+00:00")
+            local_lines = store.path_for("0050").read_text(encoding="utf-8").splitlines()
+
+        self.assertEqual(saved, 2)
+        self.assertEqual(status["sourceStatus"], "cached")
+        self.assertEqual(status["sourceUrl"], "local+seed://etf-price-history/0050")
+        self.assertEqual(status["rowCount"], 3)
+        self.assertEqual([record["date"] for record in records], [
+            "2026-06-01",
+            "2026-06-02",
+            "2026-06-03",
+        ])
+        self.assertEqual(records[1]["close"], 12.5)
+        self.assertEqual(records[1]["sourceUrl"], "fixture://local")
+        self.assertEqual(len(local_lines), 2)
+
     def test_status_marks_recent_and_long_term_coverage_tiers(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             store = EtfPriceHistoryStore(Path(temp_dir))
@@ -407,6 +482,55 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(price.json()["code"], "0056")
         self.assertEqual(price.json()["rowCount"], 3)
         self.assertEqual(price.json()["validation"]["overallStatus"], "PASS")
+
+    def test_endpoints_read_seeded_multi_etf_history_when_local_cache_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            seed_store = EtfPriceHistoryStore(root / "seed")
+            seed_store.save_points("0050", _points("0050"))
+            config = Settings(
+                etf_price_history_dir=str(root / "local"),
+                etf_price_history_seed_dir=str(seed_store.root_dir),
+            )
+            service = Etf00631LService(config=config)
+            client = TestClient(create_app(app_config=config, app_service=service))
+
+            status = client.get("/api/etf/history/status")
+            price = client.get("/api/etf/history/price", params={"code": "0050"})
+
+        self.assertEqual(status.status_code, 200)
+        self.assertEqual(status.json()["sourceStatus"], "static_official")
+        self.assertEqual(status.json()["readyCount"], 1)
+        self.assertEqual(price.status_code, 200)
+        self.assertEqual(price.json()["sourceStatus"], "static_official")
+        self.assertEqual(price.json()["rowCount"], 2)
+
+    def test_import_status_script_reports_seeded_multi_etf_history(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            seed_store = EtfPriceHistoryStore(root / "seed")
+            seed_store.save_points("0050", _points("0050"))
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "backend/scripts/import_etf_price_history.py",
+                    "--status-only",
+                    "--summary-only",
+                    "--output-dir",
+                    str(root / "local"),
+                    "--seed-dir",
+                    str(seed_store.root_dir),
+                ],
+                cwd=Path(__file__).resolve().parents[2],
+                capture_output=True,
+                check=False,
+                text=True,
+            )
+
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn('"sourceStatus": "static_official"', completed.stdout)
+        self.assertIn("[summary] overallStatus=PASS", completed.stdout)
 
 
 def _points(code: str) -> list[dict[str, object]]:

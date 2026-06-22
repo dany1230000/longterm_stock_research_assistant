@@ -45,6 +45,7 @@ def main() -> int:
         help="Fetch from 2019-01-01 instead of each ETF's latest cached month.",
     )
     parser.add_argument("--output-dir", default=settings.etf_price_history_dir)
+    parser.add_argument("--seed-dir", default=settings.etf_price_history_seed_dir)
     parser.add_argument("--status-only", action="store_true")
     parser.add_argument(
         "--summary-only",
@@ -61,7 +62,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    store = EtfPriceHistoryStore(args.output_dir)
+    store = EtfPriceHistoryStore(args.output_dir, seed_dir=args.seed_dir)
     if args.status_only:
         index_payload = store.index_response(fetched_at=utc_now_iso())
         payload = (

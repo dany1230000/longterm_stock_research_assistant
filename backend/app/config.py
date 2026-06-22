@@ -118,6 +118,10 @@ class Settings:
         "ETF_PRICE_HISTORY_DIR",
         _data_path("ETF_PRICE_HISTORY_DIR", "etf_price_history"),
     )
+    etf_price_history_seed_dir: str = os.getenv(
+        "ETF_PRICE_HISTORY_SEED_DIR",
+        str(_SEED_ROOT / "etf_price_history_seed"),
+    )
     history_export_dir: str = os.getenv(
         "00631L_HISTORY_EXPORT_DIR",
         str(_BACKEND_ROOT / "exports"),

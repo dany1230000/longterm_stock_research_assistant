@@ -87,6 +87,8 @@ v4.50 fixes the left-top ETF search sheet selected-state label after switching E
 
 v4.51 lets the public backend read `backend/seeds/00631l_price_history_seed.jsonl` when its local persistent volume has no price-history rows. Seed-only backend history is labeled `static_official`; once local rows are saved, local cache rows override same-date seed rows and the status becomes cached/local+seed history.
 
+v4.52 applies the same seed fallback to multi-ETF price histories. Public backend ETF search, selected ETF history, and comparison context can read `backend/seeds/etf_price_history_seed/` before the persistent volume is populated; seed-only ETF histories are labeled `static_official`.
+
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.

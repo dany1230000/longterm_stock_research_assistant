@@ -87,7 +87,10 @@ class Etf00631LService:
         )
         self._etf_price_history_store = (
             etf_price_history_store
-            or EtfPriceHistoryStore(self._config.etf_price_history_dir)
+            or EtfPriceHistoryStore(
+                self._config.etf_price_history_dir,
+                seed_dir=self._config.etf_price_history_seed_dir,
+            )
         )
         self._analysis_provider = analysis_provider or RuleBasedAnalysisProvider()
 
