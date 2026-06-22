@@ -8673,6 +8673,8 @@ class _LineChartPanelState extends State<_LineChartPanel> {
         _ChartTouchDetail(
           point: touchedPoint,
           value: touchedValue,
+          rangeStart: spotPoints.isEmpty ? null : spotPoints.first.date,
+          rangeEnd: spotPoints.isEmpty ? null : spotPoints.last.date,
         ),
       ],
     );
@@ -8683,15 +8685,21 @@ class _ChartTouchDetail extends StatelessWidget {
   const _ChartTouchDetail({
     required this.point,
     required this.value,
+    required this.rangeStart,
+    required this.rangeEnd,
   });
 
   final EtfPriceHistoryPoint? point;
   final double? value;
+  final DateTime? rangeStart;
+  final DateTime? rangeEnd;
 
   @override
   Widget build(BuildContext context) {
     final text = point == null || value == null
-        ? '點擊圖表可查看完整日期與數值'
+        ? rangeStart == null || rangeEnd == null
+            ? '點擊圖表可查看完整日期與數值'
+            : '圖表區間 ${formatTaiwanDate(rangeStart!)} - ${formatTaiwanDate(rangeEnd!)}；點擊圖表可查看完整日期與數值'
         : '選取日期 ${formatTaiwanDate(point!.date)} · 數值 ${_compactChartValue(value!)}';
     return Text(
       text,
