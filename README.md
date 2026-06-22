@@ -55,6 +55,7 @@ scripts\00631l_backend_prod_check.cmd
 scripts\00631l_backend_docker_check.cmd
 scripts\00631l_remote_maintenance.cmd --dry-run
 scripts\00631l_remote_maintenance.cmd --mode all
+scripts\00631l_public_backend_status.cmd
 scripts\00631l_export_static_data.cmd --status-only
 scripts\00631l_export_static_data.cmd --update
 set PUBLIC_BACKEND_URL=https://your-backend.example.com
@@ -92,6 +93,8 @@ v4.52 applies the same seed fallback to multi-ETF price histories. Public backen
 v4.53 extends public backend remote maintenance so `daily` / `all` mode also runs the multi-ETF history update and status check. This helps a deployed backend fill persistent ETF history cache rows instead of relying only on committed seed fallback.
 
 v4.54 replaces stale hard-coded backend version text with release metadata from config/env. `/health`, operations/status, and the app settings/status view can now show the backend version, release tag, git sha, and build time when deployment supplies them.
+
+v4.55 adds `scripts\00631l_public_backend_status.cmd`, a read-only public backend status check for `/health`, `/ready`, 00631L history, and multi-ETF history readiness.
 
 Next direction is tracked in `docs\00631l_next_direction.md`: data trust, public operations, mobile UX, and analysis quality.
 
