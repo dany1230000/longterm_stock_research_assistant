@@ -26,6 +26,7 @@ def main() -> int:
     parser.add_argument("--start-date", default="")
     parser.add_argument("--end-date", default="")
     parser.add_argument("--path", default=settings.price_history_path)
+    parser.add_argument("--seed-path", default=settings.price_history_seed_path)
     parser.add_argument("--status-only", action="store_true")
     parser.add_argument(
         "--full-refresh",
@@ -34,13 +35,14 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    store = PriceHistoryStore(args.path)
+    store = PriceHistoryStore(args.path, seed_path=args.seed_path)
     if args.status_only:
         payload = store.status_response(fetched_at=utc_now_iso())
+        usable = payload["sourceStatus"] in {"cached", "static_official"}
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         print(
             "[summary] "
-            f"overallStatus={'PASS' if payload['sourceStatus'] == 'cached' else 'WARN'} "
+            f"overallStatus={'PASS' if usable else 'WARN'} "
             f"rows={payload.get('rowCount', 0)} "
             f"coverage={payload.get('coverageStart')}..{payload.get('coverageEnd')}"
         )

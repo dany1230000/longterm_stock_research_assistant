@@ -46,6 +46,7 @@ _load_backend_dotenv()
 
 _BACKEND_ROOT = Path(__file__).resolve().parents[1]
 _DATA_ROOT = Path(os.getenv("00631L_DATA_DIR", str(_BACKEND_ROOT / "data")))
+_SEED_ROOT = _BACKEND_ROOT / "seeds"
 
 
 def _data_path(name: str, filename: str) -> str:
@@ -104,6 +105,10 @@ class Settings:
     price_history_path: str = os.getenv(
         "00631L_PRICE_HISTORY_PATH",
         _data_path("00631L_PRICE_HISTORY_PATH", "00631l_price_history.jsonl"),
+    )
+    price_history_seed_path: str = os.getenv(
+        "00631L_PRICE_HISTORY_SEED_PATH",
+        str(_SEED_ROOT / "00631l_price_history_seed.jsonl"),
     )
     etf_catalog_path: str = os.getenv(
         "ETF_CATALOG_PATH",

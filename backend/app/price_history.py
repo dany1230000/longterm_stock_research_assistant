@@ -45,13 +45,14 @@ def apply_00631l_split_adjustments(records: list[dict[str, Any]]) -> list[dict[s
 
 
 class PriceHistoryStore:
-    def __init__(self, path: str | Path) -> None:
+    def __init__(self, path: str | Path, *, seed_path: str | Path | None = None) -> None:
         self.path = Path(path)
+        self.seed_path = Path(seed_path) if seed_path else None
 
     def save_points(self, points: list[dict[str, Any]]) -> int:
         if not points:
             return 0
-        records = {str(record.get("date")): record for record in self._read_records()}
+        records = {str(record.get("date")): record for record in self._read_local_records()}
         changed = 0
         for point in points:
             day = str(point.get("date") or "")
@@ -132,6 +133,7 @@ class PriceHistoryStore:
 
     def status_response(self, *, fetched_at: str) -> dict[str, Any]:
         records = self.all()
+        source_info = self._source_info()
         if not records:
             return {
                 "sourceStatus": "unavailable",
@@ -158,9 +160,9 @@ class PriceHistoryStore:
         end_date = _parse_iso_date(coverage_end)
         is_stale = True if end_date is None else (today - end_date).days > 7
         return {
-            "sourceStatus": "cached",
+            "sourceStatus": source_info["sourceStatus"],
             "sourceContract": "00631l_price_history_status",
-            "sourceUrl": "local://00631l-price-history",
+            "sourceUrl": source_info["sourceUrl"],
             "fetchedAt": fetched_at,
             "sourceUpdatedAt": coverage_end,
             "dataTime": coverage_end,
@@ -175,10 +177,32 @@ class PriceHistoryStore:
         }
 
     def _read_records(self) -> list[dict[str, Any]]:
-        if not self.path.exists():
+        seed_records = self._read_seed_records()
+        local_records = self._read_local_records()
+        if not seed_records:
+            return local_records
+        if not local_records:
+            return seed_records
+        merged = {str(record.get("date")): record for record in seed_records}
+        for record in local_records:
+            day = str(record.get("date") or "")
+            if day:
+                merged[day] = record
+        return sorted(merged.values(), key=lambda item: str(item.get("date") or ""))
+
+    def _read_local_records(self) -> list[dict[str, Any]]:
+        return self._read_jsonl_records(self.path)
+
+    def _read_seed_records(self) -> list[dict[str, Any]]:
+        if self.seed_path is None:
+            return []
+        return self._read_jsonl_records(self.seed_path)
+
+    def _read_jsonl_records(self, path: Path) -> list[dict[str, Any]]:
+        if not path.exists() or not path.is_file():
             return []
         records: list[dict[str, Any]] = []
-        for line in self.path.read_text(encoding="utf-8").splitlines():
+        for line in path.read_text(encoding="utf-8").splitlines():
             if not line.strip():
                 continue
             try:
@@ -188,6 +212,29 @@ class PriceHistoryStore:
             if isinstance(decoded, dict):
                 records.append(decoded)
         return apply_00631l_split_adjustments(records)
+
+    def _source_info(self) -> dict[str, str]:
+        has_local = bool(self._read_local_records())
+        has_seed = bool(self._read_seed_records())
+        if has_local and has_seed:
+            return {
+                "sourceStatus": "cached",
+                "sourceUrl": "local+seed://00631l-price-history",
+            }
+        if has_local:
+            return {
+                "sourceStatus": "cached",
+                "sourceUrl": "local://00631l-price-history",
+            }
+        if has_seed:
+            return {
+                "sourceStatus": "static_official",
+                "sourceUrl": "seed://00631l-price-history",
+            }
+        return {
+            "sourceStatus": "unavailable",
+            "sourceUrl": "local://00631l-price-history",
+        }
 
     def _write_records(self, records: list[dict[str, Any]]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)

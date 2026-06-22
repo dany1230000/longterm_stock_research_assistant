@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from datetime import date
@@ -51,6 +53,55 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             self.assertEqual(len(response["items"]), 3)
             self.assertIn("dailyReturnPct", response["items"][1])
             self.assertEqual(response["priceField"], "adjustedClose")
+
+    def test_price_history_store_reads_seed_when_local_cache_is_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            seed = PriceHistoryStore(root / "seed.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://seed")
+            seed.save_points(rows)
+
+            store = PriceHistoryStore(root / "price.jsonl", seed_path=seed.path)
+
+            status = store.status_response(fetched_at="2026-06-11T00:00:00+00:00")
+            response = store.price_response(limit=30, fetched_at="2026-06-11T00:00:00+00:00")
+
+            self.assertEqual(status["sourceStatus"], "static_official")
+            self.assertEqual(status["sourceUrl"], "seed://00631l-price-history")
+            self.assertEqual(status["rowCount"], 3)
+            self.assertEqual(status["coverageStart"], "2026-06-01")
+            self.assertEqual(status["coverageEnd"], "2026-06-03")
+            self.assertEqual(len(response["items"]), 3)
+            self.assertEqual(response["sourceStatus"], "static_official")
+
+    def test_price_history_store_merges_seed_with_local_cache(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            seed = PriceHistoryStore(root / "seed.jsonl")
+            seed.save_points(
+                parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://seed")
+            )
+            store = PriceHistoryStore(root / "price.jsonl", seed_path=seed.path)
+            store.save_points(
+                parse_twse_stock_day(_stock_day_override_fixture(), source_url="fixture://local")
+            )
+
+            records = store.all()
+            status = store.status_response(fetched_at="2026-06-11T00:00:00+00:00")
+
+            self.assertEqual(status["sourceStatus"], "cached")
+            self.assertEqual(status["sourceUrl"], "local+seed://00631l-price-history")
+            self.assertEqual(status["rowCount"], 4)
+            self.assertEqual(status["coverageStart"], "2026-06-01")
+            self.assertEqual(status["coverageEnd"], "2026-06-04")
+            self.assertEqual([record["date"] for record in records], [
+                "2026-06-01",
+                "2026-06-02",
+                "2026-06-03",
+                "2026-06-04",
+            ])
+            self.assertEqual(records[2]["close"], 33.0)
+            self.assertEqual(records[2]["sourceUrl"], "fixture://local")
 
     def test_price_history_store_defaults_incremental_update_to_latest_month(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -501,6 +552,34 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             )
             self.assertTrue(any("seedPriceHistoryMerged" in item for item in warnings))
 
+    def test_price_history_status_script_reports_seed_history(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            seed = PriceHistoryStore(root / "seed.jsonl")
+            seed.save_points(
+                parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://seed")
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "backend/scripts/update_00631l_price_history.py",
+                    "--status-only",
+                    "--path",
+                    str(root / "price.jsonl"),
+                    "--seed-path",
+                    str(seed.path),
+                ],
+                cwd=Path(__file__).resolve().parents[2],
+                capture_output=True,
+                check=False,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('"sourceStatus": "static_official"', completed.stdout)
+            self.assertIn("[summary] overallStatus=PASS", completed.stdout)
+
     def test_static_export_merges_seeded_multi_etf_price_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -562,6 +641,18 @@ def _stock_day_fixture() -> str:
                 ["115/06/01", "1,000,000", "30,500,000", "30.00", "31.00", "29.50", "30.50", "+0.50", "1,234"],
                 ["115/06/02", "1,100,000", "34,100,000", "31.00", "32.00", "30.50", "31.00", "+0.50", "1,300"],
                 ["115/06/03", "1,200,000", "36,000,000", "30.50", "31.00", "29.80", "30.00", "-1.00", "1,400"],
+            ],
+        }
+    )
+
+
+def _stock_day_override_fixture() -> str:
+    return json.dumps(
+        {
+            "stat": "OK",
+            "data": [
+                ["115/06/03", "1,250,000", "41,250,000", "32.50", "33.50", "32.00", "33.00", "+3.00", "1,500"],
+                ["115/06/04", "1,300,000", "43,550,000", "33.00", "34.00", "32.80", "33.50", "+0.50", "1,600"],
             ],
         }
     )

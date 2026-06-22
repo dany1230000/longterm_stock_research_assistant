@@ -651,6 +651,48 @@ Custodian Fee
             self.assertEqual(result["totalInvested"], 100000)
             self.assertGreater(len(result["equityCurve"]), 1)
 
+    def test_price_history_endpoint_uses_configured_seed_when_local_cache_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            seed_store = PriceHistoryStore(root / "seed.jsonl")
+            seed_store.save_points(
+                parse_twse_stock_day(
+                    json.dumps(
+                        {
+                            "data": [
+                                ["115/06/01", "1,000,000", "30,500,000", "30.00", "31.00", "29.50", "30.50", "+0.50", "1,234"],
+                                ["115/06/02", "1,100,000", "34,100,000", "31.00", "32.00", "30.50", "31.00", "+0.50", "1,300"],
+                            ]
+                        }
+                    ),
+                    source_url="fixture://seed",
+                )
+            )
+            main_module.service = Etf00631LService(
+                config=Settings(
+                    price_history_path=str(root / "price.jsonl"),
+                    price_history_seed_path=str(seed_store.path),
+                    holdings_history_path=str(root / "history.jsonl"),
+                    intraday_nav_history_path=str(root / "intraday.jsonl"),
+                ),
+                cache=TimedMemoryCache(),
+                history_store=HoldingsHistoryStore(root / "history.jsonl"),
+                intraday_history_store=IntradayNavHistoryStore(root / "intraday.jsonl"),
+            )
+
+            status_response = self.client.get("/api/etf/00631l/history/status")
+            price_response = self.client.get("/api/etf/00631l/history/price")
+
+            self.assertEqual(status_response.status_code, 200)
+            self.assertEqual(price_response.status_code, 200)
+            status_payload = status_response.json()
+            price_payload = price_response.json()
+            self.assertEqual(status_payload["sourceStatus"], "static_official")
+            self.assertEqual(status_payload["rowCount"], 2)
+            self.assertEqual(status_payload["coverageStart"], "2026-06-01")
+            self.assertEqual(price_payload["sourceStatus"], "static_official")
+            self.assertEqual(len(price_payload["items"]), 2)
+
     def test_etf_catalog_import_and_status_endpoints(self) -> None:
         fixture = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(
             encoding="utf-8"

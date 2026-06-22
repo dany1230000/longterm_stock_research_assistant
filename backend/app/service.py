@@ -82,7 +82,8 @@ class Etf00631LService:
             self._config.intraday_nav_history_path
         )
         self._price_history_store = price_history_store or PriceHistoryStore(
-            self._config.price_history_path
+            self._config.price_history_path,
+            seed_path=self._config.price_history_seed_path,
         )
         self._etf_price_history_store = (
             etf_price_history_store
