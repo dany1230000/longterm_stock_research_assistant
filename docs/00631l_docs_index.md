@@ -92,6 +92,7 @@ This is the main entry point for 00631L lab documentation.
 - Remote ETF history maintenance v4.53: `docs\00631l_v4_53_remote_etf_history_maintenance.md`
 - Backend release metadata v4.54: `docs\00631l_v4_54_backend_release_metadata.md`
 - Public backend status check v4.55: `docs\00631l_v4_55_public_backend_status_check.md`
+- Public data freshness comparison v4.56: `docs\00631l_v4_56_public_data_freshness.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
@@ -131,6 +132,7 @@ This is the main entry point for 00631L lab documentation.
 - ETF comparison basket summary: `docs\00631l_v4_11_etf_comparison_basket_summary.md`
 - Release check: `scripts\00631l_release_check.cmd`
 - Remote public backend maintenance: `scripts\00631l_remote_maintenance.cmd --mode all`
+- Public/local/static freshness compare: `scripts\00631l_compare_public_freshness.cmd --soft-fail`
 - Public config check: `scripts\00631l_check_public_config.cmd`
 - Public web build: `scripts\00631l_build_web_public.cmd`
 - Backend production check: `scripts\00631l_backend_prod_check.cmd`
