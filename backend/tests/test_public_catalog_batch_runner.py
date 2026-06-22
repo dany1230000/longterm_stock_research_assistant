@@ -152,6 +152,67 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["finalReadyCount"], 17)
         self.assertTrue(any("partial progress" in item for item in payload["warnings"]))
 
+    def test_failed_batch_recommends_retrying_failed_offset(self) -> None:
+        history_ready_counts = [56, 15]
+
+        def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
+            if path == "/api/etf/catalog/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "static_official",
+                        "rowCount": 343,
+                    },
+                }
+            if path == "/api/etf/history/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": history_ready_counts.pop(0),
+                        "rowCount": 15,
+                        "validationFailureCount": 0,
+                    },
+                }
+            raise AssertionError(path)
+
+        def maintenance_runner(
+            *,
+            base_url: str,
+            offset: int,
+            limit: int,
+            timeout_seconds: int,
+            retry_count: int,
+            retry_delay_seconds: float,
+        ) -> dict:
+            return {
+                "overallStatus": "FAIL",
+                "failures": ["etf_history_update: HTTP 502"],
+                "warnings": [],
+                "steps": [],
+            }
+
+        payload = run_public_etf_catalog_batches(
+            base_url="https://example.com",
+            batch_size=10,
+            max_batches=1,
+            start_offset=30,
+            requester=requester,
+            maintenance_runner=maintenance_runner,
+        )
+
+        self.assertEqual(payload["overallStatus"], "FAIL")
+        self.assertEqual(payload["summary"]["nextOffset"], 30)
+        self.assertTrue(
+            any("--start-offset 30" in item for item in payload["actionItems"])
+        )
+        self.assertTrue(
+            any("ready count decreased" in item for item in payload["warnings"])
+        )
+        self.assertFalse(
+            any("--start-offset 40" in item for item in payload["actionItems"])
+        )
+
     def test_warns_when_catalog_is_not_available(self) -> None:
         def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
             return {

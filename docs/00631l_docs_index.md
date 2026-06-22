@@ -98,6 +98,7 @@ This is the main entry point for 00631L lab documentation.
 - Remote retry and post-check v4.59: `docs\00631l_v4_59_remote_retry_postcheck.md`
 - Catalog seed fallback v4.60: `docs\00631l_v4_60_catalog_seed_fallback.md`
 - Public catalog batch runner v4.61: `docs\00631l_v4_61_public_catalog_batch_runner.md`
+- Public batch resilience v4.62: `docs\00631l_v4_62_public_batch_resilience.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

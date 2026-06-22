@@ -112,6 +112,8 @@ v4.60 lets a public backend use `backend/seeds/twse_etf_catalog_seed.json` when 
 
 v4.61 adds `scripts\00631l_public_etf_catalog_batches.cmd`, which plans catalog offsets from `/api/etf/catalog/status` and runs broad ETF history batches without manually typing each offset.
 
+v4.62 hardens that batch runner for hosted backend restarts: failed batches keep the same `--start-offset` in the next action item, and ready-count regressions are reported clearly.
+
 Next direction is tracked in `docs\00631l_next_direction.md`: data trust, public operations, mobile UX, and analysis quality.
 
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.

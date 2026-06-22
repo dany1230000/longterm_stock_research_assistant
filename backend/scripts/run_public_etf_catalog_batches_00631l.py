@@ -201,17 +201,30 @@ def run_public_etf_catalog_batches(
     final_ready_count = int(final_payload.get("readyCount") or 0)
     final_validation_failures = int(final_payload.get("validationFailureCount") or 0)
     final_step_status = "PASS" if final_validation_failures == 0 else "WARN"
+    final_step_message = f"readyCount={final_ready_count}"
     if final_ready_count > initial_ready_count:
         batch_steps = [
             _downgrade_progress_timeout(step)
             for step in batch_steps
         ]
+    failed_offsets = _failed_offsets(batch_steps)
+    if final_ready_count < initial_ready_count:
+        final_step_status = "WARN"
+        final_step_message = (
+            f"readyCount={final_ready_count}; ready count decreased from initial "
+            f"{initial_ready_count}"
+        )
+    next_offset = (
+        failed_offsets[0]
+        if failed_offsets
+        else _next_offset(planned_offsets, limit, catalog_rows)
+    )
     steps.extend(batch_steps)
     steps.append(
         _step(
             "etf_history_status",
             final_step_status,
-            f"readyCount={final_ready_count}",
+            final_step_message,
             http_status=final_status.get("httpStatus"),
             summary={
                 "readyCount": final_ready_count,
@@ -233,14 +246,15 @@ def run_public_etf_catalog_batches(
             "initialReadyCount": initial_ready_count,
             "plannedOffsets": planned_offsets,
             "plannedBatchCount": len(planned_offsets),
-            "nextOffset": _next_offset(planned_offsets, limit, catalog_rows),
+            "nextOffset": next_offset,
             "finalReadyCount": final_ready_count,
             "finalValidationFailureCount": final_validation_failures,
         },
         action_items=_action_items(
             final_ready_count,
             catalog_rows,
-            next_offset=_next_offset(planned_offsets, limit, catalog_rows),
+            next_offset=next_offset,
+            failed_offset=failed_offsets[0] if failed_offsets else None,
         ),
     )
 
@@ -411,13 +425,34 @@ def _next_offset(planned_offsets: list[int], batch_size: int, catalog_rows: int)
     return candidate if candidate < catalog_rows else None
 
 
+def _failed_offsets(batch_steps: list[dict[str, Any]]) -> list[int]:
+    offsets: list[int] = []
+    for step in batch_steps:
+        if step.get("status") != "FAIL":
+            continue
+        summary = step.get("summary")
+        if not isinstance(summary, dict):
+            continue
+        try:
+            offsets.append(int(summary.get("offset")))
+        except (TypeError, ValueError):
+            continue
+    return offsets
+
+
 def _action_items(
     final_ready_count: int,
     catalog_rows: int,
     *,
     next_offset: int | None,
+    failed_offset: int | None = None,
 ) -> list[str]:
     if catalog_rows > 0 and final_ready_count < catalog_rows:
+        if failed_offset is not None:
+            return [
+                "Retry the failed offset with scripts\\00631l_public_etf_catalog_batches.cmd "
+                f"--start-offset {failed_offset}."
+            ]
         if next_offset is not None:
             return [
                 "Run the next offset with scripts\\00631l_public_etf_catalog_batches.cmd "

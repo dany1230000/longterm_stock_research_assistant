@@ -24,6 +24,8 @@ If the public backend has not deployed the catalog seed fallback yet, this comma
 
 The default batch size is intentionally small because hosted backends can time out while fetching many TWSE symbols in one request. If a batch times out but the final ready count increases, the runner reports `WARN` with partial progress instead of hiding that data was saved.
 
+If a batch fails with an HTTP error, retry the same `--start-offset` shown in `actionItems`. Do not skip to the next offset until the failed batch is either saved or the final ready count confirms progress.
+
 ## Data Labels
 
 The runner does not change source labels. If the backend uses `ETF_CATALOG_SEED_PATH`, catalog data is still labeled `static_official` until a local persistent catalog is imported.
