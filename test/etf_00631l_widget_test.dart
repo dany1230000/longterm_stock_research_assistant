@@ -48,6 +48,7 @@ void main() {
       const ValueKey('00631l-quote-meta-strip'),
     );
     expect(quoteMetaStrip, findsOneWidget);
+    expect(tester.getSize(quoteMetaStrip).height, lessThanOrEqualTo(24));
     expect(
       find.descendant(
         of: quoteMetaStrip,

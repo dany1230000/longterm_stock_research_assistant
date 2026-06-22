@@ -1471,75 +1471,26 @@ class _QuoteMetaStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final text = items
+        .map((item) => '${item.label} ${item.value}')
+        .where((value) => value.trim().isNotEmpty)
+        .join('  ·  ');
+
     return SingleChildScrollView(
       key: const ValueKey('00631l-quote-meta-strip'),
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: [
-          for (var index = 0; index < items.length; index += 1) ...[
-            if (index > 0) const SizedBox(width: 6),
-            _QuoteMetaPill(item: items[index]),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _QuoteMetaPill extends StatelessWidget {
-  const _QuoteMetaPill({required this.item});
-
-  final _QuoteMetaItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelAltColor(context),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 5,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '${item.label} ',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: _marketMutedTextColor(context),
-                    fontWeight: FontWeight.w800,
-                  ),
-            ),
-            const SizedBox(height: 1),
-            Text(
-              item.value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: _marketTextColor(context),
-                    fontWeight: FontWeight.w900,
-                  ),
-            ),
-            if (item.caption != null) ...[
-              const SizedBox(width: 5),
-              Text(
-                item.caption!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: _marketMutedTextColor(context),
-                      fontWeight: FontWeight.w700,
-                    ),
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text(
+          text,
+          maxLines: 1,
+          overflow: TextOverflow.visible,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0,
               ),
-            ],
-          ],
         ),
       ),
     );
