@@ -86,6 +86,7 @@ This is the main entry point for 00631L lab documentation.
 - Compact position card v4.47: `docs\00631l_v4_47_compact_position_card.md`
 - Compact AI detail v4.48: `docs\00631l_v4_48_compact_ai_detail.md`
 - Chart range touch hint v4.49: `docs\00631l_v4_49_chart_range_touch_hint.md`
+- Selected search state v4.50: `docs\00631l_v4_50_selected_search_state.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
 - App-ready v3.0 summary: `docs\00631l_v3_0_app_ready_summary.md`

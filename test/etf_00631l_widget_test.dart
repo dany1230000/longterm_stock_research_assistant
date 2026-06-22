@@ -577,6 +577,16 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
       findsOneWidget,
     );
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '0050',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('目前頁面'), findsOneWidget);
+    await tester.tap(find.byTooltip('關閉'));
+    await tester.pumpAndSettle();
 
     await tester.drag(find.byType(ListView).first, const Offset(0, -1720));
     await tester.pumpAndSettle();

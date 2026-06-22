@@ -705,6 +705,7 @@ class _MarketTopBar extends StatelessWidget {
                     : () => _showSymbolSearchSheet(
                           context,
                           data!,
+                          selectedEtfCode: selectedEtfCode,
                           onEtfSelected: onEtfSelected,
                         ),
               ),
@@ -807,8 +808,12 @@ class _MarketIndexPill extends StatelessWidget {
   }
 }
 
-Future<void> _showSymbolSearchSheet(BuildContext context, Etf00631LLabData data,
-    {ValueChanged<String>? onEtfSelected}) {
+Future<void> _showSymbolSearchSheet(
+  BuildContext context,
+  Etf00631LLabData data, {
+  required String selectedEtfCode,
+  ValueChanged<String>? onEtfSelected,
+}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -820,6 +825,7 @@ Future<void> _showSymbolSearchSheet(BuildContext context, Etf00631LLabData data,
     builder: (sheetContext) {
       return _SymbolSearchSheet(
         data: data,
+        selectedEtfCode: selectedEtfCode,
         onEtfSelected: onEtfSelected,
       );
     },
@@ -827,9 +833,14 @@ Future<void> _showSymbolSearchSheet(BuildContext context, Etf00631LLabData data,
 }
 
 class _SymbolSearchSheet extends ConsumerStatefulWidget {
-  const _SymbolSearchSheet({required this.data, this.onEtfSelected});
+  const _SymbolSearchSheet({
+    required this.data,
+    required this.selectedEtfCode,
+    this.onEtfSelected,
+  });
 
   final Etf00631LLabData data;
+  final String selectedEtfCode;
   final ValueChanged<String>? onEtfSelected;
 
   @override
@@ -967,7 +978,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                           final item = visibleItems[index];
                           return _SymbolSearchResultTile(
                             item: item,
-                            selected: item.code == widget.data.profile.symbol,
+                            selected: item.code == widget.selectedEtfCode,
                             onSelected: widget.onEtfSelected,
                           );
                         }
@@ -1072,7 +1083,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
         Navigator.of(context).pop();
         onSelected?.call(item.code);
         final message = selected
-            ? '目前已開啟 00631L 正二研究室。'
+            ? '${item.code} 已在目前頁面。'
             : readiness.snackMessage(item.code);
         messenger.showSnackBar(SnackBar(content: Text(message)));
       },

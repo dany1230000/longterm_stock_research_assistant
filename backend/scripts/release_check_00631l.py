@@ -227,6 +227,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_47_compact_position_card.md",
         "docs/00631l_v4_48_compact_ai_detail.md",
         "docs/00631l_v4_49_chart_range_touch_hint.md",
+        "docs/00631l_v4_50_selected_search_state.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
