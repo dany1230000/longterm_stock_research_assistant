@@ -102,6 +102,8 @@ v4.56 adds `scripts\00631l_compare_public_freshness.cmd`, a read-only comparison
 
 v4.57 adds catalog-batch remote ETF history maintenance. `POST /api/etf/history/update` now supports `fromCatalog=true`, `limit`, and `offset` so a deployed backend can fill ETF history in controlled batches.
 
+v4.58 refreshes backend release metadata defaults so `/health` does not fall back to an older v4.54 label when deployment env vars are missing.
+
 Next direction is tracked in `docs\00631l_next_direction.md`: data trust, public operations, mobile UX, and analysis quality.
 
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
