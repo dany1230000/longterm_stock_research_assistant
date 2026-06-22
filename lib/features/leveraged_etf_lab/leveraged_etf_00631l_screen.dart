@@ -5781,102 +5781,104 @@ class _PositionSectionState extends State<_PositionSection> {
           ],
         ),
         const SizedBox(height: 12),
-        _PositionStatePanel(
-          input: input,
-          summary: summary,
-          marketPrice: widget.selectedEtf.marketPrice,
-          sourceLabel: widget.selectedEtf.sourceStatusLabel,
-        ),
-        const SizedBox(height: 12),
-        _SectionBlock(
-          title: '輸入持倉資料',
-          subtitle: 'local-only，本機瀏覽器保存。清除資料後不會保留副本。',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (!_loaded) const LinearProgressIndicator(),
-              _StatusWrap(
-                labels: [
-                  'local-only',
-                  '不需登入',
-                  '不會上傳',
-                  '目前標的 ${widget.selectedEtf.code}',
-                  '行情來源 ${widget.selectedEtf.sourceStatusLabel}',
-                  '歷史來源 ${widget.selectedEtf.priceHistory.sourceStatusLabel}',
-                  '市價 ${_price(widget.selectedEtf.marketPrice)}',
+        KeyedSubtree(
+          key: const ValueKey('00631l-position-compact-input-card'),
+          child: _SectionBlock(
+            title: '輸入持倉資料',
+            subtitle: input.hasPosition
+                ? '依目前市價估算；資料只保存在本機瀏覽器。'
+                : 'local-only，本機瀏覽器保存。清除資料後不會保留副本。',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (!_loaded) const LinearProgressIndicator(),
+                _StatusWrap(
+                  labels: [
+                    input.hasPosition ? '持倉資料已輸入' : '尚未輸入持倉',
+                    'local-only',
+                    '不需登入',
+                    '不會上傳',
+                    '目前標的 ${widget.selectedEtf.code}',
+                    '行情來源 ${widget.selectedEtf.sourceStatusLabel}',
+                    '歷史來源 ${widget.selectedEtf.priceHistory.sourceStatusLabel}',
+                    '市價 ${_price(widget.selectedEtf.marketPrice)}',
+                    summary.dataTime == null
+                        ? '資料時間 unavailable'
+                        : '資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}',
+                  ],
+                ),
+                const SizedBox(height: 8),
+                if (!input.hasPosition) ...[
+                  const _EmptyPanel(
+                    title: '尚未輸入持倉',
+                    message: '填入持有股數與平均成本後，這裡會顯示目前市值、未實現損益與部位比例。',
+                  ),
+                  const SizedBox(height: 12),
                 ],
-              ),
-              const SizedBox(height: 8),
-              if (!input.hasPosition) ...[
-                const _EmptyPanel(
-                  title: '尚未輸入持倉',
-                  message: '填入持有股數與平均成本後，這裡會顯示目前市值、未實現損益與部位比例。',
+                _InputGrid(
+                  children: [
+                    _NumberField(
+                      label: '持有股數',
+                      controller: _sharesController,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    _NumberField(
+                      label: '平均成本',
+                      controller: _costController,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    _NumberField(
+                      label: '總資產，選填',
+                      controller: _assetsController,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    _NumberField(
+                      label: '費用，選填',
+                      controller: _feeController,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _noteController,
+                  decoration: const InputDecoration(labelText: '備註，選填'),
+                  minLines: 1,
+                  maxLines: 2,
+                  onChanged: (_) => setState(() {}),
                 ),
                 const SizedBox(height: 12),
-              ],
-              _InputGrid(
-                children: [
-                  _NumberField(
-                    label: '持有股數',
-                    controller: _sharesController,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  _NumberField(
-                    label: '平均成本',
-                    controller: _costController,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  _NumberField(
-                    label: '總資產，選填',
-                    controller: _assetsController,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  _NumberField(
-                    label: '費用，選填',
-                    controller: _feeController,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _noteController,
-                decoration: const InputDecoration(labelText: '備註，選填'),
-                minLines: 1,
-                maxLines: 2,
-                onChanged: (_) => setState(() {}),
-              ),
-              const SizedBox(height: 12),
-              _PositionResultGrid(summary: summary),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  FilledButton.icon(
-                    onPressed: _save,
-                    icon: const Icon(Icons.save_outlined),
-                    label: const Text('保存本機資料'),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: _export,
-                    icon: const Icon(Icons.ios_share_outlined),
-                    label: const Text('匯出 JSON'),
-                  ),
-                  TextButton.icon(
-                    onPressed: _clear,
-                    icon: const Icon(Icons.delete_outline),
-                    label: const Text('清除本機資料'),
-                  ),
-                ],
-              ),
-              if (_exportJson != null) ...[
+                _PositionResultGrid(summary: summary),
                 const SizedBox(height: 12),
-                SelectableText(_exportJson!),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: _save,
+                      icon: const Icon(Icons.save_outlined),
+                      label: const Text('保存本機資料'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: _export,
+                      icon: const Icon(Icons.ios_share_outlined),
+                      label: const Text('匯出 JSON'),
+                    ),
+                    TextButton.icon(
+                      onPressed: _clear,
+                      icon: const Icon(Icons.delete_outline),
+                      label: const Text('清除本機資料'),
+                    ),
+                  ],
+                ),
+                if (_exportJson != null) ...[
+                  const SizedBox(height: 12),
+                  SelectableText(_exportJson!),
+                ],
+                const SizedBox(height: 10),
+                const Text('本區只做持倉資料狀態與估算顯示，非買賣建議。'),
               ],
-              const SizedBox(height: 10),
-              const Text('本區只做持倉資料狀態與估算顯示，非買賣建議。'),
-            ],
+            ),
           ),
         ),
       ],
@@ -5926,55 +5928,6 @@ class _PositionSectionState extends State<_PositionSection> {
       'feeAndTax': input.feeAndTax,
       'note': input.note,
     });
-  }
-}
-
-class _PositionStatePanel extends StatelessWidget {
-  const _PositionStatePanel({
-    required this.input,
-    required this.summary,
-    required this.marketPrice,
-    required this.sourceLabel,
-  });
-
-  final EtfPositionInput input;
-  final EtfPositionSummary summary;
-  final double? marketPrice;
-  final String sourceLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final title = input.hasPosition ? '持倉資料已輸入' : '尚未輸入持倉';
-    final description = input.hasPosition
-        ? '目前使用 ${_price(marketPrice)} 估算市值，資料來源 $sourceLabel。'
-        : '本頁不需要登入。輸入資料只會存在目前瀏覽器。';
-    return _SectionBlock(
-      title: '持倉狀態',
-      subtitle: description,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _StatusWrap(
-            labels: [
-              title,
-              'local-only',
-              '市價 ${_price(marketPrice)}',
-              summary.dataTime == null
-                  ? '資料時間 unavailable'
-                  : '資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}',
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            '此區只做本機持倉試算與資料狀態顯示，非買賣建議。',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: _marketMutedTextColor(context),
-                  fontWeight: FontWeight.w700,
-                ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

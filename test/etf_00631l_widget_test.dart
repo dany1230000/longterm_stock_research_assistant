@@ -406,9 +406,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('本機持倉'), findsOneWidget);
-    expect(find.text('持倉狀態'), findsOneWidget);
+    expect(find.text('持倉狀態'), findsNothing);
     expect(find.text('尚未輸入持倉'), findsWidgets);
     expect(find.text('輸入持倉資料'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-position-compact-input-card')),
+      findsOneWidget,
+    );
     expect(find.text('不需登入'), findsOneWidget);
     expect(find.text('不會上傳'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
