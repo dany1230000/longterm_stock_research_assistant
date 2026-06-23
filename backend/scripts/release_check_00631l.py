@@ -333,6 +333,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_97_public_persistence_sample_guard.md",
         "docs/00631l_v4_98_public_persistence_fail_classification.md",
         "docs/00631l_v4_99_mobile_home_context.md",
+        "docs/00631l_v5_0_lazy_comparison_load.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

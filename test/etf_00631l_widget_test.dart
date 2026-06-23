@@ -196,6 +196,27 @@ void main() {
     expect(find.text('26/06\n03'), findsOneWidget);
   });
 
+  testWidgets(
+      'overview defers ETF comparison history loading until history tab',
+      (tester) async {
+    final repository = _CountingEtfHistoryRepository();
+
+    await _pumpLab(tester, repository);
+
+    final overviewRequests = repository.etfHistoryRequests;
+    expect(overviewRequests, lessThanOrEqualTo(1));
+    expect(find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
+        findsNothing);
+
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
+
+    expect(repository.etfHistoryRequests, greaterThan(overviewRequests + 1));
+    expect(find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
+        findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('quote header uses latest history close when live NAV is absent',
       (tester) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -1216,6 +1237,19 @@ class _NoHistoryRepository extends Mock00631LRepository {
       sourceUrl: 'local://empty-price-history',
       errorMessage: 'No official price history fixture.',
     );
+  }
+}
+
+class _CountingEtfHistoryRepository extends Mock00631LRepository {
+  int etfHistoryRequests = 0;
+
+  @override
+  Future<EtfPriceHistory> fetchEtfPriceHistory(
+    String code, {
+    int limit = 5000,
+  }) {
+    etfHistoryRequests += 1;
+    return super.fetchEtfPriceHistory(code, limit: limit);
   }
 }
 

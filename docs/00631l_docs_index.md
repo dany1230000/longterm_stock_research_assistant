@@ -136,6 +136,7 @@ This is the main entry point for 00631L lab documentation.
 - Public persistence sample guard v4.97: `docs\00631l_v4_97_public_persistence_sample_guard.md`
 - Public persistence fail classification v4.98: `docs\00631l_v4_98_public_persistence_fail_classification.md`
 - Mobile home context v4.99: `docs\00631l_v4_99_mobile_home_context.md`
+- Lazy comparison load v5.0: `docs\00631l_v5_0_lazy_comparison_load.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

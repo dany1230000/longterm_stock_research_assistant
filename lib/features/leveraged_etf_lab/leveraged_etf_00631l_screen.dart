@@ -81,8 +81,10 @@ class _LeveragedEtf00631LScreenState
     final selectedHistoryValue = useEmbeddedPriceHistory
         ? null
         : ref.watch(selectedEtfPriceHistoryProvider(_selectedEtfCode));
-    final comparisonHistoriesValue =
-        ref.watch(etfHistoryComparisonProvider(_selectedEtfCode));
+    final shouldLoadComparison = _section == _LabSection.historyBacktest;
+    final comparisonHistoriesValue = shouldLoadComparison
+        ? ref.watch(etfHistoryComparisonProvider(_selectedEtfCode))
+        : const AsyncValue<List<EtfPriceHistory>>.data([]);
     final detailsLoading = !fullValue.hasValue && fullValue.isLoading;
     final detailsError = fullValue.hasError && !fullValue.hasValue
         ? fullValue.error.toString()
