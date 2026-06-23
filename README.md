@@ -1181,3 +1181,7 @@ public backend data directory and persistence checks are healthy.
 v4.87 carries remote ETF history update item details through maintenance
 wrappers, so public batch output can show requested codes, saved rows, coverage,
 and per-code errors instead of only readyCount changes.
+
+v4.88 blocks all public catalog batch commands when public readyCount regresses
+below the last successful batch state. Fix public backend persistence before
+continuing data import.

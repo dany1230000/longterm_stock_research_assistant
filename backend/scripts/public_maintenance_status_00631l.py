@@ -151,7 +151,9 @@ def build_public_maintenance_status(
                 *_catalog_batch_regression_action_items(ready_regression),
                 *(
                     []
-                    if has_persistence_warning or has_readiness_blocker
+                    if has_persistence_warning
+                    or has_readiness_blocker
+                    or ready_regression > 0
                     else _catalog_batch_action_items(
                         catalog_batch_state,
                         public_ready_count=public_summary.get("etfHistoryReadyCount"),
@@ -160,7 +162,9 @@ def build_public_maintenance_status(
                 ),
             ]
         ),
-        block_catalog_batches=has_persistence_warning or has_readiness_blocker,
+        block_catalog_batches=has_persistence_warning
+        or has_readiness_blocker
+        or ready_regression > 0,
     )
     warnings = _dedupe([*warnings, *catalog_regression_warning])
     overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"

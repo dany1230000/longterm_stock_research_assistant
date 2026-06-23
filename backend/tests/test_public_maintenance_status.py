@@ -146,6 +146,44 @@ class PublicMaintenanceStatusTests(unittest.TestCase):
             payload["actionItems"],
         )
 
+    def test_ready_count_regression_filters_upstream_catalog_batch_actions(self) -> None:
+        payload = build_public_maintenance_status(
+            deploy_drift={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},
+            public_status={
+                "overallStatus": "WARN",
+                "warnings": ["ETF history ready count below minimum 200: 15"],
+                "failures": [],
+                "summary": {"etfHistoryReadyCount": 15, "minEtfReadyCount": 200},
+            },
+            freshness={
+                "overallStatus": "WARN",
+                "warnings": ["public backend ETF history ready count is lower"],
+                "failures": [],
+                "actionItems": [
+                    "Run public ETF catalog batches: scripts\\00631l_public_etf_catalog_batches.cmd --batch-size 1 --max-batches 1 --soft-fail"
+                ],
+                "summary": {"publicEtfReadyLagVsStatic": 213},
+            },
+            catalog_batch_state={
+                "updatedAt": "2026-06-23T02:00:00+00:00",
+                "overallStatus": "PASS",
+                "catalogRowCount": 343,
+                "finalReadyCount": 17,
+                "nextOffset": 18,
+                "failedOffset": None,
+            },
+            checked_at="2026-06-23T00:00:00+00:00",
+        )
+
+        self.assertEqual(payload["summary"]["catalogBatchReadyRegression"], 2)
+        self.assertIn(
+            "Check public backend persistent data volume and redeploy status before continuing ETF catalog batches.",
+            payload["actionItems"],
+        )
+        self.assertFalse(
+            any("00631l_public_etf_catalog_batches" in item for item in payload["actionItems"])
+        )
+
     def test_persistence_warning_blocks_catalog_batch_action_items(self) -> None:
         payload = build_public_maintenance_status(
             deploy_drift={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},
