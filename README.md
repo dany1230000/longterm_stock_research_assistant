@@ -1130,3 +1130,7 @@ the newer ready count instead of repeating the just-completed offset.
 v4.75 changes public catalog batch action items when `readyCount` moves
 backward during the same run. In that case, check public backend persistence
 and redeploy status before continuing offsets.
+
+v4.76 adds `scripts\00631l_public_history_stability.cmd`, a read-only sampler
+for public `/api/etf/history/status`. Use it before catalog batches when public
+ETF ready counts look inconsistent.

@@ -73,6 +73,10 @@ def main() -> int:
             ["cmd", "/c", "scripts\\00631l_compare_public_freshness.cmd", "--dry-run"],
         ),
         _run_command(
+            "public_history_stability_dry_run",
+            ["cmd", "/c", "scripts\\00631l_public_history_stability.cmd", "--dry-run"],
+        ),
+        _run_command(
             "public_catalog_batches_dry_run",
             [
                 "cmd",
@@ -297,6 +301,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_73_preserve_public_batch_state.md",
         "docs/00631l_v4_74_public_batch_next_offset.md",
         "docs/00631l_v4_75_public_batch_regression_guidance.md",
+        "docs/00631l_v4_76_public_history_stability.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
@@ -330,6 +335,7 @@ def _required_files_check() -> dict[str, Any]:
         "backend/scripts/check_public_deploy_drift_00631l.py",
         "backend/scripts/public_maintenance_status_00631l.py",
         "backend/scripts/compare_public_data_freshness_00631l.py",
+        "backend/scripts/public_history_stability_00631l.py",
         "backend/scripts/run_public_etf_catalog_batches_00631l.py",
         "backend/scripts/import_etf_catalog.py",
         "backend/scripts/import_etf_price_history.py",
@@ -344,6 +350,7 @@ def _required_files_check() -> dict[str, Any]:
         "scripts/00631l_public_deploy_drift.cmd",
         "scripts/00631l_public_maintenance_status.cmd",
         "scripts/00631l_compare_public_freshness.cmd",
+        "scripts/00631l_public_history_stability.cmd",
         "scripts/00631l_public_etf_catalog_batches.cmd",
         "scripts/00631l_import_etf_catalog.cmd",
         "scripts/00631l_import_etf_price_history.cmd",
