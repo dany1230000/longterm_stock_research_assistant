@@ -117,6 +117,7 @@ def build_public_maintenance_status(
         catalog_batch_state,
         public_ready_count=public_summary.get("etfHistoryReadyCount"),
     )
+    has_persistence_warning = _has_public_persistence_warning(public_status)
     catalog_regression_warning = (
         [
             "Public ETF ready count regressed from the last batch state; "
@@ -130,11 +131,16 @@ def build_public_maintenance_status(
             *list(deploy_drift.get("actionItems") or []),
             *list(public_status.get("actionItems") or []),
             *list(freshness.get("actionItems") or []),
+            *_persistence_action_items(has_persistence_warning),
             *_catalog_batch_regression_action_items(ready_regression),
-            *_catalog_batch_action_items(
-                catalog_batch_state,
-                public_ready_count=public_summary.get("etfHistoryReadyCount"),
-                ready_lag=freshness_summary.get("publicEtfReadyLagVsStatic"),
+            *(
+                []
+                if has_persistence_warning
+                else _catalog_batch_action_items(
+                    catalog_batch_state,
+                    public_ready_count=public_summary.get("etfHistoryReadyCount"),
+                    ready_lag=freshness_summary.get("publicEtfReadyLagVsStatic"),
+                )
             ),
         ]
     )
@@ -249,6 +255,24 @@ def _catalog_batch_regression_action_items(ready_regression: int) -> list[str]:
         return []
     return [
         "Check public backend persistent data volume and redeploy status before continuing ETF catalog batches."
+    ]
+
+
+def _has_public_persistence_warning(public_status: dict[str, Any]) -> bool:
+    values = [str(item).lower() for item in public_status.get("warnings") or []]
+    return any(
+        "data_persistence" in item
+        or "data directory is not writable" in item
+        or "00631l_data_dir is not writable" in item
+        for item in values
+    )
+
+
+def _persistence_action_items(has_persistence_warning: bool) -> list[str]:
+    if not has_persistence_warning:
+        return []
+    return [
+        "Fix public backend persistent data volume before running ETF catalog batches."
     ]
 
 

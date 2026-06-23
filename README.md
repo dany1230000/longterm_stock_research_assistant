@@ -1148,3 +1148,7 @@ v4.79 keeps `scripts\00631l_public_backend_status.cmd` useful when a public
 host can serve static/seed data but its data directory is not writable. The
 script reports that state as WARN for read-only observation while `/ready`
 continues to flag the deployment persistence problem.
+
+v4.80 makes `scripts\00631l_public_maintenance_status.cmd` persistence-first:
+when the public backend data path is unhealthy, the next action is to fix the
+public volume before running ETF history catalog batches.

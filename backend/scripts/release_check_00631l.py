@@ -309,6 +309,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_77_deploy_drift_gitsha_noise.md",
         "docs/00631l_v4_78_public_deploy_wait.md",
         "docs/00631l_v4_79_readonly_persistence_warn.md",
+        "docs/00631l_v4_80_persistence_first_maintenance.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
