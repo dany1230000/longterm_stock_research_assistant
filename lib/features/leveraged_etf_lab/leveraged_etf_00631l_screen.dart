@@ -314,6 +314,7 @@ class _LabContent extends StatelessWidget {
                                   _MarketTopBar(
                                     data: data,
                                     selectedEtfCode: selectedEtfCode,
+                                    selectedEtfName: selectedEtf.name,
                                     onEtfSelected: onEtfSelected,
                                     onRefresh: onRefresh,
                                   ),
@@ -679,20 +680,28 @@ class _MarketTopBar extends StatelessWidget {
   const _MarketTopBar({
     this.data,
     this.selectedEtfCode = '00631L',
+    this.selectedEtfName = '00631L 正二研究室',
     this.onEtfSelected,
     required this.onRefresh,
   });
 
   final Etf00631LLabData? data;
   final String selectedEtfCode;
+  final String selectedEtfName;
   final ValueChanged<String>? onEtfSelected;
   final VoidCallback onRefresh;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final normalizedCode = selectedEtfCode.trim().toUpperCase();
+    final subtitle = normalizedCode == '00631L'
+        ? '00631L 正二研究室'
+        : selectedEtfName.trim().isEmpty
+            ? '$normalizedCode ETF 研究室'
+            : selectedEtfName.trim();
     return SizedBox(
-      height: 58,
+      height: 52,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 500;
@@ -729,7 +738,7 @@ class _MarketTopBar extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '00631L 正二研究室',
+                      subtitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelMedium?.copyWith(
@@ -2366,6 +2375,8 @@ class _OverviewSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
+        const SizedBox(height: 6),
+        _OverviewQualityRibbon(selectedEtf: selectedEtf),
         const SizedBox(height: 8),
         _AlwaysExpandedPanel(
           title: selectedEtf.is00631L ? '圖表與曝險' : '價格圖表',
@@ -2382,8 +2393,6 @@ class _OverviewSection extends StatelessWidget {
         else
           _SelectedEtfAtAGlancePanel(selectedEtf: selectedEtf),
         const SizedBox(height: 8),
-        _OverviewDataQualityPanel(selectedEtf: selectedEtf),
-        const SizedBox(height: 8),
         if (selectedEtf.is00631L) ...[
           _OverviewHoldingsDigestPanel(data: data),
           const SizedBox(height: 8),
@@ -2394,10 +2403,114 @@ class _OverviewSection extends StatelessWidget {
               ? '完整數字、資料來源與內容物變化需要時再展開。'
               : '${selectedEtf.code} 的資料來源、coverage 與目前限制。',
           child: selectedEtf.is00631L
-              ? _OverviewMorePanel(data: data, history: history)
+              ? _OverviewMorePanel(
+                  data: data,
+                  history: history,
+                  selectedEtf: selectedEtf,
+                )
               : _SelectedEtfMorePanel(selectedEtf: selectedEtf),
         ),
       ],
+    );
+  }
+}
+
+class _OverviewQualityRibbon extends StatelessWidget {
+  const _OverviewQualityRibbon({required this.selectedEtf});
+
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final summary = selectedEtf.priceHistory.completenessSummary();
+    final adjustmentLabel = summary.hasNonUnitAdjustment
+        ? '已辨識'
+        : summary.hasAdjustedClose
+            ? '調整價可用'
+            : '未套用';
+    final priceField = summary.hasAdjustedClose ? 'adjustedClose' : 'close';
+    final coverage =
+        summary.rowCount >= 2 ? '${formatInteger(summary.rowCount)} 筆' : '資料不足';
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: Row(
+            children: [
+              const _MiniStatusBadge(label: 'DATA'),
+              const SizedBox(width: 8),
+              Text(
+                '資料正確性',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(width: 8),
+              _InlineQualityPill(label: '目前檔案', value: selectedEtf.code),
+              _InlineQualityPill(label: '價格欄位', value: priceField),
+              _InlineQualityPill(label: '分割調整', value: adjustmentLabel),
+              _InlineQualityPill(label: '覆蓋', value: coverage),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InlineQualityPill extends StatelessWidget {
+  const _InlineQualityPill({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketPanelAltColor(context),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: _marketBorderColor(context)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -2539,16 +2652,24 @@ class _OverviewMorePanel extends StatelessWidget {
   const _OverviewMorePanel({
     required this.data,
     required this.history,
+    required this.selectedEtf,
   });
 
   final Etf00631LLabData data;
   final EtfHoldingsHistoryTrendSummary history;
+  final _SelectedEtfViewData selectedEtf;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         _OverviewActionRow(data: data),
+        const SizedBox(height: 8),
+        _CompactExpansionPanel(
+          title: '資料正確性細節',
+          subtitle: '價格欄位、分割調整、coverage 與來源狀態。首屏只保留精簡版。',
+          child: _OverviewDataQualityPanel(selectedEtf: selectedEtf),
+        ),
         const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '完整數字比較',
@@ -4101,11 +4222,9 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
         ? '${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}'
         : '尚無';
     final priceField = summary.hasAdjustedClose ? 'adjustedClose' : 'close';
-    final adjustmentLabel = summary.hasAdjustedClose
-        ? '調整價狀態：使用調整價'
-        : '調整價狀態：原始收盤';
-    final coverageLabel =
-        summary.isCompleteFromListing ? '完整上市日起' : '部分區間';
+    final adjustmentLabel =
+        summary.hasAdjustedClose ? '調整價狀態：使用調整價' : '調整價狀態：原始收盤';
+    final coverageLabel = summary.isCompleteFromListing ? '完整上市日起' : '部分區間';
 
     return Card(
       key: const ValueKey('00631l-selected-history-quality-card'),

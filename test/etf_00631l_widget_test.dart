@@ -28,11 +28,11 @@ void main() {
     expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
-    expect(find.text('資料來源'), findsOneWidget);
+    expect(find.text('資料正確性'), findsOneWidget);
+    expect(find.text('目前檔案'), findsOneWidget);
     expect(find.text('更多資料狀態'), findsNothing);
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
     expect(find.text('內容物重點'), findsOneWidget);
-    expect(find.text('資料正確性'), findsOneWidget);
     expect(find.text('價格欄位'), findsOneWidget);
     expect(find.text('分割調整'), findsOneWidget);
     expect(find.textContaining('歷史資料'), findsWidgets);
@@ -177,7 +177,8 @@ void main() {
     expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
-    expect(find.text('資料來源'), findsOneWidget);
+    expect(find.text('資料正確性'), findsOneWidget);
+    expect(find.text('目前檔案'), findsOneWidget);
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.text('官方曝險'), findsOneWidget);
     expect(find.text('00631L'), findsWidgets);
@@ -681,8 +682,8 @@ void main() {
     expect(find.textContaining('0050 元大台灣50'), findsWidgets);
     expect(find.text('0050 核心資料'), findsOneWidget);
     expect(find.text('資料正確性'), findsOneWidget);
-    expect(find.text('目前檔案 0050'), findsOneWidget);
-    expect(find.text('資料來源'), findsOneWidget);
+    expect(find.text('目前檔案'), findsOneWidget);
+    expect(find.text('0050'), findsWidgets);
     expect(find.textContaining('2025/06/03 - 2026/06/03'), findsWidgets);
     expect(find.textContaining('市價 · catalog'), findsWidgets);
     expect(find.text('官方內容物重點'), findsNothing);

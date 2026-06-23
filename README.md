@@ -1230,3 +1230,8 @@ batch maintenance continues.
 
 v4.98 classifies observed public backend readiness/storage failures as verifier
 WARN instead of checker failure. Request errors can still fail the verifier.
+
+v4.99 tightens the mobile home context. The top bar subtitle follows the
+currently selected ETF, the first screen uses a compact DATA ribbon for price
+field / split-adjustment / coverage status, and full data-correctness details
+move under `更多資料`.
