@@ -1218,3 +1218,8 @@ verify the disk fields before release.
 v4.95 makes `/ready` warn when a persistent-mode backend has a fresh persistence
 marker. This keeps newly recreated public data directories visible even when the
 path is writable.
+
+v4.96 adds `scripts\00631l_verify_public_persistence.cmd`, a read-only verifier
+that samples the public backend marker and ETF ready count before public catalog
+batch maintenance. Use it after Render deploys and before continuing ETF data
+imports.

@@ -169,6 +169,14 @@ disk:
 
 `/ready` 在 persistent mode 下會檢查 persistence marker age。marker 剛建立或未滿 15 分鐘時會回報 `WARN`，用來提醒你確認這個 `createdAt` 是否能跨部署保持穩定。
 
+部署後可以用 read-only verifier 連續取樣：
+
+```cmd
+scripts\00631l_verify_public_persistence.cmd --soft-fail
+```
+
+只有在 marker 不再 fresh、`createdAt` 穩定、ETF ready count 沒有回落時，才繼續 public ETF catalog batch 維護。
+
 ### intraday unavailable
 
 確認：
