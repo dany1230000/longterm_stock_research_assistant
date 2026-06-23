@@ -83,8 +83,20 @@ class RemoteMaintenanceTests(unittest.TestCase):
                     "httpStatus": 200,
                     "payload": {
                         "sourceStatus": "cached",
+                        "requestedCodes": ["006203"],
+                        "updatedCount": 1,
                         "readyCount": 2,
                         "validationFailureCount": 0,
+                        "items": [
+                            {
+                                "code": "006203",
+                                "sourceStatus": "official",
+                                "savedRows": 1800,
+                                "rowCount": 1800,
+                                "coverageStart": "2019-01-02",
+                                "coverageEnd": "2026-06-22",
+                            }
+                        ],
                     },
                 }
             return {
@@ -113,6 +125,10 @@ class RemoteMaintenanceTests(unittest.TestCase):
         self.assertIn("fromCatalog=true", requested_paths[0])
         self.assertIn("limit=25", requested_paths[0])
         self.assertIn("offset=50", requested_paths[0])
+        self.assertEqual(response["payload"]["requestedCodes"], ["006203"])
+        self.assertEqual(response["payload"]["updatedCount"], 1)
+        self.assertEqual(response["payload"]["items"][0]["code"], "006203")
+        self.assertEqual(response["payload"]["items"][0]["savedRows"], 1800)
 
     def test_get_endpoint_retries_transient_http_status(self) -> None:
         endpoint = MaintenanceEndpoint(

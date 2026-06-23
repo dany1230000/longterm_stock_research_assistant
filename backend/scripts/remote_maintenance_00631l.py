@@ -378,6 +378,9 @@ def _payload_summary(name: str, payload: dict[str, Any]) -> dict[str, Any]:
     if name == "etf_history_update":
         return {
             "sourceStatus": payload.get("sourceStatus"),
+            "requestedCodes": payload.get("requestedCodes"),
+            "updatedCount": payload.get("updatedCount"),
+            "itemCount": len(payload.get("items") or []),
             "readyCount": payload.get("readyCount"),
             "validationFailureCount": payload.get("validationFailureCount"),
             "validationWarningCount": payload.get("validationWarningCount"),
@@ -679,6 +682,8 @@ def _request_etf_history_update(
         or update_payload.get("sourceUpdatedAt"),
         "dataTime": status_payload.get("dataTime") or update_payload.get("dataTime"),
         "requestedCodes": update_payload.get("requestedCodes"),
+        "updatedCount": update_payload.get("updatedCount"),
+        "items": update_payload.get("items") if isinstance(update_payload.get("items"), list) else [],
         "readyCount": status_payload.get("readyCount")
         if status_payload.get("readyCount") is not None
         else update_payload.get("readyCount"),

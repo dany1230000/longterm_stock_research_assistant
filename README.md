@@ -1177,3 +1177,7 @@ unavailable catalog row can be skipped without pretending it was imported.
 v4.86 adds an independent public readiness probe to maintenance status. If any
 readiness sample is WARN/FAIL, ETF catalog batch commands are hidden until the
 public backend data directory and persistence checks are healthy.
+
+v4.87 carries remote ETF history update item details through maintenance
+wrappers, so public batch output can show requested codes, saved rows, coverage,
+and per-code errors instead of only readyCount changes.
