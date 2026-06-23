@@ -416,6 +416,44 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertTrue(payload["warnings"])
         self.assertIn("/api/etf/catalog/status", payload["actionItems"][0])
 
+    def test_catalog_unavailable_does_not_overwrite_useful_resume_state(self) -> None:
+        previous_state = {
+            "sourceContract": "00631l_public_etf_catalog_batch_state",
+            "updatedAt": "2026-06-23T01:00:00+00:00",
+            "overallStatus": "FAIL",
+            "catalogRowCount": 344,
+            "initialReadyCount": 15,
+            "finalReadyCount": 27,
+            "nextOffset": 25,
+            "failedOffset": 25,
+        }
+
+        def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
+            return {
+                "httpStatus": 200,
+                "payload": {
+                    "sourceStatus": "unavailable",
+                    "rowCount": 0,
+                    "errorMessage": "catalog missing",
+                },
+            }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            state_path = Path(temp_dir) / "batch_state.json"
+            state_path.write_text(json.dumps(previous_state), encoding="utf-8")
+
+            payload = run_public_etf_catalog_batches(
+                base_url="https://example.com",
+                requester=requester,
+                state_path=state_path,
+            )
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(state["finalReadyCount"], 27)
+        self.assertEqual(state["nextOffset"], 25)
+        self.assertEqual(state["failedOffset"], 25)
+
     def test_single_batch_uses_etf_history_update_only(self) -> None:
         with patch(
             "backend.scripts.run_public_etf_catalog_batches_00631l._request_etf_history_update",

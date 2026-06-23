@@ -294,6 +294,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_70_public_batch_failure_detail.md",
         "docs/00631l_v4_71_public_batch_fail_fast.md",
         "docs/00631l_v4_72_public_ready_regression.md",
+        "docs/00631l_v4_73_preserve_public_batch_state.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

@@ -145,7 +145,8 @@ def run_public_etf_catalog_batches(
                 "Check /api/etf/catalog/status or deploy the backend with ETF_CATALOG_SEED_PATH.",
             ],
         )
-        _write_resume_state(payload, state_file)
+        if not _has_useful_resume_state(state_file):
+            _write_resume_state(payload, state_file)
         return payload
 
     initial_status = request(normalized_base_url, "/api/etf/history/status", timeout_seconds)
@@ -517,6 +518,21 @@ def _resume_offset(state_path: Path, fallback_offset: int) -> int:
         return max(0, int(payload.get("nextOffset")))
     except (TypeError, ValueError):
         return fallback_offset
+
+
+def _has_useful_resume_state(state_path: Path) -> bool:
+    try:
+        payload = json.loads(state_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    if not isinstance(payload, dict):
+        return False
+    try:
+        if int(payload.get("finalReadyCount") or 0) > 0:
+            return True
+    except (TypeError, ValueError):
+        pass
+    return payload.get("nextOffset") is not None or payload.get("failedOffset") is not None
 
 
 def _write_resume_state(payload: dict[str, Any], state_path: Path) -> None:

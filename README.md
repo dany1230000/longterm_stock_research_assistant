@@ -1117,3 +1117,8 @@ v4.72 flags public ETF history ready-count regression in
 `scripts\00631l_public_maintenance_status.cmd`. If the current public backend
 ready count is lower than the latest local batch state, check the persistent
 data volume and redeploy status before continuing catalog batches.
+
+v4.73 preserves useful public catalog batch resume state when the catalog status
+temporarily reports unavailable. A low-information zero-row catalog warning no
+longer replaces the last known `nextOffset`, `failedOffset`, or ready-count
+progress.
