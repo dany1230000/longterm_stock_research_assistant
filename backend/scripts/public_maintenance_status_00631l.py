@@ -29,6 +29,8 @@ from backend.scripts.run_public_etf_catalog_batches_00631l import (  # noqa: E40
     DEFAULT_STATE_PATH as DEFAULT_CATALOG_BATCH_STATE_PATH,
 )
 
+FRESH_PUBLIC_MARKER_SECONDS = 15 * 60
+
 
 def run_public_maintenance_status(
     *,
@@ -128,6 +130,7 @@ def build_public_maintenance_status(
         public_ready_count=public_summary.get("etfHistoryReadyCount"),
     )
     marker_newly_created = bool(public_summary.get("persistenceMarkerNewlyCreated"))
+    marker_fresh = _has_fresh_public_marker(public_summary)
     has_persistence_warning = _has_public_persistence_warning(public_status)
     has_readiness_blocker = _has_public_readiness_blocker(
         public_status,
@@ -148,6 +151,21 @@ def build_public_maintenance_status(
         if marker_newly_created
         else []
     )
+    fresh_marker_warning = (
+        [
+            "Public persistence marker is fresh while ETF history ready count is "
+            "below the required floor; verify the persistent volume before running "
+            "catalog batches."
+        ]
+        if marker_fresh
+        else []
+    )
+    block_catalog_batches = (
+        has_persistence_warning
+        or has_readiness_blocker
+        or ready_regression > 0
+        or marker_fresh
+    )
     action_items = _filter_catalog_batch_actions(
         _dedupe(
             [
@@ -158,12 +176,11 @@ def build_public_maintenance_status(
                 *_persistence_action_items(has_persistence_warning),
                 *_readiness_action_items(has_readiness_blocker),
                 *_persistence_marker_action_items(marker_newly_created),
+                *_fresh_persistence_marker_action_items(marker_fresh),
                 *_catalog_batch_regression_action_items(ready_regression),
                 *(
                     []
-                    if has_persistence_warning
-                    or has_readiness_blocker
-                    or ready_regression > 0
+                    if block_catalog_batches
                     else _catalog_batch_action_items(
                         catalog_batch_state,
                         public_ready_count=public_summary.get("etfHistoryReadyCount"),
@@ -172,11 +189,11 @@ def build_public_maintenance_status(
                 ),
             ]
         ),
-        block_catalog_batches=has_persistence_warning
-        or has_readiness_blocker
-        or ready_regression > 0,
+        block_catalog_batches=block_catalog_batches,
     )
-    warnings = _dedupe([*warnings, *catalog_regression_warning, *marker_warning])
+    warnings = _dedupe(
+        [*warnings, *catalog_regression_warning, *marker_warning, *fresh_marker_warning]
+    )
     overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
     catalog_summary = _catalog_batch_summary(catalog_batch_state)
     return {
@@ -206,6 +223,8 @@ def build_public_maintenance_status(
             "publicPersistenceMarkerNewlyCreated": public_summary.get(
                 "persistenceMarkerNewlyCreated"
             ),
+            "publicPersistenceMarkerFresh": marker_fresh,
+            "publicPersistenceMarkerFreshThresholdSeconds": FRESH_PUBLIC_MARKER_SECONDS,
             **catalog_summary,
             "catalogBatchReadyRegression": ready_regression,
         },
@@ -309,6 +328,27 @@ def _has_public_persistence_warning(public_status: dict[str, Any]) -> bool:
     )
 
 
+def _has_fresh_public_marker(public_summary: dict[str, Any]) -> bool:
+    if bool(public_summary.get("persistenceMarkerNewlyCreated")):
+        return _public_ready_below_target(public_summary)
+    try:
+        age_seconds = int(public_summary.get("persistenceMarkerAgeSeconds"))
+    except (TypeError, ValueError):
+        return False
+    if age_seconds < 0 or age_seconds >= FRESH_PUBLIC_MARKER_SECONDS:
+        return False
+    return _public_ready_below_target(public_summary)
+
+
+def _public_ready_below_target(public_summary: dict[str, Any]) -> bool:
+    try:
+        ready_count = int(public_summary.get("etfHistoryReadyCount"))
+        min_ready_count = int(public_summary.get("minEtfReadyCount"))
+    except (TypeError, ValueError):
+        return False
+    return ready_count < max(1, min_ready_count)
+
+
 def _has_public_readiness_blocker(public_status: dict[str, Any]) -> bool:
     summary = public_status.get("summary")
     if isinstance(summary, dict) and str(summary.get("readiness") or "").upper() == "FAIL":
@@ -343,6 +383,14 @@ def _persistence_marker_action_items(marker_newly_created: bool) -> list[str]:
         return []
     return [
         "Recheck public backend status after the next deploy; the persistence marker should keep the same createdAt."
+    ]
+
+
+def _fresh_persistence_marker_action_items(marker_fresh: bool) -> list[str]:
+    if not marker_fresh:
+        return []
+    return [
+        "Attach or verify the public backend persistent volume before continuing ETF catalog batches."
     ]
 
 

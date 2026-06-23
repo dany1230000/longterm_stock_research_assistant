@@ -154,6 +154,8 @@ ALLOWED_ORIGINS=https://dany1230000.github.io
 
 operations/status 會顯示 persistence WARN。這不會阻止 app 開啟，但 history/report/export/backup 不適合長期保存。
 
+如果 `/ready` 顯示資料目錄可寫入，但 `scripts\00631l_public_maintenance_status.cmd --soft-fail` 顯示 `publicPersistenceMarkerFresh=true` 且 ETF history `readyCount` 很低，代表公開後端可能剛拿到新的暫存資料夾。這時不要繼續 public ETF catalog batches；先確認平台 persistent disk / volume 是否真的掛在 `00631L_DATA_DIR`。
+
 ### intraday unavailable
 
 確認：

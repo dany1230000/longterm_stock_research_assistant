@@ -1202,3 +1202,7 @@ v4.91 carries the public persistence marker into maintenance status. The daily
 public maintenance output now shows marker createdAt/age/newlyCreated next to
 ETF readyCount, and asks for a recheck after the next deploy when the marker was
 just created.
+
+v4.92 treats a very fresh public persistence marker plus low ETF readyCount as a
+batch blocker. In that state, maintenance output hides public ETF catalog batch
+commands and asks you to verify the hosted persistent volume first.
