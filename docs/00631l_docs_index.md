@@ -306,6 +306,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Mobile home context release: `docs\00631l_v4_99_mobile_home_context.md`
 - Lazy comparison load release: `docs\00631l_v5_0_lazy_comparison_load.md`
 - History chart touch detail release: `docs\00631l_v5_1_history_chart_touch_detail.md`
+- ETF comparison status cleanup release: `docs\00631l_v5_2_etf_comparison_status_cleanup.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

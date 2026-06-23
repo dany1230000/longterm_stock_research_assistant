@@ -6533,8 +6533,7 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
       children: [
         _SectionHeaderCard(
           title: 'ETF 資料庫',
-          subtitle:
-              '先整理 TWSE all-ETF catalog；ETF 比較會沿用這份資料，不會把 fallback 說成 official。',
+          subtitle: '整理 TWSE all-ETF catalog；可搜尋並切換 ETF，歷史比較在歷史回測頁使用。',
           icon: Icons.dataset_outlined,
           badges: [
             'ETF',
@@ -6569,7 +6568,7 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
         const SizedBox(height: 12),
         _SectionBlock(
           title: 'ETF 查詢',
-          subtitle: '可用代號、名稱或商品類型搜尋；目前先做資料整理，下一步再做比較視圖。',
+          subtitle: '可用代號、名稱或商品類型搜尋；有歷史資料的 ETF 可切換後查看歷史、回測與比較。',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -6663,30 +6662,9 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
         ),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: 'ETF 比較基礎',
-          subtitle: '先比較 catalog snapshot 的行情與 NAV 欄位；完整 ETF 回測比較會在後續版本加入。',
+          title: 'ETF catalog 快覽',
+          subtitle: '只對照 catalog snapshot 的行情與 NAV；長期績效比較請到歷史回測頁自選 1-5 檔。',
           child: _EtfComparisonPreview(catalog: catalog),
-        ),
-        const SizedBox(height: 12),
-        const _SectionBlock(
-          title: '比較功能準備',
-          subtitle: '這裡先建立 ETF catalog 與資料狀態基礎；完整 ETF 比較會在後續版本加入。',
-          child: _StatusList(
-            items: [
-              _StatusItem(
-                label: '資料來源',
-                status: 'ready',
-                detail: '前端已可讀取 ETF catalog，並保留 source status。',
-                action: '下一步可加入 ETF 比較資料模型與比較頁。',
-              ),
-              _StatusItem(
-                label: '00631L',
-                status: 'focus',
-                detail: '00631L 正二研究室仍是目前核心頁面。',
-                action: '其他 ETF 先作為 catalog 與比較候選資料。',
-              ),
-            ],
-          ),
         ),
       ],
     );
@@ -6801,9 +6779,9 @@ class _SettingsSection extends StatelessWidget {
               ),
               const _StatusItem(
                 label: 'ETF comparison',
-                status: 'planned',
-                detail: '目前先整理 ETF catalog；比較視圖會在後續版本加入。',
-                action: '下一步建立 ETF 比較資料模型與 UI。',
+                status: 'available',
+                detail: '歷史回測頁可自選 1-5 檔 ETF，比較區間歷史報酬與回撤。',
+                action: '切到歷史回測頁，使用同類型篩選或手動勾選比較組合。',
               ),
             ],
           ),

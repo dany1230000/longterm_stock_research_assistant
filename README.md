@@ -1243,3 +1243,7 @@ keeps the public PWA first screen lighter on mobile.
 v5.1 improves history chart readability. Chart x-axis labels now show `YYYY`
 and `MM/DD`, and every chart displays the latest date/value by default before
 the user touches a point.
+
+v5.2 cleans up ETF comparison wording. The ETF database and settings pages now
+describe the current self-selected comparison flow instead of showing old
+roadmap text.
