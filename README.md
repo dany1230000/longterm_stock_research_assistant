@@ -1239,3 +1239,7 @@ move under `更多資料`.
 v5.0 defers multi-ETF comparison history loading until the user opens
 `歷史回測`. The overview page now avoids preloading the comparison basket, which
 keeps the public PWA first screen lighter on mobile.
+
+v5.1 improves history chart readability. Chart x-axis labels now show `YYYY`
+and `MM/DD`, and every chart displays the latest date/value by default before
+the user touches a point.

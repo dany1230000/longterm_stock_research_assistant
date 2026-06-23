@@ -8727,9 +8727,11 @@ class _LineChartPanelState extends State<_LineChartPanel> {
         spotPoints.add(selected[index]);
       }
     }
+    final fallbackIndex = spots.isEmpty ? null : spots.length - 1;
     final safeTouchedIndex = _touchedIndex == null || spots.isEmpty
-        ? null
+        ? fallbackIndex
         : _touchedIndex!.clamp(0, spots.length - 1);
+    final hasManualSelection = _touchedIndex != null && spots.isNotEmpty;
     final touchedPoint =
         safeTouchedIndex == null ? null : spotPoints[safeTouchedIndex];
     final touchedValue =
@@ -8817,6 +8819,7 @@ class _LineChartPanelState extends State<_LineChartPanel> {
           value: touchedValue,
           rangeStart: spotPoints.isEmpty ? null : spotPoints.first.date,
           rangeEnd: spotPoints.isEmpty ? null : spotPoints.last.date,
+          isManualSelection: hasManualSelection,
         ),
       ],
     );
@@ -8829,30 +8832,83 @@ class _ChartTouchDetail extends StatelessWidget {
     required this.value,
     required this.rangeStart,
     required this.rangeEnd,
+    required this.isManualSelection,
   });
 
   final EtfPriceHistoryPoint? point;
   final double? value;
   final DateTime? rangeStart;
   final DateTime? rangeEnd;
+  final bool isManualSelection;
 
   @override
   Widget build(BuildContext context) {
-    final text = point == null || value == null
+    final theme = Theme.of(context);
+    final label = isManualSelection ? '選取日期' : '最新資料';
+    final primary = point == null || value == null
         ? rangeStart == null || rangeEnd == null
             ? '點擊圖表可查看完整日期與數值'
-            : '圖表區間 ${formatTaiwanDate(rangeStart!)} - ${formatTaiwanDate(rangeEnd!)}；點擊圖表可查看完整日期與數值'
-        : '選取日期 ${formatTaiwanDate(point!.date)} · 數值 ${_compactChartValue(value!)}';
-    return Text(
-      text,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: _marketMutedTextColor(context),
-            fontWeight: FontWeight.w800,
-          ),
+            : '圖表區間 ${formatTaiwanDate(rangeStart!)} - ${formatTaiwanDate(rangeEnd!)}'
+        : '$label ${formatTaiwanDate(point!.date)} · ${_compactChartValue(value!)}';
+    final secondary = isManualSelection ? '再次點擊圖表可切換日期' : '點擊圖表可查看指定日期數值';
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                primary,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                secondary,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.right,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
+}
+
+String _shortChartDate(DateTime date) {
+  final mm = date.month.toString().padLeft(2, '0');
+  final dd = date.day.toString().padLeft(2, '0');
+  return '${date.year}\n$mm/$dd';
+}
+
+String _compactChartValue(double value) {
+  if (value.abs() >= 1000000) {
+    return formatInteger(value.round());
+  }
+  if (value.abs() >= 1000) {
+    return value.toStringAsFixed(0);
+  }
+  if (value.abs() >= 100) {
+    return value.toStringAsFixed(1);
+  }
+  return value.toStringAsFixed(2);
 }
 
 bool _isBottomDateTick(int index, int length) {
@@ -8864,23 +8920,6 @@ bool _isBottomDateTick(int index, int length) {
   }
   final mid = (length - 1) ~/ 2;
   return index == 0 || index == mid || index == length - 1;
-}
-
-String _shortChartDate(DateTime date) {
-  final yy = (date.year % 100).toString().padLeft(2, '0');
-  final mm = date.month.toString().padLeft(2, '0');
-  final dd = date.day.toString().padLeft(2, '0');
-  return '$yy/$mm\n$dd';
-}
-
-String _compactChartValue(double value) {
-  if (value.abs() >= 1000000) {
-    return formatInteger(value.round());
-  }
-  if (value.abs() >= 1000) {
-    return value.toStringAsFixed(0);
-  }
-  return value.toStringAsFixed(2);
 }
 
 class _CurveChartPanel extends StatelessWidget {

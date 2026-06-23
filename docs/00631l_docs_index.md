@@ -303,6 +303,9 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public persistence verifier release: `docs\00631l_v4_96_public_persistence_verifier.md`
 - Public persistence sample guard release: `docs\00631l_v4_97_public_persistence_sample_guard.md`
 - Public persistence failure classification release: `docs\00631l_v4_98_public_persistence_fail_classification.md`
+- Mobile home context release: `docs\00631l_v4_99_mobile_home_context.md`
+- Lazy comparison load release: `docs\00631l_v5_0_lazy_comparison_load.md`
+- History chart touch detail release: `docs\00631l_v5_1_history_chart_touch_detail.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

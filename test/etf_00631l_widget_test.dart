@@ -191,9 +191,9 @@ void main() {
     await _pumpLab(tester, _PriceHistoryRepository());
 
     expect(find.text('近一年走勢'), findsOneWidget);
-    expect(find.text('24/06\n03'), findsOneWidget);
-    expect(find.text('26/06\n01'), findsOneWidget);
-    expect(find.text('26/06\n03'), findsOneWidget);
+    expect(find.text('2024\n06/03'), findsOneWidget);
+    expect(find.text('2026\n06/01'), findsOneWidget);
+    expect(find.text('2026\n06/03'), findsOneWidget);
   });
 
   testWidgets(
@@ -337,9 +337,9 @@ void main() {
       find.byKey(const ValueKey('00631l-history-range-all')),
       findsOneWidget,
     );
-    expect(find.textContaining('點擊圖表可查看完整日期與數值'), findsWidgets);
+    expect(find.textContaining('點擊圖表可查看指定日期數值'), findsWidgets);
     expect(
-      find.textContaining('圖表區間 2025/06/03 - 2026/06/03；點擊圖表'),
+      find.textContaining('最新資料 2026/06/03'),
       findsWidgets,
     );
     expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsOneWidget);
