@@ -1169,3 +1169,7 @@ history maintenance.
 v4.84 isolates public catalog batch tests from local operational state. Backend
 tests no longer write `backend\data\00631l_public_etf_catalog_batch_state.json`
 unless a test passes an explicit temporary state path.
+
+v4.85 improves public catalog batch observability. Each batch now reports the
+requested ETF code, source status, saved rows, coverage, and item error so an
+unavailable catalog row can be skipped without pretending it was imported.

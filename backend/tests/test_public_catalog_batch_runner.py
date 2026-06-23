@@ -677,6 +677,115 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(kwargs["offset"], 10)
         self.assertEqual(kwargs["limit"], 10)
 
+    def test_single_batch_summarizes_requested_codes_and_items(self) -> None:
+        with patch(
+            "backend.scripts.run_public_etf_catalog_batches_00631l._request_etf_history_update",
+            return_value={
+                "httpStatus": 200,
+                "payload": {
+                    "sourceStatus": "error",
+                    "requestedCodes": ["006201"],
+                    "updatedCount": 0,
+                    "readyCount": 15,
+                    "validationFailureCount": 0,
+                    "items": [
+                        {
+                            "code": "006201",
+                            "sourceStatus": "error",
+                            "fetchedRows": 0,
+                            "savedRows": 0,
+                            "rowCount": 0,
+                            "coverageStart": None,
+                            "coverageEnd": None,
+                            "errorMessage": "TWSE returned no usable rows",
+                        }
+                    ],
+                },
+            },
+        ):
+            payload = _run_single_batch(
+                base_url="https://example.com",
+                offset=15,
+                limit=1,
+                timeout_seconds=120,
+                retry_count=0,
+                retry_delay_seconds=0,
+            )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["summary"]["sourceStatus"], "error")
+        self.assertEqual(payload["summary"]["requestedCodes"], ["006201"])
+        self.assertEqual(payload["summary"]["updatedCount"], 0)
+        self.assertEqual(payload["summary"]["items"][0]["code"], "006201")
+        self.assertEqual(payload["summary"]["items"][0]["savedRows"], 0)
+
+    def test_batch_step_includes_update_summary_for_unusable_catalog_item(self) -> None:
+        history_ready_counts = [15, 15]
+
+        def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
+            if path == "/api/etf/catalog/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"sourceStatus": "static_official", "rowCount": 343},
+                }
+            if path == "/api/etf/history/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": history_ready_counts.pop(0),
+                        "rowCount": 15,
+                        "validationFailureCount": 0,
+                    },
+                }
+            raise AssertionError(path)
+
+        def maintenance_runner(
+            *,
+            base_url: str,
+            offset: int,
+            limit: int,
+            timeout_seconds: int,
+            retry_count: int,
+            retry_delay_seconds: float,
+        ) -> dict:
+            return {
+                "overallStatus": "WARN",
+                "failures": [],
+                "warnings": [
+                    "etf_history_update: ETF history update did not return usable data"
+                ],
+                "summary": {
+                    "sourceStatus": "error",
+                    "requestedCodes": ["006201"],
+                    "updatedCount": 0,
+                    "readyCount": 15,
+                    "items": [
+                        {
+                            "code": "006201",
+                            "sourceStatus": "error",
+                            "savedRows": 0,
+                            "rowCount": 0,
+                        }
+                    ],
+                },
+            }
+
+        payload = run_public_etf_catalog_batches(
+            base_url="https://example.com",
+            batch_size=1,
+            max_batches=1,
+            start_offset=15,
+            requester=requester,
+            maintenance_runner=maintenance_runner,
+        )
+
+        batch_step = next(step for step in payload["steps"] if step["name"] == "catalog_batch")
+        self.assertEqual(batch_step["summary"]["requestedCodes"], ["006201"])
+        self.assertEqual(batch_step["summary"]["sourceStatus"], "error")
+        self.assertEqual(batch_step["summary"]["items"][0]["code"], "006201")
+        self.assertEqual(payload["summary"]["nextOffset"], 16)
+
 
 if __name__ == "__main__":
     unittest.main()

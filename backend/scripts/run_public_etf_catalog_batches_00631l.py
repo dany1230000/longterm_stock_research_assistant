@@ -260,6 +260,7 @@ def run_public_etf_catalog_batches(
                 summary={
                     "offset": planned_offset,
                     "limit": limit,
+                    **_batch_summary(batch_result),
                     "warnings": batch_result.get("warnings") or [],
                     "failures": batch_result.get("failures") or [],
                 },
@@ -388,8 +389,52 @@ def _run_single_batch(
             "updateHttpStatus": payload.get("updateHttpStatus"),
             "postCheckHttpStatus": payload.get("postCheckHttpStatus"),
             "postCheckRetryAttempts": payload.get("postCheckRetryAttempts"),
+            "sourceStatus": payload.get("sourceStatus"),
+            "requestedCodes": payload.get("requestedCodes") or [],
+            "updatedCount": payload.get("updatedCount"),
+            "items": _summarize_update_items(payload.get("items")),
         },
     }
+
+
+def _batch_summary(batch_result: dict[str, Any]) -> dict[str, Any]:
+    summary = (
+        batch_result.get("summary")
+        if isinstance(batch_result.get("summary"), dict)
+        else {}
+    )
+    return {
+        "sourceStatus": summary.get("sourceStatus"),
+        "requestedCodes": summary.get("requestedCodes") or [],
+        "updatedCount": summary.get("updatedCount"),
+        "readyCount": summary.get("readyCount"),
+        "updateHttpStatus": summary.get("updateHttpStatus"),
+        "postCheckHttpStatus": summary.get("postCheckHttpStatus"),
+        "postCheckRetryAttempts": summary.get("postCheckRetryAttempts"),
+        "items": summary.get("items") or [],
+    }
+
+
+def _summarize_update_items(items: Any) -> list[dict[str, Any]]:
+    if not isinstance(items, list):
+        return []
+    output: list[dict[str, Any]] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        output.append(
+            {
+                "code": item.get("code"),
+                "sourceStatus": item.get("sourceStatus"),
+                "fetchedRows": item.get("fetchedRows"),
+                "savedRows": item.get("savedRows"),
+                "rowCount": item.get("rowCount"),
+                "coverageStart": item.get("coverageStart"),
+                "coverageEnd": item.get("coverageEnd"),
+                "errorMessage": item.get("errorMessage"),
+            }
+        )
+    return output
 
 
 def _run_public_catalog_preflight(base_url: str, timeout_seconds: int) -> dict[str, Any]:
