@@ -23,6 +23,9 @@ from backend.scripts.public_backend_status_00631l import (  # noqa: E402
     DEFAULT_BACKEND_URL,
     run_public_backend_status,
 )
+from backend.scripts.run_public_etf_catalog_batches_00631l import (  # noqa: E402
+    DEFAULT_STATE_PATH as DEFAULT_CATALOG_BATCH_STATE_PATH,
+)
 
 
 def run_public_maintenance_status(
@@ -75,6 +78,7 @@ def run_public_maintenance_status(
         deploy_drift=deploy_drift,
         public_status=public_status,
         freshness=freshness,
+        catalog_batch_state=load_catalog_batch_state(DEFAULT_CATALOG_BATCH_STATE_PATH),
         checked_at=checked_at,
     )
 
@@ -84,6 +88,7 @@ def build_public_maintenance_status(
     deploy_drift: dict[str, Any],
     public_status: dict[str, Any],
     freshness: dict[str, Any],
+    catalog_batch_state: dict[str, Any] | None = None,
     checked_at: str,
 ) -> dict[str, Any]:
     steps = [
@@ -98,6 +103,7 @@ def build_public_maintenance_status(
             *list(deploy_drift.get("actionItems") or []),
             *list(public_status.get("actionItems") or []),
             *list(freshness.get("actionItems") or []),
+            *_catalog_batch_action_items(catalog_batch_state),
         ]
     )
     public_summary = (
@@ -116,6 +122,7 @@ def build_public_maintenance_status(
         else {}
     )
     overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
+    catalog_summary = _catalog_batch_summary(catalog_batch_state)
     return {
         "sourceContract": "00631l_public_maintenance_status",
         "checkedAt": checked_at,
@@ -134,12 +141,57 @@ def build_public_maintenance_status(
             "publicCoverageEnd": freshness_summary.get("publicCoverageEnd"),
             "staticCoverageEnd": freshness_summary.get("staticCoverageEnd"),
             "publicPriceHistoryRows": public_summary.get("priceHistoryRows"),
+            **catalog_summary,
         },
         "steps": steps,
         "warnings": warnings,
         "failures": failures,
         "actionItems": action_items,
     }
+
+
+def load_catalog_batch_state(path: str | Path) -> dict[str, Any] | None:
+    state_path = Path(path)
+    try:
+        payload = json.loads(state_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _catalog_batch_summary(state: dict[str, Any] | None) -> dict[str, Any]:
+    if not state:
+        return {
+            "catalogBatchStateUpdatedAt": None,
+            "catalogBatchStateStatus": "unavailable",
+            "catalogBatchCatalogRowCount": None,
+            "catalogBatchFinalReadyCount": None,
+            "catalogBatchNextOffset": None,
+            "catalogBatchFailedOffset": None,
+        }
+    return {
+        "catalogBatchStateUpdatedAt": state.get("updatedAt"),
+        "catalogBatchStateStatus": state.get("overallStatus"),
+        "catalogBatchCatalogRowCount": state.get("catalogRowCount"),
+        "catalogBatchFinalReadyCount": state.get("finalReadyCount"),
+        "catalogBatchNextOffset": state.get("nextOffset"),
+        "catalogBatchFailedOffset": state.get("failedOffset"),
+    }
+
+
+def _catalog_batch_action_items(state: dict[str, Any] | None) -> list[str]:
+    if not state:
+        return []
+    if state.get("failedOffset") is not None:
+        return [
+            "Review public ETF catalog batch state, then resume with "
+            "scripts\\00631l_public_etf_catalog_batches.cmd --resume --soft-fail."
+        ]
+    if state.get("nextOffset") is not None:
+        return [
+            "Resume public ETF catalog batches with scripts\\00631l_public_etf_catalog_batches.cmd --resume."
+        ]
+    return []
 
 
 def _step_from_payload(name: str, payload: dict[str, Any]) -> dict[str, Any]:
@@ -213,7 +265,8 @@ def main() -> int:
         f"warnings={payload['warningCount']} "
         f"failures={payload['failureCount']} "
         f"publicTag={summary.get('publicReleaseTag') or 'unknown'} "
-        f"etfReady={summary.get('publicEtfReadyCount') or 0}"
+        f"etfReady={summary.get('publicEtfReadyCount') or 0} "
+        f"nextOffset={summary.get('catalogBatchNextOffset') if summary.get('catalogBatchNextOffset') is not None else 'none'}"
     )
     return 0 if args.soft_fail or payload["overallStatus"] != "FAIL" else 1
 

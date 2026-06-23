@@ -56,6 +56,34 @@ class PublicMaintenanceStatusTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "FAIL")
         self.assertEqual(payload["failureCount"], 1)
 
+    def test_includes_public_catalog_batch_resume_state(self) -> None:
+        payload = build_public_maintenance_status(
+            deploy_drift={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},
+            public_status={
+                "overallStatus": "WARN",
+                "warnings": ["ETF history ready count below minimum 200: 15"],
+                "failures": [],
+                "summary": {"etfHistoryReadyCount": 15, "minEtfReadyCount": 200},
+            },
+            freshness={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},
+            catalog_batch_state={
+                "updatedAt": "2026-06-23T02:00:00+00:00",
+                "overallStatus": "WARN",
+                "catalogRowCount": 344,
+                "finalReadyCount": 15,
+                "nextOffset": 20,
+                "failedOffset": None,
+            },
+            checked_at="2026-06-23T00:00:00+00:00",
+        )
+
+        self.assertEqual(payload["summary"]["catalogBatchNextOffset"], 20)
+        self.assertEqual(payload["summary"]["catalogBatchFinalReadyCount"], 15)
+        self.assertIn(
+            "Resume public ETF catalog batches with scripts\\00631l_public_etf_catalog_batches.cmd --resume.",
+            payload["actionItems"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

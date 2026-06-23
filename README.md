@@ -1089,3 +1089,14 @@ v4.24 將泛用 ETF price-history import 也改成每檔 incremental 預設，�
 - 設計 API-backed repository，但保留 mock repository。
 - 補充更多 widget 測試與視覺回歸檢查。
 - 規劃研究提醒、ETF 比較、投資組合風險分析與 AI 摘要。
+## 00631L public maintenance
+
+v4.67 adds public batch resume status to
+`scripts\00631l_public_maintenance_status.cmd`. The summary now shows the
+latest public ETF catalog batch state and the next resume offset when local
+state exists.
+
+```cmd
+scripts\00631l_public_maintenance_status.cmd --soft-fail
+scripts\00631l_public_etf_catalog_batches.cmd --resume --soft-fail
+```
