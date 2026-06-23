@@ -1223,3 +1223,7 @@ v4.96 adds `scripts\00631l_verify_public_persistence.cmd`, a read-only verifier
 that samples the public backend marker and ETF ready count before public catalog
 batch maintenance. Use it after Render deploys and before continuing ETF data
 imports.
+
+v4.97 makes that verifier stricter: if any public sample is missing persistence
+marker details, it reports WARN and asks for `/ready` inspection before data
+batch maintenance continues.

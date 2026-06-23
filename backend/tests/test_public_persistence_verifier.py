@@ -102,6 +102,36 @@ class PublicPersistenceVerifierTests(unittest.TestCase):
         self.assertEqual(payload["failureCount"], 1)
         self.assertTrue(payload["actionItems"])
 
+    def test_warns_when_any_sample_is_missing_marker_details(self) -> None:
+        payload = build_public_persistence_verifier_status(
+            base_url="https://example.com",
+            checked_at="2026-06-23T07:00:00+00:00",
+            samples=[
+                {
+                    "status": "PASS",
+                    "markerCreatedAt": None,
+                    "markerFresh": False,
+                    "markerAgeSeconds": None,
+                    "etfReadyCount": 220,
+                },
+                {
+                    "status": "PASS",
+                    "markerCreatedAt": "2026-06-23T06:00:00+00:00",
+                    "markerFresh": False,
+                    "markerAgeSeconds": 3600,
+                    "etfReadyCount": 220,
+                },
+            ],
+            min_marker_age_seconds=900,
+            min_etf_ready_count=200,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertIn(
+            "One or more public persistence samples are missing marker details.",
+            payload["warnings"],
+        )
+
     def test_dry_run_does_not_apply_ready_count_floor(self) -> None:
         payload = build_public_persistence_verifier_status(
             base_url="https://example.com",

@@ -330,6 +330,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_94_render_persistent_disk_blueprint.md",
         "docs/00631l_v4_95_fresh_marker_readiness_warn.md",
         "docs/00631l_v4_96_public_persistence_verifier.md",
+        "docs/00631l_v4_97_public_persistence_sample_guard.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

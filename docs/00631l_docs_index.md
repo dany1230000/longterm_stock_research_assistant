@@ -296,6 +296,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Backend release metadata release: `docs\00631l_v4_54_backend_release_metadata.md`
 - Public backend status check release: `docs\00631l_v4_55_public_backend_status_check.md`
 - Public persistence verifier release: `docs\00631l_v4_96_public_persistence_verifier.md`
+- Public persistence sample guard release: `docs\00631l_v4_97_public_persistence_sample_guard.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

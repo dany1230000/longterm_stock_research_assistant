@@ -126,6 +126,13 @@ def build_public_persistence_verifier_status(
     if samples and not marker_created_values and not dry_run:
         warnings.append("Public persistence marker is missing from readiness summary.")
         action_items.append("Check /ready and confirm 00631L_PERSISTENCE_MARKER_PATH is under /data/00631l.")
+    elif (
+        samples
+        and len(marker_created_values) < len(samples)
+        and not dry_run
+    ):
+        warnings.append("One or more public persistence samples are missing marker details.")
+        action_items.append("Rerun scripts\\00631l_public_backend_status.cmd --soft-fail and inspect /ready.")
     if len(set(marker_created_values)) > 1 and not dry_run:
         warnings.append("Public persistence marker createdAt changed between samples.")
         action_items.append("Verify the Render persistent disk is attached at /data/00631l.")
