@@ -1,6 +1,7 @@
 import unittest
 
 from backend.scripts.verify_public_persistence_00631l import (
+    _sample_from_public_status,
     build_public_persistence_verifier_status,
 )
 
@@ -152,6 +153,37 @@ class PublicPersistenceVerifierTests(unittest.TestCase):
 
         self.assertEqual(payload["overallStatus"], "PASS")
         self.assertEqual(payload["warnings"], [])
+
+    def test_public_fail_with_backend_summary_is_verifier_warning(self) -> None:
+        sample = _sample_from_public_status(
+            {
+                "overallStatus": "FAIL",
+                "summary": {
+                    "releaseTag": "00631l-lab-test",
+                    "readiness": "FAIL",
+                    "persistenceMarkerCreatedAt": "2026-06-23T06:00:00+00:00",
+                    "persistenceMarkerFresh": False,
+                    "persistenceMarkerAgeSeconds": 3600,
+                    "etfHistoryReadyCount": 220,
+                },
+                "failures": ["ready: storage_paths failed"],
+            }
+        )
+        payload = build_public_persistence_verifier_status(
+            base_url="https://example.com",
+            checked_at="2026-06-23T07:00:00+00:00",
+            samples=[sample],
+            min_marker_age_seconds=900,
+            min_etf_ready_count=200,
+        )
+
+        self.assertEqual(sample["status"], "PASS")
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["failures"], [])
+        self.assertIn(
+            "Public backend reported FAIL during persistence verification.",
+            payload["warnings"],
+        )
 
 
 if __name__ == "__main__":

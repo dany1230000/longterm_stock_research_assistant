@@ -1227,3 +1227,6 @@ imports.
 v4.97 makes that verifier stricter: if any public sample is missing persistence
 marker details, it reports WARN and asks for `/ready` inspection before data
 batch maintenance continues.
+
+v4.98 classifies observed public backend readiness/storage failures as verifier
+WARN instead of checker failure. Request errors can still fail the verifier.

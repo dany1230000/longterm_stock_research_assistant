@@ -118,11 +118,19 @@ def build_public_persistence_verifier_status(
         for sample in samples
         if sample.get("status") == "FAIL"
     ]
+    public_fail_samples = [
+        sample
+        for sample in samples
+        if sample.get("publicStatus") == "FAIL" and sample.get("status") != "FAIL"
+    ]
     if failed_samples:
         failures.append(
             "Public backend status sample failed; fix connectivity before verifying persistence."
         )
         action_items.append("Run scripts\\00631l_public_backend_status.cmd --soft-fail.")
+    if public_fail_samples and not dry_run:
+        warnings.append("Public backend reported FAIL during persistence verification.")
+        action_items.append("Run scripts\\00631l_public_backend_status.cmd --soft-fail and inspect readiness failures.")
     if samples and not marker_created_values and not dry_run:
         warnings.append("Public persistence marker is missing from readiness summary.")
         action_items.append("Check /ready and confirm 00631L_PERSISTENCE_MARKER_PATH is under /data/00631l.")
@@ -185,9 +193,16 @@ def build_public_persistence_verifier_status(
 
 def _sample_from_public_status(payload: dict[str, Any]) -> dict[str, Any]:
     summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+    public_status = payload.get("overallStatus")
+    has_backend_summary = bool(
+        summary.get("releaseTag")
+        or summary.get("readiness")
+        or summary.get("priceHistoryRows")
+        or summary.get("etfHistoryReadyCount")
+    )
     return {
-        "status": "FAIL" if payload.get("overallStatus") == "FAIL" else "PASS",
-        "publicStatus": payload.get("overallStatus"),
+        "status": "FAIL" if public_status == "FAIL" and not has_backend_summary else "PASS",
+        "publicStatus": public_status,
         "releaseTag": summary.get("releaseTag"),
         "readiness": summary.get("readiness"),
         "markerCreatedAt": summary.get("persistenceMarkerCreatedAt"),
