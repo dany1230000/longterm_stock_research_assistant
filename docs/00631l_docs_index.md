@@ -122,6 +122,7 @@ This is the main entry point for 00631L lab documentation.
 - Public readiness batch gate v4.83: `docs\00631l_v4_83_public_readiness_batch_gate.md`
 - Public batch test state isolation v4.84: `docs\00631l_v4_84_public_batch_test_state_isolation.md`
 - Public batch observability v4.85: `docs\00631l_v4_85_public_batch_observability.md`
+- Public readiness probe v4.86: `docs\00631l_v4_86_public_readiness_probe.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

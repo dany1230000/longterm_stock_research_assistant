@@ -221,6 +221,52 @@ class PublicMaintenanceStatusTests(unittest.TestCase):
             any("00631l_public_etf_catalog_batches" in item for item in payload["actionItems"])
         )
 
+    def test_readiness_probe_blocks_batch_when_status_sample_misses_ready_failure(self) -> None:
+        payload = build_public_maintenance_status(
+            deploy_drift={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},
+            public_status={
+                "overallStatus": "WARN",
+                "warnings": ["ETF history ready count below minimum 200: 15"],
+                "failures": [],
+                "summary": {"etfHistoryReadyCount": 15, "minEtfReadyCount": 200},
+            },
+            freshness={
+                "overallStatus": "WARN",
+                "warnings": ["public backend ETF history ready count is lower"],
+                "failures": [],
+                "actionItems": [
+                    "Run public ETF catalog batches: scripts\\00631l_public_etf_catalog_batches.cmd --batch-size 1 --max-batches 1 --soft-fail"
+                ],
+                "summary": {"publicEtfReadyLagVsStatic": 213},
+            },
+            readiness_probe={
+                "overallStatus": "WARN",
+                "warnings": ["ready sample 0: readiness FAIL"],
+                "failures": [],
+                "actionItems": [
+                    "Fix public backend readiness before running ETF catalog batches."
+                ],
+            },
+            catalog_batch_state={
+                "updatedAt": "2026-06-23T02:00:00+00:00",
+                "overallStatus": "WARN",
+                "catalogRowCount": 343,
+                "finalReadyCount": 15,
+                "nextOffset": 16,
+                "failedOffset": None,
+            },
+            checked_at="2026-06-23T00:00:00+00:00",
+        )
+
+        self.assertIn(
+            "Fix public backend readiness before running ETF catalog batches.",
+            payload["actionItems"],
+        )
+        self.assertFalse(
+            any("00631l_public_etf_catalog_batches" in item for item in payload["actionItems"])
+        )
+        self.assertTrue(any("ready sample 0" in item for item in payload["warnings"]))
+
 
 if __name__ == "__main__":
     unittest.main()

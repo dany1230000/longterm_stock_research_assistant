@@ -4,6 +4,8 @@ import argparse
 import json
 import os
 import sys
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -74,10 +76,15 @@ def run_public_maintenance_status(
         base_url=base_url,
         timeout_seconds=max(1, timeout_seconds),
     )
+    readiness_probe = _run_public_readiness_probe(
+        base_url=base_url,
+        timeout_seconds=max(1, timeout_seconds),
+    )
     return build_public_maintenance_status(
         deploy_drift=deploy_drift,
         public_status=public_status,
         freshness=freshness,
+        readiness_probe=readiness_probe,
         catalog_batch_state=load_catalog_batch_state(DEFAULT_CATALOG_BATCH_STATE_PATH),
         checked_at=checked_at,
     )
@@ -88,6 +95,7 @@ def build_public_maintenance_status(
     deploy_drift: dict[str, Any],
     public_status: dict[str, Any],
     freshness: dict[str, Any],
+    readiness_probe: dict[str, Any] | None = None,
     catalog_batch_state: dict[str, Any] | None = None,
     checked_at: str,
 ) -> dict[str, Any]:
@@ -96,8 +104,10 @@ def build_public_maintenance_status(
         _step_from_payload("public_backend_status", public_status),
         _step_from_payload("public_freshness", freshness),
     ]
-    warnings = _collect("warnings", deploy_drift, public_status, freshness)
-    failures = _collect("failures", deploy_drift, public_status, freshness)
+    if readiness_probe is not None:
+        steps.append(_step_from_payload("public_readiness_probe", readiness_probe))
+    warnings = _collect("warnings", deploy_drift, public_status, freshness, readiness_probe)
+    failures = _collect("failures", deploy_drift, public_status, freshness, readiness_probe)
     public_summary = (
         public_status.get("summary")
         if isinstance(public_status.get("summary"), dict)
@@ -118,7 +128,9 @@ def build_public_maintenance_status(
         public_ready_count=public_summary.get("etfHistoryReadyCount"),
     )
     has_persistence_warning = _has_public_persistence_warning(public_status)
-    has_readiness_blocker = _has_public_readiness_blocker(public_status)
+    has_readiness_blocker = _has_public_readiness_blocker(
+        public_status,
+    ) or _has_readiness_probe_blocker(readiness_probe)
     catalog_regression_warning = (
         [
             "Public ETF ready count regressed from the last batch state; "
@@ -127,24 +139,28 @@ def build_public_maintenance_status(
         if ready_regression > 0
         else []
     )
-    action_items = _dedupe(
-        [
-            *list(deploy_drift.get("actionItems") or []),
-            *list(public_status.get("actionItems") or []),
-            *list(freshness.get("actionItems") or []),
-            *_persistence_action_items(has_persistence_warning),
-            *_readiness_action_items(has_readiness_blocker),
-            *_catalog_batch_regression_action_items(ready_regression),
-            *(
-                []
-                if has_persistence_warning or has_readiness_blocker
-                else _catalog_batch_action_items(
-                    catalog_batch_state,
-                    public_ready_count=public_summary.get("etfHistoryReadyCount"),
-                    ready_lag=freshness_summary.get("publicEtfReadyLagVsStatic"),
-                )
-            ),
-        ]
+    action_items = _filter_catalog_batch_actions(
+        _dedupe(
+            [
+                *list(deploy_drift.get("actionItems") or []),
+                *list(public_status.get("actionItems") or []),
+                *list(freshness.get("actionItems") or []),
+                *list((readiness_probe or {}).get("actionItems") or []),
+                *_persistence_action_items(has_persistence_warning),
+                *_readiness_action_items(has_readiness_blocker),
+                *_catalog_batch_regression_action_items(ready_regression),
+                *(
+                    []
+                    if has_persistence_warning or has_readiness_blocker
+                    else _catalog_batch_action_items(
+                        catalog_batch_state,
+                        public_ready_count=public_summary.get("etfHistoryReadyCount"),
+                        ready_lag=freshness_summary.get("publicEtfReadyLagVsStatic"),
+                    )
+                ),
+            ]
+        ),
+        block_catalog_batches=has_persistence_warning or has_readiness_blocker,
     )
     warnings = _dedupe([*warnings, *catalog_regression_warning])
     overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
@@ -272,9 +288,23 @@ def _has_public_persistence_warning(public_status: dict[str, Any]) -> bool:
 
 def _has_public_readiness_blocker(public_status: dict[str, Any]) -> bool:
     summary = public_status.get("summary")
-    if not isinstance(summary, dict):
+    if isinstance(summary, dict) and str(summary.get("readiness") or "").upper() == "FAIL":
+        return True
+    for step in public_status.get("steps") or []:
+        if not isinstance(step, dict) or step.get("name") != "ready":
+            continue
+        if str(step.get("status") or "").upper() in {"WARN", "FAIL"}:
+            return True
+        step_summary = step.get("summary")
+        if isinstance(step_summary, dict) and str(step_summary.get("overallStatus") or "").upper() == "FAIL":
+            return True
+    return False
+
+
+def _has_readiness_probe_blocker(readiness_probe: dict[str, Any] | None) -> bool:
+    if not readiness_probe:
         return False
-    return str(summary.get("readiness") or "").upper() == "FAIL"
+    return str(readiness_probe.get("overallStatus") or "").upper() in {"WARN", "FAIL"}
 
 
 def _persistence_action_items(has_persistence_warning: bool) -> list[str]:
@@ -293,6 +323,81 @@ def _readiness_action_items(has_readiness_blocker: bool) -> list[str]:
     ]
 
 
+def _filter_catalog_batch_actions(
+    items: list[str],
+    *,
+    block_catalog_batches: bool,
+) -> list[str]:
+    if not block_catalog_batches:
+        return items
+    return [
+        item
+        for item in items
+        if "00631l_public_etf_catalog_batches" not in item
+    ]
+
+
+def _run_public_readiness_probe(
+    *,
+    base_url: str,
+    timeout_seconds: int,
+    sample_count: int = 2,
+) -> dict[str, Any]:
+    normalized = _normalize_base_url(base_url)
+    samples: list[dict[str, Any]] = []
+    warnings: list[str] = []
+    failures: list[str] = []
+    for index in range(max(1, sample_count)):
+        sample = _request_ready(normalized, timeout_seconds)
+        sample["sampleIndex"] = index
+        samples.append(sample)
+        if int(sample.get("httpStatus") or 0) < 200 or int(sample.get("httpStatus") or 0) >= 300:
+            failures.append(f"ready sample {index}: HTTP {sample.get('httpStatus')}")
+            continue
+        status = str(sample.get("overallStatus") or "WARN").upper()
+        if status == "FAIL":
+            warnings.append(f"ready sample {index}: readiness FAIL")
+        elif status == "WARN":
+            warnings.append(f"ready sample {index}: readiness WARN")
+    overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
+    return {
+        "sourceContract": "00631l_public_readiness_probe",
+        "checkedAt": _now_iso(),
+        "overallStatus": overall_status,
+        "warningCount": len(warnings),
+        "failureCount": len(failures),
+        "samples": samples,
+        "warnings": warnings,
+        "failures": failures,
+        "actionItems": _readiness_action_items(overall_status in {"WARN", "FAIL"}),
+    }
+
+
+def _request_ready(base_url: str, timeout_seconds: int) -> dict[str, Any]:
+    request = urllib.request.Request(
+        f"{base_url}/ready",
+        method="GET",
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "00631l-public-readiness-probe/1.0",
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=max(1, timeout_seconds)) as response:
+            body = response.read().decode("utf-8", errors="replace")
+            payload = json.loads(body) if body.strip() else {}
+            return {
+                "httpStatus": response.status,
+                "overallStatus": payload.get("overallStatus"),
+                "failureCount": len(payload.get("failures") or []),
+                "warningCount": len(payload.get("warnings") or []),
+            }
+    except urllib.error.HTTPError as error:
+        return {"httpStatus": error.code, "overallStatus": "FAIL"}
+    except (OSError, json.JSONDecodeError) as error:
+        return {"httpStatus": None, "overallStatus": "FAIL", "errorMessage": str(error)}
+
+
 def _step_from_payload(name: str, payload: dict[str, Any]) -> dict[str, Any]:
     status = str(payload.get("overallStatus") or "WARN")
     normalized = status if status in {"PASS", "WARN", "FAIL"} else "WARN"
@@ -303,9 +408,11 @@ def _step_from_payload(name: str, payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _collect(key: str, *payloads: dict[str, Any]) -> list[str]:
+def _collect(key: str, *payloads: dict[str, Any] | None) -> list[str]:
     values: list[str] = []
     for payload in payloads:
+        if payload is None:
+            continue
         values.extend(str(item) for item in payload.get(key) or [])
     return _dedupe(values)
 

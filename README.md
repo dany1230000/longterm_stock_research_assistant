@@ -1173,3 +1173,7 @@ unless a test passes an explicit temporary state path.
 v4.85 improves public catalog batch observability. Each batch now reports the
 requested ETF code, source status, saved rows, coverage, and item error so an
 unavailable catalog row can be skipped without pretending it was imported.
+
+v4.86 adds an independent public readiness probe to maintenance status. If any
+readiness sample is WARN/FAIL, ETF catalog batch commands are hidden until the
+public backend data directory and persistence checks are healthy.
