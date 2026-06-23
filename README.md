@@ -1103,3 +1103,6 @@ scripts\00631l_public_etf_catalog_batches.cmd --resume --soft-fail
 
 v4.68 also suggests a concrete `--start-offset` when the public backend already
 has ETF history rows but no usable resume offset exists.
+
+v4.69 converts public ETF catalog batch timeout exceptions into JSON payloads
+and resume state, so soft-fail maintenance runs do not end as tracebacks.

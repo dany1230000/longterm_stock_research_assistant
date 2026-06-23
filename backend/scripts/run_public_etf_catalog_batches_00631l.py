@@ -177,20 +177,31 @@ def run_public_etf_catalog_batches(
     ]
     batch_steps: list[dict[str, Any]] = []
     for planned_offset in planned_offsets:
-        batch_result = runner(
-            base_url=normalized_base_url,
-            offset=planned_offset,
-            limit=limit,
-            timeout_seconds=timeout_seconds,
-            retry_count=retry_count,
-            retry_delay_seconds=retry_delay_seconds,
-        )
+        batch_message = f"offset={planned_offset} limit={limit}"
+        try:
+            batch_result = runner(
+                base_url=normalized_base_url,
+                offset=planned_offset,
+                limit=limit,
+                timeout_seconds=timeout_seconds,
+                retry_count=retry_count,
+                retry_delay_seconds=retry_delay_seconds,
+            )
+        except Exception as error:  # noqa: BLE001 - maintenance scripts must return payloads.
+            error_message = f"{type(error).__name__}: {error}"
+            batch_message = f"{batch_message}; {error_message}"
+            batch_result = {
+                "overallStatus": "FAIL",
+                "failures": [error_message],
+                "warnings": [],
+                "steps": [],
+            }
         status = str(batch_result.get("overallStatus") or "WARN")
         batch_steps.append(
             _step(
                 "catalog_batch",
                 status if status in {"PASS", "WARN", "FAIL"} else "WARN",
-                f"offset={planned_offset} limit={limit}",
+                batch_message,
                 summary={
                     "offset": planned_offset,
                     "limit": limit,

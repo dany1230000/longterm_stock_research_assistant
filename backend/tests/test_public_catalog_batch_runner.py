@@ -272,6 +272,56 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(state["failedOffset"], 30)
         self.assertEqual(state["finalReadyCount"], 15)
 
+    def test_runner_timeout_is_captured_and_writes_resume_state(self) -> None:
+        history_ready_counts = [15, 15]
+
+        def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
+            if path == "/api/etf/catalog/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"sourceStatus": "static_official", "rowCount": 343},
+                }
+            if path == "/api/etf/history/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": history_ready_counts.pop(0),
+                        "rowCount": 15,
+                        "validationFailureCount": 0,
+                    },
+                }
+            raise AssertionError(path)
+
+        def maintenance_runner(
+            *,
+            base_url: str,
+            offset: int,
+            limit: int,
+            timeout_seconds: int,
+            retry_count: int,
+            retry_delay_seconds: float,
+        ) -> dict:
+            raise TimeoutError("The read operation timed out")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            state_path = Path(temp_dir) / "batch_state.json"
+            payload = run_public_etf_catalog_batches(
+                base_url="https://example.com",
+                batch_size=10,
+                max_batches=1,
+                start_offset=15,
+                requester=requester,
+                maintenance_runner=maintenance_runner,
+                state_path=state_path,
+            )
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["overallStatus"], "FAIL")
+        self.assertTrue(any("timed out" in item for item in payload["failures"]))
+        self.assertEqual(payload["summary"]["nextOffset"], 15)
+        self.assertEqual(state["failedOffset"], 15)
+
     def test_resume_uses_saved_next_offset_for_dry_run(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             state_path = Path(temp_dir) / "batch_state.json"
