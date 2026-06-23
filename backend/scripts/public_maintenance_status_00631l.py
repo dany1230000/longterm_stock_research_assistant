@@ -215,11 +215,11 @@ def _catalog_batch_action_items(
     if state.get("failedOffset") is not None:
         return [
             "Review public ETF catalog batch state, then resume with "
-            "scripts\\00631l_public_etf_catalog_batches.cmd --resume --soft-fail."
+            "scripts\\00631l_public_etf_catalog_batches.cmd --resume --batch-size 1 --max-batches 1 --soft-fail."
         ]
     if state.get("nextOffset") is not None:
         return [
-            "Resume public ETF catalog batches with scripts\\00631l_public_etf_catalog_batches.cmd --resume."
+            "Resume public ETF catalog batches with scripts\\00631l_public_etf_catalog_batches.cmd --resume --batch-size 1 --max-batches 1 --soft-fail."
         ]
     try:
         ready_count = max(0, int(public_ready_count))
@@ -230,7 +230,7 @@ def _catalog_batch_action_items(
         return [
             "Continue public ETF catalog batches with "
             "scripts\\00631l_public_etf_catalog_batches.cmd "
-            f"--start-offset {ready_count} --soft-fail."
+            f"--start-offset {ready_count} --batch-size 1 --max-batches 1 --soft-fail."
         ]
     return []
 

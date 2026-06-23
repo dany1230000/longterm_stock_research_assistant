@@ -59,6 +59,9 @@ class PublicDataFreshnessTests(unittest.TestCase):
         self.assertTrue(
             any("00631l_public_etf_catalog_batches.cmd" in item for item in payload["actionItems"])
         )
+        self.assertTrue(
+            any("--batch-size 1 --max-batches 1" in item for item in payload["actionItems"])
+        )
 
     def test_passes_when_public_static_and_local_are_aligned(self) -> None:
         public = {

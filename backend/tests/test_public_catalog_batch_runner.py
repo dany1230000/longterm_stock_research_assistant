@@ -40,6 +40,81 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "PASS")
         self.assertEqual(payload["summary"]["plannedOffsets"], [0, 50])
 
+    def test_default_dry_run_uses_single_small_public_batch(self) -> None:
+        payload = run_public_etf_catalog_batches(
+            base_url="https://example.com",
+            catalog_row_count=125,
+            dry_run=True,
+        )
+
+        self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertEqual(payload["summary"]["plannedOffsets"], [0])
+        self.assertEqual(payload["summary"]["plannedBatchCount"], 1)
+
+    def test_preflight_warn_blocks_remote_batch(self) -> None:
+        maintenance_calls: list[int] = []
+
+        def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
+            if path == "/api/etf/catalog/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"sourceStatus": "static_official", "rowCount": 343},
+                }
+            if path == "/api/etf/history/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": 15,
+                        "rowCount": 15,
+                        "validationFailureCount": 0,
+                    },
+                }
+            raise AssertionError(path)
+
+        def preflight_checker(base_url: str, timeout_seconds: int) -> dict:
+            return {
+                "overallStatus": "WARN",
+                "warnings": ["public history stability returned WARN"],
+                "failures": [],
+                "actionItems": [
+                    "Rerun scripts\\00631l_public_history_stability.cmd --soft-fail."
+                ],
+            }
+
+        def maintenance_runner(
+            *,
+            base_url: str,
+            offset: int,
+            limit: int,
+            timeout_seconds: int,
+            retry_count: int,
+            retry_delay_seconds: float,
+        ) -> dict:
+            maintenance_calls.append(offset)
+            return {
+                "overallStatus": "PASS",
+                "failures": [],
+                "warnings": [],
+                "steps": [],
+            }
+
+        payload = run_public_etf_catalog_batches(
+            base_url="https://example.com",
+            batch_size=1,
+            max_batches=1,
+            requester=requester,
+            maintenance_runner=maintenance_runner,
+            preflight_checker=preflight_checker,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(maintenance_calls, [])
+        self.assertEqual(payload["summary"]["preflightStatus"], "WARN")
+        self.assertTrue(
+            any("public_history_stability" in item for item in payload["actionItems"])
+        )
+
     def test_runs_batches_and_reports_final_ready_count(self) -> None:
         maintenance_calls: list[tuple[int, int]] = []
         history_status_calls = 0

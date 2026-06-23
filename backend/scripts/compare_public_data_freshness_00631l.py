@@ -141,7 +141,7 @@ def compare_public_data_freshness(
         )
         action_items.append(
             "Run public ETF catalog batches: scripts\\00631l_public_etf_catalog_batches.cmd "
-            "--batch-size 10 --max-batches 8 --soft-fail"
+            "--batch-size 1 --max-batches 1 --soft-fail"
         )
     if local_rows < 2:
         warnings.append("local 00631L price history has fewer than 2 rows")

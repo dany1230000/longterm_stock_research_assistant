@@ -80,7 +80,7 @@ class PublicMaintenanceStatusTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["catalogBatchNextOffset"], 20)
         self.assertEqual(payload["summary"]["catalogBatchFinalReadyCount"], 15)
         self.assertIn(
-            "Resume public ETF catalog batches with scripts\\00631l_public_etf_catalog_batches.cmd --resume.",
+            "Resume public ETF catalog batches with scripts\\00631l_public_etf_catalog_batches.cmd --resume --batch-size 1 --max-batches 1 --soft-fail.",
             payload["actionItems"],
         )
 
@@ -111,7 +111,7 @@ class PublicMaintenanceStatusTests(unittest.TestCase):
         )
 
         self.assertIn(
-            "Continue public ETF catalog batches with scripts\\00631l_public_etf_catalog_batches.cmd --start-offset 15 --soft-fail.",
+            "Continue public ETF catalog batches with scripts\\00631l_public_etf_catalog_batches.cmd --start-offset 15 --batch-size 1 --max-batches 1 --soft-fail.",
             payload["actionItems"],
         )
 

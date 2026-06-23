@@ -57,7 +57,7 @@ scripts\00631l_remote_maintenance.cmd --dry-run
 scripts\00631l_remote_maintenance.cmd --mode all
 scripts\00631l_remote_maintenance.cmd --mode daily --etf-from-catalog --etf-limit 50 --etf-offset 0 --soft-fail
 scripts\00631l_remote_maintenance.cmd --mode daily --etf-from-catalog --etf-limit 50 --etf-offset 0 --retry-count 2 --retry-delay-seconds 3 --soft-fail
-scripts\00631l_public_etf_catalog_batches.cmd --dry-run --batch-size 10 --max-batches 8
+scripts\00631l_public_etf_catalog_batches.cmd --dry-run --batch-size 1 --max-batches 1
 scripts\00631l_public_backend_status.cmd
 scripts\00631l_compare_public_freshness.cmd --soft-fail
 scripts\00631l_export_static_data.cmd --status-only
@@ -1098,7 +1098,7 @@ state exists.
 
 ```cmd
 scripts\00631l_public_maintenance_status.cmd --soft-fail
-scripts\00631l_public_etf_catalog_batches.cmd --resume --soft-fail
+scripts\00631l_public_etf_catalog_batches.cmd --resume --batch-size 1 --max-batches 1 --soft-fail
 ```
 
 v4.68 also suggests a concrete `--start-offset` when the public backend already
@@ -1152,3 +1152,8 @@ continues to flag the deployment persistence problem.
 v4.80 makes `scripts\00631l_public_maintenance_status.cmd` persistence-first:
 when the public backend data path is unhealthy, the next action is to fix the
 public volume before running ETF history catalog batches.
+
+v4.81 makes public ETF catalog batches production-safe by default. The runner
+now plans one catalog item at a time, runs deploy/stability preflight before
+remote writes, and only suggests `--batch-size 1 --max-batches 1` in current
+maintenance guidance.

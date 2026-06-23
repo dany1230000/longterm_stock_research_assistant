@@ -21,14 +21,15 @@ from backend.scripts.remote_maintenance_00631l import _request_etf_history_updat
 
 RequestFn = Callable[[str, str, int], dict[str, Any]]
 MaintenanceRunnerFn = Callable[..., dict[str, Any]]
+PreflightCheckerFn = Callable[[str, int], dict[str, Any]]
 DEFAULT_STATE_PATH = ROOT / "backend" / "data" / "00631l_public_etf_catalog_batch_state.json"
 
 
 def run_public_etf_catalog_batches(
     *,
     base_url: str,
-    batch_size: int = 10,
-    max_batches: int = 8,
+    batch_size: int = 1,
+    max_batches: int = 1,
     start_offset: int = 0,
     timeout_seconds: int = 120,
     retry_count: int = 2,
@@ -36,10 +37,12 @@ def run_public_etf_catalog_batches(
     dry_run: bool = False,
     resume: bool = False,
     continue_on_failure: bool = False,
+    enable_preflight: bool = False,
     state_path: str | Path | None = None,
     catalog_row_count: int | None = None,
     requester: RequestFn | None = None,
     maintenance_runner: MaintenanceRunnerFn | None = None,
+    preflight_checker: PreflightCheckerFn | None = None,
 ) -> dict[str, Any]:
     normalized_base_url = _normalize_base_url(base_url)
     checked_at = _now_iso()
@@ -120,6 +123,48 @@ def run_public_etf_catalog_batches(
             },
             action_items=[],
         )
+
+    should_run_preflight = enable_preflight or preflight_checker is not None
+    if should_run_preflight:
+        preflight = (preflight_checker or _run_public_catalog_preflight)(
+            normalized_base_url,
+            timeout_seconds,
+        )
+        preflight_status = str(preflight.get("overallStatus") or "WARN")
+        if preflight_status != "PASS":
+            payload = _payload(
+                checked_at=checked_at,
+                base_url=normalized_base_url,
+                dry_run=False,
+                steps=[
+                    _step(
+                        "catalog_status",
+                        "PASS",
+                        f"catalogRows={catalog_rows} sourceStatus={catalog_source_status}",
+                        http_status=catalog_status.get("httpStatus"),
+                    ),
+                    _step(
+                        "public_catalog_preflight",
+                        "FAIL" if preflight_status == "FAIL" else "WARN",
+                        f"preflightStatus={preflight_status}",
+                        summary={
+                            "warnings": preflight.get("warnings") or [],
+                            "failures": preflight.get("failures") or [],
+                        },
+                    ),
+                ],
+                summary={
+                    "catalogRowCount": catalog_rows,
+                    "catalogSourceStatus": catalog_source_status,
+                    "plannedOffsets": planned_offsets,
+                    "plannedBatchCount": len(planned_offsets),
+                    "preflightStatus": preflight_status,
+                    "finalReadyCount": None,
+                },
+                action_items=_preflight_action_items(preflight),
+            )
+            _write_resume_state(payload, state_file)
+            return payload
 
     if catalog_rows < 1:
         payload = _payload(
@@ -336,6 +381,75 @@ def _run_single_batch(
             "postCheckRetryAttempts": payload.get("postCheckRetryAttempts"),
         },
     }
+
+
+def _run_public_catalog_preflight(base_url: str, timeout_seconds: int) -> dict[str, Any]:
+    from backend.scripts.check_public_deploy_drift_00631l import (
+        run_public_backend_deploy_drift_check,
+    )
+    from backend.scripts.public_history_stability_00631l import (
+        run_public_history_stability_check,
+    )
+
+    drift = run_public_backend_deploy_drift_check(
+        base_url=base_url,
+        timeout_seconds=max(1, timeout_seconds),
+    )
+    stability = run_public_history_stability_check(
+        base_url=base_url,
+        sample_count=3,
+        interval_seconds=1,
+        timeout_seconds=max(1, timeout_seconds),
+    )
+    steps = [
+        _step(
+            "deploy_drift",
+            _normalize_status(drift.get("overallStatus")),
+            str(drift.get("overallStatus") or "WARN"),
+            summary={
+                "warnings": drift.get("warnings") or [],
+                "failures": drift.get("failures") or [],
+            },
+        ),
+        _step(
+            "history_stability",
+            _normalize_status(stability.get("overallStatus")),
+            str(stability.get("overallStatus") or "WARN"),
+            summary={
+                "warnings": stability.get("warnings") or [],
+                "failures": stability.get("failures") or [],
+            },
+        ),
+    ]
+    return _payload(
+        checked_at=_now_iso(),
+        base_url=base_url,
+        dry_run=False,
+        steps=steps,
+        summary={
+            "deployDriftStatus": drift.get("overallStatus"),
+            "historyStabilityStatus": stability.get("overallStatus"),
+        },
+        action_items=[
+            *(drift.get("actionItems") or []),
+            *(stability.get("actionItems") or []),
+        ],
+    )
+
+
+def _preflight_action_items(preflight: dict[str, Any]) -> list[str]:
+    items = [str(item) for item in preflight.get("actionItems") or []]
+    if items:
+        return _dedupe(items)
+    return [
+        "Rerun scripts\\00631l_public_deploy_drift.cmd --soft-fail and "
+        "scripts\\00631l_public_history_stability.cmd --soft-fail before public ETF catalog batches."
+    ]
+
+
+def _normalize_status(value: Any) -> str:
+    status = str(value or "WARN")
+    return status if status in {"PASS", "WARN", "FAIL"} else "WARN"
 
 
 def _payload(
@@ -589,6 +703,17 @@ def _normalize_base_url(value: str) -> str:
     return (value.strip() or DEFAULT_BACKEND_URL).rstrip("/")
 
 
+def _dedupe(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    output: list[str] = []
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        output.append(item)
+    return output
+
+
 def _now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
@@ -604,8 +729,8 @@ def _parse_args() -> argparse.Namespace:
         or DEFAULT_BACKEND_URL,
         help="Public backend base URL.",
     )
-    parser.add_argument("--batch-size", type=int, default=10)
-    parser.add_argument("--max-batches", type=int, default=8)
+    parser.add_argument("--batch-size", type=int, default=1)
+    parser.add_argument("--max-batches", type=int, default=1)
     parser.add_argument("--start-offset", type=int, default=0)
     parser.add_argument("--timeout-seconds", type=int, default=120)
     parser.add_argument("--retry-count", type=int, default=2)
@@ -613,6 +738,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--continue-on-failure", action="store_true")
+    parser.add_argument(
+        "--skip-preflight",
+        action="store_true",
+        help="Skip deploy/stability preflight. Use only for controlled diagnostics.",
+    )
     parser.add_argument("--state-path", default=str(DEFAULT_STATE_PATH))
     parser.add_argument("--soft-fail", action="store_true")
     return parser.parse_args()
@@ -631,6 +761,7 @@ def main() -> int:
         dry_run=args.dry_run,
         resume=args.resume,
         continue_on_failure=args.continue_on_failure,
+        enable_preflight=not args.skip_preflight,
         state_path=args.state_path,
     )
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))

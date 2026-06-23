@@ -117,6 +117,7 @@ This is the main entry point for 00631L lab documentation.
 - Public deploy wait v4.78: `docs\00631l_v4_78_public_deploy_wait.md`
 - Read-only persistence warning v4.79: `docs\00631l_v4_79_readonly_persistence_warn.md`
 - Persistence-first maintenance v4.80: `docs\00631l_v4_80_persistence_first_maintenance.md`
+- Public batch preflight v4.81: `docs\00631l_v4_81_public_batch_preflight.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
@@ -157,7 +158,7 @@ This is the main entry point for 00631L lab documentation.
 - Release check: `scripts\00631l_release_check.cmd`
 - Remote public backend maintenance: `scripts\00631l_remote_maintenance.cmd --mode all`
 - Catalog-batch remote ETF history maintenance: `scripts\00631l_remote_maintenance.cmd --mode daily --etf-from-catalog --etf-limit 50 --etf-offset 0 --soft-fail`
-- Public ETF catalog batch runner: `scripts\00631l_public_etf_catalog_batches.cmd --dry-run --batch-size 10 --max-batches 8`
+- Public ETF catalog batch runner: `scripts\00631l_public_etf_catalog_batches.cmd --dry-run --batch-size 1 --max-batches 1`
 - Public deploy wait: `scripts\00631l_wait_public_deploy.cmd --soft-fail`
 - Public/local/static freshness compare: `scripts\00631l_compare_public_freshness.cmd --soft-fail`
 - Public config check: `scripts\00631l_check_public_config.cmd`
