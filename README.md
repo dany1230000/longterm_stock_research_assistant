@@ -1165,3 +1165,7 @@ guidance: next-offset action items now include `--batch-size 1 --max-batches 1
 v4.83 blocks catalog batch suggestions whenever public backend readiness is
 failing. Fix public readiness or persistence first, then continue ETF catalog
 history maintenance.
+
+v4.84 isolates public catalog batch tests from local operational state. Backend
+tests no longer write `backend\data\00631l_public_etf_catalog_batch_state.json`
+unless a test passes an explicit temporary state path.

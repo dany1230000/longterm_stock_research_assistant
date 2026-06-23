@@ -50,7 +50,14 @@ def run_public_etf_catalog_batches(
     offset = max(0, int(start_offset or 0))
     max_batch_count = max(1, int(max_batches or 1))
     state_file = Path(state_path) if state_path is not None else DEFAULT_STATE_PATH
-    if resume:
+    injected_test_or_fixture_inputs = (
+        requester is not None
+        or maintenance_runner is not None
+        or preflight_checker is not None
+        or catalog_row_count is not None
+    )
+    persist_resume_state = state_path is not None or not injected_test_or_fixture_inputs
+    if resume and persist_resume_state:
         offset = _resume_offset(state_file, offset)
 
     request = requester or _request_json
@@ -163,7 +170,8 @@ def run_public_etf_catalog_batches(
                 },
                 action_items=_preflight_action_items(preflight),
             )
-            _write_resume_state(payload, state_file)
+            if persist_resume_state:
+                _write_resume_state(payload, state_file)
             return payload
 
     if catalog_rows < 1:
@@ -190,7 +198,7 @@ def run_public_etf_catalog_batches(
                 "Check /api/etf/catalog/status or deploy the backend with ETF_CATALOG_SEED_PATH.",
             ],
         )
-        if not _has_useful_resume_state(state_file):
+        if persist_resume_state and not _has_useful_resume_state(state_file):
             _write_resume_state(payload, state_file)
         return payload
 
@@ -336,7 +344,8 @@ def run_public_etf_catalog_batches(
             ready_count_regression=ready_count_regression,
         ),
     )
-    _write_resume_state(payload, state_file)
+    if persist_resume_state:
+        _write_resume_state(payload, state_file)
     return payload
 
 

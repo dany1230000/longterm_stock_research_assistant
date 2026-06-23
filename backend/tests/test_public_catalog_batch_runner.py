@@ -413,6 +413,61 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(state["failedOffset"], 30)
         self.assertEqual(state["finalReadyCount"], 15)
 
+    def test_injected_runner_does_not_write_default_resume_state(self) -> None:
+        history_ready_counts = [15, 15]
+
+        def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
+            if path == "/api/etf/catalog/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"sourceStatus": "static_official", "rowCount": 343},
+                }
+            if path == "/api/etf/history/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": history_ready_counts.pop(0),
+                        "rowCount": 15,
+                        "validationFailureCount": 0,
+                    },
+                }
+            raise AssertionError(path)
+
+        def maintenance_runner(
+            *,
+            base_url: str,
+            offset: int,
+            limit: int,
+            timeout_seconds: int,
+            retry_count: int,
+            retry_delay_seconds: float,
+        ) -> dict:
+            return {
+                "overallStatus": "FAIL",
+                "failures": ["etf_history_update: HTTP 502"],
+                "warnings": [],
+                "steps": [],
+            }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            default_state_path = Path(temp_dir) / "default_state.json"
+            with patch(
+                "backend.scripts.run_public_etf_catalog_batches_00631l.DEFAULT_STATE_PATH",
+                default_state_path,
+            ):
+                payload = run_public_etf_catalog_batches(
+                    base_url="https://example.com",
+                    batch_size=1,
+                    max_batches=1,
+                    start_offset=25,
+                    requester=requester,
+                    maintenance_runner=maintenance_runner,
+                )
+
+            self.assertEqual(payload["overallStatus"], "FAIL")
+            self.assertFalse(default_state_path.exists())
+
     def test_stops_after_first_failed_batch_by_default(self) -> None:
         history_ready_counts = [15, 15]
         called_offsets: list[int] = []
