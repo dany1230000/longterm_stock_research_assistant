@@ -219,10 +219,15 @@ def _endpoint_summary(name: str, payload: dict[str, Any]) -> dict[str, Any]:
             "publicApiBaseUrl": payload.get("publicApiBaseUrl"),
         }
     if name == "ready":
+        marker = payload.get("persistenceMarker")
+        marker = marker if isinstance(marker, dict) else {}
         return {
             "overallStatus": payload.get("overallStatus"),
             "warningCount": len(payload.get("warnings") or []),
             "failureCount": len(payload.get("failures") or []),
+            "persistenceMarkerCreatedAt": marker.get("createdAt"),
+            "persistenceMarkerAgeSeconds": marker.get("markerAgeSeconds"),
+            "persistenceMarkerNewlyCreated": marker.get("newlyCreated"),
         }
     if name == "history_status":
         return {
@@ -255,12 +260,17 @@ def _summary(
     history = payloads.get("history_status", {})
     etf_history = payloads.get("etf_history_status", {})
     ready = payloads.get("ready", {})
+    marker = ready.get("persistenceMarker")
+    marker = marker if isinstance(marker, dict) else {}
     return {
         "backendVersion": health.get("appVersion") or release.get("version"),
         "releaseTag": release.get("tag"),
         "gitSha": release.get("gitSha"),
         "buildTime": release.get("buildTime"),
         "readiness": ready.get("overallStatus"),
+        "persistenceMarkerCreatedAt": marker.get("createdAt"),
+        "persistenceMarkerAgeSeconds": marker.get("markerAgeSeconds"),
+        "persistenceMarkerNewlyCreated": marker.get("newlyCreated"),
         "priceHistoryRows": int(history.get("rowCount") or 0),
         "priceHistoryCoverageStart": history.get("coverageStart"),
         "priceHistoryCoverageEnd": history.get("coverageEnd"),

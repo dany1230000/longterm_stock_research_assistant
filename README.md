@@ -1191,3 +1191,9 @@ effective holdings, intraday, 00631L price, ETF catalog, multi-ETF history,
 daily-cycle, integrity, restore, export, backup, and report paths so a deployed
 backend can show whether required data is really writing under the persistent
 `00631L_DATA_DIR`.
+
+v4.90 adds a public persistence marker. The backend writes a small marker file
+inside `00631L_DATA_DIR` and reports its `createdAt`, age, and newly-created
+state through `/ready`, operations/status, and public backend status checks.
+Use it with readyCount after redeploys to tell whether the public data volume is
+actually being preserved.

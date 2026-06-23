@@ -151,6 +151,7 @@ class Etf00631LService:
             self._readiness_cors_check(),
             self._readiness_data_dir_check(),
             self._readiness_storage_paths_check(),
+            self._readiness_persistence_marker_check(now),
             self._readiness_persistence_check(),
             self._readiness_url_check(
                 "twse_intraday_nav_url",
@@ -203,6 +204,7 @@ class Etf00631LService:
             "allowedOrigins": list(self._config.allowed_origins),
             "dataDir": self._config.data_dir,
             "dataPersistenceMode": self._config.data_persistence_mode,
+            "persistenceMarker": self._persistence_marker_status(now=now),
             "errorMessage": "; ".join(failures) if failures else None,
         }
 
@@ -1136,6 +1138,7 @@ class Etf00631LService:
             "sourceContract": "00631l_data_directory_health",
             "dataRoot": str(data_root),
             "persistence": persistence,
+            "persistenceMarker": self._persistence_marker_status(now=utc_now_iso()),
             "storagePaths": self._storage_path_diagnostics(),
             "dataDir": _directory_health(data_dir, data_files),
             "exportDir": _directory_health(export_dir, export_files),
@@ -1378,6 +1381,20 @@ class Etf00631LService:
             paths=paths,
         )
 
+    def _readiness_persistence_marker_check(self, now: str) -> dict[str, Any]:
+        marker = self._persistence_marker_status(now=now)
+        status = "FAIL" if marker["sourceStatus"] == "error" else "PASS"
+        return _readiness_check(
+            "persistence_marker",
+            status,
+            marker["errorMessage"] or "ok",
+            path=marker["path"],
+            createdAt=marker["createdAt"],
+            markerAgeSeconds=marker["markerAgeSeconds"],
+            newlyCreated=marker["newlyCreated"],
+            writable=marker["writable"],
+        )
+
     def _readiness_persistence_check(self) -> dict[str, Any]:
         persistence = _persistence_health(
             Path(self._config.data_dir),
@@ -1465,6 +1482,13 @@ class Etf00631LService:
                 True,
             ),
             (
+                "persistenceMarker",
+                "00631L_PERSISTENCE_MARKER_PATH",
+                Path(self._config.persistence_marker_path),
+                "file_parent",
+                True,
+            ),
+            (
                 "historyExport",
                 "00631L_HISTORY_EXPORT_DIR",
                 Path(self._config.history_export_dir),
@@ -1498,6 +1522,67 @@ class Etf00631LService:
             )
             for key, label, path, kind, required in entries
         ]
+
+    def _persistence_marker_status(self, *, now: str) -> dict[str, Any]:
+        path = Path(self._config.persistence_marker_path)
+        target = path.parent
+        writable = _ensure_directory_writable(target)
+        if not writable:
+            return {
+                "sourceStatus": "error",
+                "sourceContract": "00631l_persistence_marker",
+                "path": str(path),
+                "targetPath": str(target),
+                "createdAt": None,
+                "lastCheckedAt": now,
+                "markerAgeSeconds": None,
+                "newlyCreated": False,
+                "writable": False,
+                "errorMessage": "Persistence marker directory is not writable.",
+            }
+        newly_created = False
+        payload: dict[str, Any] = {}
+        if path.exists():
+            payload = _read_json_file(path)
+        if not payload.get("createdAt"):
+            payload = {
+                "sourceContract": "00631l_persistence_marker",
+                "createdAt": now,
+                "path": str(path),
+            }
+            newly_created = True
+        payload["lastCheckedAt"] = now
+        payload["path"] = str(path)
+        try:
+            path.write_text(
+                json.dumps(payload, ensure_ascii=False, sort_keys=True),
+                encoding="utf-8",
+            )
+        except OSError as error:
+            return {
+                "sourceStatus": "error",
+                "sourceContract": "00631l_persistence_marker",
+                "path": str(path),
+                "targetPath": str(target),
+                "createdAt": payload.get("createdAt"),
+                "lastCheckedAt": now,
+                "markerAgeSeconds": _seconds_since(payload.get("createdAt"), now),
+                "newlyCreated": newly_created,
+                "writable": False,
+                "errorMessage": f"Persistence marker write failed: {error}",
+            }
+        return {
+            "sourceStatus": "cached",
+            "sourceContract": "00631l_persistence_marker",
+            "path": str(path),
+            "targetPath": str(target),
+            "createdAt": payload.get("createdAt"),
+            "lastCheckedAt": now,
+            "markerAgeSeconds": _seconds_since(payload.get("createdAt"), now),
+            "newlyCreated": newly_created,
+            "writable": True,
+            "errorMessage": None,
+        }
 
     def _readiness_url_check(
         self,
@@ -1564,6 +1649,21 @@ def _mtime_iso(mtime: float | None) -> str | None:
     if mtime is None:
         return None
     return datetime.fromtimestamp(mtime, tz=timezone.utc).replace(microsecond=0).isoformat()
+
+
+def _seconds_since(start_iso: Any, end_iso: str) -> int | None:
+    if not start_iso:
+        return None
+    try:
+        start = datetime.fromisoformat(str(start_iso).replace("Z", "+00:00"))
+        end = datetime.fromisoformat(end_iso.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if start.tzinfo is None:
+        start = start.replace(tzinfo=timezone.utc)
+    if end.tzinfo is None:
+        end = end.replace(tzinfo=timezone.utc)
+    return max(0, int((end - start).total_seconds()))
 
 
 def _parse_date(value: str | None) -> date | None:

@@ -30,3 +30,5 @@ services:
         value: /data/00631l/backups
       - key: 00631L_REPORT_DIR
         value: /data/00631l/reports
+      - key: 00631L_PERSISTENCE_MARKER_PATH
+        value: /data/00631l/00631l_persistence_marker.json

@@ -43,7 +43,16 @@ class PublicBackendStatusTests(unittest.TestCase):
             if endpoint.name == "ready":
                 return {
                     "httpStatus": 200,
-                    "payload": {"overallStatus": "PASS", "warnings": [], "failures": []},
+                    "payload": {
+                        "overallStatus": "PASS",
+                        "warnings": [],
+                        "failures": [],
+                        "persistenceMarker": {
+                            "createdAt": "2026-06-23T05:00:00+00:00",
+                            "markerAgeSeconds": 120,
+                            "newlyCreated": False,
+                        },
+                    },
                 }
             if endpoint.name == "history_status":
                 return {
@@ -76,6 +85,19 @@ class PublicBackendStatusTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["gitSha"], "abc123")
         self.assertEqual(payload["summary"]["priceHistoryRows"], 2833)
         self.assertEqual(payload["summary"]["etfHistoryReadyCount"], 15)
+        self.assertEqual(
+            payload["summary"]["persistenceMarkerCreatedAt"],
+            "2026-06-23T05:00:00+00:00",
+        )
+        self.assertEqual(payload["summary"]["persistenceMarkerAgeSeconds"], 120)
+        self.assertFalse(payload["summary"]["persistenceMarkerNewlyCreated"])
+        ready_step = next(
+            step for step in payload["steps"] if step["name"] == "ready"
+        )
+        self.assertEqual(
+            ready_step["summary"]["persistenceMarkerCreatedAt"],
+            "2026-06-23T05:00:00+00:00",
+        )
 
     def test_status_warns_when_etf_history_has_no_ready_rows(self) -> None:
         def requester(

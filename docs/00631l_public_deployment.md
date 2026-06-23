@@ -23,6 +23,7 @@ TWSE_00631L_INTRADAY_NAV_URL=https://mis.twse.com.tw/stock/data/all_etf.txt
 00631L_DATA_DIR=/data/00631l
 ETF_PRICE_HISTORY_DIR=/data/00631l/etf_price_history
 00631L_DATA_PERSISTENCE_MODE=persistent
+00631L_PERSISTENCE_MARKER_PATH=/data/00631l/00631l_persistence_marker.json
 ```
 
 公開手機入口仍是：
@@ -76,6 +77,7 @@ ALLOWED_ORIGINS=https://dany1230000.github.io
 TWSE_00631L_INTRADAY_NAV_URL=https://mis.twse.com.tw/stock/data/all_etf.txt
 00631L_DATA_DIR=/data/00631l
 00631L_DATA_PERSISTENCE_MODE=persistent
+00631L_PERSISTENCE_MARKER_PATH=/data/00631l/00631l_persistence_marker.json
 ```
 
 Persistent volume must mount `/data/00631l`. Without it, the backend can run, but operations/status should show a persistence WARN.

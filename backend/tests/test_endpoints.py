@@ -40,8 +40,8 @@ class EndpointTests(unittest.TestCase):
         self.assertIn("serverTime", payload)
         self.assertEqual(payload["sourceContract"], "00631l_backend_health")
         self.assertNotEqual(payload["appVersion"], "3.4-live-backend")
-        self.assertEqual(payload["appVersion"], "4.89-public-storage-path-diagnostics")
-        self.assertEqual(payload["release"]["tag"], "00631l-lab-v4.89-public-storage-path-diagnostics")
+        self.assertEqual(payload["appVersion"], "4.90-public-persistence-marker")
+        self.assertEqual(payload["release"]["tag"], "00631l-lab-v4.90-public-persistence-marker")
         self.assertEqual(payload["release"]["version"], payload["appVersion"])
         self.assertIn("tag", payload["release"])
         self.assertIn("buildTime", payload["release"])
@@ -96,6 +96,7 @@ class EndpointTests(unittest.TestCase):
                     daily_cycle_status_path=str(data_dir / "daily_cycle.json"),
                     integrity_status_path=str(data_dir / "integrity.json"),
                     restore_dry_run_status_path=str(data_dir / "restore.json"),
+                    persistence_marker_path=str(data_dir / "marker.json"),
                     backup_dir=str(data_dir / "backups"),
                     report_dir=str(data_dir / "reports"),
                 ),
@@ -120,13 +121,24 @@ class EndpointTests(unittest.TestCase):
             checks = {item["name"]: item for item in payload["checks"]}
             self.assertEqual(checks["data_dir_writable"]["status"], "PASS")
             self.assertEqual(checks["storage_paths"]["status"], "PASS")
+            self.assertEqual(checks["persistence_marker"]["status"], "PASS")
+            self.assertTrue(checks["persistence_marker"]["newlyCreated"])
             storage_paths = {
                 item["key"]: item for item in checks["storage_paths"]["paths"]
             }
             self.assertTrue(storage_paths["etfPriceHistory"]["writable"])
+            self.assertTrue(storage_paths["persistenceMarker"]["writable"])
             self.assertTrue(storage_paths["etfPriceHistory"]["underDataDir"])
             self.assertEqual(checks["data_persistence"]["status"], "PASS")
             self.assertEqual(checks["live_source_connectivity"]["status"], "PASS")
+
+            second_payload = client.get("/ready").json()
+            second_checks = {item["name"]: item for item in second_payload["checks"]}
+            self.assertFalse(second_checks["persistence_marker"]["newlyCreated"])
+            self.assertEqual(
+                second_checks["persistence_marker"]["createdAt"],
+                checks["persistence_marker"]["createdAt"],
+            )
 
     def test_ready_endpoint_warns_when_required_storage_path_is_outside_data_dir(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -149,6 +161,7 @@ class EndpointTests(unittest.TestCase):
                     daily_cycle_status_path=str(data_dir / "daily_cycle.json"),
                     integrity_status_path=str(data_dir / "integrity.json"),
                     restore_dry_run_status_path=str(data_dir / "restore.json"),
+                    persistence_marker_path=str(data_dir / "marker.json"),
                 ),
                 fetcher=lambda url, timeout_seconds: '{"msgArray":[]}',
                 cache=TimedMemoryCache(),
@@ -620,6 +633,7 @@ Custodian Fee
                     daily_cycle_status_path=str(data_dir / "daily_cycle.json"),
                     integrity_status_path=str(data_dir / "integrity.json"),
                     restore_dry_run_status_path=str(data_dir / "restore.json"),
+                    persistence_marker_path=str(data_dir / "marker.json"),
                 ),
                 cache=TimedMemoryCache(),
                 history_store=HoldingsHistoryStore(data_dir / "history.jsonl"),
@@ -646,6 +660,10 @@ Custodian Fee
             self.assertIn("etfPriceHistory", storage_paths)
             self.assertTrue(storage_paths["etfPriceHistory"]["writable"])
             self.assertIn("storageSummary", payload["dataDirectoryHealth"])
+            self.assertEqual(
+                payload["dataDirectoryHealth"]["persistenceMarker"]["sourceStatus"],
+                "cached",
+            )
             self.assertEqual(payload["backendHealth"]["publicApiBaseUrl"], "https://api.example.com")
             self.assertEqual(payload["backendHealth"]["allowedOrigins"], ["https://00631l.example.com"])
 

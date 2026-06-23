@@ -57,6 +57,7 @@ ETF_PRICE_HISTORY_SEED_DIR=backend/seeds/etf_price_history_seed
 00631L_HISTORY_EXPORT_DIR=/data/00631l/exports
 00631L_BACKUP_DIR=/data/00631l/backups
 00631L_REPORT_DIR=/data/00631l/reports
+00631L_PERSISTENCE_MARKER_PATH=/data/00631l/00631l_persistence_marker.json
 ```
 
 `ALLOWED_ORIGINS` 只填 origin，不填路徑。GitHub Pages 專案頁的 origin 是 `https://dany1230000.github.io`。
