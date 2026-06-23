@@ -98,14 +98,6 @@ def build_public_maintenance_status(
     ]
     warnings = _collect("warnings", deploy_drift, public_status, freshness)
     failures = _collect("failures", deploy_drift, public_status, freshness)
-    action_items = _dedupe(
-        [
-            *list(deploy_drift.get("actionItems") or []),
-            *list(public_status.get("actionItems") or []),
-            *list(freshness.get("actionItems") or []),
-            *_catalog_batch_action_items(catalog_batch_state),
-        ]
-    )
     public_summary = (
         public_status.get("summary")
         if isinstance(public_status.get("summary"), dict)
@@ -120,6 +112,18 @@ def build_public_maintenance_status(
         deploy_drift.get("summary")
         if isinstance(deploy_drift.get("summary"), dict)
         else {}
+    )
+    action_items = _dedupe(
+        [
+            *list(deploy_drift.get("actionItems") or []),
+            *list(public_status.get("actionItems") or []),
+            *list(freshness.get("actionItems") or []),
+            *_catalog_batch_action_items(
+                catalog_batch_state,
+                public_ready_count=public_summary.get("etfHistoryReadyCount"),
+                ready_lag=freshness_summary.get("publicEtfReadyLagVsStatic"),
+            ),
+        ]
     )
     overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
     catalog_summary = _catalog_batch_summary(catalog_batch_state)
@@ -179,7 +183,12 @@ def _catalog_batch_summary(state: dict[str, Any] | None) -> dict[str, Any]:
     }
 
 
-def _catalog_batch_action_items(state: dict[str, Any] | None) -> list[str]:
+def _catalog_batch_action_items(
+    state: dict[str, Any] | None,
+    *,
+    public_ready_count: Any = None,
+    ready_lag: Any = None,
+) -> list[str]:
     if not state:
         return []
     if state.get("failedOffset") is not None:
@@ -190,6 +199,17 @@ def _catalog_batch_action_items(state: dict[str, Any] | None) -> list[str]:
     if state.get("nextOffset") is not None:
         return [
             "Resume public ETF catalog batches with scripts\\00631l_public_etf_catalog_batches.cmd --resume."
+        ]
+    try:
+        ready_count = max(0, int(public_ready_count))
+        lag_count = int(ready_lag)
+    except (TypeError, ValueError):
+        return []
+    if ready_count > 0 and lag_count > 0:
+        return [
+            "Continue public ETF catalog batches with "
+            "scripts\\00631l_public_etf_catalog_batches.cmd "
+            f"--start-offset {ready_count} --soft-fail."
         ]
     return []
 

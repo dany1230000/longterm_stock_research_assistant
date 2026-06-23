@@ -104,6 +104,7 @@ This is the main entry point for 00631L lab documentation.
 - Public ready floor v4.65: `docs\00631l_v4_65_public_ready_floor.md`
 - Public maintenance status v4.66: `docs\00631l_v4_66_public_maintenance_status.md`
 - Public batch resume status v4.67: `docs\00631l_v4_67_public_batch_resume_status.md`
+- Public batch offset guidance v4.68: `docs\00631l_v4_68_public_batch_offset_guidance.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

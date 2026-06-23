@@ -84,6 +84,37 @@ class PublicMaintenanceStatusTests(unittest.TestCase):
             payload["actionItems"],
         )
 
+    def test_suggests_start_offset_from_public_ready_count_without_resume_offset(self) -> None:
+        payload = build_public_maintenance_status(
+            deploy_drift={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},
+            public_status={
+                "overallStatus": "WARN",
+                "warnings": ["ETF history ready count below minimum 200: 15"],
+                "failures": [],
+                "summary": {"etfHistoryReadyCount": 15, "minEtfReadyCount": 200},
+            },
+            freshness={
+                "overallStatus": "WARN",
+                "warnings": ["public backend ETF history ready count is lower"],
+                "failures": [],
+                "summary": {"publicEtfReadyLagVsStatic": 213},
+            },
+            catalog_batch_state={
+                "updatedAt": "2026-06-23T02:00:00+00:00",
+                "overallStatus": "WARN",
+                "catalogRowCount": 344,
+                "finalReadyCount": 15,
+                "nextOffset": None,
+                "failedOffset": None,
+            },
+            checked_at="2026-06-23T00:00:00+00:00",
+        )
+
+        self.assertIn(
+            "Continue public ETF catalog batches with scripts\\00631l_public_etf_catalog_batches.cmd --start-offset 15 --soft-fail.",
+            payload["actionItems"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
