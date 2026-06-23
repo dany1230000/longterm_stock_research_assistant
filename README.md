@@ -1247,3 +1247,7 @@ the user touches a point.
 v5.2 cleans up ETF comparison wording. The ETF database and settings pages now
 describe the current self-selected comparison flow instead of showing old
 roadmap text.
+
+v5.3 shortens the mobile overview by replacing the stacked exposure bars with a
+single official-exposure row on phone width. Wider screens still use the fuller
+exposure layout.

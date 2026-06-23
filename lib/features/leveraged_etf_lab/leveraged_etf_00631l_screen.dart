@@ -3133,8 +3133,8 @@ class _OverviewSignalPanel extends StatelessWidget {
             return Column(
               children: [
                 priceBlock,
-                const SizedBox(height: 10),
-                exposureBlock,
+                const SizedBox(height: 8),
+                _OverviewExposureSummaryStrip(snapshot: data.snapshot),
               ],
             );
           },
@@ -3334,6 +3334,101 @@ class _SparklineChart extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _OverviewExposureSummaryStrip extends StatelessWidget {
+  const _OverviewExposureSummaryStrip({required this.snapshot});
+
+  final EtfDailyHoldingSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+          child: Row(
+            children: [
+              const _MiniStatusBadge(label: 'DAY'),
+              const SizedBox(width: 8),
+              Text(
+                '官方曝險 ${formatTaiwanDate(snapshot.tradeDate)}',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(width: 10),
+              _InlineExposureText(
+                label: '股票',
+                value: formatNullablePercent(
+                  snapshot.assetWeightPct(EtfAssetClass.stock),
+                ),
+                color: _marketGreen,
+              ),
+              const SizedBox(width: 10),
+              _InlineExposureText(
+                label: '期貨',
+                value: formatNullablePercent(
+                  snapshot.assetWeightPct(EtfAssetClass.futures),
+                ),
+                color: _marketRed,
+              ),
+              const SizedBox(width: 10),
+              _InlineExposureText(
+                label: '現金/保證金',
+                value: formatNullablePercent(snapshot.cashAndMarginWeightPct),
+                color: _marketBlue,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InlineExposureText extends StatelessWidget {
+  const _InlineExposureText({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      text: TextSpan(
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: _marketMutedTextColor(context),
+              fontWeight: FontWeight.w800,
+            ),
+        children: [
+          TextSpan(text: '$label '),
+          TextSpan(
+            text: value,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
       ),
     );
   }

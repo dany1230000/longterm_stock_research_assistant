@@ -38,7 +38,7 @@ void main() {
     expect(find.textContaining('歷史資料'), findsWidgets);
     expect(find.text('累積報酬'), findsOneWidget);
     expect(find.text('近一年走勢'), findsOneWidget);
-    expect(find.text('官方曝險'), findsOneWidget);
+    expect(find.textContaining('官方曝險'), findsOneWidget);
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
     final coreDataTop = tester.getTopLeft(find.text('核心資料')).dy;
     expect(chartTitleTop, lessThan(coreDataTop));
@@ -180,7 +180,7 @@ void main() {
     expect(find.text('資料正確性'), findsOneWidget);
     expect(find.text('目前檔案'), findsOneWidget);
     expect(find.text('近一年走勢'), findsOneWidget);
-    expect(find.text('官方曝險'), findsOneWidget);
+    expect(find.textContaining('官方曝險'), findsOneWidget);
     expect(find.text('00631L'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);
