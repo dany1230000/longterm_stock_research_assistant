@@ -1214,3 +1214,7 @@ maintenance tag.
 v4.94 adds Render persistent disk Blueprint configuration. Both `render.yaml`
 and `deploy\render.yaml` now mount `/data/00631l`, and public config checks
 verify the disk fields before release.
+
+v4.95 makes `/ready` warn when a persistent-mode backend has a fresh persistence
+marker. This keeps newly recreated public data directories visible even when the
+path is writable.

@@ -57,6 +57,7 @@ from .parsers import (
 
 
 FetchText = Callable[[str, float], str]
+FRESH_PERSISTENCE_MARKER_SECONDS = 15 * 60
 
 
 class Etf00631LService:
@@ -1383,15 +1384,25 @@ class Etf00631LService:
 
     def _readiness_persistence_marker_check(self, now: str) -> dict[str, Any]:
         marker = self._persistence_marker_status(now=now)
-        status = "FAIL" if marker["sourceStatus"] == "error" else "PASS"
+        if marker["sourceStatus"] == "error":
+            status = "FAIL"
+            message = marker["errorMessage"] or "Persistence marker error."
+        elif marker.get("fresh"):
+            status = "WARN"
+            message = "Persistence marker is fresh; confirm this createdAt stays stable across deploys."
+        else:
+            status = "PASS"
+            message = "ok"
         return _readiness_check(
             "persistence_marker",
             status,
-            marker["errorMessage"] or "ok",
+            message,
             path=marker["path"],
             createdAt=marker["createdAt"],
             markerAgeSeconds=marker["markerAgeSeconds"],
             newlyCreated=marker["newlyCreated"],
+            fresh=marker.get("fresh"),
+            freshThresholdSeconds=marker.get("freshThresholdSeconds"),
             writable=marker["writable"],
         )
 
@@ -1537,6 +1548,8 @@ class Etf00631LService:
                 "lastCheckedAt": now,
                 "markerAgeSeconds": None,
                 "newlyCreated": False,
+                "fresh": False,
+                "freshThresholdSeconds": FRESH_PERSISTENCE_MARKER_SECONDS,
                 "writable": False,
                 "errorMessage": "Persistence marker directory is not writable.",
             }
@@ -1568,9 +1581,18 @@ class Etf00631LService:
                 "lastCheckedAt": now,
                 "markerAgeSeconds": _seconds_since(payload.get("createdAt"), now),
                 "newlyCreated": newly_created,
+                "fresh": False,
+                "freshThresholdSeconds": FRESH_PERSISTENCE_MARKER_SECONDS,
                 "writable": False,
                 "errorMessage": f"Persistence marker write failed: {error}",
             }
+        marker_age = _seconds_since(payload.get("createdAt"), now)
+        marker_fresh = (
+            self._config.data_persistence_mode == "persistent"
+            and marker_age is not None
+            and marker_age >= 0
+            and (newly_created or marker_age < FRESH_PERSISTENCE_MARKER_SECONDS)
+        )
         return {
             "sourceStatus": "cached",
             "sourceContract": "00631l_persistence_marker",
@@ -1578,8 +1600,10 @@ class Etf00631LService:
             "targetPath": str(target),
             "createdAt": payload.get("createdAt"),
             "lastCheckedAt": now,
-            "markerAgeSeconds": _seconds_since(payload.get("createdAt"), now),
+            "markerAgeSeconds": marker_age,
             "newlyCreated": newly_created,
+            "fresh": marker_fresh,
+            "freshThresholdSeconds": FRESH_PERSISTENCE_MARKER_SECONDS,
             "writable": True,
             "errorMessage": None,
         }

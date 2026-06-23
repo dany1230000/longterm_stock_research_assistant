@@ -228,6 +228,8 @@ def _endpoint_summary(name: str, payload: dict[str, Any]) -> dict[str, Any]:
             "persistenceMarkerCreatedAt": marker.get("createdAt"),
             "persistenceMarkerAgeSeconds": marker.get("markerAgeSeconds"),
             "persistenceMarkerNewlyCreated": marker.get("newlyCreated"),
+            "persistenceMarkerFresh": marker.get("fresh"),
+            "persistenceMarkerFreshThresholdSeconds": marker.get("freshThresholdSeconds"),
         }
     if name == "history_status":
         return {
@@ -271,6 +273,8 @@ def _summary(
         "persistenceMarkerCreatedAt": marker.get("createdAt"),
         "persistenceMarkerAgeSeconds": marker.get("markerAgeSeconds"),
         "persistenceMarkerNewlyCreated": marker.get("newlyCreated"),
+        "persistenceMarkerFresh": marker.get("fresh"),
+        "persistenceMarkerFreshThresholdSeconds": marker.get("freshThresholdSeconds"),
         "priceHistoryRows": int(history.get("rowCount") or 0),
         "priceHistoryCoverageStart": history.get("coverageStart"),
         "priceHistoryCoverageEnd": history.get("coverageEnd"),

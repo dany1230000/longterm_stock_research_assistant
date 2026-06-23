@@ -40,8 +40,8 @@ class EndpointTests(unittest.TestCase):
         self.assertIn("serverTime", payload)
         self.assertEqual(payload["sourceContract"], "00631l_backend_health")
         self.assertNotEqual(payload["appVersion"], "3.4-live-backend")
-        self.assertEqual(payload["appVersion"], "4.94-render-persistent-disk-blueprint")
-        self.assertEqual(payload["release"]["tag"], "00631l-lab-v4.94-render-persistent-disk-blueprint")
+        self.assertEqual(payload["appVersion"], "4.95-fresh-marker-readiness-warn")
+        self.assertEqual(payload["release"]["tag"], "00631l-lab-v4.95-fresh-marker-readiness-warn")
         self.assertEqual(payload["release"]["version"], payload["appVersion"])
         self.assertIn("tag", payload["release"])
         self.assertIn("buildTime", payload["release"])
@@ -121,8 +121,10 @@ class EndpointTests(unittest.TestCase):
             checks = {item["name"]: item for item in payload["checks"]}
             self.assertEqual(checks["data_dir_writable"]["status"], "PASS")
             self.assertEqual(checks["storage_paths"]["status"], "PASS")
-            self.assertEqual(checks["persistence_marker"]["status"], "PASS")
+            self.assertEqual(checks["persistence_marker"]["status"], "WARN")
             self.assertTrue(checks["persistence_marker"]["newlyCreated"])
+            self.assertTrue(checks["persistence_marker"]["fresh"])
+            self.assertEqual(checks["persistence_marker"]["freshThresholdSeconds"], 900)
             storage_paths = {
                 item["key"]: item for item in checks["storage_paths"]["paths"]
             }
@@ -135,10 +137,57 @@ class EndpointTests(unittest.TestCase):
             second_payload = client.get("/ready").json()
             second_checks = {item["name"]: item for item in second_payload["checks"]}
             self.assertFalse(second_checks["persistence_marker"]["newlyCreated"])
+            self.assertTrue(second_checks["persistence_marker"]["fresh"])
             self.assertEqual(
                 second_checks["persistence_marker"]["createdAt"],
                 checks["persistence_marker"]["createdAt"],
             )
+
+    def test_ready_endpoint_accepts_stable_old_persistence_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data_dir = root / "data"
+            data_dir.mkdir()
+            marker_path = data_dir / "marker.json"
+            marker_path.write_text(
+                json.dumps(
+                    {
+                        "sourceContract": "00631l_persistence_marker",
+                        "createdAt": "2026-01-01T00:00:00+00:00",
+                        "path": str(marker_path),
+                    }
+                ),
+                encoding="utf-8",
+            )
+            service = Etf00631LService(
+                config=Settings(
+                    public_api_base_url="https://api.example.com",
+                    allowed_origins=("https://dany1230000.github.io",),
+                    data_dir=str(data_dir),
+                    data_persistence_mode="persistent",
+                    twse_intraday_nav_url="fixture://twse/all_etf",
+                    yuanta_intraday_nav_url="",
+                    holdings_history_path=str(data_dir / "history.jsonl"),
+                    intraday_nav_history_path=str(data_dir / "intraday.jsonl"),
+                    price_history_path=str(data_dir / "price.jsonl"),
+                    etf_catalog_path=str(data_dir / "catalog.json"),
+                    etf_price_history_dir=str(data_dir / "etf_price_history"),
+                    daily_cycle_status_path=str(data_dir / "daily_cycle.json"),
+                    integrity_status_path=str(data_dir / "integrity.json"),
+                    restore_dry_run_status_path=str(data_dir / "restore.json"),
+                    persistence_marker_path=str(marker_path),
+                ),
+                fetcher=lambda url, timeout_seconds: '{"msgArray":[]}',
+                cache=TimedMemoryCache(),
+            )
+            client = TestClient(main_module.create_app(app_service=service))
+
+            payload = client.get("/ready").json()
+            checks = {item["name"]: item for item in payload["checks"]}
+
+            self.assertEqual(checks["persistence_marker"]["status"], "PASS")
+            self.assertFalse(checks["persistence_marker"]["newlyCreated"])
+            self.assertFalse(checks["persistence_marker"]["fresh"])
 
     def test_ready_endpoint_warns_when_required_storage_path_is_outside_data_dir(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

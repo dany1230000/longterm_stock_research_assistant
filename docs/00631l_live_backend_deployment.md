@@ -167,6 +167,8 @@ disk:
 
 如果既有 Render service 不是用 Blueprint 建立，仍需要在 Render dashboard 手動新增 persistent disk，mount path 必須同樣是 `/data/00631l`。
 
+`/ready` 在 persistent mode 下會檢查 persistence marker age。marker 剛建立或未滿 15 分鐘時會回報 `WARN`，用來提醒你確認這個 `createdAt` 是否能跨部署保持穩定。
+
 ### intraday unavailable
 
 確認：

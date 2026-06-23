@@ -131,6 +131,7 @@ This is the main entry point for 00631L lab documentation.
 - Public fresh marker batch gate v4.92: `docs\00631l_v4_92_public_fresh_marker_batch_gate.md`
 - Release metadata refresh v4.93: `docs\00631l_v4_93_release_metadata_refresh.md`
 - Render persistent disk blueprint v4.94: `docs\00631l_v4_94_render_persistent_disk_blueprint.md`
+- Fresh marker readiness warning v4.95: `docs\00631l_v4_95_fresh_marker_readiness_warn.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

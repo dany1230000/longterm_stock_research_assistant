@@ -51,6 +51,8 @@ class PublicBackendStatusTests(unittest.TestCase):
                             "createdAt": "2026-06-23T05:00:00+00:00",
                             "markerAgeSeconds": 120,
                             "newlyCreated": False,
+                            "fresh": True,
+                            "freshThresholdSeconds": 900,
                         },
                     },
                 }
@@ -91,6 +93,8 @@ class PublicBackendStatusTests(unittest.TestCase):
         )
         self.assertEqual(payload["summary"]["persistenceMarkerAgeSeconds"], 120)
         self.assertFalse(payload["summary"]["persistenceMarkerNewlyCreated"])
+        self.assertTrue(payload["summary"]["persistenceMarkerFresh"])
+        self.assertEqual(payload["summary"]["persistenceMarkerFreshThresholdSeconds"], 900)
         ready_step = next(
             step for step in payload["steps"] if step["name"] == "ready"
         )
@@ -98,6 +102,7 @@ class PublicBackendStatusTests(unittest.TestCase):
             ready_step["summary"]["persistenceMarkerCreatedAt"],
             "2026-06-23T05:00:00+00:00",
         )
+        self.assertTrue(ready_step["summary"]["persistenceMarkerFresh"])
 
     def test_status_warns_when_etf_history_has_no_ready_rows(self) -> None:
         def requester(
