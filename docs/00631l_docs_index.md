@@ -106,6 +106,7 @@ This is the main entry point for 00631L lab documentation.
 - Public batch resume status v4.67: `docs\00631l_v4_67_public_batch_resume_status.md`
 - Public batch offset guidance v4.68: `docs\00631l_v4_68_public_batch_offset_guidance.md`
 - Public batch timeout payload v4.69: `docs\00631l_v4_69_public_batch_timeout_payload.md`
+- Public batch failure detail v4.70: `docs\00631l_v4_70_public_batch_failure_detail.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

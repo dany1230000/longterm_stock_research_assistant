@@ -333,11 +333,7 @@ def _payload(
     summary: dict[str, Any],
     action_items: list[str],
 ) -> dict[str, Any]:
-    failures = [
-        f"{step['name']}: {step['message']}"
-        for step in steps
-        if step.get("status") == "FAIL"
-    ]
+    failures = _failure_messages(steps)
     warnings = [
         f"{step['name']}: {step['message']}"
         for step in steps
@@ -355,6 +351,21 @@ def _payload(
         "failures": failures,
         "actionItems": action_items,
     }
+
+
+def _failure_messages(steps: list[dict[str, Any]]) -> list[str]:
+    output: list[str] = []
+    for step in steps:
+        if step.get("status") != "FAIL":
+            continue
+        base_message = f"{step['name']}: {step['message']}"
+        summary = step.get("summary") if isinstance(step.get("summary"), dict) else {}
+        details = [str(item) for item in summary.get("failures") or []]
+        if not details:
+            output.append(base_message)
+            continue
+        output.extend(f"{base_message}; {detail}" for detail in details)
+    return output
 
 
 def _request_json(base_url: str, path: str, timeout_seconds: int) -> dict[str, Any]:

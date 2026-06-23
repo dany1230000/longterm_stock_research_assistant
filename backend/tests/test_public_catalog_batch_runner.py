@@ -206,6 +206,7 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
 
         self.assertEqual(payload["overallStatus"], "FAIL")
         self.assertEqual(payload["summary"]["nextOffset"], 30)
+        self.assertTrue(any("HTTP 502" in item for item in payload["failures"]))
         self.assertTrue(
             any("--start-offset 30" in item for item in payload["actionItems"])
         )

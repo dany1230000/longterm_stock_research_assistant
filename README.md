@@ -1106,3 +1106,6 @@ has ETF history rows but no usable resume offset exists.
 
 v4.69 converts public ETF catalog batch timeout exceptions into JSON payloads
 and resume state, so soft-fail maintenance runs do not end as tracebacks.
+
+v4.70 includes child batch failure details in top-level public catalog batch
+payloads, making HTTP 502 and timeout reasons visible without reading each step.
