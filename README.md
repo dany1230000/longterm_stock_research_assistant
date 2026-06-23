@@ -1138,3 +1138,8 @@ ETF ready counts look inconsistent.
 v4.77 reduces noise in `scripts\00631l_public_deploy_drift.cmd`: when the
 public backend release tag matches the expected tag, a missing public git SHA is
 reported as metadata quality instead of changing the overall status to WARN.
+
+v4.78 adds `scripts\00631l_wait_public_deploy.cmd`, a read-only helper that
+polls public deploy drift until the public backend exposes the expected release
+tag. Run it after pushing backend releases and before continuing public ETF
+history catalog batches.
