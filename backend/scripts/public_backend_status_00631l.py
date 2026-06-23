@@ -49,6 +49,8 @@ def run_public_backend_status(
     base_url: str,
     timeout_seconds: int = 30,
     dry_run: bool = False,
+    min_price_history_rows: int = 2,
+    min_etf_ready_count: int = 1,
     requester: RequestFn | None = None,
 ) -> dict[str, Any]:
     normalized_base_url = _normalize_base_url(base_url)
@@ -68,6 +70,10 @@ def run_public_backend_status(
                 }
                 for endpoint in ENDPOINTS
             ],
+            summary={
+                "minPriceHistoryRows": max(1, int(min_price_history_rows or 2)),
+                "minEtfReadyCount": max(1, int(min_etf_ready_count or 1)),
+            },
         )
 
     request = requester or _request_json
@@ -82,7 +88,14 @@ def run_public_backend_status(
                 else {}
             )
             payloads[endpoint.name] = payload
-            steps.append(_assess_endpoint(endpoint, response))
+            steps.append(
+                _assess_endpoint(
+                    endpoint,
+                    response,
+                    min_price_history_rows=max(1, int(min_price_history_rows or 2)),
+                    min_etf_ready_count=max(1, int(min_etf_ready_count or 1)),
+                )
+            )
         except Exception as error:  # noqa: BLE001 - operational script summarizes.
             steps.append(
                 {
@@ -99,7 +112,11 @@ def run_public_backend_status(
         checked_at=checked_at,
         dry_run=False,
         steps=steps,
-        summary=_summary(payloads),
+        summary=_summary(
+            payloads,
+            min_price_history_rows=max(1, int(min_price_history_rows or 2)),
+            min_etf_ready_count=max(1, int(min_etf_ready_count or 1)),
+        ),
     )
 
 
@@ -138,6 +155,9 @@ def _result_payload(
 def _assess_endpoint(
     endpoint: PublicStatusEndpoint,
     response: dict[str, Any],
+    *,
+    min_price_history_rows: int,
+    min_etf_ready_count: int,
 ) -> dict[str, Any]:
     http_status = int(response.get("httpStatus") or 0)
     payload = response.get("payload") if isinstance(response.get("payload"), dict) else {}
@@ -152,11 +172,19 @@ def _assess_endpoint(
         elif ready_status == "WARN":
             warnings.extend(str(item) for item in payload.get("warnings") or [])
     elif endpoint.name == "history_status":
-        if int(payload.get("rowCount") or 0) < 2:
-            warnings.append("00631L price history has fewer than 2 rows")
+        row_count = int(payload.get("rowCount") or 0)
+        if row_count < min_price_history_rows:
+            warnings.append(
+                "00631L price history rows below minimum "
+                f"{min_price_history_rows}: {row_count}"
+            )
     elif endpoint.name == "etf_history_status":
-        if int(payload.get("readyCount") or 0) < 1:
-            warnings.append("ETF history has no ready symbols")
+        ready_count = int(payload.get("readyCount") or 0)
+        if ready_count < min_etf_ready_count:
+            warnings.append(
+                "ETF history ready count below minimum "
+                f"{min_etf_ready_count}: {ready_count}"
+            )
         if int(payload.get("validationFailureCount") or 0) > 0:
             warnings.append("ETF history has validation failures")
     elif endpoint.name == "health":
@@ -210,7 +238,12 @@ def _endpoint_summary(name: str, payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _summary(payloads: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def _summary(
+    payloads: dict[str, dict[str, Any]],
+    *,
+    min_price_history_rows: int,
+    min_etf_ready_count: int,
+) -> dict[str, Any]:
     health = payloads.get("health", {})
     release = health.get("release") if isinstance(health.get("release"), dict) else {}
     history = payloads.get("history_status", {})
@@ -227,6 +260,8 @@ def _summary(payloads: dict[str, dict[str, Any]]) -> dict[str, Any]:
         "priceHistoryCoverageEnd": history.get("coverageEnd"),
         "etfHistoryReadyCount": int(etf_history.get("readyCount") or 0),
         "etfHistoryRowCount": int(etf_history.get("rowCount") or 0),
+        "minPriceHistoryRows": min_price_history_rows,
+        "minEtfReadyCount": min_etf_ready_count,
         "etfHistoryValidationFailureCount": int(
             etf_history.get("validationFailureCount") or 0
         ),
@@ -284,6 +319,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--timeout-seconds", type=int, default=30)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--soft-fail", action="store_true")
+    parser.add_argument("--min-price-history-rows", type=int, default=2)
+    parser.add_argument("--min-etf-ready-count", type=int, default=1)
     return parser.parse_args()
 
 
@@ -293,6 +330,8 @@ def main() -> int:
         base_url=args.base_url,
         timeout_seconds=max(1, args.timeout_seconds),
         dry_run=args.dry_run,
+        min_price_history_rows=max(1, args.min_price_history_rows),
+        min_etf_ready_count=max(1, args.min_etf_ready_count),
     )
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
     summary = payload.get("summary") or {}

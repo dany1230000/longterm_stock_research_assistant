@@ -105,6 +105,40 @@ class PublicBackendStatusTests(unittest.TestCase):
         self.assertEqual(payload["failures"], [])
         self.assertTrue(any("ETF history" in item for item in payload["warnings"]))
 
+    def test_status_warns_when_public_ready_count_is_below_configured_floor(self) -> None:
+        def requester(
+            base_url: str,
+            endpoint: PublicStatusEndpoint,
+            timeout_seconds: int,
+        ) -> dict:
+            if endpoint.name == "health":
+                return {"httpStatus": 200, "payload": {"status": "ok"}}
+            if endpoint.name == "ready":
+                return {"httpStatus": 200, "payload": {"overallStatus": "PASS"}}
+            if endpoint.name == "history_status":
+                return {"httpStatus": 200, "payload": {"rowCount": 2829}}
+            if endpoint.name == "etf_history_status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"readyCount": 15, "validationFailureCount": 0},
+                }
+            return {"httpStatus": 200, "payload": {}}
+
+        payload = run_public_backend_status(
+            base_url="https://example.com",
+            requester=requester,
+            min_etf_ready_count=200,
+            min_price_history_rows=2800,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["failures"], [])
+        self.assertTrue(
+            any("below minimum 200" in item for item in payload["warnings"])
+        )
+        self.assertEqual(payload["summary"]["minEtfReadyCount"], 200)
+        self.assertEqual(payload["summary"]["minPriceHistoryRows"], 2800)
+
 
 if __name__ == "__main__":
     unittest.main()
