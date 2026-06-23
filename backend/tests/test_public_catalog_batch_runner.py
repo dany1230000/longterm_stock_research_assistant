@@ -273,6 +273,58 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(state["failedOffset"], 30)
         self.assertEqual(state["finalReadyCount"], 15)
 
+    def test_stops_after_first_failed_batch_by_default(self) -> None:
+        history_ready_counts = [15, 15]
+        called_offsets: list[int] = []
+
+        def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
+            if path == "/api/etf/catalog/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"sourceStatus": "static_official", "rowCount": 343},
+                }
+            if path == "/api/etf/history/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": history_ready_counts.pop(0),
+                        "rowCount": 15,
+                        "validationFailureCount": 0,
+                    },
+                }
+            raise AssertionError(path)
+
+        def maintenance_runner(
+            *,
+            base_url: str,
+            offset: int,
+            limit: int,
+            timeout_seconds: int,
+            retry_count: int,
+            retry_delay_seconds: float,
+        ) -> dict:
+            called_offsets.append(offset)
+            return {
+                "overallStatus": "FAIL",
+                "failures": ["etf_history_update: HTTP 502"],
+                "warnings": [],
+                "steps": [],
+            }
+
+        payload = run_public_etf_catalog_batches(
+            base_url="https://example.com",
+            batch_size=10,
+            max_batches=2,
+            start_offset=25,
+            requester=requester,
+            maintenance_runner=maintenance_runner,
+        )
+
+        self.assertEqual(called_offsets, [25])
+        self.assertEqual(payload["summary"]["plannedOffsets"], [25, 35])
+        self.assertEqual(payload["summary"]["nextOffset"], 25)
+
     def test_runner_timeout_is_captured_and_writes_resume_state(self) -> None:
         history_ready_counts = [15, 15]
 
@@ -320,6 +372,7 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
 
         self.assertEqual(payload["overallStatus"], "FAIL")
         self.assertTrue(any("timed out" in item for item in payload["failures"]))
+        self.assertEqual(payload["failures"][0].count("timed out"), 1)
         self.assertEqual(payload["summary"]["nextOffset"], 15)
         self.assertEqual(state["failedOffset"], 15)
 

@@ -1109,3 +1109,6 @@ and resume state, so soft-fail maintenance runs do not end as tracebacks.
 
 v4.70 includes child batch failure details in top-level public catalog batch
 payloads, making HTTP 502 and timeout reasons visible without reading each step.
+
+v4.71 stops public ETF catalog batches after the first failed offset by default;
+use `--continue-on-failure` only for deliberate diagnostic runs.

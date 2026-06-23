@@ -35,6 +35,7 @@ def run_public_etf_catalog_batches(
     retry_delay_seconds: float = 3.0,
     dry_run: bool = False,
     resume: bool = False,
+    continue_on_failure: bool = False,
     state_path: str | Path | None = None,
     catalog_row_count: int | None = None,
     requester: RequestFn | None = None,
@@ -210,6 +211,8 @@ def run_public_etf_catalog_batches(
                 },
             )
         )
+        if batch_steps[-1].get("status") == "FAIL" and not continue_on_failure:
+            break
 
     final_status = request(normalized_base_url, "/api/etf/history/status", timeout_seconds)
     final_payload = (
@@ -364,7 +367,15 @@ def _failure_messages(steps: list[dict[str, Any]]) -> list[str]:
         if not details:
             output.append(base_message)
             continue
-        output.extend(f"{base_message}; {detail}" for detail in details)
+        added = False
+        for detail in details:
+            if detail in base_message:
+                if not added:
+                    output.append(base_message)
+                    added = True
+                continue
+            output.append(f"{base_message}; {detail}")
+            added = True
     return output
 
 
@@ -562,6 +573,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--retry-delay-seconds", type=float, default=3.0)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--continue-on-failure", action="store_true")
     parser.add_argument("--state-path", default=str(DEFAULT_STATE_PATH))
     parser.add_argument("--soft-fail", action="store_true")
     return parser.parse_args()
@@ -579,6 +591,7 @@ def main() -> int:
         retry_delay_seconds=max(0.0, args.retry_delay_seconds),
         dry_run=args.dry_run,
         resume=args.resume,
+        continue_on_failure=args.continue_on_failure,
         state_path=args.state_path,
     )
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
