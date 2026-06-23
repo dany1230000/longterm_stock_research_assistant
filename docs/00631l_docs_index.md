@@ -125,6 +125,7 @@ This is the main entry point for 00631L lab documentation.
 - Public readiness probe v4.86: `docs\00631l_v4_86_public_readiness_probe.md`
 - Remote ETF update items v4.87: `docs\00631l_v4_87_remote_etf_update_items.md`
 - Public regression batch gate v4.88: `docs\00631l_v4_88_public_regression_batch_gate.md`
+- Public storage path diagnostics v4.89: `docs\00631l_v4_89_public_storage_path_diagnostics.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

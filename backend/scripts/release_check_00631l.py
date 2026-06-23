@@ -318,6 +318,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v4_86_public_readiness_probe.md",
         "docs/00631l_v4_87_remote_etf_update_items.md",
         "docs/00631l_v4_88_public_regression_batch_gate.md",
+        "docs/00631l_v4_89_public_storage_path_diagnostics.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

@@ -150,6 +150,7 @@ class Etf00631LService:
             self._readiness_public_api_check(),
             self._readiness_cors_check(),
             self._readiness_data_dir_check(),
+            self._readiness_storage_paths_check(),
             self._readiness_persistence_check(),
             self._readiness_url_check(
                 "twse_intraday_nav_url",
@@ -1135,6 +1136,7 @@ class Etf00631LService:
             "sourceContract": "00631l_data_directory_health",
             "dataRoot": str(data_root),
             "persistence": persistence,
+            "storagePaths": self._storage_path_diagnostics(),
             "dataDir": _directory_health(data_dir, data_files),
             "exportDir": _directory_health(export_dir, export_files),
             "backupDir": _directory_health(
@@ -1146,12 +1148,18 @@ class Etf00631LService:
             "latestExportUpdatedAt": export_status.get("latestUpdatedAt"),
             "latestBackupUpdatedAt": backup_status.get("latestUpdatedAt"),
         }
+        storage_summary = _storage_path_summary(health["storagePaths"])
+        health["storageSummary"] = storage_summary
         directories = [health["dataDir"], health["exportDir"], health["backupDir"]]
-        if persistence["sourceStatus"] == "error" or any(
-            directory["sourceStatus"] == "error" for directory in directories
+        if (
+            persistence["sourceStatus"] == "error"
+            or storage_summary["requiredFailureCount"]
+            or any(
+                directory["sourceStatus"] == "error" for directory in directories
+            )
         ):
             health["sourceStatus"] = "error"
-        elif persistence["sourceStatus"] == "stale":
+        elif persistence["sourceStatus"] == "stale" or storage_summary["warningCount"]:
             health["sourceStatus"] = "stale"
         elif any(directory["sourceStatus"] == "unavailable" for directory in directories):
             health["sourceStatus"] = "unavailable"
@@ -1252,12 +1260,9 @@ class Etf00631LService:
             Path(self._config.data_dir),
             mode=self._config.data_persistence_mode,
         )
-        data_dir_ready = (
-            _path_parent_ready(self._config.holdings_history_path)
-            and _path_parent_ready(self._config.intraday_nav_history_path)
-            and _path_parent_ready(self._config.price_history_path)
-            and _path_parent_ready(self._config.etf_catalog_path)
-        )
+        storage_paths = self._storage_path_diagnostics()
+        storage_summary = _storage_path_summary(storage_paths)
+        data_dir_ready = storage_summary["requiredFailureCount"] == 0
         export_dir = Path(self._config.history_export_dir)
         export_dir_ready = export_dir.exists() or export_dir.parent.exists()
         backup_dir = Path(self._config.backup_dir)
@@ -1288,6 +1293,8 @@ class Etf00631LService:
             "exportDirReady": export_dir_ready,
             "backupDirReady": backup_dir_ready,
             "dataPersistenceWarning": persistence["warning"],
+            "storagePathWarnings": storage_summary["warnings"],
+            "storagePathFailures": storage_summary["failures"],
         }
 
     def _readiness_public_api_check(self) -> dict[str, Any]:
@@ -1344,6 +1351,33 @@ class Etf00631LService:
             writable=writable,
         )
 
+    def _readiness_storage_paths_check(self) -> dict[str, Any]:
+        paths = self._storage_path_diagnostics()
+        summary = _storage_path_summary(paths)
+        status = (
+            "FAIL"
+            if summary["requiredFailureCount"]
+            else "WARN"
+            if summary["warningCount"]
+            else "PASS"
+        )
+        if summary["requiredFailureCount"]:
+            message = "Required backend storage paths are not writable."
+        elif summary["warningCount"]:
+            message = "Some operational storage paths need deployment review."
+        else:
+            message = "ok"
+        return _readiness_check(
+            "storage_paths",
+            status,
+            message,
+            requiredFailureCount=summary["requiredFailureCount"],
+            warningCount=summary["warningCount"],
+            failures=summary["failures"],
+            warnings=summary["warnings"],
+            paths=paths,
+        )
+
     def _readiness_persistence_check(self) -> dict[str, Any]:
         persistence = _persistence_health(
             Path(self._config.data_dir),
@@ -1363,6 +1397,107 @@ class Etf00631LService:
             isPersistent=persistence["isPersistent"],
             path=persistence["path"],
         )
+
+    def _storage_path_diagnostics(self) -> list[dict[str, Any]]:
+        data_root = Path(self._config.data_dir)
+        entries = [
+            (
+                "dataRoot",
+                "00631L_DATA_DIR",
+                data_root,
+                "directory",
+                True,
+            ),
+            (
+                "holdingsHistory",
+                "00631L_HOLDINGS_HISTORY_PATH",
+                Path(self._config.holdings_history_path),
+                "file_parent",
+                True,
+            ),
+            (
+                "intradayNavHistory",
+                "00631L_INTRADAY_NAV_HISTORY_PATH",
+                Path(self._config.intraday_nav_history_path),
+                "file_parent",
+                True,
+            ),
+            (
+                "priceHistory",
+                "00631L_PRICE_HISTORY_PATH",
+                Path(self._config.price_history_path),
+                "file_parent",
+                True,
+            ),
+            (
+                "etfCatalog",
+                "ETF_CATALOG_PATH",
+                Path(self._config.etf_catalog_path),
+                "file_parent",
+                True,
+            ),
+            (
+                "etfPriceHistory",
+                "ETF_PRICE_HISTORY_DIR",
+                Path(self._config.etf_price_history_dir),
+                "directory",
+                True,
+            ),
+            (
+                "dailyCycleStatus",
+                "00631L_DAILY_CYCLE_STATUS_PATH",
+                Path(self._config.daily_cycle_status_path),
+                "file_parent",
+                True,
+            ),
+            (
+                "integrityStatus",
+                "00631L_INTEGRITY_STATUS_PATH",
+                Path(self._config.integrity_status_path),
+                "file_parent",
+                True,
+            ),
+            (
+                "restoreDryRunStatus",
+                "00631L_RESTORE_DRY_RUN_STATUS_PATH",
+                Path(self._config.restore_dry_run_status_path),
+                "file_parent",
+                True,
+            ),
+            (
+                "historyExport",
+                "00631L_HISTORY_EXPORT_DIR",
+                Path(self._config.history_export_dir),
+                "directory",
+                False,
+            ),
+            (
+                "backup",
+                "00631L_BACKUP_DIR",
+                Path(self._config.backup_dir),
+                "directory",
+                False,
+            ),
+            (
+                "report",
+                "00631L_REPORT_DIR",
+                Path(self._config.report_dir),
+                "directory",
+                False,
+            ),
+        ]
+        return [
+            _storage_path_health(
+                key=key,
+                label=label,
+                path=path,
+                kind=kind,
+                required=required,
+                data_root=data_root,
+                persistent_mode=self._config.data_persistence_mode == "persistent",
+            )
+            for key, label, path, kind, required in entries
+        ]
 
     def _readiness_url_check(
         self,
@@ -1540,6 +1675,78 @@ def _directory_health(directory: Path, files: list[Path]) -> dict[str, Any]:
         "latestFile": str(latest_path) if latest_path else None,
         "latestUpdatedAt": _mtime_iso(latest_mtime) if latest_path else None,
     }
+
+
+def _storage_path_health(
+    *,
+    key: str,
+    label: str,
+    path: Path,
+    kind: str,
+    required: bool,
+    data_root: Path,
+    persistent_mode: bool,
+) -> dict[str, Any]:
+    target = path if kind == "directory" else path.parent
+    writable = _ensure_directory_writable(target)
+    exists = target.exists() and target.is_dir()
+    under_data_dir = _is_relative_to(target, data_root)
+    warning: str | None = None
+    if not writable:
+        status = "FAIL" if required else "WARN"
+        message = f"{label} target is not writable."
+    elif persistent_mode and required and not under_data_dir:
+        status = "WARN"
+        message = f"{label} is writable but outside 00631L_DATA_DIR."
+        warning = message
+    else:
+        status = "PASS"
+        message = "ok"
+    return {
+        "key": key,
+        "label": label,
+        "path": str(path),
+        "targetPath": str(target),
+        "kind": kind,
+        "required": required,
+        "exists": exists,
+        "writable": writable,
+        "underDataDir": under_data_dir,
+        "status": status,
+        "sourceStatus": "cached" if status == "PASS" else "stale" if status == "WARN" else "error",
+        "message": message,
+        "warning": warning,
+    }
+
+
+def _storage_path_summary(paths: list[dict[str, Any]]) -> dict[str, Any]:
+    failures = [
+        f"{item.get('label')}: {item.get('message')}"
+        for item in paths
+        if item.get("required") and item.get("status") == "FAIL"
+    ]
+    warnings = [
+        f"{item.get('label')}: {item.get('message')}"
+        for item in paths
+        if item.get("status") == "WARN"
+    ]
+    return {
+        "requiredCount": len([item for item in paths if item.get("required")]),
+        "requiredFailureCount": len(failures),
+        "warningCount": len(warnings),
+        "failures": failures,
+        "warnings": warnings,
+    }
+
+
+def _is_relative_to(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+        return True
+    except ValueError:
+        return False
+    except OSError:
+        return False
 
 
 def _persistence_health(directory: Path, *, mode: str) -> dict[str, Any]:

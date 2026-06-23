@@ -1185,3 +1185,9 @@ and per-code errors instead of only readyCount changes.
 v4.88 blocks all public catalog batch commands when public readyCount regresses
 below the last successful batch state. Fix public backend persistence before
 continuing data import.
+
+v4.89 adds path-level public storage diagnostics. `/ready` now checks the
+effective holdings, intraday, 00631L price, ETF catalog, multi-ETF history,
+daily-cycle, integrity, restore, export, backup, and report paths so a deployed
+backend can show whether required data is really writing under the persistent
+`00631L_DATA_DIR`.

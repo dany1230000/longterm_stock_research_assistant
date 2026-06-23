@@ -40,8 +40,8 @@ class EndpointTests(unittest.TestCase):
         self.assertIn("serverTime", payload)
         self.assertEqual(payload["sourceContract"], "00631l_backend_health")
         self.assertNotEqual(payload["appVersion"], "3.4-live-backend")
-        self.assertEqual(payload["appVersion"], "4.88-public-regression-batch-gate")
-        self.assertEqual(payload["release"]["tag"], "00631l-lab-v4.88-public-regression-batch-gate")
+        self.assertEqual(payload["appVersion"], "4.89-public-storage-path-diagnostics")
+        self.assertEqual(payload["release"]["tag"], "00631l-lab-v4.89-public-storage-path-diagnostics")
         self.assertEqual(payload["release"]["version"], payload["appVersion"])
         self.assertIn("tag", payload["release"])
         self.assertIn("buildTime", payload["release"])
@@ -90,6 +90,14 @@ class EndpointTests(unittest.TestCase):
                     holdings_history_path=str(data_dir / "history.jsonl"),
                     intraday_nav_history_path=str(data_dir / "intraday.jsonl"),
                     price_history_path=str(data_dir / "price.jsonl"),
+                    etf_catalog_path=str(data_dir / "catalog.json"),
+                    etf_price_history_dir=str(data_dir / "etf_price_history"),
+                    history_export_dir=str(data_dir / "exports"),
+                    daily_cycle_status_path=str(data_dir / "daily_cycle.json"),
+                    integrity_status_path=str(data_dir / "integrity.json"),
+                    restore_dry_run_status_path=str(data_dir / "restore.json"),
+                    backup_dir=str(data_dir / "backups"),
+                    report_dir=str(data_dir / "reports"),
                 ),
                 fetcher=lambda url, timeout_seconds: '{"msgArray":[]}',
                 cache=TimedMemoryCache(),
@@ -111,8 +119,55 @@ class EndpointTests(unittest.TestCase):
             self.assertEqual(payload["allowedOrigins"], ["https://dany1230000.github.io"])
             checks = {item["name"]: item for item in payload["checks"]}
             self.assertEqual(checks["data_dir_writable"]["status"], "PASS")
+            self.assertEqual(checks["storage_paths"]["status"], "PASS")
+            storage_paths = {
+                item["key"]: item for item in checks["storage_paths"]["paths"]
+            }
+            self.assertTrue(storage_paths["etfPriceHistory"]["writable"])
+            self.assertTrue(storage_paths["etfPriceHistory"]["underDataDir"])
             self.assertEqual(checks["data_persistence"]["status"], "PASS")
             self.assertEqual(checks["live_source_connectivity"]["status"], "PASS")
+
+    def test_ready_endpoint_warns_when_required_storage_path_is_outside_data_dir(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data_dir = root / "data"
+            external_dir = root / "external_etf_history"
+            service = Etf00631LService(
+                config=Settings(
+                    public_api_base_url="https://api.example.com",
+                    allowed_origins=("https://dany1230000.github.io",),
+                    data_dir=str(data_dir),
+                    data_persistence_mode="persistent",
+                    twse_intraday_nav_url="fixture://twse/all_etf",
+                    yuanta_intraday_nav_url="",
+                    holdings_history_path=str(data_dir / "history.jsonl"),
+                    intraday_nav_history_path=str(data_dir / "intraday.jsonl"),
+                    price_history_path=str(data_dir / "price.jsonl"),
+                    etf_catalog_path=str(data_dir / "catalog.json"),
+                    etf_price_history_dir=str(external_dir),
+                    daily_cycle_status_path=str(data_dir / "daily_cycle.json"),
+                    integrity_status_path=str(data_dir / "integrity.json"),
+                    restore_dry_run_status_path=str(data_dir / "restore.json"),
+                ),
+                fetcher=lambda url, timeout_seconds: '{"msgArray":[]}',
+                cache=TimedMemoryCache(),
+            )
+            client = TestClient(main_module.create_app(app_service=service))
+
+            payload = client.get("/ready").json()
+
+            checks = {item["name"]: item for item in payload["checks"]}
+            self.assertEqual(payload["overallStatus"], "WARN")
+            self.assertEqual(checks["storage_paths"]["status"], "WARN")
+            self.assertEqual(checks["storage_paths"]["requiredFailureCount"], 0)
+            self.assertGreaterEqual(checks["storage_paths"]["warningCount"], 1)
+            storage_paths = {
+                item["key"]: item for item in checks["storage_paths"]["paths"]
+            }
+            self.assertTrue(storage_paths["etfPriceHistory"]["writable"])
+            self.assertFalse(storage_paths["etfPriceHistory"]["underDataDir"])
+            self.assertIn("outside 00631L_DATA_DIR", storage_paths["etfPriceHistory"]["message"])
 
     def test_ready_endpoint_warns_for_local_transient_config(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -584,6 +639,13 @@ Custodian Fee
             self.assertTrue(payload["dataDirectoryHealth"]["persistence"]["writable"])
             self.assertFalse(payload["dataDirectoryHealth"]["persistence"]["isPersistent"])
             self.assertIn("persistent volume", payload["dataDirectoryHealth"]["persistence"]["warning"])
+            self.assertIn("storagePaths", payload["dataDirectoryHealth"])
+            storage_paths = {
+                item["key"]: item for item in payload["dataDirectoryHealth"]["storagePaths"]
+            }
+            self.assertIn("etfPriceHistory", storage_paths)
+            self.assertTrue(storage_paths["etfPriceHistory"]["writable"])
+            self.assertIn("storageSummary", payload["dataDirectoryHealth"])
             self.assertEqual(payload["backendHealth"]["publicApiBaseUrl"], "https://api.example.com")
             self.assertEqual(payload["backendHealth"]["allowedOrigins"], ["https://00631l.example.com"])
 
