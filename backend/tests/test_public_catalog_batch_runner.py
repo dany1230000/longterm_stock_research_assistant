@@ -155,6 +155,61 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["finalReadyCount"], 17)
         self.assertTrue(any("partial progress" in item for item in payload["warnings"]))
 
+    def test_next_offset_uses_final_ready_count_after_partial_progress(self) -> None:
+        history_ready_counts = [16, 17]
+
+        def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
+            if path == "/api/etf/catalog/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "static_official",
+                        "rowCount": 120,
+                    },
+                }
+            if path == "/api/etf/history/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": history_ready_counts.pop(0),
+                        "rowCount": 17,
+                        "validationFailureCount": 0,
+                    },
+                }
+            raise AssertionError(path)
+
+        def maintenance_runner(
+            *,
+            base_url: str,
+            offset: int,
+            limit: int,
+            timeout_seconds: int,
+            retry_count: int,
+            retry_delay_seconds: float,
+        ) -> dict:
+            return {
+                "overallStatus": "FAIL",
+                "failures": ["etf_history_update: The read operation timed out"],
+                "warnings": [],
+                "steps": [],
+            }
+
+        payload = run_public_etf_catalog_batches(
+            base_url="https://example.com",
+            batch_size=1,
+            max_batches=1,
+            start_offset=15,
+            requester=requester,
+            maintenance_runner=maintenance_runner,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["summary"]["nextOffset"], 17)
+        self.assertTrue(
+            any("--start-offset 17" in item for item in payload["actionItems"])
+        )
+
     def test_failed_batch_recommends_retrying_failed_offset(self) -> None:
         history_ready_counts = [56, 15]
 

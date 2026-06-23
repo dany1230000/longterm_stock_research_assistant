@@ -1122,3 +1122,7 @@ v4.73 preserves useful public catalog batch resume state when the catalog status
 temporarily reports unavailable. A low-information zero-row catalog warning no
 longer replaces the last known `nextOffset`, `failedOffset`, or ready-count
 progress.
+
+v4.74 adjusts the public catalog batch `nextOffset` after partial progress. If
+a request times out but the public `readyCount` increases, the next action uses
+the newer ready count instead of repeating the just-completed offset.

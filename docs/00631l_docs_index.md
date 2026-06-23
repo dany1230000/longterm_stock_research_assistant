@@ -110,6 +110,7 @@ This is the main entry point for 00631L lab documentation.
 - Public batch fail-fast v4.71: `docs\00631l_v4_71_public_batch_fail_fast.md`
 - Public ready regression v4.72: `docs\00631l_v4_72_public_ready_regression.md`
 - Preserve public batch state v4.73: `docs\00631l_v4_73_preserve_public_batch_state.md`
+- Public batch next offset v4.74: `docs\00631l_v4_74_public_batch_next_offset.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

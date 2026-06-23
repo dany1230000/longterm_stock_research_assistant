@@ -240,7 +240,14 @@ def run_public_etf_catalog_batches(
     next_offset = (
         failed_offsets[0]
         if failed_offsets
-        else _next_offset(planned_offsets, limit, catalog_rows)
+        else _next_offset(
+            planned_offsets,
+            limit,
+            catalog_rows,
+            minimum_offset=final_ready_count
+            if final_ready_count > initial_ready_count
+            else None,
+        )
     )
     steps.extend(batch_steps)
     steps.append(
@@ -463,10 +470,18 @@ def _downgrade_progress_timeout(step: dict[str, Any]) -> dict[str, Any]:
     return updated
 
 
-def _next_offset(planned_offsets: list[int], batch_size: int, catalog_rows: int) -> int | None:
+def _next_offset(
+    planned_offsets: list[int],
+    batch_size: int,
+    catalog_rows: int,
+    *,
+    minimum_offset: int | None = None,
+) -> int | None:
     if not planned_offsets:
         return None
     candidate = planned_offsets[-1] + max(1, batch_size)
+    if minimum_offset is not None:
+        candidate = max(candidate, max(0, minimum_offset))
     return candidate if candidate < catalog_rows else None
 
 
