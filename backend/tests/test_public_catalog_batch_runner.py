@@ -173,7 +173,10 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["finalReadyCount"], 90)
         self.assertEqual(history_status_calls, 2)
         self.assertTrue(
-            any("--start-offset 150" in item for item in payload["actionItems"])
+            any(
+                "--start-offset 150 --batch-size 1 --max-batches 1 --soft-fail" in item
+                for item in payload["actionItems"]
+            )
         )
 
     def test_batch_timeout_is_warning_when_ready_count_increases(self) -> None:
@@ -282,7 +285,10 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "WARN")
         self.assertEqual(payload["summary"]["nextOffset"], 17)
         self.assertTrue(
-            any("--start-offset 17" in item for item in payload["actionItems"])
+            any(
+                "--start-offset 17 --batch-size 1 --max-batches 1 --soft-fail" in item
+                for item in payload["actionItems"]
+            )
         )
 
     def test_failed_batch_with_ready_regression_prioritizes_persistence_check(self) -> None:

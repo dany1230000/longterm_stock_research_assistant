@@ -118,6 +118,7 @@ This is the main entry point for 00631L lab documentation.
 - Read-only persistence warning v4.79: `docs\00631l_v4_79_readonly_persistence_warn.md`
 - Persistence-first maintenance v4.80: `docs\00631l_v4_80_persistence_first_maintenance.md`
 - Public batch preflight v4.81: `docs\00631l_v4_81_public_batch_preflight.md`
+- Public batch action flags v4.82: `docs\00631l_v4_82_public_batch_action_flags.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

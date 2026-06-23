@@ -633,12 +633,12 @@ def _action_items(
         if failed_offset is not None:
             return [
                 "Retry the failed offset with scripts\\00631l_public_etf_catalog_batches.cmd "
-                f"--start-offset {failed_offset}."
+                f"--start-offset {failed_offset} --batch-size 1 --max-batches 1 --soft-fail."
             ]
         if next_offset is not None:
             return [
                 "Run the next offset with scripts\\00631l_public_etf_catalog_batches.cmd "
-                f"--start-offset {next_offset}."
+                f"--start-offset {next_offset} --batch-size 1 --max-batches 1 --soft-fail."
             ]
         return [
             "Run another public ETF catalog batch after checking /api/etf/history/status."

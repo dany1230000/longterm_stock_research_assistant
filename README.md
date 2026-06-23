@@ -1157,3 +1157,7 @@ v4.81 makes public ETF catalog batches production-safe by default. The runner
 now plans one catalog item at a time, runs deploy/stability preflight before
 remote writes, and only suggests `--batch-size 1 --max-batches 1` in current
 maintenance guidance.
+
+v4.82 keeps successful public catalog batch payloads consistent with that
+guidance: next-offset action items now include `--batch-size 1 --max-batches 1
+--soft-fail`.
