@@ -231,6 +231,7 @@ def run_public_etf_catalog_batches(
             for step in batch_steps
         ]
     failed_offsets = _failed_offsets(batch_steps)
+    ready_count_regression = max(0, initial_ready_count - final_ready_count)
     if final_ready_count < initial_ready_count:
         final_step_status = "WARN"
         final_step_message = (
@@ -280,12 +281,14 @@ def run_public_etf_catalog_batches(
             "failedOffset": failed_offsets[0] if failed_offsets else None,
             "finalReadyCount": final_ready_count,
             "finalValidationFailureCount": final_validation_failures,
+            "readyCountRegression": ready_count_regression,
         },
         action_items=_action_items(
             final_ready_count,
             catalog_rows,
             next_offset=next_offset,
             failed_offset=failed_offsets[0] if failed_offsets else None,
+            ready_count_regression=ready_count_regression,
         ),
     )
     _write_resume_state(payload, state_file)
@@ -506,7 +509,12 @@ def _action_items(
     *,
     next_offset: int | None,
     failed_offset: int | None = None,
+    ready_count_regression: int = 0,
 ) -> list[str]:
+    if ready_count_regression > 0:
+        return [
+            "Check public backend persistent data volume and redeploy status before continuing ETF catalog batches."
+        ]
     if catalog_rows > 0 and final_ready_count < catalog_rows:
         if failed_offset is not None:
             return [

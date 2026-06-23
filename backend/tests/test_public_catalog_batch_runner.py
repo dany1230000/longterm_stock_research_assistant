@@ -210,7 +210,7 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
             any("--start-offset 17" in item for item in payload["actionItems"])
         )
 
-    def test_failed_batch_recommends_retrying_failed_offset(self) -> None:
+    def test_failed_batch_with_ready_regression_prioritizes_persistence_check(self) -> None:
         history_ready_counts = [56, 15]
 
         def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
@@ -263,10 +263,14 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["nextOffset"], 30)
         self.assertTrue(any("HTTP 502" in item for item in payload["failures"]))
         self.assertTrue(
-            any("--start-offset 30" in item for item in payload["actionItems"])
+            any("persistent data volume" in item for item in payload["actionItems"])
         )
         self.assertTrue(
             any("ready count decreased" in item for item in payload["warnings"])
+        )
+        self.assertEqual(payload["summary"]["readyCountRegression"], 41)
+        self.assertFalse(
+            any("--start-offset 30" in item for item in payload["actionItems"])
         )
         self.assertFalse(
             any("--start-offset 40" in item for item in payload["actionItems"])

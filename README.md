@@ -1126,3 +1126,7 @@ progress.
 v4.74 adjusts the public catalog batch `nextOffset` after partial progress. If
 a request times out but the public `readyCount` increases, the next action uses
 the newer ready count instead of repeating the just-completed offset.
+
+v4.75 changes public catalog batch action items when `readyCount` moves
+backward during the same run. In that case, check public backend persistence
+and redeploy status before continuing offsets.
