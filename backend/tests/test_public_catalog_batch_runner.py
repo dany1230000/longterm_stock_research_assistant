@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -212,6 +215,81 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertFalse(
             any("--start-offset 40" in item for item in payload["actionItems"])
         )
+
+    def test_failed_batch_writes_resume_state(self) -> None:
+        history_ready_counts = [56, 15]
+
+        def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
+            if path == "/api/etf/catalog/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"sourceStatus": "static_official", "rowCount": 343},
+                }
+            if path == "/api/etf/history/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": history_ready_counts.pop(0),
+                        "rowCount": 15,
+                        "validationFailureCount": 0,
+                    },
+                }
+            raise AssertionError(path)
+
+        def maintenance_runner(
+            *,
+            base_url: str,
+            offset: int,
+            limit: int,
+            timeout_seconds: int,
+            retry_count: int,
+            retry_delay_seconds: float,
+        ) -> dict:
+            return {
+                "overallStatus": "FAIL",
+                "failures": ["etf_history_update: HTTP 502"],
+                "warnings": [],
+                "steps": [],
+            }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            state_path = Path(temp_dir) / "batch_state.json"
+            run_public_etf_catalog_batches(
+                base_url="https://example.com",
+                batch_size=10,
+                max_batches=1,
+                start_offset=30,
+                requester=requester,
+                maintenance_runner=maintenance_runner,
+                state_path=state_path,
+            )
+
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(state["overallStatus"], "FAIL")
+        self.assertEqual(state["nextOffset"], 30)
+        self.assertEqual(state["failedOffset"], 30)
+        self.assertEqual(state["finalReadyCount"], 15)
+
+    def test_resume_uses_saved_next_offset_for_dry_run(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            state_path = Path(temp_dir) / "batch_state.json"
+            state_path.write_text(
+                json.dumps({"nextOffset": 40}),
+                encoding="utf-8",
+            )
+
+            payload = run_public_etf_catalog_batches(
+                base_url="https://example.com",
+                batch_size=10,
+                max_batches=2,
+                dry_run=True,
+                resume=True,
+                state_path=state_path,
+            )
+
+        self.assertEqual(payload["summary"]["plannedOffsets"], [40, 50])
 
     def test_warns_when_catalog_is_not_available(self) -> None:
         def requester(base_url: str, path: str, timeout_seconds: int) -> dict:

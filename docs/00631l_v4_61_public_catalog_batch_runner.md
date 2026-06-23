@@ -26,6 +26,8 @@ The default batch size is intentionally small because hosted backends can time o
 
 If a batch fails with an HTTP error, retry the same `--start-offset` shown in `actionItems`. Do not skip to the next offset until the failed batch is either saved or the final ready count confirms progress.
 
+v4.64 adds a resume state file under `backend\data`. Use `--resume` to continue from the last recorded `nextOffset`.
+
 ## Data Labels
 
 The runner does not change source labels. If the backend uses `ETF_CATALOG_SEED_PATH`, catalog data is still labeled `static_official` until a local persistent catalog is imported.

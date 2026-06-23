@@ -21,6 +21,7 @@ from backend.scripts.remote_maintenance_00631l import _request_etf_history_updat
 
 RequestFn = Callable[[str, str, int], dict[str, Any]]
 MaintenanceRunnerFn = Callable[..., dict[str, Any]]
+DEFAULT_STATE_PATH = ROOT / "backend" / "data" / "00631l_public_etf_catalog_batch_state.json"
 
 
 def run_public_etf_catalog_batches(
@@ -33,6 +34,8 @@ def run_public_etf_catalog_batches(
     retry_count: int = 2,
     retry_delay_seconds: float = 3.0,
     dry_run: bool = False,
+    resume: bool = False,
+    state_path: str | Path | None = None,
     catalog_row_count: int | None = None,
     requester: RequestFn | None = None,
     maintenance_runner: MaintenanceRunnerFn | None = None,
@@ -42,6 +45,9 @@ def run_public_etf_catalog_batches(
     limit = max(1, int(batch_size or 10))
     offset = max(0, int(start_offset or 0))
     max_batch_count = max(1, int(max_batches or 1))
+    state_file = Path(state_path) if state_path is not None else DEFAULT_STATE_PATH
+    if resume:
+        offset = _resume_offset(state_file, offset)
 
     request = requester or _request_json
     if dry_run and catalog_row_count is None:
@@ -115,7 +121,7 @@ def run_public_etf_catalog_batches(
         )
 
     if catalog_rows < 1:
-        return _payload(
+        payload = _payload(
             checked_at=checked_at,
             base_url=normalized_base_url,
             dry_run=False,
@@ -138,6 +144,8 @@ def run_public_etf_catalog_batches(
                 "Check /api/etf/catalog/status or deploy the backend with ETF_CATALOG_SEED_PATH.",
             ],
         )
+        _write_resume_state(payload, state_file)
+        return payload
 
     initial_status = request(normalized_base_url, "/api/etf/history/status", timeout_seconds)
     initial_payload = (
@@ -235,7 +243,7 @@ def run_public_etf_catalog_batches(
         )
     )
 
-    return _payload(
+    payload = _payload(
         checked_at=checked_at,
         base_url=normalized_base_url,
         dry_run=False,
@@ -247,6 +255,7 @@ def run_public_etf_catalog_batches(
             "plannedOffsets": planned_offsets,
             "plannedBatchCount": len(planned_offsets),
             "nextOffset": next_offset,
+            "failedOffset": failed_offsets[0] if failed_offsets else None,
             "finalReadyCount": final_ready_count,
             "finalValidationFailureCount": final_validation_failures,
         },
@@ -257,6 +266,8 @@ def run_public_etf_catalog_batches(
             failed_offset=failed_offsets[0] if failed_offsets else None,
         ),
     )
+    _write_resume_state(payload, state_file)
+    return payload
 
 
 def _run_single_batch(
@@ -464,6 +475,44 @@ def _action_items(
     return []
 
 
+def _resume_offset(state_path: Path, fallback_offset: int) -> int:
+    try:
+        payload = json.loads(state_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return fallback_offset
+    try:
+        return max(0, int(payload.get("nextOffset")))
+    except (TypeError, ValueError):
+        return fallback_offset
+
+
+def _write_resume_state(payload: dict[str, Any], state_path: Path) -> None:
+    summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+    state = {
+        "sourceContract": "00631l_public_etf_catalog_batch_state",
+        "updatedAt": payload.get("checkedAt"),
+        "baseUrl": payload.get("baseUrl"),
+        "overallStatus": payload.get("overallStatus"),
+        "catalogRowCount": summary.get("catalogRowCount"),
+        "catalogSourceStatus": summary.get("catalogSourceStatus"),
+        "initialReadyCount": summary.get("initialReadyCount"),
+        "finalReadyCount": summary.get("finalReadyCount"),
+        "plannedOffsets": summary.get("plannedOffsets") or [],
+        "plannedBatchCount": summary.get("plannedBatchCount"),
+        "nextOffset": summary.get("nextOffset"),
+        "failedOffset": summary.get("failedOffset"),
+        "finalValidationFailureCount": summary.get("finalValidationFailureCount"),
+        "warnings": payload.get("warnings") or [],
+        "failures": payload.get("failures") or [],
+        "actionItems": payload.get("actionItems") or [],
+    }
+    state_path.parent.mkdir(parents=True, exist_ok=True)
+    state_path.write_text(
+        json.dumps(state, ensure_ascii=True, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+
+
 def _normalize_base_url(value: str) -> str:
     return (value.strip() or DEFAULT_BACKEND_URL).rstrip("/")
 
@@ -490,6 +539,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--retry-count", type=int, default=2)
     parser.add_argument("--retry-delay-seconds", type=float, default=3.0)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--state-path", default=str(DEFAULT_STATE_PATH))
     parser.add_argument("--soft-fail", action="store_true")
     return parser.parse_args()
 
@@ -505,6 +556,8 @@ def main() -> int:
         retry_count=max(0, args.retry_count),
         retry_delay_seconds=max(0.0, args.retry_delay_seconds),
         dry_run=args.dry_run,
+        resume=args.resume,
+        state_path=args.state_path,
     )
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
     summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
