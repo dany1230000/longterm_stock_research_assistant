@@ -113,6 +113,7 @@ This is the main entry point for 00631L lab documentation.
 - Public batch next offset v4.74: `docs\00631l_v4_74_public_batch_next_offset.md`
 - Public batch regression guidance v4.75: `docs\00631l_v4_75_public_batch_regression_guidance.md`
 - Public history stability v4.76: `docs\00631l_v4_76_public_history_stability.md`
+- Deploy drift git SHA noise v4.77: `docs\00631l_v4_77_deploy_drift_gitsha_noise.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

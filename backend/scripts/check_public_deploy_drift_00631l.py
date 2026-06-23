@@ -98,6 +98,7 @@ def check_public_backend_deploy_drift(
     public_overall = str(public_status.get("overallStatus") or "WARN")
     public_release_tag = str(summary.get("releaseTag") or "")
     public_git_sha = str(summary.get("gitSha") or "")
+    public_git_sha_status = "present" if public_git_sha else "missing"
     public_backend_version = str(summary.get("backendVersion") or "")
     expected_git_sha = (expected_git_sha or "").strip()
 
@@ -127,7 +128,11 @@ def check_public_backend_deploy_drift(
             "public backend git sha differs: "
             f"public={public_git_sha} expected={expected_git_sha}"
         )
-    elif expected_git_sha and not public_git_sha:
+    elif (
+        expected_git_sha
+        and not public_git_sha
+        and public_release_tag != expected_release_tag
+    ):
         warnings.append(
             "public backend git sha is not exposed; set 00631L_BACKEND_GIT_SHA during deploy."
         )
@@ -154,6 +159,7 @@ def check_public_backend_deploy_drift(
             "publicBackendVersion": public_backend_version,
             "publicReleaseTag": public_release_tag,
             "publicGitSha": public_git_sha,
+            "publicGitShaStatus": public_git_sha_status,
             "expectedReleaseTag": expected_release_tag,
             "expectedGitSha": expected_git_sha,
         },

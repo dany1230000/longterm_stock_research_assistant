@@ -59,6 +59,27 @@ class PublicBackendDeployDriftTests(unittest.TestCase):
         self.assertEqual(payload["warnings"], [])
         self.assertEqual(payload["failures"], [])
 
+    def test_passes_when_release_tag_matches_and_public_git_sha_missing(self) -> None:
+        payload = check_public_backend_deploy_drift(
+            public_status={
+                "overallStatus": "PASS",
+                "baseUrl": "https://example.com",
+                "summary": {
+                    "backendVersion": "4.76-public-history-stability",
+                    "releaseTag": "00631l-lab-v4.76-public-history-stability",
+                    "gitSha": "",
+                },
+            },
+            expected_release_tag="00631l-lab-v4.76-public-history-stability",
+            expected_git_sha="abc123",
+            checked_at="2026-06-23T00:00:00+00:00",
+        )
+
+        self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertEqual(payload["warnings"], [])
+        self.assertEqual(payload["failures"], [])
+        self.assertEqual(payload["summary"]["publicGitShaStatus"], "missing")
+
     def test_fails_when_public_status_check_failed(self) -> None:
         payload = check_public_backend_deploy_drift(
             public_status={

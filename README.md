@@ -1134,3 +1134,7 @@ and redeploy status before continuing offsets.
 v4.76 adds `scripts\00631l_public_history_stability.cmd`, a read-only sampler
 for public `/api/etf/history/status`. Use it before catalog batches when public
 ETF ready counts look inconsistent.
+
+v4.77 reduces noise in `scripts\00631l_public_deploy_drift.cmd`: when the
+public backend release tag matches the expected tag, a missing public git SHA is
+reported as metadata quality instead of changing the overall status to WARN.
