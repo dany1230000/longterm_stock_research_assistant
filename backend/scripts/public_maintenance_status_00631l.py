@@ -127,6 +127,7 @@ def build_public_maintenance_status(
         catalog_batch_state,
         public_ready_count=public_summary.get("etfHistoryReadyCount"),
     )
+    marker_newly_created = bool(public_summary.get("persistenceMarkerNewlyCreated"))
     has_persistence_warning = _has_public_persistence_warning(public_status)
     has_readiness_blocker = _has_public_readiness_blocker(
         public_status,
@@ -139,6 +140,14 @@ def build_public_maintenance_status(
         if ready_regression > 0
         else []
     )
+    marker_warning = (
+        [
+            "Public persistence marker was newly created; verify that the backend "
+            "is using the intended persistent volume before long batch runs."
+        ]
+        if marker_newly_created
+        else []
+    )
     action_items = _filter_catalog_batch_actions(
         _dedupe(
             [
@@ -148,6 +157,7 @@ def build_public_maintenance_status(
                 *list((readiness_probe or {}).get("actionItems") or []),
                 *_persistence_action_items(has_persistence_warning),
                 *_readiness_action_items(has_readiness_blocker),
+                *_persistence_marker_action_items(marker_newly_created),
                 *_catalog_batch_regression_action_items(ready_regression),
                 *(
                     []
@@ -166,7 +176,7 @@ def build_public_maintenance_status(
         or has_readiness_blocker
         or ready_regression > 0,
     )
-    warnings = _dedupe([*warnings, *catalog_regression_warning])
+    warnings = _dedupe([*warnings, *catalog_regression_warning, *marker_warning])
     overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
     catalog_summary = _catalog_batch_summary(catalog_batch_state)
     return {
@@ -187,6 +197,15 @@ def build_public_maintenance_status(
             "publicCoverageEnd": freshness_summary.get("publicCoverageEnd"),
             "staticCoverageEnd": freshness_summary.get("staticCoverageEnd"),
             "publicPriceHistoryRows": public_summary.get("priceHistoryRows"),
+            "publicPersistenceMarkerCreatedAt": public_summary.get(
+                "persistenceMarkerCreatedAt"
+            ),
+            "publicPersistenceMarkerAgeSeconds": public_summary.get(
+                "persistenceMarkerAgeSeconds"
+            ),
+            "publicPersistenceMarkerNewlyCreated": public_summary.get(
+                "persistenceMarkerNewlyCreated"
+            ),
             **catalog_summary,
             "catalogBatchReadyRegression": ready_regression,
         },
@@ -316,6 +335,14 @@ def _persistence_action_items(has_persistence_warning: bool) -> list[str]:
         return []
     return [
         "Fix public backend persistent data volume before running ETF catalog batches."
+    ]
+
+
+def _persistence_marker_action_items(marker_newly_created: bool) -> list[str]:
+    if not marker_newly_created:
+        return []
+    return [
+        "Recheck public backend status after the next deploy; the persistence marker should keep the same createdAt."
     ]
 
 

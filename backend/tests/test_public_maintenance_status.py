@@ -115,6 +115,52 @@ class PublicMaintenanceStatusTests(unittest.TestCase):
             payload["actionItems"],
         )
 
+    def test_includes_public_persistence_marker_summary(self) -> None:
+        payload = build_public_maintenance_status(
+            deploy_drift={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},
+            public_status={
+                "overallStatus": "WARN",
+                "warnings": ["ETF history ready count below minimum 200: 16"],
+                "failures": [],
+                "summary": {
+                    "etfHistoryReadyCount": 16,
+                    "minEtfReadyCount": 200,
+                    "persistenceMarkerCreatedAt": "2026-06-23T05:28:27+00:00",
+                    "persistenceMarkerAgeSeconds": 90,
+                    "persistenceMarkerNewlyCreated": True,
+                },
+            },
+            freshness={
+                "overallStatus": "WARN",
+                "warnings": ["public backend ETF history ready count is lower"],
+                "failures": [],
+                "summary": {"publicEtfReadyLagVsStatic": 212},
+            },
+            catalog_batch_state={
+                "updatedAt": "2026-06-23T05:31:30+00:00",
+                "overallStatus": "PASS",
+                "catalogRowCount": 343,
+                "finalReadyCount": 16,
+                "nextOffset": 17,
+                "failedOffset": None,
+            },
+            checked_at="2026-06-23T00:00:00+00:00",
+        )
+
+        self.assertEqual(
+            payload["summary"]["publicPersistenceMarkerCreatedAt"],
+            "2026-06-23T05:28:27+00:00",
+        )
+        self.assertEqual(payload["summary"]["publicPersistenceMarkerAgeSeconds"], 90)
+        self.assertTrue(payload["summary"]["publicPersistenceMarkerNewlyCreated"])
+        self.assertTrue(
+            any("persistence marker" in item for item in payload["warnings"])
+        )
+        self.assertIn(
+            "Recheck public backend status after the next deploy; the persistence marker should keep the same createdAt.",
+            payload["actionItems"],
+        )
+
     def test_warns_when_public_ready_count_regresses_below_last_batch_state(self) -> None:
         payload = build_public_maintenance_status(
             deploy_drift={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},

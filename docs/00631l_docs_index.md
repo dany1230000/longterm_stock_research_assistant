@@ -127,6 +127,7 @@ This is the main entry point for 00631L lab documentation.
 - Public regression batch gate v4.88: `docs\00631l_v4_88_public_regression_batch_gate.md`
 - Public storage path diagnostics v4.89: `docs\00631l_v4_89_public_storage_path_diagnostics.md`
 - Public persistence marker v4.90: `docs\00631l_v4_90_public_persistence_marker.md`
+- Public marker maintenance summary v4.91: `docs\00631l_v4_91_public_marker_maintenance_summary.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`

@@ -1197,3 +1197,8 @@ inside `00631L_DATA_DIR` and reports its `createdAt`, age, and newly-created
 state through `/ready`, operations/status, and public backend status checks.
 Use it with readyCount after redeploys to tell whether the public data volume is
 actually being preserved.
+
+v4.91 carries the public persistence marker into maintenance status. The daily
+public maintenance output now shows marker createdAt/age/newlyCreated next to
+ETF readyCount, and asks for a recheck after the next deploy when the marker was
+just created.
