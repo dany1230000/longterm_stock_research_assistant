@@ -7,6 +7,7 @@ from backend.scripts.check_public_config_00631l import (
     _allowed_origins_check,
     _data_persistence_check,
     _public_api_url_check,
+    _render_disk_check,
 )
 from backend.scripts.deploy_precheck_00631l import run_deploy_precheck
 from backend.scripts.release_check_00631l import (
@@ -107,6 +108,7 @@ class ReleaseCheckTests(unittest.TestCase):
                 "deploy/Caddyfile",
                 "deploy/nginx.example.conf",
                 "deploy/render.yaml",
+                "render.yaml",
                 "web/index.html",
                 "web/manifest.json",
                 "scripts/00631l_check_public_config.cmd",
@@ -164,6 +166,29 @@ class ReleaseCheckTests(unittest.TestCase):
 
     def test_public_config_rejects_wildcard_origin(self) -> None:
         self.assertEqual(_allowed_origins_check({"ALLOWED_ORIGINS": "*"})["status"], "FAIL")
+
+    def test_public_config_checks_render_disk_template(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "deploy").mkdir()
+            (root / "deploy" / "render.yaml").write_text(
+                "\n".join(
+                    [
+                        "services:",
+                        "  - type: web",
+                        "    disk:",
+                        "      name: 00631l-data",
+                        "      mountPath: /data/00631l",
+                        "      sizeGB: 1",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            self.assertEqual(_render_disk_check(root, "deploy/render.yaml")["status"], "PASS")
+
+            (root / "render.yaml").write_text("services:\n  - type: web\n", encoding="utf-8")
+            self.assertEqual(_render_disk_check(root, "render.yaml")["status"], "WARN")
 
 
 if __name__ == "__main__":

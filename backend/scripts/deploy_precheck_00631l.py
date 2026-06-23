@@ -40,6 +40,7 @@ def run_deploy_precheck(root: Path = ROOT) -> dict[str, Any]:
         "deploy/Caddyfile",
         "deploy/nginx.example.conf",
         "deploy/render.yaml",
+        "render.yaml",
         "web/index.html",
         "web/manifest.json",
         "scripts/00631l_check_public_config.cmd",

@@ -46,6 +46,9 @@ def run_public_config_check(root: Path = ROOT) -> dict[str, Any]:
         _required_file_check(root, "deploy/Caddyfile"),
         _required_file_check(root, "deploy/nginx.example.conf"),
         _required_file_check(root, "deploy/render.yaml"),
+        _required_file_check(root, "render.yaml"),
+        _render_disk_check(root, "deploy/render.yaml"),
+        _render_disk_check(root, "render.yaml"),
         _required_file_check(root, "scripts/00631l_export_static_data.cmd"),
         _required_file_check(root, "scripts/00631l_build_pages_static.cmd"),
         _required_file_check(root, "scripts/00631l_backend_prod_check.cmd"),
@@ -161,6 +164,32 @@ def _data_persistence_check(env: dict[str, str]) -> dict[str, Any]:
             mode=mode,
         )
     return _check("data_persistence", "PASS", "ok", dataDir=data_dir, mode=mode)
+
+
+def _render_disk_check(root: Path, relative_path: str) -> dict[str, Any]:
+    path = root / relative_path
+    if not path.is_file():
+        return _check(
+            f"{relative_path}:disk",
+            "WARN",
+            f"{relative_path} is missing; Render disk template cannot be checked.",
+        )
+    text = path.read_text(encoding="utf-8")
+    missing: list[str] = []
+    if "disk:" not in text:
+        missing.append("disk")
+    if "mountPath: /data/00631l" not in text:
+        missing.append("mountPath=/data/00631l")
+    if "sizeGB:" not in text:
+        missing.append("sizeGB")
+    if missing:
+        return _check(
+            f"{relative_path}:disk",
+            "WARN",
+            f"{relative_path} should define a persistent disk ({', '.join(missing)} missing).",
+            missing=missing,
+        )
+    return _check(f"{relative_path}:disk", "PASS", "ok")
 
 
 def _required_file_check(root: Path, relative_path: str) -> dict[str, Any]:

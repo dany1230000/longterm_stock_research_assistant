@@ -23,7 +23,7 @@ https://dany1230000.github.io
 5. 掛載 persistent volume 到 `/data/00631l`。
 6. 設定 `00631L_DATA_DIR=/data/00631l`。
 7. 設定 `00631L_DATA_PERSISTENCE_MODE=persistent`。
-8. 部署 `backend\Dockerfile`。
+8. Render 可用 repo root `render.yaml` Blueprint，或手動用 `backend\Dockerfile` 建立 web service。
 9. 用 `/health` 和 `/ready` 檢查狀態。
 10. 用 public backend URL 重新 build frontend。
 
@@ -155,6 +155,17 @@ ALLOWED_ORIGINS=https://dany1230000.github.io
 operations/status 會顯示 persistence WARN。這不會阻止 app 開啟，但 history/report/export/backup 不適合長期保存。
 
 如果 `/ready` 顯示資料目錄可寫入，但 `scripts\00631l_public_maintenance_status.cmd --soft-fail` 顯示 `publicPersistenceMarkerFresh=true` 且 ETF history `readyCount` 很低，代表公開後端可能剛拿到新的暫存資料夾。這時不要繼續 public ETF catalog batches；先確認平台 persistent disk / volume 是否真的掛在 `00631L_DATA_DIR`。
+
+Render Blueprint 模板在 repo root `render.yaml` 和 `deploy\render.yaml` 都設定：
+
+```yaml
+disk:
+  name: 00631l-data
+  mountPath: /data/00631l
+  sizeGB: 1
+```
+
+如果既有 Render service 不是用 Blueprint 建立，仍需要在 Render dashboard 手動新增 persistent disk，mount path 必須同樣是 `/data/00631l`。
 
 ### intraday unavailable
 

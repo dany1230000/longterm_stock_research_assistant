@@ -328,6 +328,7 @@ def _required_files_check() -> dict[str, Any]:
         "deploy/Caddyfile",
         "deploy/nginx.example.conf",
         "deploy/render.yaml",
+        "render.yaml",
         "backend/Dockerfile",
         "backend/app/analysis.py",
         "backend/app/backtest.py",

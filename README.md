@@ -1210,3 +1210,7 @@ commands and asks you to verify the hosted persistent volume first.
 v4.93 refreshes backend release metadata so `/health`, deploy drift, and deploy
 wait checks target the current release tag instead of the previous public marker
 maintenance tag.
+
+v4.94 adds Render persistent disk Blueprint configuration. Both `render.yaml`
+and `deploy\render.yaml` now mount `/data/00631l`, and public config checks
+verify the disk fields before release.
