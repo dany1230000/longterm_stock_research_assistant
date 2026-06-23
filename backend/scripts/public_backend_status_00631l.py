@@ -168,7 +168,13 @@ def _assess_endpoint(
     if endpoint.name == "ready":
         ready_status = str(payload.get("overallStatus") or "")
         if ready_status == "FAIL":
-            failures.extend(str(item) for item in payload.get("failures") or [])
+            ready_failures = [str(item) for item in payload.get("failures") or []]
+            if ready_failures and all(
+                _is_read_only_persistence_failure(item) for item in ready_failures
+            ):
+                warnings.extend(ready_failures)
+            else:
+                failures.extend(ready_failures)
         elif ready_status == "WARN":
             warnings.extend(str(item) for item in payload.get("warnings") or [])
     elif endpoint.name == "history_status":
@@ -266,6 +272,16 @@ def _summary(
             etf_history.get("validationFailureCount") or 0
         ),
     }
+
+
+def _is_read_only_persistence_failure(message: str) -> bool:
+    lowered = message.lower()
+    return (
+        "data_dir_writable" in lowered
+        or "data_persistence" in lowered
+        or "data directory is not writable" in lowered
+        or "00631l_data_dir is not writable" in lowered
+    )
 
 
 def _request_json(

@@ -1143,3 +1143,8 @@ v4.78 adds `scripts\00631l_wait_public_deploy.cmd`, a read-only helper that
 polls public deploy drift until the public backend exposes the expected release
 tag. Run it after pushing backend releases and before continuing public ETF
 history catalog batches.
+
+v4.79 keeps `scripts\00631l_public_backend_status.cmd` useful when a public
+host can serve static/seed data but its data directory is not writable. The
+script reports that state as WARN for read-only observation while `/ready`
+continues to flag the deployment persistence problem.

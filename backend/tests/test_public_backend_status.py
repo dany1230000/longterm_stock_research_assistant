@@ -139,6 +139,46 @@ class PublicBackendStatusTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["minEtfReadyCount"], 200)
         self.assertEqual(payload["summary"]["minPriceHistoryRows"], 2800)
 
+    def test_status_warns_for_read_only_public_data_dir_failures(self) -> None:
+        def requester(
+            base_url: str,
+            endpoint: PublicStatusEndpoint,
+            timeout_seconds: int,
+        ) -> dict:
+            if endpoint.name == "health":
+                return {"httpStatus": 200, "payload": {"status": "ok"}}
+            if endpoint.name == "ready":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "overallStatus": "FAIL",
+                        "warnings": [],
+                        "failures": [
+                            "data_dir_writable: 00631L_DATA_DIR is not writable.",
+                            "data_persistence: Data directory is not writable; history/report/export persistence may fail.",
+                        ],
+                    },
+                }
+            if endpoint.name == "history_status":
+                return {"httpStatus": 200, "payload": {"rowCount": 2829}}
+            if endpoint.name == "etf_history_status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"readyCount": 15, "validationFailureCount": 0},
+                }
+            return {"httpStatus": 200, "payload": {}}
+
+        payload = run_public_backend_status(
+            base_url="https://example.com",
+            requester=requester,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["failures"], [])
+        self.assertTrue(
+            any("data directory" in item.lower() for item in payload["warnings"])
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
