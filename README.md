@@ -1206,3 +1206,7 @@ just created.
 v4.92 treats a very fresh public persistence marker plus low ETF readyCount as a
 batch blocker. In that state, maintenance output hides public ETF catalog batch
 commands and asks you to verify the hosted persistent volume first.
+
+v4.93 refreshes backend release metadata so `/health`, deploy drift, and deploy
+wait checks target the current release tag instead of the previous public marker
+maintenance tag.
