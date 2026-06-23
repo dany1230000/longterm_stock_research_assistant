@@ -1161,3 +1161,7 @@ maintenance guidance.
 v4.82 keeps successful public catalog batch payloads consistent with that
 guidance: next-offset action items now include `--batch-size 1 --max-batches 1
 --soft-fail`.
+
+v4.83 blocks catalog batch suggestions whenever public backend readiness is
+failing. Fix public readiness or persistence first, then continue ETF catalog
+history maintenance.

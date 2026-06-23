@@ -118,6 +118,7 @@ def build_public_maintenance_status(
         public_ready_count=public_summary.get("etfHistoryReadyCount"),
     )
     has_persistence_warning = _has_public_persistence_warning(public_status)
+    has_readiness_blocker = _has_public_readiness_blocker(public_status)
     catalog_regression_warning = (
         [
             "Public ETF ready count regressed from the last batch state; "
@@ -132,10 +133,11 @@ def build_public_maintenance_status(
             *list(public_status.get("actionItems") or []),
             *list(freshness.get("actionItems") or []),
             *_persistence_action_items(has_persistence_warning),
+            *_readiness_action_items(has_readiness_blocker),
             *_catalog_batch_regression_action_items(ready_regression),
             *(
                 []
-                if has_persistence_warning
+                if has_persistence_warning or has_readiness_blocker
                 else _catalog_batch_action_items(
                     catalog_batch_state,
                     public_ready_count=public_summary.get("etfHistoryReadyCount"),
@@ -268,11 +270,26 @@ def _has_public_persistence_warning(public_status: dict[str, Any]) -> bool:
     )
 
 
+def _has_public_readiness_blocker(public_status: dict[str, Any]) -> bool:
+    summary = public_status.get("summary")
+    if not isinstance(summary, dict):
+        return False
+    return str(summary.get("readiness") or "").upper() == "FAIL"
+
+
 def _persistence_action_items(has_persistence_warning: bool) -> list[str]:
     if not has_persistence_warning:
         return []
     return [
         "Fix public backend persistent data volume before running ETF catalog batches."
+    ]
+
+
+def _readiness_action_items(has_readiness_blocker: bool) -> list[str]:
+    if not has_readiness_blocker:
+        return []
+    return [
+        "Fix public backend readiness before running ETF catalog batches."
     ]
 
 

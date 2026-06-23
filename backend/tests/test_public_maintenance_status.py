@@ -183,6 +183,44 @@ class PublicMaintenanceStatusTests(unittest.TestCase):
             any("00631l_public_etf_catalog_batches" in item for item in payload["actionItems"])
         )
 
+    def test_readiness_failure_blocks_catalog_batch_action_items(self) -> None:
+        payload = build_public_maintenance_status(
+            deploy_drift={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},
+            public_status={
+                "overallStatus": "WARN",
+                "warnings": [],
+                "failures": [],
+                "summary": {
+                    "readiness": "FAIL",
+                    "etfHistoryReadyCount": 15,
+                    "minEtfReadyCount": 200,
+                },
+            },
+            freshness={
+                "overallStatus": "WARN",
+                "warnings": ["public backend ETF history ready count is lower"],
+                "failures": [],
+                "summary": {"publicEtfReadyLagVsStatic": 213},
+            },
+            catalog_batch_state={
+                "updatedAt": "2026-06-23T02:00:00+00:00",
+                "overallStatus": "FAIL",
+                "catalogRowCount": 344,
+                "finalReadyCount": 15,
+                "nextOffset": 25,
+                "failedOffset": 25,
+            },
+            checked_at="2026-06-23T00:00:00+00:00",
+        )
+
+        self.assertIn(
+            "Fix public backend readiness before running ETF catalog batches.",
+            payload["actionItems"],
+        )
+        self.assertFalse(
+            any("00631l_public_etf_catalog_batches" in item for item in payload["actionItems"])
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
