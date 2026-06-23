@@ -114,6 +114,8 @@ v4.61 adds `scripts\00631l_public_etf_catalog_batches.cmd`, which plans catalog 
 
 v4.62 hardens that batch runner for hosted backend restarts: failed batches keep the same `--start-offset` in the next action item, and ready-count regressions are reported clearly.
 
+v4.63 adds `scripts\00631l_public_deploy_drift.cmd`, a read-only check that warns when the public backend is still running an older release tag than the current local release metadata.
+
 Next direction is tracked in `docs\00631l_next_direction.md`: data trust, public operations, mobile UX, and analysis quality.
 
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
