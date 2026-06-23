@@ -120,6 +120,8 @@ v4.64 makes `scripts\00631l_public_etf_catalog_batches.cmd` resumable with `--re
 
 v4.65 adds readiness floors to `scripts\00631l_public_backend_status.cmd`, for example `--min-etf-ready-count 200`, so hosted backend history regressions are visible as `WARN`.
 
+v4.66 adds `scripts\00631l_public_maintenance_status.cmd`, a read-only public maintenance summary that combines deploy drift, readiness floors, freshness, and action items.
+
 Next direction is tracked in `docs\00631l_next_direction.md`: data trust, public operations, mobile UX, and analysis quality.
 
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.

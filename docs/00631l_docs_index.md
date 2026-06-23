@@ -102,6 +102,7 @@ This is the main entry point for 00631L lab documentation.
 - Public deploy drift check v4.63: `docs\00631l_v4_63_public_deploy_drift.md`
 - Public catalog batch resume v4.64: `docs\00631l_v4_64_public_catalog_batch_resume.md`
 - Public ready floor v4.65: `docs\00631l_v4_65_public_ready_floor.md`
+- Public maintenance status v4.66: `docs\00631l_v4_66_public_maintenance_status.md`
 - Next direction roadmap: `docs\00631l_next_direction.md`
 - App Store release plan: `docs\00631l_app_store_release_plan.md`
 - Static-public v3.1 summary: `docs\00631l_v3_1_static_public_summary.md`
