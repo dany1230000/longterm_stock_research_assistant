@@ -1112,3 +1112,8 @@ payloads, making HTTP 502 and timeout reasons visible without reading each step.
 
 v4.71 stops public ETF catalog batches after the first failed offset by default;
 use `--continue-on-failure` only for deliberate diagnostic runs.
+
+v4.72 flags public ETF history ready-count regression in
+`scripts\00631l_public_maintenance_status.cmd`. If the current public backend
+ready count is lower than the latest local batch state, check the persistent
+data volume and redeploy status before continuing catalog batches.

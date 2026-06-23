@@ -113,11 +113,24 @@ def build_public_maintenance_status(
         if isinstance(deploy_drift.get("summary"), dict)
         else {}
     )
+    ready_regression = _catalog_batch_ready_regression(
+        catalog_batch_state,
+        public_ready_count=public_summary.get("etfHistoryReadyCount"),
+    )
+    catalog_regression_warning = (
+        [
+            "Public ETF ready count regressed from the last batch state; "
+            "check Render deploy persistence before running more batches."
+        ]
+        if ready_regression > 0
+        else []
+    )
     action_items = _dedupe(
         [
             *list(deploy_drift.get("actionItems") or []),
             *list(public_status.get("actionItems") or []),
             *list(freshness.get("actionItems") or []),
+            *_catalog_batch_regression_action_items(ready_regression),
             *_catalog_batch_action_items(
                 catalog_batch_state,
                 public_ready_count=public_summary.get("etfHistoryReadyCount"),
@@ -125,6 +138,7 @@ def build_public_maintenance_status(
             ),
         ]
     )
+    warnings = _dedupe([*warnings, *catalog_regression_warning])
     overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
     catalog_summary = _catalog_batch_summary(catalog_batch_state)
     return {
@@ -146,6 +160,7 @@ def build_public_maintenance_status(
             "staticCoverageEnd": freshness_summary.get("staticCoverageEnd"),
             "publicPriceHistoryRows": public_summary.get("priceHistoryRows"),
             **catalog_summary,
+            "catalogBatchReadyRegression": ready_regression,
         },
         "steps": steps,
         "warnings": warnings,
@@ -212,6 +227,29 @@ def _catalog_batch_action_items(
             f"--start-offset {ready_count} --soft-fail."
         ]
     return []
+
+
+def _catalog_batch_ready_regression(
+    state: dict[str, Any] | None,
+    *,
+    public_ready_count: Any = None,
+) -> int:
+    if not state:
+        return 0
+    try:
+        final_ready_count = int(state.get("finalReadyCount"))
+        current_ready_count = int(public_ready_count)
+    except (TypeError, ValueError):
+        return 0
+    return max(0, final_ready_count - current_ready_count)
+
+
+def _catalog_batch_regression_action_items(ready_regression: int) -> list[str]:
+    if ready_regression <= 0:
+        return []
+    return [
+        "Check public backend persistent data volume and redeploy status before continuing ETF catalog batches."
+    ]
 
 
 def _step_from_payload(name: str, payload: dict[str, Any]) -> dict[str, Any]:

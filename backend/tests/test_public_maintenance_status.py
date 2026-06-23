@@ -115,6 +115,37 @@ class PublicMaintenanceStatusTests(unittest.TestCase):
             payload["actionItems"],
         )
 
+    def test_warns_when_public_ready_count_regresses_below_last_batch_state(self) -> None:
+        payload = build_public_maintenance_status(
+            deploy_drift={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},
+            public_status={
+                "overallStatus": "WARN",
+                "warnings": ["ETF history ready count below minimum 200: 15"],
+                "failures": [],
+                "summary": {"etfHistoryReadyCount": 15, "minEtfReadyCount": 200},
+            },
+            freshness={"overallStatus": "PASS", "warnings": [], "failures": [], "summary": {}},
+            catalog_batch_state={
+                "updatedAt": "2026-06-23T02:00:00+00:00",
+                "overallStatus": "WARN",
+                "catalogRowCount": 344,
+                "finalReadyCount": 27,
+                "nextOffset": 25,
+                "failedOffset": None,
+            },
+            checked_at="2026-06-23T00:00:00+00:00",
+        )
+
+        self.assertEqual(payload["summary"]["catalogBatchReadyRegression"], 12)
+        self.assertIn(
+            "Public ETF ready count regressed from the last batch state; check Render deploy persistence before running more batches.",
+            payload["warnings"],
+        )
+        self.assertIn(
+            "Check public backend persistent data volume and redeploy status before continuing ETF catalog batches.",
+            payload["actionItems"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
