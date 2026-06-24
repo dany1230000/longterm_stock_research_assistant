@@ -1466,3 +1466,7 @@ history/backtest flow.
 v5.53 strengthens the top-left ETF selector. Search rows now show capability
 badges for history, backtest, comparison, AI context, and live NAV scope before
 the user switches symbols.
+
+v5.54 clarifies ETF comparison as a user-selected basket. The history/backtest
+page now shows common coverage, minimum row count, and source status for the
+selected comparison set.

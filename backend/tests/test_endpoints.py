@@ -40,10 +40,10 @@ class EndpointTests(unittest.TestCase):
         self.assertIn("serverTime", payload)
         self.assertEqual(payload["sourceContract"], "00631l_backend_health")
         self.assertNotEqual(payload["appVersion"], "3.4-live-backend")
-        self.assertEqual(payload["appVersion"], "5.53-etf-selector-confidence")
+        self.assertEqual(payload["appVersion"], "5.54-comparison-basket-context")
         self.assertEqual(
             payload["release"]["tag"],
-            "00631l-lab-v5.53-etf-selector-confidence",
+            "00631l-lab-v5.54-comparison-basket-context",
         )
         self.assertEqual(payload["release"]["version"], payload["appVersion"])
         self.assertIn("tag", payload["release"])

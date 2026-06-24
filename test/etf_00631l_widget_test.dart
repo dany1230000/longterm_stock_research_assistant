@@ -745,6 +745,13 @@ void main() {
     expect(find.text('比較檔數'), findsOneWidget);
     expect(find.text('代表'), findsWidgets);
     expect(find.text('高股息'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-basket-context')),
+      findsOneWidget,
+    );
+    expect(find.text('自選 basket 資料檢查'), findsOneWidget);
+    expect(find.textContaining('共同資料區間'), findsOneWidget);
+    expect(find.textContaining('固定基準'), findsOneWidget);
     final initialComparisonSummary = tester.widget<Text>(
       find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
     );
@@ -842,6 +849,8 @@ void main() {
     await tester.tap(clearButton);
     await tester.pumpAndSettle();
     expect(selectedLabel().data, equals('尚未選擇比較 ETF'));
+    expect(find.textContaining('basket empty'), findsOneWidget);
+    expect(find.textContaining('尚未選擇比較 ETF'), findsWidgets);
 
     final chip0050 = find.byKey(const ValueKey('00631l-etf-compare-chip-0050'));
     await tester.ensureVisible(chip0050);

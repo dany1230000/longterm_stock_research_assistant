@@ -358,6 +358,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Compact selected ETF overview: `docs\00631l_v5_51_compact_selected_etf_overview.md`
 - Selected ETF overview dedup: `docs\00631l_v5_52_selected_etf_overview_dedup.md`
 - ETF selector confidence: `docs\00631l_v5_53_etf_selector_confidence.md`
+- Comparison basket context: `docs\00631l_v5_54_comparison_basket_context.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

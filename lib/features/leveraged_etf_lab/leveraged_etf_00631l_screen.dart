@@ -5598,6 +5598,7 @@ class _EtfHistoryComparisonPanelState
       histories: mergedHistories,
       metrics: usableMetrics,
     );
+    final basketContext = _comparisonBasketContext(usableMetrics);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -5738,6 +5739,8 @@ class _EtfHistoryComparisonPanelState
               ),
         ),
         const SizedBox(height: 10),
+        _ComparisonBasketContextCard(basketContext: basketContext),
+        const SizedBox(height: 10),
         if (usableMetrics.isEmpty)
           const KeyedSubtree(
             key: ValueKey('00631l-etf-comparison-return-chart'),
@@ -5868,6 +5871,64 @@ class _ComparisonSelectionChips extends StatelessWidget {
             visualDensity: VisualDensity.compact,
           ),
       ],
+    );
+  }
+}
+
+class _ComparisonBasketContextCard extends StatelessWidget {
+  const _ComparisonBasketContextCard({required this.basketContext});
+
+  final _EtfComparisonBasketContext basketContext;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      key: const ValueKey('00631l-etf-comparison-basket-context'),
+      elevation: 0,
+      color: theme.colorScheme.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.rule_folder_outlined,
+                  color: theme.colorScheme.primary,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '自選 basket 資料檢查',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              basketContext.explanation,
+              key: const ValueKey('00631l-etf-comparison-basket-explanation'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _StatusWrap(labels: basketContext.labels),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -9843,6 +9904,8 @@ class _EtfComparisonMetric {
     required this.code,
     required this.name,
     required this.rowCount,
+    required this.coverageStart,
+    required this.coverageEnd,
     required this.latestClose,
     required this.totalReturnPct,
     required this.annualizedReturnPct,
@@ -9854,12 +9917,24 @@ class _EtfComparisonMetric {
   final String code;
   final String name;
   final int rowCount;
+  final DateTime? coverageStart;
+  final DateTime? coverageEnd;
   final double? latestClose;
   final double? totalReturnPct;
   final double? annualizedReturnPct;
   final double? maxDrawdownPct;
   final double? annualizedVolatilityPct;
   final String sourceStatusLabel;
+}
+
+class _EtfComparisonBasketContext {
+  const _EtfComparisonBasketContext({
+    required this.labels,
+    required this.explanation,
+  });
+
+  final List<String> labels;
+  final String explanation;
 }
 
 class _ComparisonGroup extends StatelessWidget {
@@ -11388,6 +11463,8 @@ _EtfComparisonMetric _comparisonMetricForHistory({
     code: code.isEmpty ? 'ETF' : code,
     name: _historyDisplayName(history),
     rowCount: summary.rowCount,
+    coverageStart: summary.coverageStart,
+    coverageEnd: summary.coverageEnd,
     latestClose: summary.latest?.performanceClose,
     totalReturnPct: performance.totalReturnPct,
     annualizedReturnPct: performance.annualizedReturnPct,
@@ -11451,6 +11528,60 @@ Set<String> _presetComparisonCodes(
     for (final metric in availableMetrics)
       if (_comparisonFilterIncludes(filter, metric.code)) metric.code,
   }.take(5).toSet();
+}
+
+_EtfComparisonBasketContext _comparisonBasketContext(
+  List<_EtfComparisonMetric> metrics,
+) {
+  if (metrics.isEmpty) {
+    return const _EtfComparisonBasketContext(
+      labels: [
+        'basket empty',
+        'common range unavailable',
+        'min rows -',
+      ],
+      explanation: '尚未選擇比較 ETF；勾選 1-5 檔後，圖表會用同一期間起點重算百分比，沒有固定比較基準。',
+    );
+  }
+
+  DateTime? commonStart;
+  DateTime? commonEnd;
+  var minRows = metrics.first.rowCount;
+  final statuses = <String>{};
+  for (final metric in metrics) {
+    final start = metric.coverageStart;
+    final end = metric.coverageEnd;
+    if (start != null && (commonStart == null || start.isAfter(commonStart))) {
+      commonStart = start;
+    }
+    if (end != null && (commonEnd == null || end.isBefore(commonEnd))) {
+      commonEnd = end;
+    }
+    if (metric.rowCount < minRows) {
+      minRows = metric.rowCount;
+    }
+    if (metric.sourceStatusLabel.trim().isNotEmpty) {
+      statuses.add(metric.sourceStatusLabel.trim());
+    }
+  }
+  final hasCommonRange = commonStart != null &&
+      commonEnd != null &&
+      !commonStart.isAfter(commonEnd);
+  final statusLabel = statuses.isEmpty ? 'unknown' : statuses.take(3).join('/');
+  final codes = metrics.map((metric) => metric.code).join(' / ');
+  return _EtfComparisonBasketContext(
+    labels: [
+      'basket $codes',
+      hasCommonRange
+          ? 'common ${_dateOrDash(commonStart)} - ${_dateOrDash(commonEnd)}'
+          : 'common range unavailable',
+      'min rows ${formatInteger(minRows)}',
+      'status $statusLabel',
+    ],
+    explanation: hasCommonRange
+        ? '目前 basket 會用共同資料區間重算百分比；這是自選比較，不把任何 ETF 設成固定基準。'
+        : '目前 basket 的歷史區間沒有完整重疊；請調整 ETF 組合或確認 price history 匯入狀態。',
+  );
 }
 
 List<EtfPriceHistory> _comparisonChartHistories({
