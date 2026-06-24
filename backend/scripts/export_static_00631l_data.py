@@ -22,6 +22,7 @@ from backend.app.etf_catalog import (  # noqa: E402
 from backend.app.etf_price_history import (  # noqa: E402
     DEFAULT_ETF_HISTORY_CODES,
     EtfPriceHistoryStore,
+    catalog_codes,
     parse_code_list,
 )
 from backend.app.fetcher import fetch_text  # noqa: E402
@@ -168,7 +169,11 @@ def main() -> int:
     parser.add_argument(
         "--multi-etf-codes",
         default=",".join(DEFAULT_ETF_HISTORY_CODES),
-        help="Selected ETF codes to include in static public price-history files.",
+        help=(
+            "Selected ETF codes to include in static public price-history files. "
+            "Use all-local for ready local histories, or all-catalog to include "
+            "every TWSE ETF catalog code in the readiness index."
+        ),
     )
     parser.add_argument(
         "--etf-price-history-dir",
@@ -264,6 +269,7 @@ def main() -> int:
     seed_codes = (
         list(DEFAULT_ETF_HISTORY_CODES)
         if _is_all_local_codes_mode(args.multi_etf_codes)
+        or _is_all_catalog_codes_mode(args.multi_etf_codes)
         else parse_code_list(args.multi_etf_codes)
     )
     _merge_etf_price_history_seed_if_needed(
@@ -275,6 +281,7 @@ def main() -> int:
     multi_etf_codes = _resolve_multi_etf_codes(
         args.multi_etf_codes,
         store=etf_price_history_store,
+        catalog_payload=etf_catalog_payload,
         warnings=warnings,
     )
 
@@ -488,10 +495,21 @@ def _resolve_multi_etf_codes(
     value: str,
     *,
     store: EtfPriceHistoryStore,
+    catalog_payload: dict[str, object] | None = None,
     warnings: list[str],
 ) -> list[str]:
     mode = str(value or "").strip().lower()
     if not _is_all_local_codes_mode(value):
+        if _is_all_catalog_codes_mode(value):
+            codes = catalog_codes(catalog_payload or {}, limit=0)
+            store_codes = store.codes()
+            merged = list(dict.fromkeys(codes + store_codes))
+            warnings.append(
+                "multiEtfCodesResolved="
+                f"{mode}; catalogCodes={len(codes)}; localCodes={len(store_codes)}; "
+                f"exportCodes={len(merged)}"
+            )
+            return merged
         return parse_code_list(value)
 
     fetched_at = utc_now_iso()
@@ -514,6 +532,10 @@ def _resolve_multi_etf_codes(
 
 def _is_all_local_codes_mode(value: str) -> bool:
     return str(value or "").strip().lower() in {"all-local", "local", "*"}
+
+
+def _is_all_catalog_codes_mode(value: str) -> bool:
+    return str(value or "").strip().lower() in {"all-catalog", "catalog"}
 
 
 def _build_release_metadata() -> dict[str, str]:

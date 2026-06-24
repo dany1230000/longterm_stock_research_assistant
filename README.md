@@ -1530,3 +1530,8 @@ old.
 v5.68 makes compact maintenance output shorter. `--summary-only` import and
 static export logs keep the status numbers but trim sample rows and long warning
 text, so daily checks stay readable.
+
+v5.69 makes the static ETF price-history index catalog-complete. GitHub Pages
+static export now includes every TWSE ETF catalog code in the readiness index;
+symbols without saved price history are shown as unavailable instead of being
+hidden from the denominator.

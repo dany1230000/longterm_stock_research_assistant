@@ -21,6 +21,7 @@ from backend.scripts.export_static_00631l_data import (
     _merge_etf_price_history_seed_if_needed,
     _merge_seed_if_needed,
     _prepare_price_history_update_start,
+    _resolve_multi_etf_codes,
 )
 
 
@@ -282,6 +283,56 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             )
             self.assertEqual(price["code"], "0050")
             self.assertEqual(price["sourceStatus"], "static_official")
+
+    def test_static_export_index_includes_catalog_missing_history(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            store.save_points(rows)
+            etf_store = EtfPriceHistoryStore(root / "etf_history")
+            etf_store.save_points("0050", rows)
+
+            result = export_static_00631l_data(
+                output_dir=root / "static",
+                price_history_store=store,
+                etf_price_history_store=etf_store,
+                etf_price_history_codes=["0050", "00999"],
+                etf_catalog_payload=_etf_catalog_payload(),
+                strict=True,
+                minimum_catalog_row_count=2,
+            )
+            index = json.loads(
+                (root / "static" / "etf_price_history_index.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+
+        self.assertEqual(result["overallStatus"], "PASS")
+        self.assertEqual(result["etfPriceHistoryRowCount"], 2)
+        self.assertEqual(result["etfPriceHistoryReadyCount"], 1)
+        self.assertEqual(result["etfPriceHistoryCoverageTierCounts"]["unavailable"], 1)
+        self.assertEqual(index["rowCount"], 2)
+        self.assertEqual(index["readyCount"], 1)
+        self.assertEqual(index["items"][1]["code"], "00999")
+        self.assertEqual(index["items"][1]["coverageTier"], "unavailable")
+
+    def test_static_export_all_catalog_resolves_catalog_codes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            etf_store = EtfPriceHistoryStore(Path(temp_dir) / "etf_history")
+            etf_store.save_points("00757", _stock_day_fixture_points("00757"))
+            warnings: list[str] = []
+
+            codes = _resolve_multi_etf_codes(
+                "all-catalog",
+                store=etf_store,
+                catalog_payload=_etf_catalog_payload(),
+                warnings=warnings,
+            )
+
+        self.assertEqual(codes[:2], ["00631L", "0050"])
+        self.assertIn("00757", codes)
+        self.assertTrue(any("multiEtfCodesResolved=all-catalog" in item for item in warnings))
 
     def test_static_status_reads_etf_tier_counts_from_index_fallback(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -739,6 +790,16 @@ def _stock_day_fixture() -> str:
             ],
         }
     )
+
+
+def _stock_day_fixture_points(code: str) -> list[dict[str, object]]:
+    return [
+        {
+            **row,
+            "code": code,
+        }
+        for row in parse_twse_stock_day(_stock_day_fixture(), source_url=f"fixture://{code}")
+    ]
 
 
 def _stock_day_override_fixture() -> str:
