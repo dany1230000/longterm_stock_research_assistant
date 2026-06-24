@@ -1289,3 +1289,7 @@ v5.12 makes ETF history comparison read as a user-selected basket. The
 history/backtest page now labels the comparison group as `目前 basket`, keeps
 the 1-5 ETF limit clear, and avoids implying that every comparison is fixed to
 00631L.
+
+v5.13 makes selected ETF history quality more explicit. The history/backtest
+quality card now labels split-adjustment status as `分割調整`, distinguishing
+split-adjusted, adjusted-price-available, and unadjusted histories.

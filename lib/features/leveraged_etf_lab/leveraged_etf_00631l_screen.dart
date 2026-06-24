@@ -4352,8 +4352,11 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
         ? '${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}'
         : '尚無';
     final priceField = summary.hasAdjustedClose ? 'adjustedClose' : 'close';
-    final adjustmentLabel =
-        summary.hasAdjustedClose ? '調整價狀態：使用調整價' : '調整價狀態：原始收盤';
+    final splitAdjustmentLabel = summary.hasNonUnitAdjustment
+        ? '已套用分割調整'
+        : summary.hasAdjustedClose
+            ? '調整價可用'
+            : '未套用';
     final coverageLabel = summary.isCompleteFromListing ? '完整上市日起' : '部分區間';
 
     return Card(
@@ -4409,6 +4412,7 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
                 ),
                 _CompactTextBadge(label: coverageLabel),
                 _CompactTextBadge(label: '價格欄位 $priceField'),
+                _CompactTextBadge(label: '分割調整 $splitAdjustmentLabel'),
               ],
             ),
             const SizedBox(height: 8),
@@ -4444,8 +4448,8 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
                       width: itemWidth,
                       child: _SectionHeaderMetricChip(
                         metric: _SectionHeaderMetric(
-                          label: '調整價狀態',
-                          value: adjustmentLabel.replaceFirst('調整價狀態：', ''),
+                          label: '分割調整',
+                          value: splitAdjustmentLabel,
                         ),
                       ),
                     ),
@@ -4464,7 +4468,7 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '$adjustmentLabel；回測只使用目前 coverage 內的已載入收盤資料，回測不代表未來表現。',
+              '價格欄位 $priceField；分割調整 $splitAdjustmentLabel；回測只使用目前 coverage 內的已載入收盤資料，回測不代表未來表現。',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 height: 1.35,

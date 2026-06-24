@@ -590,7 +590,8 @@ void main() {
     expect(find.text('0050 歷史資料'), findsOneWidget);
     expect(find.text('3 筆'), findsWidgets);
     expect(find.textContaining('2025/06/03 - 2026/06/03'), findsWidgets);
-    expect(find.text('調整價狀態'), findsOneWidget);
+    expect(find.text('分割調整'), findsWidgets);
+    expect(find.text('調整價可用'), findsWidgets);
     expect(find.byKey(const ValueKey('00631l-backtest-view')), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-etf-history-comparison')),
@@ -743,8 +744,8 @@ void main() {
     expect(find.text('最新交易日'), findsOneWidget);
     expect(find.text('日變動'), findsOneWidget);
     expect(find.text('回撤'), findsOneWidget);
-    expect(find.textContaining('價格欄位 close'), findsWidgets);
-    expect(find.textContaining('分割調整 未套用'), findsWidgets);
+    expect(find.textContaining('價格欄位 adjustedClose'), findsWidgets);
+    expect(find.textContaining('分割調整 調整價可用'), findsWidgets);
     expect(find.textContaining('2026/06/03'), findsWidgets);
     _expectNoTradingActionText();
   });
@@ -1060,6 +1061,8 @@ class _PriceHistoryRepository extends Mock00631LRepository {
         high: profile.$2 * 1.01,
         low: profile.$2 * 0.99,
         close: profile.$2,
+        adjustedClose: profile.$2,
+        adjustmentFactor: 1.0,
         volume: 1000000,
       ),
       EtfPriceHistoryPoint(
@@ -1068,6 +1071,8 @@ class _PriceHistoryRepository extends Mock00631LRepository {
         high: profile.$2 * 1.1,
         low: profile.$2 * 1.07,
         close: profile.$2 * 1.09,
+        adjustedClose: profile.$2 * 1.09,
+        adjustmentFactor: 1.0,
         volume: 1100000,
       ),
       EtfPriceHistoryPoint(
@@ -1076,6 +1081,8 @@ class _PriceHistoryRepository extends Mock00631LRepository {
         high: profile.$2 * 1.12,
         low: profile.$2 * 1.08,
         close: profile.$2 * 1.11,
+        adjustedClose: profile.$2 * 1.11,
+        adjustmentFactor: 1.0,
         volume: 1200000,
       ),
     ].take(limit).toList(growable: false);

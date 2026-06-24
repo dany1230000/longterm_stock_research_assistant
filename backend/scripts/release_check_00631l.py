@@ -346,6 +346,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_10_overview_data_readiness_ribbon.md",
         "docs/00631l_v5_11_symbol_search_history_coverage.md",
         "docs/00631l_v5_12_comparison_basket_labels.md",
+        "docs/00631l_v5_13_selected_history_split_status.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
