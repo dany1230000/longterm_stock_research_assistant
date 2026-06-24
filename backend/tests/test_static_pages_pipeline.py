@@ -21,6 +21,7 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--progress-every 25", workflow)
         self.assertIn("--max-coverage-age-days 7", workflow)
         self.assertIn("--multi-etf-codes all-catalog", workflow)
+        self.assertIn("fetch-depth: 0", workflow)
 
     def test_local_pages_build_broad_import_uses_seed_catalog(self) -> None:
         script = (ROOT / "scripts" / "00631l_build_pages_static.cmd").read_text(

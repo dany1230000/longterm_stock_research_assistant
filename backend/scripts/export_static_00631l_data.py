@@ -591,9 +591,19 @@ def _seed_codes_for_multi_etf_mode(value: str, *, seed_dir: Path) -> list[str]:
 
 
 def _build_release_metadata() -> dict[str, str]:
+    release_tag = (
+        os.getenv("00631L_BACKEND_RELEASE_TAG", "").strip()
+        or _git_exact_release_tag()
+        or settings.backend_release_tag
+    )
+    app_version = (
+        os.getenv("00631L_BACKEND_APP_VERSION", "").strip()
+        or _version_from_release_tag(release_tag)
+        or settings.backend_app_version
+    )
     return {
-        "appVersion": settings.backend_app_version,
-        "releaseTag": settings.backend_release_tag,
+        "appVersion": app_version,
+        "releaseTag": release_tag,
         "gitSha": (
             os.getenv("GITHUB_SHA", "").strip()
             or os.getenv("00631L_BACKEND_GIT_SHA", "").strip()
@@ -602,6 +612,30 @@ def _build_release_metadata() -> dict[str, str]:
         "buildTime": os.getenv("00631L_BACKEND_BUILD_TIME", "").strip()
         or datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
     }
+
+
+def _git_exact_release_tag() -> str:
+    try:
+        result = subprocess.run(
+            ["git", "tag", "--points-at", "HEAD", "--list", "00631l-lab-v*"],
+            text=True,
+            capture_output=True,
+            check=False,
+            cwd=ROOT,
+        )
+    except OSError:
+        return ""
+    if result.returncode != 0:
+        return ""
+    tags = sorted(line.strip() for line in result.stdout.splitlines() if line.strip())
+    return tags[-1] if tags else ""
+
+
+def _version_from_release_tag(release_tag: str) -> str:
+    prefix = "00631l-lab-v"
+    if release_tag.startswith(prefix):
+        return release_tag[len(prefix) :]
+    return ""
 
 
 def _git_head_sha() -> str:

@@ -23,10 +23,18 @@ from backend.scripts.export_static_00631l_data import (
     _prepare_price_history_update_start,
     _resolve_multi_etf_codes,
     _seed_codes_for_multi_etf_mode,
+    _version_from_release_tag,
 )
 
 
 class PriceHistoryAndBacktestTests(unittest.TestCase):
+    def test_release_tag_to_version_uses_exact_00631l_tag(self) -> None:
+        self.assertEqual(
+            _version_from_release_tag("00631l-lab-v5.72-release-metadata-tags"),
+            "5.72-release-metadata-tags",
+        )
+        self.assertEqual(_version_from_release_tag("other-tag"), "")
+
     def test_twse_stock_day_parser_maps_ohlcv(self) -> None:
         rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
 

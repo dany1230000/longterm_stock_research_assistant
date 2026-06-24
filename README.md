@@ -1543,3 +1543,8 @@ public ETF readiness stable when a workflow run gets partial TWSE responses.
 v5.71 cleans up static export warning semantics. Normal seed merges, update
 counts, and all-catalog resolution now appear as notes or structured counts;
 warnings are reserved for source, coverage, seed, or strict export issues.
+
+v5.72 fixes public release metadata. Static export can derive the app version
+from an exact `00631l-lab-v*` tag on `HEAD`, and the GitHub Pages workflow now
+checks out tags so the public marker can show the deployed release tag instead
+of an older default.
