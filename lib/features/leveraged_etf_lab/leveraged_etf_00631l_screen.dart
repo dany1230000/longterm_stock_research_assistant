@@ -2689,47 +2689,30 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
           border: Border.all(color: _marketBorderColor(context)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Text(
-                    '更新時間',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: _marketTextColor(context),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0,
-                        ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      selectedEtf.is00631L
-                          ? '每日內容物、盤中 NAV、TX 與歷史資料分開判讀'
-                          : '此 ETF 目前以 catalog 與歷史價格為主',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: _marketMutedTextColor(context),
-                            fontWeight: FontWeight.w700,
-                          ),
+              Text(
+                '更新時間',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
                     ),
-                  ),
-                ],
               ),
-              const SizedBox(height: 8),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-                    for (var index = 0; index < items.length; index++) ...[
-                      _OverviewClockChip(item: items[index]),
-                      if (index != items.length - 1) const SizedBox(width: 8),
+              const SizedBox(width: 8),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: Row(
+                    children: [
+                      for (var index = 0; index < items.length; index++) ...[
+                        _OverviewClockChip(item: items[index]),
+                        if (index != items.length - 1) const SizedBox(width: 6),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ],
@@ -2764,8 +2747,8 @@ class _OverviewClockChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 146,
-      padding: const EdgeInsets.all(8),
+      width: 118,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: _marketPanelAltColor(context),
         borderRadius: BorderRadius.circular(10),
@@ -2791,30 +2774,20 @@ class _OverviewClockChip extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             item.value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: _marketTextColor(context),
                   fontWeight: FontWeight.w900,
                   letterSpacing: 0,
                 ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             item.caption,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: _marketMutedTextColor(context),
-                  fontWeight: FontWeight.w700,
-                ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            item.status,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(

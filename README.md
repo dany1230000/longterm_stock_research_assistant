@@ -1371,3 +1371,7 @@ v5.31 tightens ETF data readiness wording. The app now labels the section as
 `ETF 資料庫狀態` and clarifies that history-ready ETFs support history,
 backtest, and comparison, but do not imply that official holdings history is
 complete.
+
+v5.32 makes the overview update-time area more compact. DAY, LIVE, TX, and HIS
+timestamps are shown in one horizontal ticker so the mobile first screen reaches
+the chart sooner.
