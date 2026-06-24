@@ -34,19 +34,31 @@ def main() -> int:
         timeout=args.timeout,
         min_row_count=args.min_row_count,
     )
-    deploy_status = run_pages_deploy_status_check(
-        repo=args.repo,
-        workflow=args.workflow,
-        branch=args.branch,
-        root_url=args.root_url,
-        static_base_url=args.static_base_url,
-        expected_sha=args.expected_sha,
-        timeout=args.timeout,
+    deploy_status = (
+        _skipped_deploy_status(
+            repo=args.repo,
+            workflow=args.workflow,
+            branch=args.branch,
+            expected_sha=(args.expected_sha or _git_head_sha()).strip(),
+            root_url=args.root_url,
+            static_base_url=args.static_base_url,
+        )
+        if args.skip_github_api
+        else run_pages_deploy_status_check(
+            repo=args.repo,
+            workflow=args.workflow,
+            branch=args.branch,
+            root_url=args.root_url,
+            static_base_url=args.static_base_url,
+            expected_sha=args.expected_sha,
+            timeout=args.timeout,
+        )
     )
     payload = build_public_pages_checkup(
         public_pages=public_pages,
         deploy_status=deploy_status,
         expected_sha=(args.expected_sha or _git_head_sha()).strip(),
+        github_api_mode="skipped" if args.skip_github_api else "checked",
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
     summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
@@ -57,7 +69,8 @@ def main() -> int:
         f"failures={payload['failureCount']} "
         f"rows={summary.get('staticRowCount') or 0} "
         f"coverage={summary.get('coverageStart') or '-'}..{summary.get('coverageEnd') or '-'} "
-        f"workflow={summary.get('latestRunStatus') or 'unknown'}/{summary.get('latestRunConclusion') or 'unknown'}"
+        f"workflow={summary.get('latestRunStatus') or 'unknown'}/{summary.get('latestRunConclusion') or 'unknown'} "
+        f"githubApi={summary.get('githubApiMode') or 'checked'}"
     )
     return 0 if args.soft_fail or payload["overallStatus"] != "FAIL" else 1
 
@@ -67,6 +80,7 @@ def build_public_pages_checkup(
     public_pages: dict[str, Any],
     deploy_status: dict[str, Any],
     expected_sha: str,
+    github_api_mode: str = "checked",
 ) -> dict[str, Any]:
     checked_at = _now_iso()
     deploy_summary = (
@@ -83,6 +97,8 @@ def build_public_pages_checkup(
     elif public_pages.get("overallStatus") == "WARN":
         warnings.extend(f"public_pages: {item}" for item in public_pages.get("warnings") or [])
 
+    github_api_skipped = github_api_mode == "skipped"
+
     if deploy_status.get("overallStatus") == "FAIL":
         failures.extend(f"deploy_status: {item}" for item in deploy_status.get("failures") or [])
         if not failures:
@@ -93,7 +109,10 @@ def build_public_pages_checkup(
     latest_sha = str(deploy_summary.get("latestRunHeadSha") or "")
     latest_status = str(deploy_summary.get("latestRunStatus") or "")
     latest_conclusion = str(deploy_summary.get("latestRunConclusion") or "")
-    if expected_sha and latest_sha and not latest_sha.startswith(expected_sha[:12]):
+    if github_api_skipped:
+        latest_status = "skipped"
+        latest_conclusion = "skipped"
+    elif expected_sha and latest_sha and not latest_sha.startswith(expected_sha[:12]):
         warnings.append(
             "latest Pages workflow does not match local HEAD: "
             f"workflow={latest_sha[:12]} local={expected_sha[:12]}"
@@ -111,11 +130,18 @@ def build_public_pages_checkup(
         warnings.append("static public data has fewer than 2 rows")
         action_items.append("Run scripts\\00631l_export_static_data.cmd --update before building Pages.")
 
+    if _looks_rate_limited(deploy_status):
+        action_items.append(
+            "GitHub API is rate-limited; use scripts\\00631l_public_pages_checkup.cmd --skip-github-api "
+            "for a public PWA/static-data check."
+        )
+
     return {
         "sourceContract": "00631l_public_pages_checkup",
         "checkedAt": checked_at,
         "overallStatus": "FAIL" if failures else "WARN" if warnings else "PASS",
         "summary": {
+            "githubApiMode": github_api_mode,
             "publicUrl": public_pages.get("rootUrl") or DEFAULT_ROOT_URL,
             "hashUrl": public_pages.get("hashUrl"),
             "staticBaseUrl": public_pages.get("staticBaseUrl") or DEFAULT_STATIC_BASE_URL,
@@ -136,6 +162,54 @@ def build_public_pages_checkup(
         "failureCount": len(_dedupe(failures)),
         "actionItems": _dedupe(action_items),
     }
+
+
+def _skipped_deploy_status(
+    *,
+    repo: str,
+    workflow: str,
+    branch: str,
+    expected_sha: str,
+    root_url: str,
+    static_base_url: str,
+) -> dict[str, Any]:
+    return {
+        "sourceContract": "00631l_pages_deploy_status",
+        "checkedAt": _now_iso(),
+        "repo": repo,
+        "workflow": workflow,
+        "branch": branch,
+        "dryRun": False,
+        "overallStatus": "PASS",
+        "checks": [
+            {
+                "name": "github_api",
+                "status": "PASS",
+                "message": "skipped by --skip-github-api",
+            }
+        ],
+        "summary": {
+            "expectedSha": expected_sha,
+            "latestRunStatus": "skipped",
+            "latestRunConclusion": "skipped",
+            "latestRunHeadSha": "",
+            "latestRunUrl": None,
+            "staticRowCount": None,
+            "coverageStart": None,
+            "coverageEnd": None,
+            "rootUrl": root_url,
+            "staticBaseUrl": static_base_url,
+        },
+        "warnings": [],
+        "failures": [],
+        "warningCount": 0,
+        "failureCount": 0,
+    }
+
+
+def _looks_rate_limited(payload: dict[str, Any]) -> bool:
+    text = json.dumps(payload, ensure_ascii=False).lower()
+    return "rate limit" in text or "api rate limit" in text or "http 403" in text
 
 
 def _dedupe(items: list[str]) -> list[str]:
@@ -182,6 +256,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--expected-sha", default=os.getenv("EXPECTED_00631L_GIT_SHA", ""))
     parser.add_argument("--timeout", type=float, default=15.0)
     parser.add_argument("--min-row-count", type=int, default=2800)
+    parser.add_argument(
+        "--skip-github-api",
+        "--public-only",
+        action="store_true",
+        help="Only check the public PWA/static data and skip GitHub workflow API calls.",
+    )
     parser.add_argument("--soft-fail", action="store_true")
     return parser.parse_args()
 

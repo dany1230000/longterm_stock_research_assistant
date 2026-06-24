@@ -1396,3 +1396,8 @@ finish and confirm the public PWA smoke check passes for the expected commit.
 v5.37 adds `scripts\00631l_public_pages_checkup.cmd`, a short daily check for
 the public phone app. It reports the public URL, static data rows and coverage,
 and latest GitHub Pages workflow state in one output.
+
+v5.38 makes the public Pages checkup rate-limit friendly. Daily public app
+checks can run with `scripts\00631l_public_pages_checkup.cmd --skip-github-api`
+to verify the public PWA and static data without consuming GitHub workflow API
+quota; release checks still keep one deploy-status step for post-push context.

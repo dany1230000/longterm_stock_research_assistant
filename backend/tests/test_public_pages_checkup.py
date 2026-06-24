@@ -14,6 +14,21 @@ class PublicPagesCheckupTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "PASS")
         self.assertEqual(payload["failureCount"], 0)
         self.assertEqual(payload["summary"]["staticRowCount"], 2835)
+        self.assertEqual(payload["summary"]["githubApiMode"], "checked")
+
+    def test_public_pages_checkup_skips_workflow_warnings_in_public_only_mode(self) -> None:
+        payload = build_public_pages_checkup(
+            public_pages=_public_pages("PASS"),
+            deploy_status=_deploy_status("PASS", "", "", ""),
+            expected_sha="abc123",
+            github_api_mode="skipped",
+        )
+
+        self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertEqual(payload["summary"]["githubApiMode"], "skipped")
+        self.assertEqual(payload["summary"]["latestRunStatus"], "skipped")
+        self.assertEqual(payload["summary"]["latestRunConclusion"], "skipped")
+        self.assertEqual(payload["warnings"], [])
 
     def test_public_pages_checkup_warns_when_workflow_is_not_complete(self) -> None:
         payload = build_public_pages_checkup(
@@ -36,6 +51,29 @@ class PublicPagesCheckupTests(unittest.TestCase):
 
         self.assertEqual(payload["overallStatus"], "FAIL")
         self.assertGreater(payload["failureCount"], 0)
+
+    def test_public_pages_checkup_adds_public_only_action_when_github_api_is_limited(self) -> None:
+        payload = build_public_pages_checkup(
+            public_pages=_public_pages("PASS"),
+            deploy_status={
+                "overallStatus": "WARN",
+                "summary": {
+                    "latestRunStatus": "",
+                    "latestRunConclusion": "",
+                    "latestRunHeadSha": "",
+                },
+                "warnings": [
+                    "workflow_runs: https://api.github.com unavailable: HTTP 403 rate limit exceeded"
+                ],
+                "failures": [],
+            },
+            expected_sha="abc123",
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertTrue(
+            any("--skip-github-api" in item for item in payload["actionItems"])
+        )
 
 
 def _public_pages(status: str) -> dict:
