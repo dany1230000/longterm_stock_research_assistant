@@ -6704,13 +6704,8 @@ class _PositionSectionState extends State<_PositionSection> {
                   labels: [
                     input.hasPosition ? '持倉資料已輸入' : '尚未輸入持倉',
                     'local-only',
-                    '不需登入',
-                    '不會上傳',
                     '目前標的 ${widget.selectedEtf.code}',
                     '行情來源 ${widget.selectedEtf.sourceStatusLabel}',
-                    summary.dataTime == null
-                        ? '資料時間 unavailable'
-                        : '資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}',
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -6754,7 +6749,12 @@ class _PositionSectionState extends State<_PositionSection> {
                   onChanged: (_) => setState(() {}),
                 ),
                 const SizedBox(height: 12),
-                _PositionResultGrid(summary: summary),
+                _CompactExpansionPanel(
+                  title: '估算細節',
+                  subtitle:
+                      input.hasPosition ? '市值、成本、損益與部位比例。' : '輸入股數與成本後顯示完整估算。',
+                  child: _PositionResultGrid(summary: summary),
+                ),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 8,

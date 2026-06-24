@@ -461,8 +461,9 @@ void main() {
       find.byKey(const ValueKey('00631l-position-compact-input-card')),
       findsOneWidget,
     );
-    expect(find.text('不需登入'), findsOneWidget);
-    expect(find.text('不會上傳'), findsOneWidget);
+    expect(find.text('估算細節'), findsOneWidget);
+    expect(find.textContaining('不需登入'), findsOneWidget);
+    expect(find.textContaining('不會上傳'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
     expect(find.text('保存本機資料'), findsOneWidget);
     expect(find.text('匯出 JSON'), findsOneWidget);

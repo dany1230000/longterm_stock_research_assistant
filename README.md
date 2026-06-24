@@ -1330,3 +1330,8 @@ comparison baseline.
 v5.22 adds a compact overview update-time strip. The first screen now separates
 official daily holdings, live intraday NAV, TX quote time, and historical price
 coverage so users can see which data is daily, live, or static at a glance.
+
+v5.23 compacts the position page. The account-style summary remains visible,
+while detailed value/cost/PnL calculations move into an expandable estimate
+detail block so mobile users can reach the local input and export controls
+faster.

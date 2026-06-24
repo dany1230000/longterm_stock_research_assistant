@@ -327,6 +327,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF room readiness panel release: `docs\00631l_v5_20_etf_room_readiness_panel.md`
 - Custom ETF comparison basket release: `docs\00631l_v5_21_custom_etf_comparison_basket.md`
 - Overview data time strip release: `docs\00631l_v5_22_overview_data_time_strip.md`
+- Compact position account release: `docs\00631l_v5_23_compact_position_account.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
