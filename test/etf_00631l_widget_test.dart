@@ -42,7 +42,9 @@ void main() {
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.textContaining('官方曝險'), findsOneWidget);
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
+    final dataQualityTop = tester.getTopLeft(find.text('資料正確性')).dy;
     final coreDataTop = tester.getTopLeft(find.text('核心資料')).dy;
+    expect(chartTitleTop, lessThan(dataQualityTop));
     expect(chartTitleTop, lessThan(coreDataTop));
     expect(find.text('官方 NAV'), findsNothing);
     expect(find.textContaining('Mock 預設'), findsWidgets);

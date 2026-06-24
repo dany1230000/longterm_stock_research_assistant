@@ -1375,3 +1375,7 @@ complete.
 v5.32 makes the overview update-time area more compact. DAY, LIVE, TX, and HIS
 timestamps are shown in one horizontal ticker so the mobile first screen reaches
 the chart sooner.
+
+v5.33 moves the overview price chart directly under the quote header. Data
+quality and update-time strips still remain visible, but they no longer push the
+chart below the first screen.
