@@ -315,6 +315,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - AI page briefing cards release: `docs\00631l_v5_8_ai_page_briefing_cards.md`
 - Settings account summary release: `docs\00631l_v5_9_settings_account_summary.md`
 - Overview data readiness ribbon release: `docs\00631l_v5_10_overview_data_readiness_ribbon.md`
+- Symbol search history coverage release: `docs\00631l_v5_11_symbol_search_history_coverage.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

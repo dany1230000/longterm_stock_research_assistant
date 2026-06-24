@@ -104,6 +104,7 @@ void main() {
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
     expect(find.textContaining('可切換研究標的'), findsOneWidget);
     expect(find.text('可用歷史 15'), findsOneWidget);
+    expect(find.text('歷史覆蓋 15 / 16'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
       findsOneWidget,

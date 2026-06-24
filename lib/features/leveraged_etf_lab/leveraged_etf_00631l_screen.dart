@@ -873,6 +873,9 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
     final catalog = widget.data.etfCatalog;
     final stocksAsync = ref.watch(watchlistProvider);
     final readyHistoryCount = _searchReadyHistoryCount(widget.data);
+    final catalogRowCount = catalog.hasData
+        ? catalog.rowCount
+        : widget.data.operationsStatus.etfCatalogRowCount;
     final items = query.isEmpty
         ? catalog.focusItems
         : [
@@ -959,8 +962,9 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
             _StatusWrap(
               labels: [
                 'catalog ${catalog.sourceStatusLabel}',
-                'rows ${formatInteger(catalog.rowCount)}',
+                'rows ${formatInteger(catalogRowCount)}',
                 '可用歷史 ${formatInteger(readyHistoryCount)}',
+                '歷史覆蓋 ${formatInteger(readyHistoryCount)} / ${formatInteger(catalogRowCount)}',
                 if (query.isEmpty) '熱門清單' else 'ETF ${visibleItems.length}',
                 if (query.isNotEmpty) '個股 ${stockItems.length}',
               ],

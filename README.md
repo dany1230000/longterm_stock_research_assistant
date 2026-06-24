@@ -1280,3 +1280,7 @@ and daily readiness, while deployment diagnostics remain in expandable panels.
 v5.10 makes data readiness visible on the overview page. The DATA ribbon now
 shows coverage type and ETF history readiness count next to the selected ETF,
 price field, split-adjustment status, and loaded row count.
+
+v5.11 makes the top-left symbol search sheet clearer about imported data. It
+now shows the ETF history coverage ratio, using the actual ready-history count
+against the current catalog row count.
