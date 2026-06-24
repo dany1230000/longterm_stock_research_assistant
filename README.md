@@ -1297,3 +1297,7 @@ split-adjusted, adjusted-price-available, and unadjusted histories.
 v5.14 surfaces ETF data-library readiness in the settings page. Users can now
 see catalog count, history-ready count, long-term/recent coverage tiers, and
 data time without opening maintenance diagnostics.
+
+v5.15 adds history-availability filters to the left-top symbol search sheet.
+Users can filter search results by all ETFs, history-ready ETFs, or catalog-only
+ETFs before switching the active research symbol.

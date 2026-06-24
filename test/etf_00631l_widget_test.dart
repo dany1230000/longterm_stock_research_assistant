@@ -515,6 +515,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
+        find.byKey(const ValueKey('00631l-symbol-filter-all')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-filter-ready')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-filter-catalogOnly')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),
       findsOneWidget,
     );
@@ -524,6 +534,21 @@ void main() {
     );
     expect(find.textContaining('尚未匯入可驗證歷史價格'), findsOneWidget);
     expect(find.text('切換後：catalog 快覽，歷史資料不足'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-filter-ready')));
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),
+      findsNothing,
+    );
+
+    await tester
+        .tap(find.byKey(const ValueKey('00631l-symbol-filter-catalogOnly')));
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),
+      findsOneWidget,
+    );
 
     await tester.tap(
       find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),

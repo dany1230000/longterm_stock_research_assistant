@@ -319,6 +319,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Comparison basket labels release: `docs\00631l_v5_12_comparison_basket_labels.md`
 - Selected history split status release: `docs\00631l_v5_13_selected_history_split_status.md`
 - ETF data library readiness release: `docs\00631l_v5_14_etf_data_library_readiness.md`
+- Symbol search history filter release: `docs\00631l_v5_15_symbol_search_history_filter.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

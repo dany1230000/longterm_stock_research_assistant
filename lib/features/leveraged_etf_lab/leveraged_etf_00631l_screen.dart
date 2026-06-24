@@ -858,8 +858,19 @@ class _SymbolSearchSheet extends ConsumerStatefulWidget {
   ConsumerState<_SymbolSearchSheet> createState() => _SymbolSearchSheetState();
 }
 
+enum _SymbolSearchHistoryFilter {
+  all('全部'),
+  ready('歷史可用'),
+  catalogOnly('catalog-only');
+
+  const _SymbolSearchHistoryFilter(this.label);
+
+  final String label;
+}
+
 class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
   final _controller = TextEditingController();
+  _SymbolSearchHistoryFilter _historyFilter = _SymbolSearchHistoryFilter.all;
 
   @override
   void dispose() {
@@ -876,12 +887,16 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
     final catalogRowCount = catalog.hasData
         ? catalog.rowCount
         : widget.data.operationsStatus.etfCatalogRowCount;
-    final items = query.isEmpty
+    final baseItems = query.isEmpty
         ? catalog.focusItems
         : [
             for (final item in catalog.items)
               if (_catalogSearchText(item).contains(query)) item,
           ];
+    final items = [
+      for (final item in baseItems)
+        if (_symbolSearchFilterIncludes(_historyFilter, item)) item,
+    ];
     final visibleItems = items.take(30).toList(growable: false);
     final stockItems = query.isEmpty
         ? const <Stock>[]
@@ -965,9 +980,28 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                 'rows ${formatInteger(catalogRowCount)}',
                 '可用歷史 ${formatInteger(readyHistoryCount)}',
                 '歷史覆蓋 ${formatInteger(readyHistoryCount)} / ${formatInteger(catalogRowCount)}',
+                '篩選 ${_historyFilter.label}',
                 if (query.isEmpty) '熱門清單' else 'ETF ${visibleItems.length}',
                 if (query.isNotEmpty) '個股 ${stockItems.length}',
               ],
+            ),
+            const SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (final filter in _SymbolSearchHistoryFilter.values) ...[
+                    ChoiceChip(
+                      key: ValueKey('00631l-symbol-filter-${filter.name}'),
+                      label: Text(filter.label),
+                      selected: _historyFilter == filter,
+                      onSelected: (_) =>
+                          setState(() => _historyFilter = filter),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                ],
+              ),
             ),
             const SizedBox(height: 10),
             KeyedSubtree(
@@ -10063,6 +10097,20 @@ _EtfHistoryReadiness _etfHistoryReadiness(EtfCatalogItem item) {
     capabilityLabel: hasHistory ? '切換後：歷史 / 回測 / 比較' : '切換後：catalog 快覽，歷史資料不足',
     trailingLabel: hasHistory ? '可切換' : 'catalog',
   );
+}
+
+bool _symbolSearchFilterIncludes(
+  _SymbolSearchHistoryFilter filter,
+  EtfCatalogItem item,
+) {
+  switch (filter) {
+    case _SymbolSearchHistoryFilter.all:
+      return true;
+    case _SymbolSearchHistoryFilter.ready:
+      return _catalogItemHasImportedEtfHistory(item);
+    case _SymbolSearchHistoryFilter.catalogOnly:
+      return !_catalogItemHasImportedEtfHistory(item);
+  }
 }
 
 class _EtfHistoryReadiness {
