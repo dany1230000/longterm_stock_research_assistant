@@ -1473,3 +1473,7 @@ selected comparison set.
 
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
+
+v5.56 adds a daily interpretation card to the AI page, combining holdings date,
+intraday NAV time, premium discount state, exposure weights, and the first
+program action item.

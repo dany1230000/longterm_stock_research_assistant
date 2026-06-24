@@ -1033,6 +1033,13 @@ void main() {
     expect(find.textContaining('official holdings'), findsWidgets);
     expect(find.textContaining('盤中 NAV'), findsWidgets);
     expect(
+      find.byKey(const ValueKey('00631l-ai-daily-interpretation-card')),
+      findsOneWidget,
+    );
+    expect(find.text('當日資料解讀'), findsOneWidget);
+    expect(find.textContaining('官方每日內容物顯示 TX 權重'), findsOneWidget);
+    expect(find.textContaining('盤中觀察以市價'), findsOneWidget);
+    expect(
       find.byKey(const ValueKey('00631l-ai-interpretation-matrix')),
       findsOneWidget,
     );

@@ -7335,6 +7335,8 @@ class _AiSection extends StatelessWidget {
       children: [
         _AiTodaySnapshotPanel(data: data, summary: summary),
         const SizedBox(height: 12),
+        _AiDailyInterpretationCard(data: data, summary: summary),
+        const SizedBox(height: 12),
         _AiTodayInterpretationMatrix(data: data, summary: summary),
         const SizedBox(height: 12),
         _SectionBlock(
@@ -7710,6 +7712,92 @@ class _AiTodaySnapshotPanel extends StatelessWidget {
               _BulletLine(text: bullet, icon: Icons.insights_outlined),
             const SizedBox(height: 8),
             _BulletLine(text: '程式操作：$action', icon: Icons.task_alt_outlined),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiDailyInterpretationCard extends StatelessWidget {
+  const _AiDailyInterpretationCard({
+    required this.data,
+    required this.summary,
+  });
+
+  final Etf00631LLabData data;
+  final EtfAiAnalysisSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final snapshot = data.snapshot;
+    final nav = data.intradayNav;
+    final txWeight = snapshot.futuresHoldings
+        .where((line) => line.code.toUpperCase().contains('TX'))
+        .fold<double>(0, (sum, line) => sum + line.weightPct);
+    final tsmcWeight = snapshot.stockHoldings
+        .where((line) => line.code == '2330')
+        .fold<double>(0, (sum, line) => sum + line.weightPct);
+    final premium = nav?.premiumDiscountAssessment;
+    final firstAction = summary.actionItems.isEmpty
+        ? '目前沒有程式操作項目；請保留資料時間檢查。'
+        : summary.actionItems.first;
+    return DecoratedBox(
+      key: const ValueKey('00631l-ai-daily-interpretation-card'),
+      decoration: BoxDecoration(
+        color:
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.auto_awesome_outlined,
+                  color: theme.colorScheme.primary,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '當日資料解讀',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                const _CompactTextBadge(label: '非買賣建議'),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _StatusWrap(
+              labels: [
+                'holdings ${_dateOrDash(snapshot.tradeDate)}',
+                'NAV ${_intradayDataTimeText(nav)}',
+                premium?.label ?? '折溢價資料不足',
+                'source ${summary.source}',
+              ],
+            ),
+            const SizedBox(height: 10),
+            _BulletLine(
+              text:
+                  '官方每日內容物顯示 TX 權重 ${formatNullablePercent(txWeight)}、台積電 ${formatNullablePercent(tsmcWeight)}、現金與保證金 ${formatNullablePercent(snapshot.cashAndMarginWeightPct)}。',
+              icon: Icons.account_tree_outlined,
+            ),
+            const _BulletLine(
+              text: '盤中觀察以市價、預估淨值與折溢價為主；內容物仍以官方每日快照時間為準。',
+              icon: Icons.schedule_outlined,
+            ),
+            _BulletLine(
+              text: '程式操作：$firstAction',
+              icon: Icons.task_alt_outlined,
+            ),
           ],
         ),
       ),
