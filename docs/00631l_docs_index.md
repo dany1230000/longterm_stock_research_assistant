@@ -367,6 +367,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Compact position entry: `docs\00631l_v5_60_compact_position_entry.md`
 - AI page progressive detail: `docs\00631l_v5_61_ai_page_progressive_detail.md`
 - Static fast start: `docs\00631l_v5_62_static_fast_start.md`
+- Compact ETF search: `docs\00631l_v5_63_compact_etf_search.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

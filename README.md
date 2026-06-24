@@ -1503,3 +1503,8 @@ v5.62 improves public static startup. Static mode now loads verified price
 history, operations status, AI summary, and ETF catalog through a dedicated fast
 path; live-only holdings, intraday NAV, and TX fields stay marked as backend
 required instead of falling through mock data.
+
+v5.63 makes the ETF search sheet more compact. The selector keeps the search
+field, completion percentage, history-ready count, gap count, filters, and
+results visible first; detailed catalog and coverage-tier diagnostics move under
+`資料細節`.

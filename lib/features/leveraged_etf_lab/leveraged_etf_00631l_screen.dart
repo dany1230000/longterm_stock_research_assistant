@@ -1047,10 +1047,6 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
             const SizedBox(height: 10),
             _StatusWrap(
               labels: [
-                'catalog ${catalog.sourceStatusLabel}',
-                'rows ${formatInteger(catalogRowCount)}',
-                '可用歷史 ${formatInteger(readyHistoryCount)}',
-                '歷史覆蓋 ${formatInteger(readyHistoryCount)} / ${formatInteger(catalogRowCount)}',
                 '篩選 ${_historyFilter.label}',
                 if (query.isEmpty) '熱門清單' else 'ETF ${visibleItems.length}',
                 if (query.isNotEmpty) '個股 ${stockItems.length}',
@@ -1180,14 +1176,25 @@ class _SymbolSearchDataCompletionStrip extends StatelessWidget {
             const SizedBox(height: 8),
             _StatusWrap(
               labels: [
-                'catalog ${formatInteger(catalogRowCount)}',
-                if (effectiveCatalogRowCount != catalogRowCount)
-                  '完整統計 ${formatInteger(effectiveCatalogRowCount)}',
                 'history ready ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
                 '缺口 ${formatInteger(gap)}',
-                'long-term ${formatInteger(longTerm)}',
-                'recent ${formatInteger(recent)}',
               ],
+            ),
+            const SizedBox(height: 8),
+            _CompactExpansionPanel(
+              title: '資料細節',
+              subtitle: '展開查看 catalog rows、完整統計與 coverage tier。',
+              child: _StatusWrap(
+                labels: [
+                  'catalog ${formatInteger(catalogRowCount)}',
+                  if (effectiveCatalogRowCount != catalogRowCount)
+                    '完整統計 ${formatInteger(effectiveCatalogRowCount)}',
+                  'catalog source ${status.etfCatalogStatus}',
+                  'history source ${status.etfPriceHistoryStatus}',
+                  'long-term ${formatInteger(longTerm)}',
+                  'recent ${formatInteger(recent)}',
+                ],
+              ),
             ),
           ],
         ),

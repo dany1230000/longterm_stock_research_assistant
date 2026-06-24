@@ -114,8 +114,8 @@ void main() {
 
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
     expect(find.textContaining('可切換研究標的'), findsOneWidget);
-    expect(find.text('可用歷史 15'), findsOneWidget);
-    expect(find.text('歷史覆蓋 15 / 16'), findsOneWidget);
+    expect(find.text('history ready 15 / 16'), findsOneWidget);
+    expect(find.text('資料細節'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
       findsOneWidget,
@@ -134,7 +134,7 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
       findsOneWidget,
     );
-    expect(find.textContaining('可用歷史'), findsOneWidget);
+    expect(find.textContaining('history ready'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
@@ -208,10 +208,16 @@ void main() {
     );
     expect(find.text('ETF 資料庫狀態'), findsOneWidget);
     expect(find.textContaining('完成度'), findsOneWidget);
-    expect(find.text('catalog 16'), findsOneWidget);
-    expect(find.text('完整統計 228'), findsOneWidget);
+    expect(find.text('catalog 16'), findsNothing);
+    expect(find.text('完整統計 228'), findsNothing);
     expect(find.text('history ready 228 / 228'), findsOneWidget);
     expect(find.text('缺口 0'), findsOneWidget);
+    expect(find.text('long-term 8'), findsNothing);
+    expect(find.text('recent 220'), findsNothing);
+    await tester.tap(find.text('資料細節'));
+    await tester.pumpAndSettle();
+    expect(find.text('catalog 16'), findsOneWidget);
+    expect(find.text('完整統計 228'), findsOneWidget);
     expect(find.text('long-term 8'), findsOneWidget);
     expect(find.text('recent 220'), findsOneWidget);
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
@@ -225,9 +231,12 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
     await tester.pumpAndSettle();
 
-    expect(find.text('完整統計 344'), findsOneWidget);
+    expect(find.text('完整統計 344'), findsNothing);
     expect(find.text('history ready 228 / 344'), findsOneWidget);
     expect(find.text('缺口 116'), findsOneWidget);
+    await tester.tap(find.text('資料細節'));
+    await tester.pumpAndSettle();
+    expect(find.text('完整統計 344'), findsOneWidget);
 
     await tester.tap(find.byTooltip('關閉'));
     await tester.pumpAndSettle();
