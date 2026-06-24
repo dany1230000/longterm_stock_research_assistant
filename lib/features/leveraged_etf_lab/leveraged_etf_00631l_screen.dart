@@ -1009,6 +1009,13 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               ),
             ),
             const SizedBox(height: 10),
+            _SymbolSearchDataCompletionStrip(
+              key: const ValueKey('00631l-etf-data-completion-strip'),
+              data: widget.data,
+              catalogRowCount: catalogRowCount,
+              readyHistoryCount: readyHistoryCount,
+            ),
+            const SizedBox(height: 10),
             _StatusWrap(
               labels: [
                 'catalog ${catalog.sourceStatusLabel}',
@@ -1070,6 +1077,88 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                         return _StockSearchResultTile(stock: stock);
                       },
                     ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SymbolSearchDataCompletionStrip extends StatelessWidget {
+  const _SymbolSearchDataCompletionStrip({
+    super.key,
+    required this.data,
+    required this.catalogRowCount,
+    required this.readyHistoryCount,
+  });
+
+  final Etf00631LLabData data;
+  final int catalogRowCount;
+  final int readyHistoryCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = data.operationsStatus;
+    final effectiveCatalogRowCount =
+        status.etfCatalogRowCount > catalogRowCount
+            ? status.etfCatalogRowCount
+            : catalogRowCount;
+    final historyTotal = status.etfPriceHistoryRowCount > 0
+        ? status.etfPriceHistoryRowCount
+        : effectiveCatalogRowCount;
+    final readyRatio =
+        historyTotal <= 0 ? 0.0 : readyHistoryCount / historyTotal * 100;
+    final gap = (historyTotal - readyHistoryCount)
+        .clamp(0, historyTotal)
+        .toInt();
+    final tiers = status.etfPriceHistoryCoverageTierCounts;
+    final longTerm = tiers['long_term'] ?? 0;
+    final recent = tiers['recent'] ?? 0;
+    final theme = Theme.of(context);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'ETF 資料補齊',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                Text(
+                '完成度 ${formatNullablePercent(readyRatio)}',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _StatusWrap(
+              labels: [
+                'catalog ${formatInteger(catalogRowCount)}',
+                if (effectiveCatalogRowCount != catalogRowCount)
+                  '完整統計 ${formatInteger(effectiveCatalogRowCount)}',
+                'history ready ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
+                '缺口 ${formatInteger(gap)}',
+                'long-term ${formatInteger(longTerm)}',
+                'recent ${formatInteger(recent)}',
+              ],
             ),
           ],
         ),
@@ -7835,6 +7924,12 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
           ],
         ),
         const SizedBox(height: 12),
+        _EtfDataLibrarySummary(
+          key: const ValueKey('00631l-etf-data-completion-strip'),
+          data: widget.data,
+          compact: true,
+        ),
+        const SizedBox(height: 12),
         _SectionBlock(
           title: 'ETF 查詢',
           subtitle: '可用代號、名稱或商品類型搜尋；有歷史資料的 ETF 可切換後查看歷史、回測與比較。',
@@ -8556,9 +8651,14 @@ class _EtfResearchRoomReadinessPanel extends StatelessWidget {
 }
 
 class _EtfDataLibrarySummary extends StatelessWidget {
-  const _EtfDataLibrarySummary({required this.data});
+  const _EtfDataLibrarySummary({
+    super.key,
+    required this.data,
+    this.compact = false,
+  });
 
   final Etf00631LLabData data;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -8582,58 +8682,62 @@ class _EtfDataLibrarySummary extends StatelessWidget {
         ? 0.0
         : status.etfPriceHistoryReadyCount / historyTotal;
 
+    final cards = [
+      _MetricCard(
+        label: '完成度',
+        value: formatNullablePercent(readyRatio * 100),
+        caption: 'history ready ratio',
+        icon: Icons.fact_check_outlined,
+      ),
+      _MetricCard(
+        label: 'catalog 檔數',
+        value: formatInteger(catalogRows),
+        caption: data.etfCatalog.hasData
+            ? data.etfCatalog.sourceStatusLabel
+            : status.etfCatalogStatus,
+        icon: Icons.dataset_outlined,
+      ),
+      _MetricCard(
+        label: '歷史 ready',
+        value: historyReadyValue,
+        caption: status.etfPriceHistoryStatus,
+        icon: Icons.query_stats_outlined,
+      ),
+      _MetricCard(
+        label: 'long-term',
+        value: formatInteger(longTerm),
+        caption: '長期 coverage',
+        icon: Icons.timeline_outlined,
+      ),
+      _MetricCard(
+        label: 'recent',
+        value: formatInteger(recent),
+        caption: '近期 coverage',
+        icon: Icons.schedule_outlined,
+      ),
+      _MetricCard(
+        label: '尚未 ready',
+        value: formatInteger(notReady),
+        caption: '需補歷史或等待驗證',
+        icon: Icons.hourglass_empty_outlined,
+      ),
+      _MetricCard(
+        label: '資料時間',
+        value: _dateTimeOrDash(
+          status.etfPriceHistoryDataTime ?? data.etfCatalog.dataTime,
+        ),
+        caption: 'history / catalog',
+        icon: Icons.update_outlined,
+      ),
+    ];
+
     return _SectionBlock(
       title: 'ETF 資料補齊',
-      subtitle: '目前可搜尋的 ETF catalog 與已匯入歷史資料；歷史 ready 才能支援回測與比較。',
+      subtitle: compact
+          ? '先看 ETF catalog 與歷史資料補齊度；缺口代表尚未有足夠歷史可供比較或回測。'
+          : '目前可搜尋的 ETF catalog 與已匯入歷史資料；歷史 ready 才能支援回測與比較。',
       child: _ResponsiveMetricGrid(
-        cards: [
-          _MetricCard(
-            label: '完成度',
-            value: formatNullablePercent(readyRatio * 100),
-            caption: 'history ready ratio',
-            icon: Icons.fact_check_outlined,
-          ),
-          _MetricCard(
-            label: 'catalog 檔數',
-            value: formatInteger(catalogRows),
-            caption: data.etfCatalog.hasData
-                ? data.etfCatalog.sourceStatusLabel
-                : status.etfCatalogStatus,
-            icon: Icons.dataset_outlined,
-          ),
-          _MetricCard(
-            label: '歷史 ready',
-            value: historyReadyValue,
-            caption: status.etfPriceHistoryStatus,
-            icon: Icons.query_stats_outlined,
-          ),
-          _MetricCard(
-            label: 'long-term',
-            value: formatInteger(longTerm),
-            caption: '長期 coverage',
-            icon: Icons.timeline_outlined,
-          ),
-          _MetricCard(
-            label: 'recent',
-            value: formatInteger(recent),
-            caption: '近期 coverage',
-            icon: Icons.schedule_outlined,
-          ),
-          _MetricCard(
-            label: '尚未 ready',
-            value: formatInteger(notReady),
-            caption: '需補歷史或等待驗證',
-            icon: Icons.hourglass_empty_outlined,
-          ),
-          _MetricCard(
-            label: '資料時間',
-            value: _dateTimeOrDash(
-              status.etfPriceHistoryDataTime ?? data.etfCatalog.dataTime,
-            ),
-            caption: 'history / catalog',
-            icon: Icons.update_outlined,
-          ),
-        ],
+        cards: cards,
       ),
     );
   }

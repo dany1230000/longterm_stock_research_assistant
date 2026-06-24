@@ -329,6 +329,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Overview data time strip release: `docs\00631l_v5_22_overview_data_time_strip.md`
 - Compact position account release: `docs\00631l_v5_23_compact_position_account.md`
 - AI daily interpretation matrix release: `docs\00631l_v5_24_ai_daily_interpretation_matrix.md`
+- ETF data completion status release: `docs\00631l_v5_25_etf_data_completion_status.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

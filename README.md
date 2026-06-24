@@ -1340,3 +1340,8 @@ v5.24 strengthens the rule-based AI page with a daily interpretation matrix.
 It separates freshness, premium/discount, holdings movement, and historical
 coverage into short status cards while keeping the output non-directional and
 data-focused.
+
+v5.25 moves ETF data completion status into the left-top ETF search sheet.
+Catalog count, history-ready count, coverage tiers, remaining gap, and data
+time are visible before users search or switch ETFs, while Settings keeps the
+same maintenance summary.

@@ -164,6 +164,29 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('symbol search shows ETF data completion status',
+      (tester) async {
+    await _pumpLab(tester, _EtfReadinessOperationsRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-etf-data-completion-strip')),
+      findsOneWidget,
+    );
+    expect(find.text('ETF 資料補齊'), findsOneWidget);
+    expect(find.textContaining('完成度'), findsOneWidget);
+    expect(find.text('catalog 16'), findsOneWidget);
+    expect(find.text('完整統計 228'), findsOneWidget);
+    expect(find.text('history ready 228 / 228'), findsOneWidget);
+    expect(find.text('缺口 0'), findsOneWidget);
+    expect(find.text('long-term 8'), findsOneWidget);
+    expect(find.text('recent 220'), findsOneWidget);
+    expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('00631L lab remains readable on phone width', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
