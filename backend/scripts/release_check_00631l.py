@@ -343,6 +343,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_7_daily_ai_analysis_context.md",
         "docs/00631l_v5_8_ai_page_briefing_cards.md",
         "docs/00631l_v5_9_settings_account_summary.md",
+        "docs/00631l_v5_10_overview_data_readiness_ribbon.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

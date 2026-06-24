@@ -2393,7 +2393,7 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 6),
-        _OverviewQualityRibbon(selectedEtf: selectedEtf),
+        _OverviewQualityRibbon(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
         _AlwaysExpandedPanel(
           title: selectedEtf.is00631L ? '圖表與曝險' : '價格圖表',
@@ -2433,8 +2433,12 @@ class _OverviewSection extends StatelessWidget {
 }
 
 class _OverviewQualityRibbon extends StatelessWidget {
-  const _OverviewQualityRibbon({required this.selectedEtf});
+  const _OverviewQualityRibbon({
+    required this.data,
+    required this.selectedEtf,
+  });
 
+  final Etf00631LLabData data;
   final _SelectedEtfViewData selectedEtf;
 
   @override
@@ -2448,6 +2452,14 @@ class _OverviewQualityRibbon extends StatelessWidget {
     final priceField = summary.hasAdjustedClose ? 'adjustedClose' : 'close';
     final coverage =
         summary.rowCount >= 2 ? '${formatInteger(summary.rowCount)} 筆' : '資料不足';
+    final coverageKind = summary.isCompleteFromListing ? '上市日起' : '部分區間';
+    final catalogCount = data.etfCatalog.hasData
+        ? data.etfCatalog.rowCount
+        : data.operationsStatus.etfCatalogRowCount;
+    final readyHistory = data.operationsStatus.etfPriceHistoryReadyCount;
+    final etfHistoryLabel = catalogCount > 0
+        ? '${formatInteger(readyHistory)} / ${formatInteger(catalogCount)}'
+        : formatInteger(readyHistory);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -2476,6 +2488,8 @@ class _OverviewQualityRibbon extends StatelessWidget {
               _InlineQualityPill(label: '價格欄位', value: priceField),
               _InlineQualityPill(label: '分割調整', value: adjustmentLabel),
               _InlineQualityPill(label: '覆蓋', value: coverage),
+              _InlineQualityPill(label: '覆蓋型態', value: coverageKind),
+              _InlineQualityPill(label: 'ETF歷史', value: etfHistoryLabel),
             ],
           ),
         ),

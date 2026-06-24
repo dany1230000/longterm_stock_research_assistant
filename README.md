@@ -1276,3 +1276,7 @@ available in the detail panel.
 v5.9 makes the settings page feel more like an account/settings tab. It now
 starts with compact cards for no-login usage, selected ETF, frontend data mode,
 and daily readiness, while deployment diagnostics remain in expandable panels.
+
+v5.10 makes data readiness visible on the overview page. The DATA ribbon now
+shows coverage type and ETF history readiness count next to the selected ETF,
+price field, split-adjustment status, and loaded row count.

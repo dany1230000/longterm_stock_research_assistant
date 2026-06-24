@@ -35,6 +35,8 @@ void main() {
     expect(find.text('內容物重點'), findsOneWidget);
     expect(find.text('價格欄位'), findsOneWidget);
     expect(find.text('分割調整'), findsOneWidget);
+    expect(find.text('覆蓋型態'), findsOneWidget);
+    expect(find.text('ETF歷史'), findsOneWidget);
     expect(find.textContaining('歷史資料'), findsWidgets);
     expect(find.text('累積報酬'), findsOneWidget);
     expect(find.text('近一年走勢'), findsOneWidget);
