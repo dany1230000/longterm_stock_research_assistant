@@ -1326,3 +1326,7 @@ v5.21 improves the ETF comparison basket. History/backtest comparison now
 starts from the active ETF's peer group, lets users clear the basket, apply a
 peer preset, or view only the active ETF, and avoids treating 00631L as a fixed
 comparison baseline.
+
+v5.22 adds a compact overview update-time strip. The first screen now separates
+official daily holdings, live intraday NAV, TX quote time, and historical price
+coverage so users can see which data is daily, live, or static at a glance.

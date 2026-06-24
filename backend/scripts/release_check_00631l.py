@@ -355,6 +355,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_19_etf_data_readiness_ratio.md",
         "docs/00631l_v5_20_etf_room_readiness_panel.md",
         "docs/00631l_v5_21_custom_etf_comparison_basket.md",
+        "docs/00631l_v5_22_overview_data_time_strip.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

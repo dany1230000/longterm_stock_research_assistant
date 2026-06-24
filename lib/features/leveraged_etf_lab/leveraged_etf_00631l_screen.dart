@@ -2468,6 +2468,8 @@ class _OverviewSection extends StatelessWidget {
         const SizedBox(height: 6),
         _OverviewQualityRibbon(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
+        _OverviewUpdateClockStrip(data: data, selectedEtf: selectedEtf),
+        const SizedBox(height: 8),
         if (!selectedEtf.is00631L) ...[
           _SelectedEtfReadinessBanner(selectedEtf: selectedEtf),
           const SizedBox(height: 8),
@@ -2505,6 +2507,234 @@ class _OverviewSection extends StatelessWidget {
               : _SelectedEtfMorePanel(selectedEtf: selectedEtf),
         ),
       ],
+    );
+  }
+}
+
+class _OverviewUpdateClockStrip extends StatelessWidget {
+  const _OverviewUpdateClockStrip({
+    required this.data,
+    required this.selectedEtf,
+  });
+
+  final Etf00631LLabData data;
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final priceSummary = selectedEtf.priceHistory.completenessSummary();
+    final nav = data.intradayNav;
+    final navSession = nav?.marketSession();
+    final tx = data.futuresQuote;
+    final items = selectedEtf.is00631L
+        ? [
+            _OverviewClockItem(
+              badge: 'DAY',
+              title: '內容物',
+              value: formatTaiwanDate(data.snapshot.tradeDate),
+              caption: '官方每日快照',
+              status: data.snapshot.status.label,
+            ),
+            _OverviewClockItem(
+              badge: 'LIVE',
+              title: 'NAV',
+              value: nav?.dataTime == null
+                  ? '暫無'
+                  : _sourceTimeText(nav!.dataTime!),
+              caption: navSession == null
+                  ? '需要 backend'
+                  : '${navSession.phaseLabel} · ${navSession.dataFreshnessLabel}',
+              status: nav?.status.label ?? 'unavailable',
+            ),
+            _OverviewClockItem(
+              badge: 'TX',
+              title: '期貨',
+              value: tx.dataTime == null ? '暫無' : _sourceTimeText(tx.dataTime!),
+              caption: tx.txPrice == null
+                  ? 'TAIFEX 資料暫無'
+                  : '${tx.txSymbol ?? tx.symbol} ${_price(tx.txPrice)}',
+              status: tx.status.label,
+            ),
+            _OverviewClockItem(
+              badge: 'HIS',
+              title: '歷史',
+              value: _dateOrDash(priceSummary.coverageEnd),
+              caption: '${formatInteger(priceSummary.rowCount)} rows',
+              status: selectedEtf.priceHistory.sourceStatusLabel,
+            ),
+          ]
+        : [
+            _OverviewClockItem(
+              badge: 'ETF',
+              title: selectedEtf.code,
+              value: selectedEtf.dataTime == null
+                  ? _dateOrDash(priceSummary.coverageEnd)
+                  : _sourceTimeText(selectedEtf.dataTime!),
+              caption: selectedEtf.hasImportedHistory
+                  ? 'history ready'
+                  : 'catalog only',
+              status: selectedEtf.sourceStatusLabel,
+            ),
+            _OverviewClockItem(
+              badge: 'HIS',
+              title: '歷史',
+              value: _dateOrDash(priceSummary.coverageEnd),
+              caption: '${formatInteger(priceSummary.rowCount)} rows',
+              status: selectedEtf.priceHistory.sourceStatusLabel,
+            ),
+            const _OverviewClockItem(
+              badge: 'DAY',
+              title: '內容物',
+              value: '00631L only',
+              caption: '不套用到其他 ETF',
+              status: 'not mapped',
+            ),
+          ];
+
+    return KeyedSubtree(
+      key: const ValueKey('00631l-overview-update-clock-strip'),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketPanelColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: _marketBorderColor(context)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    '更新時間',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0,
+                        ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      selectedEtf.is00631L
+                          ? '每日內容物、盤中 NAV、TX 與歷史資料分開判讀'
+                          : '此 ETF 目前以 catalog 與歷史價格為主',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: _marketMutedTextColor(context),
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    for (var index = 0; index < items.length; index++) ...[
+                      _OverviewClockChip(item: items[index]),
+                      if (index != items.length - 1) const SizedBox(width: 8),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewClockItem {
+  const _OverviewClockItem({
+    required this.badge,
+    required this.title,
+    required this.value,
+    required this.caption,
+    required this.status,
+  });
+
+  final String badge;
+  final String title;
+  final String value;
+  final String caption;
+  final String status;
+}
+
+class _OverviewClockChip extends StatelessWidget {
+  const _OverviewClockChip({required this.item});
+
+  final _OverviewClockItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 146,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _MiniStatusBadge(label: item.badge),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  item.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: _marketMutedTextColor(context),
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            item.value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            item.caption,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            item.status,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
+      ),
     );
   }
 }

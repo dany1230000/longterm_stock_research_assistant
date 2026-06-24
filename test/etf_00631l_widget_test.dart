@@ -850,6 +850,14 @@ void main() {
     await _pumpLab(tester, Mock00631LRepository());
 
     expect(find.byKey(const ValueKey('00631l-section-holdings')), findsNothing);
+    expect(
+      find.byKey(const ValueKey('00631l-overview-update-clock-strip')),
+      findsOneWidget,
+    );
+    expect(find.text('更新時間'), findsOneWidget);
+    expect(find.text('DAY'), findsWidgets);
+    expect(find.text('LIVE'), findsWidgets);
+    expect(find.text('HIS'), findsWidgets);
     expect(find.text('官方內容物重點'), findsOneWidget);
     expect(find.textContaining('每日官方快照'), findsOneWidget);
     expect(find.text('TX 期貨'), findsWidgets);
