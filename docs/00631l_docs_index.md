@@ -346,6 +346,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public release marker: `docs\00631l_v5_39_public_release_marker.md`
 - Public release guidance: `docs\00631l_v5_40_public_release_guidance.md`
 - Public release mismatch guidance: `docs\00631l_v5_41_public_release_mismatch_guidance.md`
+- Public release marker wait: `docs\00631l_v5_42_public_release_wait.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

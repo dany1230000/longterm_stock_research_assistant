@@ -1413,3 +1413,8 @@ still deploying the static bundle.
 v5.41 adds explicit release mismatch guidance. If public Pages is reachable but
 `release.json` still points to an older commit, checkup reports
 `releaseMatchesExpected=false` with failures empty and a rerun action.
+
+v5.42 adds a public-only release marker wait command:
+`scripts\00631l_wait_public_release_marker.cmd --expected-sha <commit>`.
+It polls the public `release.json` served by GitHub Pages and avoids the GitHub
+Actions API, so post-push checks still work when API quota is limited.
