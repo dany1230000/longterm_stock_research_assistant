@@ -321,6 +321,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF data library readiness release: `docs\00631l_v5_14_etf_data_library_readiness.md`
 - Symbol search history filter release: `docs\00631l_v5_15_symbol_search_history_filter.md`
 - Selected ETF readiness banner release: `docs\00631l_v5_16_selected_etf_readiness_banner.md`
+- Overview chart date inspector release: `docs\00631l_v5_17_overview_chart_date_inspector.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

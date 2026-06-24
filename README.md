@@ -1305,3 +1305,7 @@ ETFs before switching the active research symbol.
 v5.16 adds a selected ETF readiness banner on the overview screen. After
 switching symbols, the first screen states whether the ETF has imported
 history/backtest data or only catalog fields, with program-operation guidance.
+
+v5.17 adds a date inspector below the overview price chart. The home chart keeps
+its one-year default window, but now shows the selected or latest date and value
+instead of leaving users to infer chart points from the line alone.

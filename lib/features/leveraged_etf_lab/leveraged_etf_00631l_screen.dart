@@ -3397,18 +3397,27 @@ class _OverviewSparklineBlock extends StatelessWidget {
   }
 }
 
-class _SparklineChart extends StatelessWidget {
+class _SparklineChart extends StatefulWidget {
   const _SparklineChart({required this.points});
 
   final List<EtfPriceHistoryPoint> points;
 
   @override
+  State<_SparklineChart> createState() => _SparklineChartState();
+}
+
+class _SparklineChartState extends State<_SparklineChart> {
+  int? _touchedIndex;
+
+  @override
   Widget build(BuildContext context) {
     final spots = <FlSpot>[];
-    for (var index = 0; index < points.length; index += 1) {
-      final close = points[index].performanceClose;
+    final spotPoints = <EtfPriceHistoryPoint>[];
+    for (var index = 0; index < widget.points.length; index += 1) {
+      final close = widget.points[index].performanceClose;
       if (close.isFinite) {
-        spots.add(FlSpot(index.toDouble(), close));
+        spots.add(FlSpot(spots.length.toDouble(), close));
+        spotPoints.add(widget.points[index]);
       }
     }
     if (spots.length < 2) {
@@ -3431,13 +3440,23 @@ class _SparklineChart extends StatelessWidget {
     final chartMaxY =
         spots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
     final padding = ((chartMaxY - chartMinY).abs() * 0.08).clamp(0.2, 20.0);
+    final fallbackIndex = spots.length - 1;
+    final safeTouchedIndex = _touchedIndex == null
+        ? fallbackIndex
+        : _touchedIndex!.clamp(0, spots.length - 1);
+    final hasManualSelection = _touchedIndex != null;
+    final touchedPoint = spotPoints[safeTouchedIndex];
+    final touchedValue = spots[safeTouchedIndex].y;
 
-    return SizedBox(
-      height: 112,
-      child: LineChart(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 112,
+          child: LineChart(
         LineChartData(
           minX: 0,
-          maxX: (points.length - 1).toDouble(),
+          maxX: (spots.length - 1).toDouble(),
           minY: chartMinY - padding,
           maxY: chartMaxY + padding,
           borderData: FlBorderData(show: false),
@@ -3460,13 +3479,13 @@ class _SparklineChart extends StatelessWidget {
                 reservedSize: 32,
                 getTitlesWidget: (value, meta) {
                   final index = value.round();
-                  if (!_isBottomDateTick(index, points.length)) {
+                  if (!_isBottomDateTick(index, spotPoints.length)) {
                     return const SizedBox.shrink();
                   }
                   return Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      _shortChartDate(points[index].date),
+                      _shortChartDate(spotPoints[index].date),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: _marketMutedTextColor(context),
@@ -3482,11 +3501,19 @@ class _SparklineChart extends StatelessWidget {
           ),
           lineTouchData: LineTouchData(
             enabled: true,
+            touchCallback: (event, response) {
+              final touched = response?.lineBarSpots?.isNotEmpty == true
+                  ? response!.lineBarSpots!.first.spotIndex
+                  : null;
+              if (touched != null && touched != _touchedIndex) {
+                setState(() => _touchedIndex = touched);
+              }
+            },
             touchTooltipData: LineTouchTooltipData(
               getTooltipItems: (touchedSpots) => [
                 for (final spot in touchedSpots)
                   LineTooltipItem(
-                    '${formatTaiwanDate(points[spot.spotIndex].date)}\n${_price(spot.y)}',
+                    '${formatTaiwanDate(spotPoints[spot.spotIndex].date)}\n${_price(spot.y)}',
                     const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
@@ -3502,15 +3529,31 @@ class _SparklineChart extends StatelessWidget {
               barWidth: 2.2,
               isCurved: true,
               color: _marketBlue,
-              dotData: const FlDotData(show: false),
+              dotData: FlDotData(
+                show: hasManualSelection,
+                checkToShowDot: (spot, _) => spot.x == safeTouchedIndex,
+              ),
               belowBarData: BarAreaData(
                 show: true,
                 color: _marketBlue.withValues(alpha: 0.10),
               ),
             ),
           ],
+            ),
+          ),
         ),
-      ),
+        const SizedBox(height: 6),
+        KeyedSubtree(
+          key: const ValueKey('00631l-overview-sparkline-touch-detail'),
+          child: _ChartTouchDetail(
+            point: touchedPoint,
+            value: touchedValue,
+            rangeStart: spotPoints.first.date,
+            rangeEnd: spotPoints.last.date,
+            isManualSelection: hasManualSelection,
+          ),
+        ),
+      ],
     );
   }
 }
