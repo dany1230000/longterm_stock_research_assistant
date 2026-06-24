@@ -1267,3 +1267,8 @@ controls in place.
 v5.7 strengthens the rule-based AI summary. The backend now emits a clearer
 daily briefing for holdings date, intraday NAV time, premium-discount range,
 exposure context, and data-risk status.
+
+v5.8 makes the AI page easier to scan on mobile. The page now opens with
+three compact briefing cards for daily status, intraday premium/discount
+context, and data-risk context, while the full rule-based report remains
+available in the detail panel.

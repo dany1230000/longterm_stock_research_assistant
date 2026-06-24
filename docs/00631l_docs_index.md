@@ -312,6 +312,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - History/backtest range context release: `docs\00631l_v5_5_history_backtest_range_context.md`
 - Position account summary release: `docs\00631l_v5_6_position_account_summary.md`
 - Daily AI analysis context release: `docs\00631l_v5_7_daily_ai_analysis_context.md`
+- AI page briefing cards release: `docs\00631l_v5_8_ai_page_briefing_cards.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

@@ -6518,61 +6518,42 @@ class _AiSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeaderCard(
+        _SectionBlock(
           title: '今日 AI 快覽',
           subtitle: 'rule_based 分析；聚焦今日資料時間、內容物、折溢價偏離與維護狀態。',
-          icon: Icons.psychology_alt_outlined,
-          badges: [
-            'AI',
-            'source ${summary.source}',
-            'readiness ${summary.readinessLabel}',
-          ],
-          metrics: [
-            _SectionHeaderMetric(
-              label: '資料時間',
-              value: summary.dataTime == null
-                  ? 'unavailable'
-                  : formatTaiwanDateTimeSeconds(summary.dataTime!),
-              caption: 'analysis data',
-            ),
-            _SectionHeaderMetric(
-              label: '摘要',
-              value: '${summary.bullets.length} 條',
-            ),
-            _SectionHeaderMetric(
-              label: '程式操作',
-              value: '${summary.actionItems.length} 項',
-            ),
-            const _SectionHeaderMetric(
-              label: '性質',
-              value: '非買賣建議',
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _SectionBlock(
-          title: '今日 AI 分析摘要',
-          subtitle: '預設 rule_based，不需要 API key。只解釋今日資料狀態、內容物變化與價格偏離。',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _AiBriefCards(data: data, summary: summary),
+              const SizedBox(height: 12),
               _StatusWrap(
                 labels: [
                   'source ${summary.source}',
-                  'sourceStatus ${summary.sourceStatusLabel}',
                   'readiness ${summary.readinessLabel}',
                   summary.disclaimer,
                 ],
               ),
-              const SizedBox(height: 12),
-              _AiDailyStatusPanel(data: data, summary: summary),
-              const SizedBox(height: 12),
-              _AiSignalGrid(data: data, summary: summary),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               Text(
                 '產生時間 ${formatTaiwanDateTimeSeconds(summary.generatedAt)}'
                 '${summary.dataTime == null ? '' : '，資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}'}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _SectionBlock(
+          title: '今日 AI 分析摘要',
+          subtitle: '摘要只描述當日資料狀態、內容物變化與價格偏離；完整資料放在展開區。',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _AiDailyStatusPanel(data: data, summary: summary),
+              const SizedBox(height: 12),
+              _AiSignalGrid(data: data, summary: summary),
               const SizedBox(height: 12),
               Text(
                 '今日重點',
@@ -6654,6 +6635,142 @@ class _AiSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AiBriefCards extends StatelessWidget {
+  const _AiBriefCards({required this.data, required this.summary});
+
+  final Etf00631LLabData data;
+  final EtfAiAnalysisSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final dailyBrief = _findAnalysisBullet(summary, '當日重點') ??
+        (summary.bullets.isEmpty ? '今日資料仍在載入或不足。' : summary.bullets.first);
+    final premiumAssessment = data.intradayNav?.premiumDiscountAssessment;
+    final intradayBrief = _findAnalysisBullet(summary, '盤中折溢價最新') ??
+        '盤中 NAV ${_intradayDataTimeText(data.intradayNav)}；${premiumAssessment == null ? '目前沒有可判斷的盤中偏離資料。' : _premiumDescription(premiumAssessment)}';
+    final riskBrief = _findAnalysisBullet(summary, '資料風險') ??
+        '資料來源 ${summary.sourceStatusLabel}；若資料 stale、error 或 unavailable，先檢查 backend 與來源時間。';
+
+    final cards = [
+      _AiBriefTile(
+        key: const ValueKey('00631l-ai-daily-brief'),
+        label: '當日重點',
+        value: dailyBrief,
+        icon: Icons.today_outlined,
+      ),
+      _AiBriefTile(
+        key: const ValueKey('00631l-ai-intraday-brief'),
+        label: '盤中偏離',
+        value: intradayBrief,
+        icon: Icons.price_change_outlined,
+      ),
+      _AiBriefTile(
+        key: const ValueKey('00631l-ai-risk-brief'),
+        label: '資料風險',
+        value: riskBrief,
+        icon: Icons.health_and_safety_outlined,
+      ),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 720) {
+          return Column(
+            children: [
+              for (var index = 0; index < cards.length; index += 1) ...[
+                if (index > 0) const SizedBox(height: 8),
+                cards[index],
+              ],
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var index = 0; index < cards.length; index += 1) ...[
+              if (index > 0) const SizedBox(width: 8),
+              Expanded(child: cards[index]),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _AiBriefTile extends StatelessWidget {
+  const _AiBriefTile({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color:
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.42),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: theme.colorScheme.onPrimaryContainer,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      height: 1.35,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -10474,6 +10591,15 @@ String _overviewAiBrief(Etf00631LLabData data) {
     return 'AI 摘要暫無內容；請確認資料來源狀態後重新整理。';
   }
   return data.aiAnalysis.bullets.first;
+}
+
+String? _findAnalysisBullet(EtfAiAnalysisSummary summary, String marker) {
+  for (final bullet in summary.bullets) {
+    if (bullet.contains(marker)) {
+      return bullet;
+    }
+  }
+  return null;
 }
 
 List<String> _completeDataBriefing(Etf00631LLabData data) {
