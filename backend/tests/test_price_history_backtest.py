@@ -22,6 +22,7 @@ from backend.scripts.export_static_00631l_data import (
     _merge_seed_if_needed,
     _prepare_price_history_update_start,
     _resolve_multi_etf_codes,
+    _seed_codes_for_multi_etf_mode,
 )
 
 
@@ -333,6 +334,20 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertEqual(codes[:2], ["00631L", "0050"])
         self.assertIn("00757", codes)
         self.assertTrue(any("multiEtfCodesResolved=all-catalog" in item for item in warnings))
+
+    def test_static_export_all_catalog_merges_available_seed_codes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            seed_dir = Path(temp_dir) / "seed"
+            seed_dir.mkdir()
+            (seed_dir / "0050.jsonl").write_text("", encoding="utf-8")
+            (seed_dir / "00878.jsonl").write_text("", encoding="utf-8")
+
+            codes = _seed_codes_for_multi_etf_mode(
+                "all-catalog",
+                seed_dir=seed_dir,
+            )
+
+        self.assertEqual(codes, ["0050", "00878"])
 
     def test_static_status_reads_etf_tier_counts_from_index_fallback(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

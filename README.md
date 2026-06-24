@@ -1535,3 +1535,7 @@ v5.69 makes the static ETF price-history index catalog-complete. GitHub Pages
 static export now includes every TWSE ETF catalog code in the readiness index;
 symbols without saved price history are shown as unavailable instead of being
 hidden from the denominator.
+
+v5.70 commits a broader validated ETF price-history seed set. Static Pages
+export can merge 230 ready ETF histories from seed before live refresh, keeping
+public ETF readiness stable when a workflow run gets partial TWSE responses.

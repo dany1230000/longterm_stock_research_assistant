@@ -374,6 +374,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Static coverage guard: `docs\00631l_v5_67_static_coverage_guard.md`
 - Compact static output: `docs\00631l_v5_68_compact_static_output.md`
 - Catalog-complete static index: `docs\00631l_v5_69_catalog_complete_static_index.md`
+- Broad ETF price seed: `docs\00631l_v5_70_broad_etf_price_seed.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

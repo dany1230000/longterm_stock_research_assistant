@@ -266,11 +266,9 @@ def main() -> int:
         warnings=warnings,
     )
     etf_price_history_store = EtfPriceHistoryStore(args.etf_price_history_dir)
-    seed_codes = (
-        list(DEFAULT_ETF_HISTORY_CODES)
-        if _is_all_local_codes_mode(args.multi_etf_codes)
-        or _is_all_catalog_codes_mode(args.multi_etf_codes)
-        else parse_code_list(args.multi_etf_codes)
+    seed_codes = _seed_codes_for_multi_etf_mode(
+        args.multi_etf_codes,
+        seed_dir=Path(args.seed_etf_price_history_dir),
     )
     _merge_etf_price_history_seed_if_needed(
         store=etf_price_history_store,
@@ -536,6 +534,19 @@ def _is_all_local_codes_mode(value: str) -> bool:
 
 def _is_all_catalog_codes_mode(value: str) -> bool:
     return str(value or "").strip().lower() in {"all-catalog", "catalog"}
+
+
+def _seed_codes_for_multi_etf_mode(value: str, *, seed_dir: Path) -> list[str]:
+    if _is_all_catalog_codes_mode(value):
+        seed_codes = [
+            path.stem.upper()
+            for path in sorted(seed_dir.glob("*.jsonl"))
+            if path.stem
+        ] if seed_dir.exists() else []
+        return seed_codes or list(DEFAULT_ETF_HISTORY_CODES)
+    if _is_all_local_codes_mode(value):
+        return list(DEFAULT_ETF_HISTORY_CODES)
+    return parse_code_list(value)
 
 
 def _build_release_metadata() -> dict[str, str]:

@@ -38,6 +38,15 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--max-coverage-age-days 7", script)
         self.assertIn("--multi-etf-codes all-catalog", script)
 
+    def test_broad_etf_price_seed_is_committed_for_pages_reproducibility(self) -> None:
+        seed_dir = ROOT / "backend" / "seeds" / "etf_price_history_seed"
+        seed_files = sorted(seed_dir.glob("*.jsonl"))
+
+        self.assertGreaterEqual(len(seed_files), 200)
+        self.assertTrue((seed_dir / "00631L.jsonl").exists())
+        self.assertTrue((seed_dir / "0050.jsonl").exists())
+        self.assertTrue((seed_dir / "00878.jsonl").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
