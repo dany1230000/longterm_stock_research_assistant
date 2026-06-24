@@ -1345,3 +1345,7 @@ v5.25 moves ETF data completion status into the left-top ETF search sheet.
 Catalog count, history-ready count, coverage tiers, remaining gap, and data
 time are visible before users search or switch ETFs, while Settings keeps the
 same maintenance summary.
+
+v5.26 makes history chart dates easier to read. Compact charts now show full
+start, middle, and end dates below the chart while keeping tap-to-inspect date
+details.

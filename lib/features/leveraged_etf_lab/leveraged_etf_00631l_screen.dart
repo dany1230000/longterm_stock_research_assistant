@@ -10372,6 +10372,14 @@ class _LineChartPanelState extends State<_LineChartPanel> {
                 ),
         ),
         const SizedBox(height: 6),
+        if (spotPoints.isNotEmpty) ...[
+          _ChartAxisDateStrip(
+            start: spotPoints.first.date,
+            middle: spotPoints[(spotPoints.length - 1) ~/ 2].date,
+            end: spotPoints.last.date,
+          ),
+          const SizedBox(height: 6),
+        ],
         _ChartTouchDetail(
           point: touchedPoint,
           value: touchedValue,
@@ -10380,6 +10388,49 @@ class _LineChartPanelState extends State<_LineChartPanel> {
           isManualSelection: hasManualSelection,
         ),
       ],
+    );
+  }
+}
+
+class _ChartAxisDateStrip extends StatelessWidget {
+  const _ChartAxisDateStrip({
+    required this.start,
+    required this.middle,
+    required this.end,
+  });
+
+  final DateTime start;
+  final DateTime middle;
+  final DateTime end;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: _axisLabel(context, '起', start, TextAlign.left)),
+        Expanded(child: _axisLabel(context, '中', middle, TextAlign.center)),
+        Expanded(child: _axisLabel(context, '迄', end, TextAlign.right)),
+      ],
+    );
+  }
+
+  Widget _axisLabel(
+    BuildContext context,
+    String label,
+    DateTime date,
+    TextAlign align,
+  ) {
+    final theme = Theme.of(context);
+    return Text(
+      '$label ${formatTaiwanDate(date)}',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: align,
+      style: theme.textTheme.labelSmall?.copyWith(
+        color: _marketMutedTextColor(context),
+        fontWeight: FontWeight.w800,
+        fontSize: 10,
+      ),
     );
   }
 }

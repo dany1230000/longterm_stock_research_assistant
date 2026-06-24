@@ -380,6 +380,9 @@ void main() {
     expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsOneWidget);
     expect(find.textContaining('圖表區間 2025/06/03 - 2026/06/03'), findsWidgets);
     expect(find.textContaining('橫軸顯示起點 / 中點 / 終點'), findsOneWidget);
+    expect(find.text('起 2025/06/03'), findsWidgets);
+    expect(find.text('中 2026/06/01'), findsWidgets);
+    expect(find.text('迄 2026/06/03'), findsWidgets);
     expect(find.textContaining('區間筆數 4'), findsOneWidget);
     expect(find.textContaining('完整筆數 5'), findsOneWidget);
     expect(find.text('目前區間價格表'), findsOneWidget);
