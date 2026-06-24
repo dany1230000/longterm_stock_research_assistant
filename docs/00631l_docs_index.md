@@ -338,6 +338,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF data status wording release: `docs\00631l_v5_31_etf_data_status_wording.md`
 - Compact overview ticker release: `docs\00631l_v5_32_compact_overview_ticker.md`
 - Overview chart priority release: `docs\00631l_v5_33_overview_chart_priority.md`
+- Public Pages smoke release: `docs\00631l_v5_34_public_pages_smoke.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

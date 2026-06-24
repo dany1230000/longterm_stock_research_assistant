@@ -1379,3 +1379,8 @@ the chart sooner.
 v5.33 moves the overview price chart directly under the quote header. Data
 quality and update-time strips still remain visible, but they no longer push the
 chart below the first screen.
+
+v5.34 adds a public GitHub Pages smoke check. Release validation now verifies
+that the deployed root page, PWA manifest, and static public data status are
+reachable and still identify the 00631L app before a release is treated as
+ready.
