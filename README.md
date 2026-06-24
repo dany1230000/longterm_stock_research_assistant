@@ -1301,3 +1301,7 @@ data time without opening maintenance diagnostics.
 v5.15 adds history-availability filters to the left-top symbol search sheet.
 Users can filter search results by all ETFs, history-ready ETFs, or catalog-only
 ETFs before switching the active research symbol.
+
+v5.16 adds a selected ETF readiness banner on the overview screen. After
+switching symbols, the first screen states whether the ETF has imported
+history/backtest data or only catalog fields, with program-operation guidance.

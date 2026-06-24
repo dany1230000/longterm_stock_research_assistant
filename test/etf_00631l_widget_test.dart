@@ -555,6 +555,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(
+      find.byKey(const ValueKey('00631l-selected-etf-readiness-banner')),
+      findsOneWidget,
+    );
+    expect(find.textContaining('00400A catalog-only'), findsOneWidget);
+    expect(find.textContaining('尚未匯入可驗證歷史價格'), findsWidgets);
+
     expect(find.text('ETF 歷史資料尚未匯入'), findsOneWidget);
     expect(find.textContaining('請先匯入歷史價格'), findsWidgets);
     _expectNoTradingActionText();
@@ -745,6 +752,12 @@ void main() {
 
     await _tapSection(tester, 'overview');
     await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-selected-etf-readiness-banner')),
+      findsOneWidget,
+    );
+    expect(find.textContaining('0050 歷史與回測可用'), findsOneWidget);
+    expect(find.textContaining('已載入 3 筆歷史價格'), findsWidgets);
     expect(find.textContaining('0050 元大台灣50'), findsWidgets);
     expect(find.text('0050 核心資料'), findsOneWidget);
     expect(find.text('資料正確性'), findsOneWidget);

@@ -470,6 +470,41 @@ class _SelectedEtfViewData {
   final double? previousNav;
   final DateTime? dataTime;
   final String sourceStatusLabel;
+
+  EtfPriceHistoryCompletenessSummary get historySummary =>
+      priceHistory.completenessSummary();
+
+  bool get hasImportedHistory =>
+      historySummary.rowCount >= 2 ||
+      (catalogItem != null && _catalogItemHasImportedEtfHistory(catalogItem!));
+
+  String get readinessLabel {
+    if (is00631L) {
+      return '00631L 完整研究室';
+    }
+    return hasImportedHistory ? '歷史與回測可用' : 'catalog-only';
+  }
+
+  String get readinessDetail {
+    final summary = historySummary;
+    if (is00631L) {
+      return '00631L 已接官方 holdings、intraday NAV、歷史與回測資料。';
+    }
+    if (hasImportedHistory) {
+      return '$code 已載入 ${formatInteger(summary.rowCount)} 筆歷史價格，區間 ${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}。';
+    }
+    return '$code 目前只有 ETF catalog 欄位，尚未匯入可驗證歷史價格。';
+  }
+
+  String get readinessAction {
+    if (is00631L) {
+      return '保持 daily cycle 與 static export 更新。';
+    }
+    if (hasImportedHistory) {
+      return '可查看歷史、回測與自選比較；內容物資料仍以 00631L 為主。';
+    }
+    return '若要啟用歷史與回測，請先匯入該 ETF price history。';
+  }
 }
 
 class _DetailsLoadStateStrip extends StatelessWidget {
@@ -2433,6 +2468,10 @@ class _OverviewSection extends StatelessWidget {
         const SizedBox(height: 6),
         _OverviewQualityRibbon(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
+        if (!selectedEtf.is00631L) ...[
+          _SelectedEtfReadinessBanner(selectedEtf: selectedEtf),
+          const SizedBox(height: 8),
+        ],
         _AlwaysExpandedPanel(
           title: selectedEtf.is00631L ? '圖表與曝險' : '價格圖表',
           subtitle: selectedEtf.is00631L
@@ -2578,6 +2617,76 @@ class _InlineQualityPill extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectedEtfReadinessBanner extends StatelessWidget {
+  const _SelectedEtfReadinessBanner({required this.selectedEtf});
+
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final ready = selectedEtf.hasImportedHistory;
+    final accent = ready
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.tertiary;
+    return DecoratedBox(
+      key: const ValueKey('00631l-selected-etf-readiness-banner'),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: accent.withValues(alpha: 0.55)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 9, 10, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                _MiniStatusBadge(label: ready ? 'READY' : 'DATA'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${selectedEtf.code} ${selectedEtf.readinessLabel}',
+                    key: const ValueKey('00631l-selected-etf-readiness-title'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                        ),
+                  ),
+                ),
+                _CompactTextBadge(
+                  label: ready ? 'history ready' : 'catalog-only',
+                ),
+              ],
+            ),
+            const SizedBox(height: 7),
+            Text(
+              selectedEtf.readinessDetail,
+              key: const ValueKey('00631l-selected-etf-readiness-detail'),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    height: 1.35,
+                  ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              selectedEtf.readinessAction,
+              key: const ValueKey('00631l-selected-etf-readiness-action'),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: accent,
+                    fontWeight: FontWeight.w800,
+                    height: 1.3,
+                  ),
+            ),
+          ],
         ),
       ),
     );
@@ -4861,6 +4970,8 @@ class _HistoryBacktestSection extends StatelessWidget {
           const SizedBox(height: 10),
         ],
         if (history.points.length < 2) ...[
+          _SelectedEtfReadinessBanner(selectedEtf: selectedEtf),
+          const SizedBox(height: 10),
           const _SectionBlock(
             title: 'ETF 歷史資料尚未匯入',
             subtitle: '目前只找到 ETF catalog；歷史圖表與回測需要先匯入該 ETF 的可驗證歷史價格。',
