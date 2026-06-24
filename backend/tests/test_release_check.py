@@ -75,6 +75,14 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertIn('"public_pages"', source)
         self.assertIn("scripts\\\\00631l_check_public_pages.cmd", source)
 
+    def test_release_check_runs_pages_deploy_status(self) -> None:
+        source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
+            encoding="utf-8",
+        )
+
+        self.assertIn('"pages_deploy_status"', source)
+        self.assertIn("scripts\\\\00631l_check_pages_deploy.cmd", source)
+
     def test_static_summary_tier_guard_requires_tiers_when_etf_history_exists(self) -> None:
         self.assertTrue(
             _static_summary_has_usable_tiers(

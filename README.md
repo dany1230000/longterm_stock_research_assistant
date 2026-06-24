@@ -1384,3 +1384,7 @@ v5.34 adds a public GitHub Pages smoke check. Release validation now verifies
 that the deployed root page, PWA manifest, and static public data status are
 reachable and still identify the 00631L app before a release is treated as
 ready.
+
+v5.35 adds a GitHub Pages deployment-status check. It reports the latest Pages
+workflow run and GitHub Pages settings alongside the public smoke result, so
+public phone deployment problems are visible from the local release flow.
