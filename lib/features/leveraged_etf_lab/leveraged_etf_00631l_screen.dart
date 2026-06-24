@@ -505,6 +505,35 @@ class _SelectedEtfViewData {
     }
     return '若要啟用歷史與回測，請先匯入該 ETF price history。';
   }
+
+  String get historyCoverageText {
+    final summary = historySummary;
+    return '${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}';
+  }
+
+  String get priceFieldLabel {
+    final summary = historySummary;
+    return summary.hasAdjustedClose ? 'adjustedClose' : 'close';
+  }
+
+  String get adjustmentContextLabel {
+    final summary = historySummary;
+    if (summary.hasNonUnitAdjustment) {
+      return '有調整因子';
+    }
+    if (summary.hasAdjustedClose) {
+      return '使用調整價';
+    }
+    return '未標示調整';
+  }
+
+  String get backtestReadinessLabel {
+    return hasImportedHistory ? 'backtest ready' : 'backtest unavailable';
+  }
+
+  String get liveNavScopeLabel {
+    return is00631L ? 'live NAV backend' : 'live NAV 00631L only';
+  }
 }
 
 class _DetailsLoadStateStrip extends StatelessWidget {
@@ -2568,6 +2597,8 @@ class _OverviewSection extends StatelessWidget {
         if (!selectedEtf.is00631L) ...[
           _SelectedEtfReadinessBanner(selectedEtf: selectedEtf),
           const SizedBox(height: 8),
+          _SelectedEtfDataContextCard(selectedEtf: selectedEtf),
+          const SizedBox(height: 8),
         ],
         _OverviewQualityRibbon(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
@@ -2977,6 +3008,96 @@ class _SelectedEtfReadinessBanner extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                     height: 1.3,
                   ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectedEtfDataContextCard extends StatelessWidget {
+  const _SelectedEtfDataContextCard({required this.selectedEtf});
+
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final history = selectedEtf.historySummary;
+    final latestDate = _dateOrDash(history.latest?.date);
+    final historyReady = selectedEtf.hasImportedHistory;
+    final liveNavCaption = selectedEtf.is00631L
+        ? 'public backend 可更新 intraday NAV'
+        : '此檔尚未建立 live NAV mapping';
+    final backtestCaption =
+        historyReady ? '可用現有 history 做歷史與回測檢視' : 'history 不足，先不要解讀回測';
+    return KeyedSubtree(
+      key: const ValueKey('00631l-selected-etf-data-context-card'),
+      child: _SectionBlock(
+        title: '資料脈絡',
+        subtitle: '${selectedEtf.code} 的資料覆蓋、欄位與 live 範圍；這裡只描述資料狀態，非買賣建議。',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _StatusWrap(
+              labels: [
+                'ETF ${selectedEtf.code}',
+                'history ${selectedEtf.priceHistory.sourceStatusLabel}',
+                'rows ${formatInteger(history.rowCount)}',
+                selectedEtf.backtestReadinessLabel,
+                selectedEtf.liveNavScopeLabel,
+                '非買賣建議',
+              ],
+            ),
+            const SizedBox(height: 12),
+            _ResponsiveMetricGrid(
+              cards: [
+                _MetricCard(
+                  label: '歷史筆數',
+                  value: formatInteger(history.rowCount),
+                  caption: selectedEtf.historyCoverageText,
+                  icon: Icons.timeline_outlined,
+                ),
+                _MetricCard(
+                  label: '最新收盤',
+                  value: _price(history.latest?.performanceClose),
+                  caption: latestDate,
+                  icon: Icons.show_chart_outlined,
+                ),
+                _MetricCard(
+                  label: '價格欄位',
+                  value: selectedEtf.priceFieldLabel,
+                  caption: selectedEtf.adjustmentContextLabel,
+                  icon: Icons.tune_outlined,
+                ),
+                _MetricCard(
+                  label: 'live NAV',
+                  value: selectedEtf.is00631L ? '可用' : '未接',
+                  caption: liveNavCaption,
+                  icon: Icons.sensors_outlined,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _BulletLine(
+              text: historyReady
+                  ? '${selectedEtf.code} 已有 ${formatInteger(history.rowCount)} 筆歷史價格，coverage ${selectedEtf.historyCoverageText}。'
+                  : '${selectedEtf.code} 目前沒有足夠歷史價格，畫面會保留 catalog/static/error 狀態。',
+              icon: Icons.fact_check_outlined,
+            ),
+            const _BulletLine(
+              text:
+                  '即時 NAV / 折溢價 live mapping 目前以 00631L 為主；其他 ETF 先以歷史價格與 catalog 狀態觀察。',
+              icon: Icons.sensors_outlined,
+            ),
+            _BulletLine(
+              text:
+                  '價格分析使用 ${selectedEtf.priceFieldLabel}；若資料含分割或調整，請以調整價與 adjustmentFactor 為準。',
+              icon: Icons.rule_outlined,
+            ),
+            _BulletLine(
+              text: backtestCaption,
+              icon: Icons.query_stats_outlined,
             ),
           ],
         ),
@@ -7740,6 +7861,8 @@ class _SelectedEtfAiSection extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 12),
+        _SelectedEtfDataContextCard(selectedEtf: selectedEtf),
         const SizedBox(height: 12),
         _SectionBlock(
           title: '${selectedEtf.code} 資料解讀摘要',

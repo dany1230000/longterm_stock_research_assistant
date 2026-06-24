@@ -436,6 +436,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_45_brief_public_release_wait.md",
         "docs/00631l_v5_46_brief_public_pages_checkup.md",
         "docs/00631l_v5_47_brief_release_check.md",
+        "docs/00631l_v5_48_selected_etf_data_context.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

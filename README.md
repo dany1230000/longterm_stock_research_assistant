@@ -1440,3 +1440,8 @@ nested smoke payloads.
 v5.47 makes `scripts\00631l_release_check.cmd` compact by default. Use
 `scripts\00631l_release_check.cmd --verbose` only when full per-step stdout and
 stderr tails are needed for debugging.
+
+v5.48 adds a selected ETF data-context card to the overview and AI pages. When
+the top-left selector switches away from 00631L, the app now shows history row
+count, coverage, price field, split-adjustment context, backtest readiness, and
+live NAV scope before any analysis text.
