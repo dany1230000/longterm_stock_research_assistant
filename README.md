@@ -1255,3 +1255,7 @@ exposure layout.
 v5.4 makes the left-top symbol search clearer. Each ETF result now states
 whether switching enables history/backtest/comparison or only a catalog
 snapshot.
+
+v5.5 makes the history/backtest date range easier to read. History charts and
+backtest results now show a compact range context strip with the selected
+dates, row/sample count, and latest data date before the detailed cards.

@@ -4539,11 +4539,30 @@ class _FilterablePriceHistoryBlockState
           ),
         ),
         const SizedBox(height: 10),
-        _StatusWrap(
-          labels: [
-            '目前區間：${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}',
-            '區間筆數 ${formatInteger(selectedSummary.rowCount)}',
-            '完整筆數 ${formatInteger(fullSummary.rowCount)}',
+        _RangeContextStrip(
+          key: const ValueKey('00631l-history-range-context'),
+          title: '價格圖表區間',
+          subtitle: '預設最近 1 年；可點開始或結束日期調整。',
+          items: [
+            _RangeContextItem(
+              label: '目前區間',
+              value:
+                  '${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}',
+            ),
+            _RangeContextItem(
+              label: '區間筆數',
+              value: formatInteger(selectedSummary.rowCount),
+              separator: ' ',
+            ),
+            _RangeContextItem(
+              label: '完整筆數',
+              value: formatInteger(fullSummary.rowCount),
+              separator: ' ',
+            ),
+            _RangeContextItem(
+              label: '最新資料',
+              value: _dateOrDash(selectedSummary.coverageEnd),
+            ),
           ],
         ),
         const SizedBox(height: 6),
@@ -5638,14 +5657,35 @@ class _BacktestSectionState extends State<_BacktestSection> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    _StatusWrap(
-                      labels: [
-                        '回測區間 ${_dateOrDash(_startDate)} - ${_dateOrDash(_endDate)}',
-                        _strategy == EtfBacktestStrategy.lumpSum
-                            ? '策略 一次投入'
-                            : '策略 定期定額',
-                        '樣本 ${formatInteger(result.equityCurve.length)}',
-                        '成本 ${_parseDouble(_feeController.text).toStringAsFixed(2)}%',
+                    _RangeContextStrip(
+                      key: const ValueKey('00631l-backtest-range-context'),
+                      title: '回測設定摘要',
+                      subtitle: '結果只套用目前日期區間與下方參數。',
+                      items: [
+                        _RangeContextItem(
+                          label: '回測區間',
+                          value:
+                              '${_dateOrDash(_startDate)} - ${_dateOrDash(_endDate)}',
+                          separator: ' ',
+                        ),
+                        _RangeContextItem(
+                          label: '策略',
+                          value: _strategy == EtfBacktestStrategy.lumpSum
+                              ? '一次投入'
+                              : '定期定額',
+                          separator: ' ',
+                        ),
+                        _RangeContextItem(
+                          label: '樣本',
+                          value: formatInteger(result.equityCurve.length),
+                          separator: ' ',
+                        ),
+                        _RangeContextItem(
+                          label: '成本',
+                          value:
+                              '${_parseDouble(_feeController.text).toStringAsFixed(2)}%',
+                          separator: ' ',
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -5905,6 +5945,130 @@ class _BacktestDateButton extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RangeContextItem {
+  const _RangeContextItem({
+    required this.label,
+    required this.value,
+    this.separator = '：',
+  });
+
+  final String label;
+  final String value;
+  final String separator;
+
+  String get text => '$label$separator$value';
+}
+
+class _RangeContextStrip extends StatelessWidget {
+  const _RangeContextStrip({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.items,
+  });
+
+  final String title;
+  final String subtitle;
+  final List<_RangeContextItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                const _CompactTextBadge(label: '日期可調'),
+              ],
+            ),
+            const SizedBox(height: 3),
+            Text(
+              subtitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w700,
+                height: 1.25,
+              ),
+            ),
+            const SizedBox(height: 8),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final compact = constraints.maxWidth < 520;
+                final itemWidth = compact
+                    ? (constraints.maxWidth - 8) / 2
+                    : (constraints.maxWidth - 24) / 4;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final item in items)
+                      SizedBox(
+                        width: itemWidth.clamp(120, double.infinity),
+                        child: _RangeContextTile(item: item),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RangeContextTile extends StatelessWidget {
+  const _RangeContextTile({required this.item});
+
+  final _RangeContextItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
+        child: Text(
+          item.text,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.w900,
+            height: 1.18,
           ),
         ),
       ),

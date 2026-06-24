@@ -327,6 +327,10 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.byKey(const ValueKey('00631l-history-range-context')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-history-range-1y')),
       findsOneWidget,
     );
@@ -402,6 +406,11 @@ void main() {
       find.byKey(const ValueKey('00631l-backtest-range-chips')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-backtest-range-context')),
+      findsOneWidget,
+    );
+    expect(find.text('回測設定摘要'), findsOneWidget);
     final backtestAllRange =
         find.byKey(const ValueKey('00631l-backtest-range-all'));
     await tester.scrollUntilVisible(
