@@ -7387,8 +7387,6 @@ class _AiSection extends StatelessWidget {
         const SizedBox(height: 12),
         _AiDailyInterpretationCard(data: data, summary: summary),
         const SizedBox(height: 12),
-        _AiTodayInterpretationMatrix(data: data, summary: summary),
-        const SizedBox(height: 12),
         _SectionBlock(
           title: '今日 AI 快覽',
           subtitle: 'rule_based 分析；聚焦今日資料時間、內容物、折溢價偏離與維護狀態。',
@@ -7422,10 +7420,6 @@ class _AiSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _AiDailyStatusPanel(data: data, summary: summary),
-              const SizedBox(height: 12),
-              _AiSignalGrid(data: data, summary: summary),
-              const SizedBox(height: 12),
               Text(
                 '今日重點',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -7447,11 +7441,20 @@ class _AiSection extends StatelessWidget {
                 _BulletLine(text: action, icon: Icons.task_alt_outlined),
               const SizedBox(height: 12),
               _CompactExpansionPanel(
-                title: '完整資料日報',
-                subtitle: '展開查看全部 AI 條目、維護狀態與資料完整度。',
+                title: '進階 AI 明細',
+                subtitle: '展開查看判讀矩陣、資料狀態、完整日報與資料完整度。',
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _AiTodayInterpretationMatrix(
+                      data: data,
+                      summary: summary,
+                    ),
+                    const SizedBox(height: 12),
+                    _AiDailyStatusPanel(data: data, summary: summary),
+                    const SizedBox(height: 12),
+                    _AiSignalGrid(data: data, summary: summary),
+                    const SizedBox(height: 12),
                     if (hiddenBullets.isNotEmpty) ...[
                       Text(
                         '其餘 AI 條目',

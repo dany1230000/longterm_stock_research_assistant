@@ -1494,3 +1494,7 @@ result strip replaces the taller result header.
 v5.60 shortens the position page. A compact local-only title and account
 summary replace the tall position header; saved positions keep edit inputs
 behind a compact expander.
+
+v5.61 shortens the AI page first screen. The daily interpretation and three
+brief cards stay visible first, while the matrix, data status, complete report,
+and integrity details move behind `進階 AI 明細`.
