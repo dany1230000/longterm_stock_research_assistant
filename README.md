@@ -1354,3 +1354,7 @@ v5.27 makes ETF data-completion counts stricter. The app now compares imported
 ETF price histories against the broader catalog count when available, so the
 visible gap does not disappear just because the history index itself is fully
 ready.
+
+v5.28 makes ETF import status output stricter too. The multi-ETF history
+status command now prints catalogSymbols and gap, so daily maintenance can see
+which catalog rows still lack usable price-history coverage.

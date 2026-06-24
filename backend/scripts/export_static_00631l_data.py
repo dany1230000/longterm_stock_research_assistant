@@ -41,6 +41,11 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
     tiers = payload.get("etfPriceHistoryCoverageTierCounts") or {}
     if not isinstance(tiers, dict):
         tiers = {}
+    etf_catalog_rows = int(payload.get("etfCatalogRowCount") or 0)
+    etf_ready_rows = int(payload.get("etfPriceHistoryReadyCount") or 0)
+    etf_history_rows = int(payload.get("etfPriceHistoryRowCount") or 0)
+    etf_completion_total = max(etf_catalog_rows, etf_history_rows, etf_ready_rows)
+    etf_gap = max(0, etf_completion_total - etf_ready_rows)
     tier_text = (
         ",".join(
             f"{key}:{int(tiers.get(key) or 0)}"
@@ -54,8 +59,10 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
         f"overallStatus={payload.get('overallStatus', 'UNKNOWN')}",
         f"rows={int(payload.get('rowCount') or 0)}",
         f"coverage={payload.get('coverageStart')}..{payload.get('coverageEnd')}",
-        f"etfReady={int(payload.get('etfPriceHistoryReadyCount') or 0)}",
-        f"etfRows={int(payload.get('etfPriceHistoryRowCount') or 0)}",
+        f"etfReady={etf_ready_rows}",
+        f"etfRows={etf_history_rows}",
+        f"etfCatalogRows={etf_catalog_rows}",
+        f"etfGap={etf_gap}",
         f"tiers={tier_text}",
     ]
     if payload.get("outputDir"):

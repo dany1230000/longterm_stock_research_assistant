@@ -436,11 +436,18 @@ class EtfPriceHistoryTests(unittest.TestCase):
             ],
         }
 
-        summary = build_status_summary_response(payload, sample_size=2)
+        summary = build_status_summary_response(
+            payload,
+            catalog_row_count=5,
+            sample_size=2,
+        )
 
         self.assertNotIn("items", summary)
         self.assertEqual(summary["rowCount"], 3)
         self.assertEqual(summary["readyCount"], 2)
+        self.assertEqual(summary["catalogRowCount"], 5)
+        self.assertEqual(summary["completionTotal"], 5)
+        self.assertEqual(summary["completionGap"], 3)
         self.assertEqual(summary["coverageStart"], "2019-01-02")
         self.assertEqual(summary["coverageEnd"], "2026-06-18")
         self.assertEqual(summary["sampleCodes"], ["0050", "0056"])

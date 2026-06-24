@@ -429,7 +429,8 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 "coverageStart": "2014-10-31",
                 "coverageEnd": "2026-06-11",
                 "etfPriceHistoryReadyCount": 228,
-                "etfPriceHistoryRowCount": 55000,
+                "etfPriceHistoryRowCount": 228,
+                "etfCatalogRowCount": 344,
                 "etfPriceHistoryCoverageTierCounts": {
                     "long_term": 8,
                     "recent": 220,
@@ -444,7 +445,9 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertIn("rows=2827", line)
         self.assertIn("coverage=2014-10-31..2026-06-11", line)
         self.assertIn("etfReady=228", line)
-        self.assertIn("etfRows=55000", line)
+        self.assertIn("etfRows=228", line)
+        self.assertIn("etfCatalogRows=344", line)
+        self.assertIn("etfGap=116", line)
         self.assertIn("tiers=long_term:8,recent:220,unavailable:0,error:0", line)
 
     def test_static_export_summary_line_does_not_infer_missing_tier_counts(self) -> None:
@@ -460,6 +463,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         )
 
         self.assertIn("etfReady=15", line)
+        self.assertIn("etfGap=0", line)
         self.assertIn("tiers=not_available", line)
 
     def test_static_export_strict_fails_without_price_history(self) -> None:

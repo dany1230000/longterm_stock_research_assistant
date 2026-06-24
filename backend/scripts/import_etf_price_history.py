@@ -65,8 +65,17 @@ def main() -> int:
     store = EtfPriceHistoryStore(args.output_dir, seed_dir=args.seed_dir)
     if args.status_only:
         index_payload = store.index_response(fetched_at=utc_now_iso())
+        catalog_payload = load_etf_catalog(args.catalog_path, fetched_at=utc_now_iso())
+        catalog_row_count = int(catalog_payload.get("rowCount") or 0)
+        ready_count = int(index_payload.get("readyCount") or 0)
+        history_row_count = int(index_payload.get("rowCount") or 0)
+        completion_total = max(catalog_row_count, history_row_count, ready_count)
+        completion_gap = max(0, completion_total - ready_count)
         payload = (
-            build_status_summary_response(index_payload)
+            build_status_summary_response(
+                index_payload,
+                catalog_row_count=catalog_row_count,
+            )
             if args.summary_only
             else index_payload
         )
@@ -77,6 +86,8 @@ def main() -> int:
             f"overallStatus={'FAIL' if validation_failures else 'PASS' if index_payload.get('readyCount', 0) else 'WARN'} "
             f"symbols={index_payload.get('rowCount', 0)} "
             f"ready={index_payload.get('readyCount', 0)} "
+            f"catalogSymbols={catalog_row_count} "
+            f"gap={completion_gap} "
             f"validationFailures={validation_failures}"
         )
         return 1 if validation_failures else 0
@@ -214,6 +225,7 @@ def _resolve_codes(args: argparse.Namespace) -> list[str]:
 def build_status_summary_response(
     payload: dict[str, object],
     *,
+    catalog_row_count: int = 0,
     sample_size: int = 12,
 ) -> dict[str, object]:
     items = [item for item in payload.get("items", []) if isinstance(item, dict)]
@@ -231,6 +243,9 @@ def build_status_summary_response(
     tier_counts = payload.get("coverageTierCounts")
     if not isinstance(tier_counts, dict):
         tier_counts = _coverage_tier_counts(items)
+    ready_count = int(payload.get("readyCount") or 0)
+    history_row_count = int(payload.get("rowCount") or 0)
+    completion_total = max(catalog_row_count, history_row_count, ready_count)
     return {
         "sourceStatus": payload.get("sourceStatus"),
         "sourceContract": payload.get("sourceContract"),
@@ -240,6 +255,9 @@ def build_status_summary_response(
         "dataTime": payload.get("dataTime"),
         "rowCount": payload.get("rowCount", 0),
         "readyCount": payload.get("readyCount", 0),
+        "catalogRowCount": catalog_row_count,
+        "completionTotal": completion_total,
+        "completionGap": max(0, completion_total - ready_count),
         "coverageStart": min(starts) if starts else None,
         "coverageEnd": max(ends) if ends else None,
         "validationFailureCount": payload.get("validationFailureCount", 0),
