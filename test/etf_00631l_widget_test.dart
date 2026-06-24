@@ -894,6 +894,24 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('settings shows ETF data library readiness', (tester) async {
+    await _pumpLab(tester, _EtfReadinessOperationsRepository());
+
+    await _tapSection(tester, 'settings');
+    await tester.pumpAndSettle();
+
+    expect(find.text('ETF 資料補齊'), findsOneWidget);
+    expect(find.text('catalog 檔數'), findsOneWidget);
+    expect(find.text('歷史 ready'), findsOneWidget);
+    expect(find.text('228 / 228'), findsOneWidget);
+    expect(find.text('long-term'), findsOneWidget);
+    expect(find.text('8'), findsWidgets);
+    expect(find.text('recent'), findsOneWidget);
+    expect(find.text('220'), findsWidgets);
+    expect(find.text('尚未 ready'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('live proxy failure keeps fallback visible', (tester) async {
     await _pumpLab(
       tester,

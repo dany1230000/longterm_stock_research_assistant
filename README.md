@@ -1293,3 +1293,7 @@ the 1-5 ETF limit clear, and avoids implying that every comparison is fixed to
 v5.13 makes selected ETF history quality more explicit. The history/backtest
 quality card now labels split-adjustment status as `分割調整`, distinguishing
 split-adjusted, adjusted-price-available, and unadjusted histories.
+
+v5.14 surfaces ETF data-library readiness in the settings page. Users can now
+see catalog count, history-ready count, long-term/recent coverage tiers, and
+data time without opening maintenance diagnostics.

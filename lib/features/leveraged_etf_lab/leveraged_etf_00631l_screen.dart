@@ -7267,6 +7267,8 @@ class _SettingsSection extends StatelessWidget {
           readinessLabel: readiness.label,
         ),
         const SizedBox(height: 10),
+        _EtfDataLibrarySummary(data: data),
+        const SizedBox(height: 10),
         _SectionBlock(
           title: '帳戶與偏好',
           subtitle: '目前不需要登入。持倉資料預設只保存在本機瀏覽器。',
@@ -7743,6 +7745,81 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
             value: readinessLabel,
             caption: status.reportOverallStatus,
             icon: Icons.fact_check_outlined,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EtfDataLibrarySummary extends StatelessWidget {
+  const _EtfDataLibrarySummary({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = data.operationsStatus;
+    final catalogRows = data.etfCatalog.hasData
+        ? data.etfCatalog.rowCount
+        : status.etfCatalogRowCount;
+    final historyTotal = status.etfPriceHistoryRowCount > 0
+        ? status.etfPriceHistoryRowCount
+        : catalogRows;
+    final tiers = status.etfPriceHistoryCoverageTierCounts;
+    final longTerm = tiers['long_term'] ?? 0;
+    final recent = tiers['recent'] ?? 0;
+    final notReady = (historyTotal - status.etfPriceHistoryReadyCount)
+        .clamp(0, historyTotal)
+        .toInt();
+    final historyReadyValue = historyTotal > 0
+        ? '${formatInteger(status.etfPriceHistoryReadyCount)} / ${formatInteger(historyTotal)}'
+        : formatInteger(status.etfPriceHistoryReadyCount);
+
+    return _SectionBlock(
+      title: 'ETF 資料補齊',
+      subtitle: '目前可搜尋的 ETF catalog 與已匯入歷史資料；歷史 ready 才能支援回測與比較。',
+      child: _ResponsiveMetricGrid(
+        cards: [
+          _MetricCard(
+            label: 'catalog 檔數',
+            value: formatInteger(catalogRows),
+            caption: data.etfCatalog.hasData
+                ? data.etfCatalog.sourceStatusLabel
+                : status.etfCatalogStatus,
+            icon: Icons.dataset_outlined,
+          ),
+          _MetricCard(
+            label: '歷史 ready',
+            value: historyReadyValue,
+            caption: status.etfPriceHistoryStatus,
+            icon: Icons.query_stats_outlined,
+          ),
+          _MetricCard(
+            label: 'long-term',
+            value: formatInteger(longTerm),
+            caption: '長期 coverage',
+            icon: Icons.timeline_outlined,
+          ),
+          _MetricCard(
+            label: 'recent',
+            value: formatInteger(recent),
+            caption: '近期 coverage',
+            icon: Icons.schedule_outlined,
+          ),
+          _MetricCard(
+            label: '尚未 ready',
+            value: formatInteger(notReady),
+            caption: '需補歷史或等待驗證',
+            icon: Icons.hourglass_empty_outlined,
+          ),
+          _MetricCard(
+            label: '資料時間',
+            value: _dateTimeOrDash(
+              status.etfPriceHistoryDataTime ?? data.etfCatalog.dataTime,
+            ),
+            caption: 'history / catalog',
+            icon: Icons.update_outlined,
           ),
         ],
       ),
