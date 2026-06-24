@@ -9079,9 +9079,11 @@ class _EtfDataLibrarySummary extends StatelessWidget {
     final tiers = status.etfPriceHistoryCoverageTierCounts;
     final longTerm = tiers['long_term'] ?? 0;
     final recent = tiers['recent'] ?? 0;
-    final notReady = (historyTotal - status.etfPriceHistoryReadyCount)
-        .clamp(0, historyTotal)
-        .toInt();
+    final notReady = status.etfPriceHistoryMissingCount > 0
+        ? status.etfPriceHistoryMissingCount
+        : (historyTotal - status.etfPriceHistoryReadyCount)
+            .clamp(0, historyTotal)
+            .toInt();
     final historyReadyValue = historyTotal > 0
         ? '${formatInteger(status.etfPriceHistoryReadyCount)} / ${formatInteger(historyTotal)}'
         : formatInteger(status.etfPriceHistoryReadyCount);
@@ -11635,6 +11637,7 @@ int _etfDataCompletionTotal({
     status.etfCatalogRowCount,
     status.etfPriceHistoryRowCount,
     status.etfPriceHistoryReadyCount,
+    status.etfPriceHistoryReadyCount + status.etfPriceHistoryMissingCount,
   ].fold<int>(0, (maxRows, rows) => rows > maxRows ? rows : maxRows);
 }
 

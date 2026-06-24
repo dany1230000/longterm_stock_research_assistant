@@ -471,6 +471,7 @@ EtfOperationsStatus _cachedOperationsStatus(EtfOperationsStatus status) {
     etfPriceHistoryStatus: status.etfPriceHistoryStatus,
     etfPriceHistoryRowCount: status.etfPriceHistoryRowCount,
     etfPriceHistoryReadyCount: status.etfPriceHistoryReadyCount,
+    etfPriceHistoryMissingCount: status.etfPriceHistoryMissingCount,
     etfPriceHistoryCoverageTierCounts: status.etfPriceHistoryCoverageTierCounts,
     etfPriceHistoryDataTime: status.etfPriceHistoryDataTime,
     backtestStatus: status.backtestStatus,
@@ -559,6 +560,7 @@ EtfOperationsStatus _backendDisconnectedOperationsStatus(
     etfPriceHistoryStatus: status.etfPriceHistoryStatus,
     etfPriceHistoryRowCount: status.etfPriceHistoryRowCount,
     etfPriceHistoryReadyCount: status.etfPriceHistoryReadyCount,
+    etfPriceHistoryMissingCount: status.etfPriceHistoryMissingCount,
     etfPriceHistoryCoverageTierCounts: status.etfPriceHistoryCoverageTierCounts,
     etfPriceHistoryDataTime: status.etfPriceHistoryDataTime,
     backtestStatus: status.backtestStatus,
@@ -679,6 +681,7 @@ EtfOperationsStatus _mergeOperationsPriceHistory(
     etfPriceHistoryStatus: primary.etfPriceHistoryStatus,
     etfPriceHistoryRowCount: primary.etfPriceHistoryRowCount,
     etfPriceHistoryReadyCount: primary.etfPriceHistoryReadyCount,
+    etfPriceHistoryMissingCount: primary.etfPriceHistoryMissingCount,
     etfPriceHistoryCoverageTierCounts:
         primary.etfPriceHistoryCoverageTierCounts,
     etfPriceHistoryDataTime: primary.etfPriceHistoryDataTime,

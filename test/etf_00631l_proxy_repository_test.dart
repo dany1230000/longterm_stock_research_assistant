@@ -322,6 +322,7 @@ void main() {
     expect(status.etfCatalogDataTime, DateTime(2026, 6, 12, 13, 31));
     expect(status.etfPriceHistoryStatus, 'static_official');
     expect(status.etfPriceHistoryReadyCount, 1);
+    expect(status.etfPriceHistoryMissingCount, 2);
     expect(status.etfPriceHistoryCoverageTierCounts['recent'], 1);
     expect(status.staticReleaseAppVersion, '5.42-public-release-wait');
     expect(status.staticReleaseTag, '00631l-lab-v5.42-public-release-wait');
@@ -1134,6 +1135,7 @@ Map<String, Object?> _staticStatusPayload() {
     'coverageStart': '2026-06-01',
     'coverageEnd': '2026-06-03',
     'rowCount': 3,
+    'etfPriceHistoryMissingCount': 2,
     'isCompleteFromListing': false,
     'isStale': false,
     'outputDir': 'web/00631l-static-data',
@@ -1160,12 +1162,13 @@ Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
     'sourceContract': 'twse_multi_etf_static_price_history_index',
     'generatedAt': '2026-06-11T10:00:00+08:00',
     'dataTime': '2026-06-03',
-    'rowCount': 1,
+    'rowCount': 3,
     'readyCount': 1,
+    'missingCount': 2,
     'coverageTierCounts': {
       'long_term': 0,
       'recent': 1,
-      'unavailable': 0,
+      'unavailable': 2,
       'error': 0,
     },
     'items': [

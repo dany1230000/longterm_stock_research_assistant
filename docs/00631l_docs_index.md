@@ -377,6 +377,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Broad ETF price seed: `docs\00631l_v5_70_broad_etf_price_seed.md`
 - Static warning cleanup: `docs\00631l_v5_71_static_warning_cleanup.md`
 - Release metadata tags: `docs\00631l_v5_72_release_metadata_tags.md`
+- ETF missing count UI: `docs\00631l_v5_73_etf_missing_count_ui.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

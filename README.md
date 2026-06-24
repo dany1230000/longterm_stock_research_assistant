@@ -1548,3 +1548,8 @@ v5.72 fixes public release metadata. Static export can derive the app version
 from an exact `00631l-lab-v*` tag on `HEAD`, and the GitHub Pages workflow now
 checks out tags so the public marker can show the deployed release tag instead
 of an older default.
+
+v5.73 carries ETF history missing-count metadata into the Flutter app. Static
+and live operations status now preserve `etfPriceHistoryMissingCount`, so the
+ETF data-library panel can show ready and missing histories directly instead of
+inferring the gap from row counts.

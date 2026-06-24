@@ -1505,6 +1505,7 @@ class _EtfCatalogGapOperationsRepository extends Mock00631LRepository {
       rowCount: 228,
       catalogRowCount: 344,
       historyRowCount: 228,
+      missingCount: 116,
       tierCounts: const {
         'long_term': 8,
         'recent': 220,
@@ -1565,6 +1566,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
   required Map<String, int> tierCounts,
   int? catalogRowCount,
   int? historyRowCount,
+  int missingCount = 0,
 }) {
   final now = DateTime(2026, 6, 11, 10);
   return EtfOperationsStatus(
@@ -1608,6 +1610,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     etfPriceHistoryStatus: 'static_official',
     etfPriceHistoryRowCount: historyRowCount ?? rowCount,
     etfPriceHistoryReadyCount: readyCount,
+    etfPriceHistoryMissingCount: missingCount,
     etfPriceHistoryCoverageTierCounts: tierCounts,
     etfPriceHistoryDataTime: now,
     backtestStatus: 'static_official',

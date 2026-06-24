@@ -203,6 +203,10 @@ class Static00631LRepository extends Mock00631LRepository {
         _string(etfHistoryPayload?['sourceStatus'], fallback: 'unavailable');
     final etfHistoryRowCount = _int(etfHistoryPayload?['rowCount']);
     final etfHistoryReadyCount = _int(etfHistoryPayload?['readyCount']);
+    final etfHistoryMissingCount = _int(
+      etfHistoryPayload?['missingCount'] ??
+          statusPayload?['etfPriceHistoryMissingCount'],
+    );
     final etfHistoryCoverageTierCounts =
         _intMap(etfHistoryPayload?['coverageTierCounts']);
     final etfHistoryDataTime = _date(etfHistoryPayload?['dataTime']) ??
@@ -221,6 +225,7 @@ class Static00631LRepository extends Mock00631LRepository {
         etfPriceHistoryStatus: etfHistoryRawStatus,
         etfPriceHistoryRowCount: etfHistoryRowCount,
         etfPriceHistoryReadyCount: etfHistoryReadyCount,
+        etfPriceHistoryMissingCount: etfHistoryMissingCount,
         etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
         etfPriceHistoryDataTime: etfHistoryDataTime,
         staticReleaseAppVersion: _string(releasePayload?['appVersion']),
@@ -247,6 +252,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryStatus: etfHistoryRawStatus,
       etfPriceHistoryRowCount: etfHistoryRowCount,
       etfPriceHistoryReadyCount: etfHistoryReadyCount,
+      etfPriceHistoryMissingCount: etfHistoryMissingCount,
       etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
       etfPriceHistoryDataTime: etfHistoryDataTime,
       staticReleaseAppVersion: _string(releasePayload?['appVersion']),
@@ -274,6 +280,7 @@ class Static00631LRepository extends Mock00631LRepository {
     String etfPriceHistoryStatus = 'unavailable',
     int etfPriceHistoryRowCount = 0,
     int etfPriceHistoryReadyCount = 0,
+    int etfPriceHistoryMissingCount = 0,
     Map<String, int> etfPriceHistoryCoverageTierCounts = const {},
     DateTime? etfPriceHistoryDataTime,
     String staticReleaseAppVersion = '',
@@ -326,6 +333,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryStatus: etfPriceHistoryStatus,
       etfPriceHistoryRowCount: etfPriceHistoryRowCount,
       etfPriceHistoryReadyCount: etfPriceHistoryReadyCount,
+      etfPriceHistoryMissingCount: etfPriceHistoryMissingCount,
       etfPriceHistoryCoverageTierCounts: etfPriceHistoryCoverageTierCounts,
       etfPriceHistoryDataTime: etfPriceHistoryDataTime,
       backtestStatus: rowCount >= 2 ? 'static_official' : 'unavailable',
