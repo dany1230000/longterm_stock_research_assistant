@@ -52,7 +52,7 @@ jobs:
       - name: Import broad ETF recent price history
         timeout-minutes: 15
         continue-on-error: true
-        run: python backend/scripts/import_etf_price_history.py --from-catalog --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial
+        run: python backend/scripts/import_etf_price_history.py --from-catalog --catalog-path backend/seeds/twse_etf_catalog_seed.json --limit 0 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial
 
       - name: Export static 00631L data
         run: python backend/scripts/export_static_00631l_data.py --update --strict --min-row-count 2800 --min-etf-catalog-row-count 100 --multi-etf-codes all-local --seed-price-history-path backend/seeds/00631l_price_history_seed.jsonl --seed-etf-catalog-path backend/seeds/twse_etf_catalog_seed.json --output-dir web/00631l-static-data

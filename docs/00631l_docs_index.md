@@ -185,7 +185,7 @@ This is the main entry point for 00631L lab documentation.
 - Backend production check: `scripts\00631l_backend_prod_check.cmd`
 - Backend Docker check: `scripts\00631l_backend_docker_check.cmd`
 - Static data export: `scripts\00631l_export_static_data.cmd --update` (price history plus ETF catalog snapshot)
-- GitHub Pages static build: `scripts\00631l_build_pages_static.cmd`
+- GitHub Pages static build: `scripts\00631l_build_pages_static.cmd` (uses the committed TWSE ETF seed catalog for broad ETF import)
 
 ## Data And Reports
 
@@ -368,6 +368,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - AI page progressive detail: `docs\00631l_v5_61_ai_page_progressive_detail.md`
 - Static fast start: `docs\00631l_v5_62_static_fast_start.md`
 - Compact ETF search: `docs\00631l_v5_63_compact_etf_search.md`
+- Broad ETF seed catalog: `docs\00631l_v5_64_broad_etf_seed_catalog.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

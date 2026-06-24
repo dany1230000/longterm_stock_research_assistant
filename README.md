@@ -1507,4 +1507,9 @@ required instead of falling through mock data.
 v5.63 makes the ETF search sheet more compact. The selector keeps the search
 field, completion percentage, history-ready count, gap count, filters, and
 results visible first; detailed catalog and coverage-tier diagnostics move under
-`資料細節`.
+the compact data detail expander.
+
+v5.64 makes the GitHub Pages static ETF import reproducible. The broad ETF
+history step now uses the committed TWSE ETF seed catalog in both Actions and
+the local Pages build script, so public static data does not depend on a
+maintainer-only local catalog file.
