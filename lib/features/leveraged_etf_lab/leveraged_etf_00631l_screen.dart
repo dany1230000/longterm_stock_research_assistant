@@ -6261,6 +6261,91 @@ class _TouchedComparisonValue {
   final double value;
 }
 
+class _BacktestQuickResultStrip extends StatelessWidget {
+  const _BacktestQuickResultStrip({
+    required this.result,
+    required this.selectedEtfCode,
+    required this.sourceStatusLabel,
+    required this.strategyLabel,
+  });
+
+  final EtfBacktestResult result;
+  final String selectedEtfCode;
+  final String sourceStatusLabel;
+  final String strategyLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final items = [
+      _InlineQualityPill(
+        label: '期末',
+        value: formatNtdAmount(result.finalValue),
+      ),
+      _InlineQualityPill(
+        label: '投入',
+        value: formatNtdAmount(result.totalInvested),
+      ),
+      _InlineQualityPill(
+        label: '報酬',
+        value: formatSignedNullablePercent(result.totalReturnPct),
+      ),
+      _InlineQualityPill(
+        label: '回撤',
+        value: formatSignedNullablePercent(result.maxDrawdownPct),
+      ),
+    ];
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'BT'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '回測快覽',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                _CompactTextBadge(label: selectedEtfCode),
+              ],
+            ),
+            const SizedBox(height: 7),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(children: items),
+            ),
+            const SizedBox(height: 6),
+            _StatusWrap(
+              labels: [
+                strategyLabel,
+                'source $sourceStatusLabel',
+                '回測不代表未來表現',
+                '非買賣建議',
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _BacktestSection extends StatefulWidget {
   const _BacktestSection({
     super.key,
@@ -6342,36 +6427,14 @@ class _BacktestSectionState extends State<_BacktestSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeaderCard(
-          title: '回測快覽',
-          subtitle: '使用歷史收盤價計算；回測不代表未來表現，非買賣建議。',
-          icon: Icons.query_stats_outlined,
-          badges: [
-            'backtest',
-            widget.selectedEtfCode,
-            'source ${history.sourceStatusLabel}',
-            _strategy == EtfBacktestStrategy.lumpSum ? '一次投入' : '定期定額',
-          ],
-          metrics: [
-            _SectionHeaderMetric(
-              label: '期末市值',
-              value: formatNtdAmount(result.finalValue),
-            ),
-            _SectionHeaderMetric(
-              label: '總投入',
-              value: formatNtdAmount(result.totalInvested),
-            ),
-            _SectionHeaderMetric(
-              label: '累積報酬',
-              value: formatSignedNullablePercent(result.totalReturnPct),
-            ),
-            _SectionHeaderMetric(
-              label: '最大回撤',
-              value: formatSignedNullablePercent(result.maxDrawdownPct),
-            ),
-          ],
+        _BacktestQuickResultStrip(
+          result: result,
+          selectedEtfCode: widget.selectedEtfCode,
+          sourceStatusLabel: history.sourceStatusLabel,
+          strategyLabel:
+              _strategy == EtfBacktestStrategy.lumpSum ? '一次投入' : '定期定額',
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _SectionBlock(
           title: '歷史回測',
           subtitle: '只使用已保存的歷史收盤價。回測不代表未來表現，非買賣建議。',
@@ -6468,29 +6531,33 @@ class _BacktestSectionState extends State<_BacktestSection> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    _InputGrid(
-                      children: [
-                        _NumberField(
-                          label: '初始金額',
-                          controller: _initialController,
-                          onChanged: (_) => setState(() {}),
-                        ),
-                        _NumberField(
-                          label: '每月投入金額',
-                          controller: _monthlyController,
-                          onChanged: (_) => setState(() {}),
-                        ),
-                        _NumberField(
-                          label: '每月日期',
-                          controller: _dayController,
-                          onChanged: (_) => setState(() {}),
-                        ),
-                        _NumberField(
-                          label: '手續費率 %',
-                          controller: _feeController,
-                          onChanged: (_) => setState(() {}),
-                        ),
-                      ],
+                    _CompactExpansionPanel(
+                      title: '金額與成本參數',
+                      subtitle: '預設值可直接跑；需要調整金額、投入日或成本時再展開。',
+                      child: _InputGrid(
+                        children: [
+                          _NumberField(
+                            label: '初始金額',
+                            controller: _initialController,
+                            onChanged: (_) => setState(() {}),
+                          ),
+                          _NumberField(
+                            label: '每月投入金額',
+                            controller: _monthlyController,
+                            onChanged: (_) => setState(() {}),
+                          ),
+                          _NumberField(
+                            label: '每月日期',
+                            controller: _dayController,
+                            onChanged: (_) => setState(() {}),
+                          ),
+                          _NumberField(
+                            label: '手續費率 %',
+                            controller: _feeController,
+                            onChanged: (_) => setState(() {}),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 12),
                     _ResponsiveMetricGrid(

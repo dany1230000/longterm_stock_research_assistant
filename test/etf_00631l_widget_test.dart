@@ -501,6 +501,8 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('回測設定摘要'), findsOneWidget);
+    expect(find.text('金額與成本參數'), findsOneWidget);
+    expect(find.text('初始金額'), findsNothing);
     final backtestAllRange =
         find.byKey(const ValueKey('00631l-backtest-range-all'));
     await tester.scrollUntilVisible(
@@ -518,6 +520,14 @@ void main() {
     expect(find.text('市價'), findsNothing);
     expect(find.text('一次投入'), findsOneWidget);
     expect(find.text('定期定額'), findsWidgets);
+    await tester.ensureVisible(find.text('金額與成本參數'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('金額與成本參數'));
+    await tester.pumpAndSettle();
+    expect(find.text('初始金額'), findsOneWidget);
+    expect(find.text('每月投入金額'), findsOneWidget);
+    expect(find.text('每月日期'), findsOneWidget);
+    expect(find.text('手續費率 %'), findsOneWidget);
     expect(find.text('期末市值'), findsWidgets);
     expect(find.textContaining('回測不代表未來表現'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);

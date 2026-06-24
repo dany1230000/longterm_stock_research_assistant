@@ -1486,3 +1486,7 @@ expanders.
 v5.58 tightens the overview first screen. The home page now starts with quote,
 core data, visible one-year chart, and official holdings highlights; update
 times and data-quality diagnostics live under `更多資料`.
+
+v5.59 shortens the history/backtest page. Date range controls stay visible,
+while amount and cost inputs move behind `金額與成本參數`; a compact backtest
+result strip replaces the taller result header.
