@@ -362,6 +362,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Compact position actions: `docs\00631l_v5_55_compact_position_actions.md`
 - AI daily interpretation: `docs\00631l_v5_56_ai_daily_interpretation.md`
 - Compact settings/account: `docs\00631l_v5_57_compact_settings_account.md`
+- Compact home glance: `docs\00631l_v5_58_compact_home_glance.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

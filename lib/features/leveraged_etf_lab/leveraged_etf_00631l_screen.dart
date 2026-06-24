@@ -2575,6 +2575,11 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
+        if (selectedEtf.is00631L)
+          _OverviewAtAGlancePanel(data: data)
+        else
+          _SelectedEtfAtAGlancePanel(selectedEtf: selectedEtf),
+        const SizedBox(height: 8),
         _AlwaysExpandedPanel(
           title: selectedEtf.is00631L ? '價格與曝險' : '價格走勢',
           subtitle: selectedEtf.is00631L
@@ -2589,15 +2594,6 @@ class _OverviewSection extends StatelessWidget {
           _SelectedEtfHistoryReadinessStrip(selectedEtf: selectedEtf),
           const SizedBox(height: 8),
         ],
-        _OverviewQualityRibbon(data: data, selectedEtf: selectedEtf),
-        const SizedBox(height: 8),
-        _OverviewUpdateClockStrip(data: data, selectedEtf: selectedEtf),
-        const SizedBox(height: 8),
-        if (selectedEtf.is00631L)
-          _OverviewAtAGlancePanel(data: data)
-        else
-          _SelectedEtfAtAGlancePanel(selectedEtf: selectedEtf),
-        const SizedBox(height: 8),
         if (selectedEtf.is00631L) ...[
           _OverviewHoldingsDigestPanel(data: data),
           const SizedBox(height: 8),
@@ -3289,6 +3285,10 @@ class _OverviewMorePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        _OverviewUpdateClockStrip(data: data, selectedEtf: selectedEtf),
+        const SizedBox(height: 8),
+        _OverviewQualityRibbon(data: data, selectedEtf: selectedEtf),
+        const SizedBox(height: 8),
         _OverviewActionRow(data: data),
         const SizedBox(height: 8),
         _CompactExpansionPanel(

@@ -1482,3 +1482,7 @@ v5.57 makes the bottom-right settings page more like an account/preferences
 area. Daily-use items stay visible first, while ETF data-library details,
 deployment readiness, and backend diagnostics are moved behind compact
 expanders.
+
+v5.58 tightens the overview first screen. The home page now starts with quote,
+core data, visible one-year chart, and official holdings highlights; update
+times and data-quality diagnostics live under `更多資料`.

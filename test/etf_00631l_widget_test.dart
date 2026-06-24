@@ -28,24 +28,22 @@ void main() {
     expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
-    expect(find.text('資料正確性'), findsOneWidget);
-    expect(find.text('目前檔案'), findsOneWidget);
+    expect(find.text('資料正確性'), findsNothing);
+    expect(find.text('目前檔案'), findsNothing);
     expect(find.text('更多資料狀態'), findsNothing);
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
     expect(find.text('內容物重點'), findsOneWidget);
-    expect(find.text('價格欄位'), findsOneWidget);
-    expect(find.text('分割調整'), findsOneWidget);
-    expect(find.text('覆蓋型態'), findsOneWidget);
-    expect(find.text('ETF歷史'), findsOneWidget);
+    expect(find.text('價格欄位'), findsNothing);
+    expect(find.text('分割調整'), findsNothing);
+    expect(find.text('覆蓋型態'), findsNothing);
+    expect(find.text('ETF歷史'), findsNothing);
     expect(find.textContaining('歷史資料'), findsWidgets);
     expect(find.text('累積報酬'), findsOneWidget);
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.textContaining('官方曝險'), findsOneWidget);
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
-    final dataQualityTop = tester.getTopLeft(find.text('資料正確性')).dy;
     final coreDataTop = tester.getTopLeft(find.text('核心資料')).dy;
-    expect(chartTitleTop, lessThan(dataQualityTop));
-    expect(chartTitleTop, lessThan(coreDataTop));
+    expect(coreDataTop, lessThan(chartTitleTop));
     expect(find.text('官方 NAV'), findsNothing);
     expect(find.textContaining('Mock 預設'), findsWidgets);
     final quoteMetaStrip = find.byKey(
@@ -76,6 +74,17 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-button')),
       findsOneWidget,
     );
+    await tester.ensureVisible(find.text('更多資料'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('更多資料'));
+    await tester.pumpAndSettle();
+    expect(find.text('資料正確性'), findsOneWidget);
+    expect(find.text('更新時間'), findsOneWidget);
+    expect(find.text('目前檔案'), findsOneWidget);
+    expect(find.text('價格欄位'), findsOneWidget);
+    expect(find.text('分割調整'), findsOneWidget);
+    expect(find.text('覆蓋型態'), findsOneWidget);
+    expect(find.text('ETF歷史'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-top-search-button')),
       findsNothing,
@@ -252,8 +261,8 @@ void main() {
     expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
-    expect(find.text('資料正確性'), findsOneWidget);
-    expect(find.text('目前檔案'), findsOneWidget);
+    expect(find.text('資料正確性'), findsNothing);
+    expect(find.text('目前檔案'), findsNothing);
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.textContaining('官方曝險'), findsOneWidget);
     expect(find.text('00631L'), findsWidgets);
@@ -903,8 +912,8 @@ void main() {
     expect(find.textContaining('3 rows'), findsWidgets);
     expect(find.textContaining('0050 元大台灣50'), findsWidgets);
     expect(find.text('0050 核心資料'), findsOneWidget);
-    expect(find.text('資料正確性'), findsOneWidget);
-    expect(find.text('目前檔案'), findsOneWidget);
+    expect(find.text('資料正確性'), findsNothing);
+    expect(find.text('目前檔案'), findsNothing);
     expect(find.text('0050'), findsWidgets);
     expect(find.textContaining('2025/06/03 - 2026/06/03'), findsWidgets);
     expect(find.textContaining('市價 · catalog'), findsWidgets);
@@ -997,12 +1006,9 @@ void main() {
     expect(find.byKey(const ValueKey('00631l-section-holdings')), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-update-clock-strip')),
-      findsOneWidget,
+      findsNothing,
     );
-    expect(find.text('更新時間'), findsOneWidget);
-    expect(find.text('DAY'), findsWidgets);
-    expect(find.text('LIVE'), findsWidgets);
-    expect(find.text('HIS'), findsWidgets);
+    expect(find.text('更新時間'), findsNothing);
     expect(find.text('官方內容物重點'), findsOneWidget);
     expect(find.textContaining('每日官方快照'), findsOneWidget);
     expect(find.text('TX 期貨'), findsWidgets);
@@ -1012,6 +1018,18 @@ void main() {
     expect(find.text('2330'), findsOneWidget);
     expect(find.text('MIX'), findsOneWidget);
     expect(find.byType(DataTable), findsNothing);
+    await tester.ensureVisible(find.text('更多資料'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('更多資料'));
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-overview-update-clock-strip')),
+      findsOneWidget,
+    );
+    expect(find.text('更新時間'), findsOneWidget);
+    expect(find.text('DAY'), findsWidgets);
+    expect(find.text('LIVE'), findsWidgets);
+    expect(find.text('HIS'), findsWidgets);
     for (final section in const [
       'overview',
       'historyBacktest',
