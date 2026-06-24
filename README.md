@@ -1284,3 +1284,8 @@ price field, split-adjustment status, and loaded row count.
 v5.11 makes the top-left symbol search sheet clearer about imported data. It
 now shows the ETF history coverage ratio, using the actual ready-history count
 against the current catalog row count.
+
+v5.12 makes ETF history comparison read as a user-selected basket. The
+history/backtest page now labels the comparison group as `目前 basket`, keeps
+the 1-5 ETF limit clear, and avoids implying that every comparison is fixed to
+00631L.

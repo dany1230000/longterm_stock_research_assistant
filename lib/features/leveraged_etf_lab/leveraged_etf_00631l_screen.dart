@@ -4953,10 +4953,10 @@ class _EtfHistoryComparisonPanelState
       children: [
         _SectionHeaderCard(
           title: 'ETF 歷史比較',
-          subtitle: '可自行勾選 1-5 檔，不固定與 00631L 比；結果只描述過去資料，非買賣建議。',
+          subtitle: '建立自己的 1-5 檔比較 basket；結果只描述過去資料，不固定與 00631L 對照。',
           icon: Icons.stacked_line_chart_outlined,
           badges: const [
-            '自選 ETF',
+            '自選 basket',
             '最近 1 年',
             'static / proxy history',
           ],
@@ -4964,7 +4964,7 @@ class _EtfHistoryComparisonPanelState
             _SectionHeaderMetric(
               label: '比較檔數',
               value: formatInteger(usableMetrics.length),
-              caption: '目前納入比較',
+              caption: '目前 basket',
             ),
             _SectionHeaderMetric(
               label: '區間',
@@ -5018,7 +5018,7 @@ class _EtfHistoryComparisonPanelState
         ),
         const SizedBox(height: 6),
         Text(
-          '可自行勾選 1-5 檔 ETF；同類型預設只是快速篩選，仍可手動調整組合。',
+          '勾選 1-5 檔 ETF 建立 basket；類型篩選只是快速選取，仍可手動調整。',
           key: const ValueKey('00631l-etf-comparison-guidance'),
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: _marketMutedTextColor(context),
@@ -5029,7 +5029,7 @@ class _EtfHistoryComparisonPanelState
         Text(
           usableMetrics.isEmpty
               ? '尚未選擇比較 ETF'
-              : '比較 ${usableMetrics.map((metric) => metric.code).join(' / ')}',
+              : '目前 basket：${usableMetrics.map((metric) => metric.code).join(' / ')}',
           key: const ValueKey('00631l-etf-comparison-selected-codes'),
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: _marketMutedTextColor(context),

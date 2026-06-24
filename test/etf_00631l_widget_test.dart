@@ -608,7 +608,7 @@ void main() {
     final initialComparisonSummary = tester.widget<Text>(
       find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
     );
-    expect(initialComparisonSummary.data, equals('比較 0050'));
+    expect(initialComparisonSummary.data, equals('目前 basket：0050'));
     expect(initialComparisonSummary.data, isNot(contains('00631L')));
     expect(
       find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
@@ -674,7 +674,7 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-comparison-guidance')),
       findsOneWidget,
     );
-    expect(find.textContaining('不固定與 00631L 比'), findsOneWidget);
+    expect(find.textContaining('建立自己的 1-5 檔比較 basket'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
       findsOneWidget,
@@ -684,7 +684,7 @@ void main() {
           find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
         );
 
-    expect(selectedLabel().data, equals('比較 00631L'));
+    expect(selectedLabel().data, equals('目前 basket：00631L'));
 
     final chip0050 = find.byKey(const ValueKey('00631l-etf-compare-chip-0050'));
     await tester.ensureVisible(chip0050);
