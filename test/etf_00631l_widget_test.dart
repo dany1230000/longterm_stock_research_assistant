@@ -896,6 +896,12 @@ void main() {
 
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-etf-room-readiness-panel')),
+      findsOneWidget,
+    );
+    expect(find.text('ETF 研究室完成度'), findsOneWidget);
+    expect(find.text('公開 PWA'), findsOneWidget);
     expect(find.text('設定'), findsWidgets);
     expect(find.text('設定總覽'), findsOneWidget);
     expect(find.text('帳戶與偏好'), findsOneWidget);

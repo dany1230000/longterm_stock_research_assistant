@@ -7522,6 +7522,8 @@ class _SettingsSection extends StatelessWidget {
           readinessLabel: readiness.label,
         ),
         const SizedBox(height: 10),
+        _EtfResearchRoomReadinessPanel(data: data, selectedEtf: selectedEtf),
+        const SizedBox(height: 10),
         _EtfDataLibrarySummary(data: data),
         const SizedBox(height: 10),
         _SectionBlock(
@@ -8002,6 +8004,70 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
             icon: Icons.fact_check_outlined,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _EtfResearchRoomReadinessPanel extends StatelessWidget {
+  const _EtfResearchRoomReadinessPanel({
+    required this.data,
+    required this.selectedEtf,
+  });
+
+  final Etf00631LLabData data;
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = data.operationsStatus;
+    final price = data.priceHistory.completenessSummary();
+    final etfReady = status.etfPriceHistoryReadyCount;
+    final etfTotal = status.etfPriceHistoryRowCount > 0
+        ? status.etfPriceHistoryRowCount
+        : data.etfCatalog.rowCount;
+    return KeyedSubtree(
+      key: const ValueKey('00631l-etf-room-readiness-panel'),
+      child: _SectionBlock(
+        title: 'ETF 研究室完成度',
+        subtitle: '檢查正式工具的主要能力是否已可日常使用；只描述資料與程式狀態。',
+        child: _StatusList(
+          items: [
+            const _StatusItem(
+              label: '公開 PWA',
+              status: 'available',
+              detail:
+                  'GitHub Pages static mode 可開啟；live intraday 需要 public backend。',
+              action: '手機可直接開公開網址；若要 live，請保持 backend /ready 正常。',
+            ),
+            _StatusItem(
+              label: '00631L 核心資料',
+              status: data.status.label,
+              detail:
+                  'holdings ${formatTaiwanDate(data.snapshot.tradeDate)}；price rows ${formatInteger(price.rowCount)}；intraday ${data.intradayNav?.status.label ?? 'unavailable'}。',
+              action: '每日執行 daily cycle，確認 official / cached / stale 狀態。',
+            ),
+            _StatusItem(
+              label: '多 ETF 資料庫',
+              status: '$etfReady / $etfTotal ready',
+              detail: '已匯入 ETF price history 的檔數會影響搜尋切換、歷史、回測與比較。',
+              action:
+                  '資料不足時執行 scripts\\00631l_import_etf_price_history.cmd --update。',
+            ),
+            _StatusItem(
+              label: '目前選取',
+              status: selectedEtf.code,
+              detail: selectedEtf.readinessDetail,
+              action: selectedEtf.readinessAction,
+            ),
+            const _StatusItem(
+              label: '持倉與 AI',
+              status: 'local-only / rule_based',
+              detail: '持倉保存在瀏覽器本機；AI 目前只做 rule-based 資料解讀。',
+              action: '需要移機前先匯出持倉 JSON；外部 LLM 預設關閉。',
+            ),
+          ],
+        ),
       ),
     );
   }

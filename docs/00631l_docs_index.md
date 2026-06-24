@@ -324,6 +324,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Overview chart date inspector release: `docs\00631l_v5_17_overview_chart_date_inspector.md`
 - AI today snapshot release: `docs\00631l_v5_18_ai_today_snapshot.md`
 - ETF data readiness ratio release: `docs\00631l_v5_19_etf_data_readiness_ratio.md`
+- ETF room readiness panel release: `docs\00631l_v5_20_etf_room_readiness_panel.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
