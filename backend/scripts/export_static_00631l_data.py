@@ -75,7 +75,7 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
 def build_static_export_compact_response(
     payload: dict[str, object],
     *,
-    sample_size: int = 12,
+    sample_size: int = 5,
 ) -> dict[str, object]:
     warnings = [
         str(warning)
@@ -106,10 +106,23 @@ def build_static_export_compact_response(
         "outputDir": payload.get("outputDir"),
         "release": payload.get("release"),
         "warningCount": len(warnings),
-        "warningsSample": warnings[: max(sample_size, 0)],
+        "warningsSample": [
+            _truncate_compact_text(warning)
+            for warning in warnings[: max(sample_size, 0)]
+        ],
         "failureCount": len(failures),
-        "failures": failures,
+        "failures": [
+            _truncate_compact_text(failure, limit=240)
+            for failure in failures
+        ],
     }
+
+
+def _truncate_compact_text(value: object, *, limit: int = 160) -> str:
+    text = str(value or "")
+    if len(text) <= limit:
+        return text
+    return f"{text[: max(limit - 3, 0)]}..."
 
 
 def main() -> int:

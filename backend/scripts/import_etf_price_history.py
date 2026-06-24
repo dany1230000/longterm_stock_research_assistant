@@ -245,7 +245,7 @@ def should_emit_progress(position: int, total: int, every: int) -> bool:
 def build_import_summary_response(
     payload: dict[str, object],
     *,
-    sample_size: int = 12,
+    sample_size: int = 5,
 ) -> dict[str, object]:
     items = [item for item in payload.get("items", []) if isinstance(item, dict)]
     warnings = [
@@ -276,11 +276,17 @@ def build_import_summary_response(
         "validationFailureCount": payload.get("validationFailureCount", 0),
         "validationWarningCount": payload.get("validationWarningCount", 0),
         "itemCount": len(items),
-        "sampleItems": items[: max(sample_size, 0)],
+        "sampleItems": [
+            _compact_import_item(item)
+            for item in items[: max(sample_size, 0)]
+        ],
         "warningCount": len(warnings),
-        "warningsSample": warnings[: max(sample_size, 0)],
+        "warningsSample": [
+            _truncate_text(warning)
+            for warning in warnings[: max(sample_size, 0)]
+        ],
         "failureCount": len(failures),
-        "failures": failures,
+        "failures": [_truncate_text(failure, limit=240) for failure in failures],
         "errorMessage": payload.get("errorMessage"),
     }
 
@@ -289,7 +295,7 @@ def build_status_summary_response(
     payload: dict[str, object],
     *,
     catalog_row_count: int = 0,
-    sample_size: int = 12,
+    sample_size: int = 5,
 ) -> dict[str, object]:
     items = [item for item in payload.get("items", []) if isinstance(item, dict)]
     starts = [
@@ -338,6 +344,27 @@ def _coverage_tier_counts(items: list[dict[str, object]]) -> dict[str, int]:
         tier = str(item.get("coverageTier") or "unavailable")
         counts[tier] = counts.get(tier, 0) + 1
     return counts
+
+
+def _compact_import_item(item: dict[str, object]) -> dict[str, object]:
+    return {
+        "code": item.get("code"),
+        "sourceStatus": item.get("sourceStatus"),
+        "coverageEnd": item.get("coverageEnd"),
+        "rowCount": item.get("rowCount"),
+        "savedRows": item.get("savedRows"),
+        "validationStatus": item.get("validationStatus"),
+        "errorMessage": _truncate_text(item.get("errorMessage"), limit=160)
+        if item.get("errorMessage")
+        else None,
+    }
+
+
+def _truncate_text(value: object, *, limit: int = 160) -> str:
+    text = str(value or "")
+    if len(text) <= limit:
+        return text
+    return f"{text[: max(limit - 3, 0)]}..."
 
 
 if __name__ == "__main__":

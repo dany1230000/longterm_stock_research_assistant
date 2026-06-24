@@ -1526,3 +1526,7 @@ v5.67 refreshes the committed official 00631L price-history seed and adds a
 strict coverage-age guard to static export. GitHub Pages will not replace public
 static data with a fallback whose price-history coverage is more than seven days
 old.
+
+v5.68 makes compact maintenance output shorter. `--summary-only` import and
+static export logs keep the status numbers but trim sample rows and long warning
+text, so daily checks stay readable.

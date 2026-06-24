@@ -661,11 +661,38 @@ class EtfPriceHistoryTests(unittest.TestCase):
             "validationFailureCount": 0,
             "validationWarningCount": 1,
             "items": [
-                {"code": "0050", "rowCount": 17},
-                {"code": "0056", "rowCount": 17},
-                {"code": "00631L", "rowCount": 1809},
+                {
+                    "code": "0050",
+                    "sourceStatus": "official",
+                    "coverageEnd": "2026-06-24",
+                    "rowCount": 17,
+                    "savedRows": 0,
+                    "validationStatus": "PASS",
+                    "requestedMonths": 90,
+                    "fetchedRows": 17,
+                },
+                {
+                    "code": "0056",
+                    "sourceStatus": "official",
+                    "coverageEnd": "2026-06-24",
+                    "rowCount": 17,
+                    "savedRows": 1,
+                    "validationStatus": "PASS",
+                    "requestedMonths": 90,
+                    "fetchedRows": 17,
+                },
+                {
+                    "code": "00631L",
+                    "sourceStatus": "official",
+                    "coverageEnd": "2026-06-24",
+                    "rowCount": 1809,
+                    "savedRows": 0,
+                    "validationStatus": "PASS",
+                    "requestedMonths": 90,
+                    "fetchedRows": 1809,
+                },
             ],
-            "warnings": ["0056: emptyMonths=1"],
+            "warnings": ["0056: " + ("emptyMonth;" * 40)],
             "failures": [],
             "errorMessage": None,
         }
@@ -676,7 +703,21 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(compact["readyCount"], 230)
         self.assertEqual(compact["itemCount"], 3)
         self.assertEqual(len(compact["sampleItems"]), 2)
+        self.assertEqual(
+            sorted(compact["sampleItems"][0].keys()),
+            [
+                "code",
+                "coverageEnd",
+                "errorMessage",
+                "rowCount",
+                "savedRows",
+                "sourceStatus",
+                "validationStatus",
+            ],
+        )
+        self.assertNotIn("requestedMonths", compact["sampleItems"][0])
         self.assertEqual(compact["warningCount"], 1)
+        self.assertLessEqual(len(compact["warningsSample"][0]), 160)
         self.assertNotIn("items", compact)
 
     def test_import_progress_emits_first_interval_and_last(self) -> None:

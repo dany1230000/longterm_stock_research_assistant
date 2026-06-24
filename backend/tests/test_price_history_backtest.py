@@ -511,7 +511,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 },
                 "outputDir": "web/00631l-static-data",
                 "release": {"releaseTag": "00631l-lab-test"},
-                "warnings": ["seed merged", "recent import partial"],
+                "warnings": ["seed merged", "recent import partial " + ("details;" * 40)],
                 "failures": [],
                 "files": {"priceHistory": "price_history.json"},
             },
@@ -523,6 +523,15 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertEqual(compact["warningCount"], 2)
         self.assertEqual(compact["warningsSample"], ["seed merged"])
         self.assertNotIn("files", compact)
+
+        truncated = build_static_export_compact_response(
+            {
+                "warnings": ["recent import partial " + ("details;" * 40)],
+                "failures": [],
+            },
+            sample_size=1,
+        )
+        self.assertLessEqual(len(truncated["warningsSample"][0]), 160)
 
     def test_static_export_coverage_age_guard(self) -> None:
         self.assertIsNone(
