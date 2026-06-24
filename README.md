@@ -1539,3 +1539,7 @@ hidden from the denominator.
 v5.70 commits a broader validated ETF price-history seed set. Static Pages
 export can merge 230 ready ETF histories from seed before live refresh, keeping
 public ETF readiness stable when a workflow run gets partial TWSE responses.
+
+v5.71 cleans up static export warning semantics. Normal seed merges, update
+counts, and all-catalog resolution now appear as notes or structured counts;
+warnings are reserved for source, coverage, seed, or strict export issues.

@@ -94,6 +94,7 @@ def export_static_00631l_data(
         "minimumRowCount": required_rows,
         "etfCatalogRowCount": catalog_row_count,
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
+        "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
         "minimumCatalogRowCount": catalog_min_rows,
         "warnings": warnings,
         "failures": failures,
@@ -135,6 +136,7 @@ def export_static_00631l_data(
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
         "etfPriceHistoryRowCount": etf_history_payload["rowCount"],
         "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
+        "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
         "etfPriceHistoryCoverageTierCounts": etf_history_payload.get(
             "coverageTierCounts",
@@ -171,6 +173,7 @@ def export_static_00631l_data(
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
         "etfPriceHistoryRowCount": etf_history_payload["rowCount"],
         "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
+        "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
         "etfPriceHistoryCoverageTierCounts": etf_history_payload.get(
             "coverageTierCounts",
@@ -247,9 +250,14 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         etf_tier_counts = legacy_etf_summary.get("coverageTierCounts", {})
     etf_history_row_count = int(manifest.get("etfPriceHistoryRowCount") or 0)
     etf_history_ready_count = int(manifest.get("etfPriceHistoryReadyCount") or 0)
+    etf_history_missing_count = int(manifest.get("etfPriceHistoryMissingCount") or 0)
     if legacy_etf_summary and int(legacy_etf_summary.get("rowCount") or 0) > etf_history_row_count:
         etf_history_row_count = int(legacy_etf_summary.get("rowCount") or 0)
         etf_history_ready_count = int(legacy_etf_summary.get("readyCount") or 0)
+        etf_history_missing_count = max(
+            0,
+            etf_history_row_count - etf_history_ready_count,
+        )
     return {
         "sourceStatus": manifest.get("sourceStatus", "unavailable"),
         "sourceContract": STATIC_SOURCE_CONTRACT,
@@ -264,6 +272,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         "etfCatalogDataTime": manifest.get("etfCatalogDataTime"),
         "etfPriceHistoryRowCount": etf_history_row_count,
         "etfPriceHistoryReadyCount": etf_history_ready_count,
+        "etfPriceHistoryMissingCount": etf_history_missing_count,
         "etfPriceHistoryDataTime": manifest.get("etfPriceHistoryDataTime")
         or etf_history_index.get("dataTime")
         or legacy_etf_summary.get("dataTime"),
@@ -355,6 +364,7 @@ def _export_static_etf_price_history(
     items: list[dict[str, Any]] = []
     ready_count = 0
     latest: str | None = None
+    missing_codes: list[str] = []
     for code in codes:
         status = store.status(code, fetched_at=generated_at)
         row_count = int(status.get("rowCount") or 0)
@@ -376,7 +386,7 @@ def _export_static_etf_price_history(
             }
             _write_json(history_dir / f"{code}.json", static_payload)
         else:
-            warnings.append(f"etfPriceHistoryMissing={code}")
+            missing_codes.append(code)
         items.append(status)
 
     tier_counts = _coverage_tier_counts(items)
@@ -390,6 +400,8 @@ def _export_static_etf_price_history(
         "dataTime": latest,
         "rowCount": len(items),
         "readyCount": ready_count,
+        "missingCount": len(missing_codes),
+        "missingSample": missing_codes[:10],
         "coverageTierCounts": tier_counts,
         "items": items,
         "errorMessage": None if ready_count else "No selected ETF price history is available.",

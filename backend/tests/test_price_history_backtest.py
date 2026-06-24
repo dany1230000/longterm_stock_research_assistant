@@ -323,17 +323,20 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             etf_store = EtfPriceHistoryStore(Path(temp_dir) / "etf_history")
             etf_store.save_points("00757", _stock_day_fixture_points("00757"))
             warnings: list[str] = []
+            notes: list[str] = []
 
             codes = _resolve_multi_etf_codes(
                 "all-catalog",
                 store=etf_store,
                 catalog_payload=_etf_catalog_payload(),
                 warnings=warnings,
+                notes=notes,
             )
 
         self.assertEqual(codes[:2], ["00631L", "0050"])
         self.assertIn("00757", codes)
-        self.assertTrue(any("multiEtfCodesResolved=all-catalog" in item for item in warnings))
+        self.assertEqual(warnings, [])
+        self.assertTrue(any("multiEtfCodesResolved=all-catalog" in item for item in notes))
 
     def test_static_export_all_catalog_merges_available_seed_codes(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -519,6 +522,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 "coverageEnd": "2026-06-11",
                 "etfPriceHistoryReadyCount": 228,
                 "etfPriceHistoryRowCount": 228,
+                "etfPriceHistoryMissingCount": 116,
                 "etfCatalogRowCount": 344,
                 "etfPriceHistoryCoverageTierCounts": {
                     "long_term": 8,
@@ -536,7 +540,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertIn("etfReady=228", line)
         self.assertIn("etfRows=228", line)
         self.assertIn("etfCatalogRows=344", line)
-        self.assertIn("etfGap=116", line)
+        self.assertIn("etfMissing=116", line)
         self.assertIn("tiers=long_term:8,recent:220,unavailable:0,error:0", line)
 
     def test_static_export_summary_line_does_not_infer_missing_tier_counts(self) -> None:
@@ -552,7 +556,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         )
 
         self.assertIn("etfReady=15", line)
-        self.assertIn("etfGap=0", line)
+        self.assertIn("etfMissing=0", line)
         self.assertIn("tiers=not_available", line)
 
     def test_static_export_compact_response_keeps_cli_output_short(self) -> None:
@@ -752,7 +756,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             etf_store = EtfPriceHistoryStore(root / "etf_history")
             warnings: list[str] = []
 
-            _merge_etf_price_history_seed_if_needed(
+            seed_summary = _merge_etf_price_history_seed_if_needed(
                 store=etf_store,
                 seed_dir=root / "seed_etf_history",
                 codes=["0050"],
@@ -769,7 +773,10 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
 
             self.assertEqual(result["overallStatus"], "PASS")
             self.assertEqual(result["etfPriceHistoryReadyCount"], 1)
-            self.assertTrue(any("seedEtfPriceHistoryMerged=0050" in item for item in warnings))
+            self.assertEqual(result["etfPriceHistoryMissingCount"], 0)
+            self.assertEqual(seed_summary["readyCount"], 1)
+            self.assertEqual(seed_summary["mergedCount"], 1)
+            self.assertFalse(any("seedEtfPriceHistoryMerged=0050" in item for item in warnings))
 
     def test_static_export_merges_seed_when_recent_etf_history_exists(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -781,7 +788,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             etf_store.save_points("0050", rows[-1:])
             warnings: list[str] = []
 
-            _merge_etf_price_history_seed_if_needed(
+            seed_summary = _merge_etf_price_history_seed_if_needed(
                 store=etf_store,
                 seed_dir=root / "seed_etf_history",
                 codes=["0050"],
@@ -791,7 +798,33 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             status = etf_store.status("0050", fetched_at="2026-06-15T00:00:00+00:00")
             self.assertEqual(status["rowCount"], 3)
             self.assertEqual(status["coverageStart"], "2026-06-01")
-            self.assertTrue(any("seedEtfPriceHistoryMerged=0050" in item for item in warnings))
+            self.assertEqual(seed_summary["readyCount"], 1)
+            self.assertEqual(seed_summary["missingCount"], 0)
+            self.assertFalse(any("seedEtfPriceHistoryMerged=0050" in item for item in warnings))
+
+    def test_static_export_summarizes_missing_multi_etf_history_without_warning_spam(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            store.save_points(rows)
+            etf_store = EtfPriceHistoryStore(root / "etf_history")
+            etf_store.save_points("0050", rows)
+            warnings: list[str] = []
+
+            result = export_static_00631l_data(
+                output_dir=root / "static",
+                price_history_store=store,
+                etf_price_history_store=etf_store,
+                etf_price_history_codes=["0050", "00878"],
+                strict=True,
+                warnings=warnings,
+            )
+
+            self.assertEqual(result["overallStatus"], "PASS")
+            self.assertEqual(result["etfPriceHistoryReadyCount"], 1)
+            self.assertEqual(result["etfPriceHistoryMissingCount"], 1)
+            self.assertFalse(any("etfPriceHistoryMissing=00878" in item for item in result["warnings"]))
 
 
 def _stock_day_fixture() -> str:

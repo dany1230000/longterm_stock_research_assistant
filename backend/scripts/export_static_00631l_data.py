@@ -47,8 +47,10 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
     etf_catalog_rows = int(payload.get("etfCatalogRowCount") or 0)
     etf_ready_rows = int(payload.get("etfPriceHistoryReadyCount") or 0)
     etf_history_rows = int(payload.get("etfPriceHistoryRowCount") or 0)
-    etf_completion_total = max(etf_catalog_rows, etf_history_rows, etf_ready_rows)
-    etf_gap = max(0, etf_completion_total - etf_ready_rows)
+    etf_missing_rows = int(
+        payload.get("etfPriceHistoryMissingCount")
+        or max(0, max(etf_catalog_rows, etf_history_rows, etf_ready_rows) - etf_ready_rows)
+    )
     tier_text = (
         ",".join(
             f"{key}:{int(tiers.get(key) or 0)}"
@@ -65,7 +67,7 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
         f"etfReady={etf_ready_rows}",
         f"etfRows={etf_history_rows}",
         f"etfCatalogRows={etf_catalog_rows}",
-        f"etfGap={etf_gap}",
+        f"etfMissing={etf_missing_rows}",
         f"tiers={tier_text}",
     ]
     if payload.get("outputDir"):
@@ -88,6 +90,11 @@ def build_static_export_compact_response(
         for failure in payload.get("failures", [])
         if failure is not None
     ]
+    notes = [
+        str(note)
+        for note in payload.get("notes", [])
+        if note is not None
+    ]
     return {
         "sourceStatus": payload.get("sourceStatus"),
         "sourceContract": payload.get("sourceContract"),
@@ -100,12 +107,19 @@ def build_static_export_compact_response(
         "etfCatalogRowCount": payload.get("etfCatalogRowCount", 0),
         "etfPriceHistoryReadyCount": payload.get("etfPriceHistoryReadyCount", 0),
         "etfPriceHistoryRowCount": payload.get("etfPriceHistoryRowCount", 0),
+        "etfPriceHistoryMissingCount": payload.get("etfPriceHistoryMissingCount", 0),
         "etfPriceHistoryCoverageTierCounts": payload.get(
             "etfPriceHistoryCoverageTierCounts",
             {},
         ),
+        "etfPriceHistorySeedMerge": payload.get("etfPriceHistorySeedMerge"),
         "outputDir": payload.get("outputDir"),
         "release": payload.get("release"),
+        "noteCount": len(notes),
+        "notesSample": [
+            _truncate_compact_text(note)
+            for note in notes[: max(sample_size, 0)]
+        ],
         "warningCount": len(warnings),
         "warningsSample": [
             _truncate_compact_text(warning)
@@ -216,6 +230,7 @@ def main() -> int:
 
     store = PriceHistoryStore(args.price_history_path)
     warnings: list[str] = []
+    notes: list[str] = []
     if args.update:
         default_start = date(2014, 10, 31)
         start, update_mode = _prepare_price_history_update_start(
@@ -246,8 +261,8 @@ def main() -> int:
                 warnings.append(
                     fetched.get("errorMessage") or "TWSE price history update failed."
                 )
-            warnings.append(f"updateMode={update_mode}")
-            warnings.append(f"updateSavedRows={saved}")
+            notes.append(f"updateMode={update_mode}")
+            notes.append(f"updateSavedRows={saved}")
         except Exception as error:  # noqa: BLE001 - seed fallback keeps Pages deployable.
             warnings.append(f"priceHistoryUpdateFailed={error}")
     _merge_seed_if_needed(
@@ -264,13 +279,14 @@ def main() -> int:
         update=args.update or args.update_etf_catalog,
         min_row_count=args.min_etf_catalog_row_count,
         warnings=warnings,
+        notes=notes,
     )
     etf_price_history_store = EtfPriceHistoryStore(args.etf_price_history_dir)
     seed_codes = _seed_codes_for_multi_etf_mode(
         args.multi_etf_codes,
         seed_dir=Path(args.seed_etf_price_history_dir),
     )
-    _merge_etf_price_history_seed_if_needed(
+    seed_merge_summary = _merge_etf_price_history_seed_if_needed(
         store=etf_price_history_store,
         seed_dir=Path(args.seed_etf_price_history_dir),
         codes=seed_codes,
@@ -281,6 +297,7 @@ def main() -> int:
         store=etf_price_history_store,
         catalog_payload=etf_catalog_payload,
         warnings=warnings,
+        notes=notes,
     )
 
     payload = export_static_00631l_data(
@@ -295,6 +312,8 @@ def main() -> int:
         warnings=warnings,
         release_metadata=_build_release_metadata(),
     )
+    payload["etfPriceHistorySeedMerge"] = seed_merge_summary
+    payload["notes"] = notes
     coverage_age_message = build_coverage_age_message(
         payload.get("coverageEnd"),
         max_age_days=args.max_coverage_age_days,
@@ -373,6 +392,7 @@ def _load_etf_catalog_payload(
     update: bool,
     min_row_count: int,
     warnings: list[str],
+    notes: list[str],
 ) -> dict[str, object] | None:
     fetched_at = utc_now_iso()
     if update:
@@ -389,7 +409,7 @@ def _load_etf_catalog_payload(
                 row_count = int(payload.get("rowCount") or 0)
                 if payload.get("sourceStatus") == "official" and row_count >= min_row_count:
                     save_etf_catalog(payload, path)
-                    warnings.append(f"etfCatalogUpdateSavedRows={row_count}")
+                    notes.append(f"etfCatalogUpdateSavedRows={row_count}")
                 else:
                     warnings.append(
                         "etfCatalogUpdateInsufficient="
@@ -406,7 +426,7 @@ def _load_etf_catalog_payload(
         seed_payload = load_etf_catalog(seed_path, fetched_at=fetched_at)
         seed_rows = int(seed_payload.get("rowCount") or 0)
         if seed_rows >= min_row_count:
-            warnings.append(
+            notes.append(
                 "seedEtfCatalogUsed="
                 f"{seed_path}; seedRows={seed_rows}; localRows={payload.get('rowCount', 0)}"
             )
@@ -458,35 +478,55 @@ def _merge_etf_price_history_seed_if_needed(
     seed_dir: Path,
     codes: list[str],
     warnings: list[str],
-) -> None:
+) -> dict[str, object]:
+    summary: dict[str, object] = {
+        "seedDir": str(seed_dir),
+        "requestedCount": len(codes),
+        "readyCount": 0,
+        "mergedCount": 0,
+        "savedRowCount": 0,
+        "seedRowCount": 0,
+        "missingCount": 0,
+        "missingSample": [],
+    }
     if not seed_dir.exists():
         warnings.append(f"seedEtfPriceHistoryMissing={seed_dir}")
-        return
+        summary["missingCount"] = len(codes)
+        summary["missingSample"] = codes[:10]
+        return summary
 
     seed_store = EtfPriceHistoryStore(seed_dir)
     merged = 0
     ready = 0
+    saved_rows_total = 0
+    seed_rows_total = 0
+    missing_codes: list[str] = []
     for code in codes:
         seed_records = seed_store.all(code)
         if not seed_records:
-            warnings.append(f"seedEtfPriceHistoryMissingCode={code}")
+            missing_codes.append(code)
             continue
         saved = store.save_points(code, seed_records)
+        saved_rows_total += saved
+        seed_rows_total += len(seed_records)
         status = store.status(code, fetched_at=utc_now_iso())
         row_count = int(status.get("rowCount") or 0)
         if row_count >= 2:
             ready += 1
         if saved:
             merged += 1
-        warnings.append(
-            "seedEtfPriceHistoryMerged="
-            f"{code}; seedRows={len(seed_records)}; savedRows={saved}"
-        )
 
-    if merged or ready:
-        warnings.append(
-            f"seedEtfPriceHistoryReady={ready}; merged={merged}; seedDir={seed_dir}"
-        )
+    summary.update(
+        {
+            "readyCount": ready,
+            "mergedCount": merged,
+            "savedRowCount": saved_rows_total,
+            "seedRowCount": seed_rows_total,
+            "missingCount": len(missing_codes),
+            "missingSample": missing_codes[:10],
+        }
+    )
+    return summary
 
 
 def _resolve_multi_etf_codes(
@@ -495,6 +535,7 @@ def _resolve_multi_etf_codes(
     store: EtfPriceHistoryStore,
     catalog_payload: dict[str, object] | None = None,
     warnings: list[str],
+    notes: list[str],
 ) -> list[str]:
     mode = str(value or "").strip().lower()
     if not _is_all_local_codes_mode(value):
@@ -502,7 +543,7 @@ def _resolve_multi_etf_codes(
             codes = catalog_codes(catalog_payload or {}, limit=0)
             store_codes = store.codes()
             merged = list(dict.fromkeys(codes + store_codes))
-            warnings.append(
+            notes.append(
                 "multiEtfCodesResolved="
                 f"{mode}; catalogCodes={len(codes)}; localCodes={len(store_codes)}; "
                 f"exportCodes={len(merged)}"
@@ -521,7 +562,7 @@ def _resolve_multi_etf_codes(
             codes.append(code)
         else:
             skipped += 1
-    warnings.append(
+    notes.append(
         "multiEtfCodesResolved="
         f"{mode}; readyCodes={len(codes)}; skipped={skipped}"
     )
