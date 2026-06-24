@@ -21,6 +21,7 @@ from backend.app.service import Etf00631LService
 from backend.scripts.import_etf_price_history import (
     build_import_summary_response,
     build_status_summary_response,
+    should_emit_progress,
 )
 
 
@@ -677,6 +678,13 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(len(compact["sampleItems"]), 2)
         self.assertEqual(compact["warningCount"], 1)
         self.assertNotIn("items", compact)
+
+    def test_import_progress_emits_first_interval_and_last(self) -> None:
+        self.assertFalse(should_emit_progress(1, 10, 0))
+        self.assertTrue(should_emit_progress(1, 10, 3))
+        self.assertFalse(should_emit_progress(2, 10, 3))
+        self.assertTrue(should_emit_progress(3, 10, 3))
+        self.assertTrue(should_emit_progress(10, 10, 3))
 
 
 def _points(code: str) -> list[dict[str, object]]:

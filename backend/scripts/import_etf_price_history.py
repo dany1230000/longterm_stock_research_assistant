@@ -60,6 +60,12 @@ def main() -> int:
             "backfills. Validation failures still fail the command."
         ),
     )
+    parser.add_argument(
+        "--progress-every",
+        type=int,
+        default=0,
+        help="Print a compact progress line every N symbols. 0 disables progress.",
+    )
     args = parser.parse_args()
 
     store = EtfPriceHistoryStore(args.output_dir, seed_dir=args.seed_dir)
@@ -113,7 +119,14 @@ def main() -> int:
     warnings: list[str] = []
     fetch_failures: list[str] = []
     validation_failures: list[str] = []
-    for code in codes:
+    total_codes = len(codes)
+    for position, code in enumerate(codes, start=1):
+        if should_emit_progress(position, total_codes, args.progress_every):
+            print(
+                f"[progress] etf_price_history_import {position}/{total_codes} code={code}",
+                file=sys.stderr,
+                flush=True,
+            )
         if explicit_start is not None:
             start = explicit_start
             update_mode = "custom"
@@ -221,6 +234,12 @@ def _resolve_codes(args: argparse.Namespace) -> list[str]:
         return parse_code_list(args.codes)
     payload = load_etf_catalog(args.catalog_path, fetched_at=utc_now_iso())
     return catalog_codes(payload, limit=args.limit)
+
+
+def should_emit_progress(position: int, total: int, every: int) -> bool:
+    if every <= 0 or total <= 0 or position <= 0:
+        return False
+    return position == 1 or position == total or position % every == 0
 
 
 def build_import_summary_response(

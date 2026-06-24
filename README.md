@@ -1517,3 +1517,7 @@ maintainer-only local catalog file.
 v5.65 keeps static Pages build logs concise. ETF import and static export now
 support compact normal-run summaries, so daily validation shows status, row
 counts, ETF readiness, warnings, and failures without dumping every ETF row.
+
+v5.66 adds progress lines to long ETF history imports. GitHub Pages and local
+static builds now show compact `[progress]` updates while the seed catalog is
+being checked.
