@@ -1362,3 +1362,7 @@ which catalog rows still lack usable price-history coverage.
 v5.29 aligns local Dart formatting with the GitHub Pages workflow gate. The
 public Pages build runs `dart format --set-exit-if-changed .`, so local release
 work now keeps that check clean before pushing.
+
+v5.30 adds that Dart formatting gate directly to `scripts\00631l_release_check.cmd`.
+Release validation now catches formatter drift before GitHub Pages starts its
+public build.

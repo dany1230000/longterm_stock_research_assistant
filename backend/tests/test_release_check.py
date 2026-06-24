@@ -59,6 +59,14 @@ class ReleaseCheckTests(unittest.TestCase):
 
         self.assertIn('"--summary-only"', source)
 
+    def test_release_check_runs_dart_format_gate(self) -> None:
+        source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
+            encoding="utf-8",
+        )
+
+        self.assertIn('"dart_format_check"', source)
+        self.assertIn('"--set-exit-if-changed"', source)
+
     def test_static_summary_tier_guard_requires_tiers_when_etf_history_exists(self) -> None:
         self.assertTrue(
             _static_summary_has_usable_tiers(

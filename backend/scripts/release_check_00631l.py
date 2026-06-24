@@ -98,6 +98,10 @@ def main() -> int:
             ],
         ),
         _run_command("env_check", ["cmd", "/c", "scripts\\00631l_check_env.cmd"]),
+        _run_command(
+            "dart_format_check",
+            ["cmd", "/c", "dart", "format", "--set-exit-if-changed", "."],
+        ),
         _run_command("flutter_analyze", ["cmd", "/c", "flutter", "analyze"]),
         _run_command("flutter_test", ["cmd", "/c", "flutter", "test"]),
         _run_command("flutter_build_web", ["cmd", "/c", "flutter", "build", "web"]),
@@ -363,6 +367,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_27_etf_catalog_gap_completion.md",
         "docs/00631l_v5_28_etf_import_gap_summary.md",
         "docs/00631l_v5_29_pages_format_alignment.md",
+        "docs/00631l_v5_30_release_format_gate.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
