@@ -96,6 +96,7 @@ class Static00631LRepository extends Mock00631LRepository {
   @override
   Future<EtfOperationsStatus> fetchOperationsStatus() async {
     final statusPayload = await _tryGetJson('status.json');
+    final releasePayload = await _tryGetJson('release.json');
     final catalogPayload = await _tryGetJson('etf_catalog.json');
     final etfHistoryPayload = await _tryGetJson('etf_price_history_index.json');
     final catalogRawStatus =
@@ -128,6 +129,10 @@ class Static00631LRepository extends Mock00631LRepository {
         etfPriceHistoryReadyCount: etfHistoryReadyCount,
         etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
         etfPriceHistoryDataTime: etfHistoryDataTime,
+        staticReleaseAppVersion: _string(releasePayload?['appVersion']),
+        staticReleaseTag: _string(releasePayload?['releaseTag']),
+        staticReleaseGitSha: _string(releasePayload?['gitSha']),
+        staticReleaseBuildTime: _dateTime(releasePayload?['buildTime']),
         errorMessage: 'Static public status.json is unavailable.',
       );
     }
@@ -150,6 +155,10 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryReadyCount: etfHistoryReadyCount,
       etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
       etfPriceHistoryDataTime: etfHistoryDataTime,
+      staticReleaseAppVersion: _string(releasePayload?['appVersion']),
+      staticReleaseTag: _string(releasePayload?['releaseTag']),
+      staticReleaseGitSha: _string(releasePayload?['gitSha']),
+      staticReleaseBuildTime: _dateTime(releasePayload?['buildTime']),
       errorMessage: rowCount >= 2
           ? null
           : statusPayload['errorMessage']?.toString() ??
@@ -173,6 +182,10 @@ class Static00631LRepository extends Mock00631LRepository {
     int etfPriceHistoryReadyCount = 0,
     Map<String, int> etfPriceHistoryCoverageTierCounts = const {},
     DateTime? etfPriceHistoryDataTime,
+    String staticReleaseAppVersion = '',
+    String staticReleaseTag = '',
+    String staticReleaseGitSha = '',
+    DateTime? staticReleaseBuildTime,
     String? errorMessage,
   }) {
     final now = DateTime.now();
@@ -186,6 +199,10 @@ class Static00631LRepository extends Mock00631LRepository {
       lastFetchedAt: generatedAt ?? now,
       sourceUpdatedAt: coverageEnd,
       isStale: isStale,
+      staticReleaseAppVersion: staticReleaseAppVersion,
+      staticReleaseTag: staticReleaseTag,
+      staticReleaseGitSha: staticReleaseGitSha,
+      staticReleaseBuildTime: staticReleaseBuildTime,
       intradaySourceMode: 'backend_required',
       twseIntradayNavConfigured: false,
       yuantaIntradayNavConfigured: false,

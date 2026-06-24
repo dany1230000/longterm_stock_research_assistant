@@ -1418,3 +1418,7 @@ v5.42 adds a public-only release marker wait command:
 `scripts\00631l_wait_public_release_marker.cmd --expected-sha <commit>`.
 It polls the public `release.json` served by GitHub Pages and avoids the GitHub
 Actions API, so post-push checks still work when API quota is limited.
+
+v5.43 reads that static `release.json` inside the PWA operations status. The
+settings page can show the public static release version, tag, commit, and
+build time directly on mobile.

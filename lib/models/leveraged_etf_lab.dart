@@ -1235,6 +1235,10 @@ class EtfOperationsStatus {
     this.backendReleaseTag = '',
     this.backendGitSha = '',
     this.backendBuildTime,
+    this.staticReleaseAppVersion = '',
+    this.staticReleaseTag = '',
+    this.staticReleaseGitSha = '',
+    this.staticReleaseBuildTime,
     this.publicApiBaseUrl = '',
     this.allowedOrigins = const [],
     this.dataRoot = '',
@@ -1396,6 +1400,10 @@ class EtfOperationsStatus {
   final String backendReleaseTag;
   final String backendGitSha;
   final DateTime? backendBuildTime;
+  final String staticReleaseAppVersion;
+  final String staticReleaseTag;
+  final String staticReleaseGitSha;
+  final DateTime? staticReleaseBuildTime;
   final String publicApiBaseUrl;
   final List<String> allowedOrigins;
   final String dataRoot;
@@ -1553,6 +1561,17 @@ class EtfOperationsStatus {
       return version;
     }
     return '$version · $tag';
+  }
+
+  String get staticReleaseLabel {
+    final version = staticReleaseAppVersion.trim().isEmpty
+        ? 'static release unknown'
+        : staticReleaseAppVersion.trim();
+    final tag = staticReleaseTag.trim();
+    if (tag.isEmpty) {
+      return version;
+    }
+    return '$version / $tag';
   }
 
   EtfDailyReadinessSummary get dailyReadinessSummary {

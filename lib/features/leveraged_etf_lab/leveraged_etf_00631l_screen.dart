@@ -8207,6 +8207,18 @@ class _SettingsSection extends StatelessWidget {
                     ? 'set 00631L_BACKEND_GIT_SHA during deployment for exact build trace.'
                     : 'git ${status.backendGitSha}',
               ),
+              if (status.sourceStatusLabel == 'static_public_data' ||
+                  status.staticReleaseGitSha.isNotEmpty)
+                _StatusItem(
+                  label: 'public static release',
+                  status: status.staticReleaseAppVersion.isEmpty
+                      ? 'not loaded'
+                      : status.staticReleaseAppVersion,
+                  detail: status.staticReleaseLabel,
+                  action: status.staticReleaseGitSha.isEmpty
+                      ? 'run scripts\\00631l_export_static_data.cmd --update before the Pages build.'
+                      : 'git ${_shortGitSha(status.staticReleaseGitSha)}; build ${_dateTimeOrDash(status.staticReleaseBuildTime)}',
+                ),
               _StatusItem(
                 label: 'official holdings',
                 status: status.holdingsHistoryStatus,
@@ -8547,6 +8559,16 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
             caption: status.backendConnectionLabel,
             icon: Icons.cloud_sync_outlined,
           ),
+          if (status.sourceStatusLabel == 'static_public_data' ||
+              status.staticReleaseGitSha.isNotEmpty)
+            _MetricCard(
+              label: 'public static release',
+              value: status.staticReleaseAppVersion.isEmpty
+                  ? 'not loaded'
+                  : status.staticReleaseAppVersion,
+              caption: _shortGitSha(status.staticReleaseGitSha),
+              icon: Icons.verified_outlined,
+            ),
           _MetricCard(
             label: '日常狀態',
             value: readinessLabel,
@@ -11445,6 +11467,14 @@ String _dateTimeOrDash(DateTime? dateTime) {
   return dateTime == null
       ? 'unavailable'
       : formatTaiwanDateTimeSeconds(dateTime);
+}
+
+String _shortGitSha(String value) {
+  final normalized = value.trim();
+  if (normalized.length <= 12) {
+    return normalized.isEmpty ? 'unavailable' : normalized;
+  }
+  return normalized.substring(0, 12);
 }
 
 String _sourceTimeText(DateTime dateTime, {DateTime? now}) {

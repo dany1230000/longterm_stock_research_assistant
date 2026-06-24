@@ -1051,6 +1051,8 @@ void main() {
     expect(find.textContaining('不代表官方內容物已完整匯入'), findsOneWidget);
     expect(find.text('history ready ratio'), findsOneWidget);
     expect(find.text('尚未 ready'), findsOneWidget);
+    expect(find.text('public static release'), findsOneWidget);
+    expect(find.text('5.42-public-release-wait'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -1404,6 +1406,10 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     intradaySourceMode: 'backend_required',
     twseIntradayNavConfigured: false,
     yuantaIntradayNavConfigured: false,
+    staticReleaseAppVersion: '5.42-public-release-wait',
+    staticReleaseTag: '00631l-lab-v5.42-public-release-wait',
+    staticReleaseGitSha: 'b611c2c21c031b2fea2f182a778a46776093bb3f',
+    staticReleaseBuildTime: DateTime(2026, 6, 24, 8, 1, 9),
     publicApiBaseUrl: '',
     allowedOrigins: const [],
     dataRoot: 'web/00631l-static-data',

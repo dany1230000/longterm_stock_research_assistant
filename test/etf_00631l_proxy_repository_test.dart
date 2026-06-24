@@ -286,6 +286,7 @@ void main() {
         '00631l-static-data/price_history.json':
             jsonEncode(_staticPriceHistoryPayload()),
         '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
+        '00631l-static-data/release.json': jsonEncode(_staticReleasePayload()),
         '00631l-static-data/etf_catalog.json':
             jsonEncode(_staticEtfCatalogPayload()),
         '00631l-static-data/etf_price_history_index.json':
@@ -321,6 +322,11 @@ void main() {
     expect(status.etfPriceHistoryStatus, 'static_official');
     expect(status.etfPriceHistoryReadyCount, 1);
     expect(status.etfPriceHistoryCoverageTierCounts['recent'], 1);
+    expect(status.staticReleaseAppVersion, '5.42-public-release-wait');
+    expect(status.staticReleaseTag, '00631l-lab-v5.42-public-release-wait');
+    expect(
+        status.staticReleaseGitSha, 'b611c2c21c031b2fea2f182a778a46776093bb3f');
+    expect(status.staticReleaseLabel, contains('5.42-public-release-wait'));
     expect(status.backtestAvailable, isTrue);
     expect(status.backendConnectionLabel, 'static public data');
     expect(analysis.sourceStatusLabel, 'static_official');
@@ -1122,6 +1128,16 @@ Map<String, Object?> _staticStatusPayload() {
     'failures': [],
     'strict': false,
     'errorMessage': null,
+  };
+}
+
+Map<String, Object?> _staticReleasePayload() {
+  return {
+    'sourceContract': '00631l_static_public_release_marker',
+    'appVersion': '5.42-public-release-wait',
+    'releaseTag': '00631l-lab-v5.42-public-release-wait',
+    'gitSha': 'b611c2c21c031b2fea2f182a778a46776093bb3f',
+    'buildTime': '2026-06-24T08:01:09+00:00',
   };
 }
 
