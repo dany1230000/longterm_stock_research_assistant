@@ -957,6 +957,8 @@ void main() {
     expect(find.text('8'), findsWidgets);
     expect(find.text('recent'), findsOneWidget);
     expect(find.text('220'), findsWidgets);
+    expect(find.text('完成度'), findsOneWidget);
+    expect(find.text('history ready ratio'), findsOneWidget);
     expect(find.text('尚未 ready'), findsOneWidget);
     _expectNoTradingActionText();
   });

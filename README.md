@@ -1313,3 +1313,7 @@ instead of leaving users to infer chart points from the line alone.
 v5.18 adds a top-level AI today snapshot. The AI page now starts with holdings
 date, intraday NAV time, premium/discount status, price history coverage, and
 program-operation guidance before the longer rule-based details.
+
+v5.19 adds an ETF data readiness ratio to Settings. The ETF data library now
+shows the share of catalog symbols that have imported price history, making data
+coverage easier to verify before switching symbols or running comparisons.

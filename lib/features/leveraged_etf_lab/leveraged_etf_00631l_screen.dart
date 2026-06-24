@@ -8030,12 +8030,21 @@ class _EtfDataLibrarySummary extends StatelessWidget {
     final historyReadyValue = historyTotal > 0
         ? '${formatInteger(status.etfPriceHistoryReadyCount)} / ${formatInteger(historyTotal)}'
         : formatInteger(status.etfPriceHistoryReadyCount);
+    final readyRatio = historyTotal <= 0
+        ? 0.0
+        : status.etfPriceHistoryReadyCount / historyTotal;
 
     return _SectionBlock(
       title: 'ETF 資料補齊',
       subtitle: '目前可搜尋的 ETF catalog 與已匯入歷史資料；歷史 ready 才能支援回測與比較。',
       child: _ResponsiveMetricGrid(
         cards: [
+          _MetricCard(
+            label: '完成度',
+            value: formatNullablePercent(readyRatio * 100),
+            caption: 'history ready ratio',
+            icon: Icons.fact_check_outlined,
+          ),
           _MetricCard(
             label: 'catalog 檔數',
             value: formatInteger(catalogRows),
