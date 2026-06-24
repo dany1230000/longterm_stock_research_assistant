@@ -1490,3 +1490,7 @@ times and data-quality diagnostics live under `更多資料`.
 v5.59 shortens the history/backtest page. Date range controls stay visible,
 while amount and cost inputs move behind `金額與成本參數`; a compact backtest
 result strip replaces the taller result header.
+
+v5.60 shortens the position page. A compact local-only title and account
+summary replace the tall position header; saved positions keep edit inputs
+behind a compact expander.

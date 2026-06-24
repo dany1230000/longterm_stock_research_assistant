@@ -7001,38 +7001,83 @@ class _PositionSectionState extends State<_PositionSection> {
       marketPrice: widget.selectedEtf.marketPrice,
       dataTime: widget.selectedEtf.dataTime,
     );
+    final inputForm = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!_loaded) const LinearProgressIndicator(),
+        _StatusWrap(
+          labels: [
+            input.hasPosition ? '持倉資料已輸入' : '尚未輸入持倉',
+            'local-only',
+            '目前標的 ${widget.selectedEtf.code}',
+            '行情來源 ${widget.selectedEtf.sourceStatusLabel}',
+          ],
+        ),
+        const SizedBox(height: 8),
+        if (!input.hasPosition) ...[
+          const _EmptyPanel(
+            title: '尚未輸入持倉',
+            message: '填入持有股數與平均成本後，這裡會顯示目前市值、未實現損益與部位比例。',
+          ),
+          const SizedBox(height: 12),
+        ],
+        _InputGrid(
+          children: [
+            _NumberField(
+              label: '持有股數',
+              controller: _sharesController,
+              onChanged: (_) => setState(() {}),
+            ),
+            _NumberField(
+              label: '平均成本',
+              controller: _costController,
+              onChanged: (_) => setState(() {}),
+            ),
+            _NumberField(
+              label: '總資產，選填',
+              controller: _assetsController,
+              onChanged: (_) => setState(() {}),
+            ),
+            _NumberField(
+              label: '費用，選填',
+              controller: _feeController,
+              onChanged: (_) => setState(() {}),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _noteController,
+          decoration: const InputDecoration(labelText: '備註，選填'),
+          minLines: 1,
+          maxLines: 2,
+          onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 12),
+        _CompactExpansionPanel(
+          title: '估算細節',
+          subtitle: input.hasPosition ? '市值、成本、損益與部位比例。' : '輸入股數與成本後顯示完整估算。',
+          child: _PositionResultGrid(summary: summary),
+        ),
+        if (_exportJson != null) ...[
+          const SizedBox(height: 12),
+          SelectableText(_exportJson!),
+        ],
+        const SizedBox(height: 10),
+        const Text('本區只做持倉資料狀態與估算顯示，非買賣建議。'),
+      ],
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeaderCard(
+        _CompactPageTitle(
           title: '本機持倉',
           subtitle: input.hasPosition
               ? '依目前市價估算；資料只保存在本機瀏覽器。'
               : '先輸入股數與平均成本，就能在本機估算持倉狀態。',
-          icon: Icons.account_balance_wallet_outlined,
-          badges: ['local-only', 'browser storage', widget.selectedEtf.code],
-          metrics: [
-            _SectionHeaderMetric(
-              label: '目前市值',
-              value: formatNtdAmount(summary.marketValue),
-            ),
-            _SectionHeaderMetric(
-              label: '成本',
-              value: formatNtdAmount(summary.cost),
-            ),
-            _SectionHeaderMetric(
-              label: '損益',
-              value: formatNtdAmount(summary.unrealizedPnl),
-            ),
-            _SectionHeaderMetric(
-              label: '資料時間',
-              value: summary.dataTime == null
-                  ? 'unavailable'
-                  : formatTimeSeconds(summary.dataTime!),
-            ),
-          ],
+          badges: ['local-only', widget.selectedEtf.code],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _PositionAccountStrip(
           input: input,
           summary: summary,
@@ -7048,79 +7093,17 @@ class _PositionSectionState extends State<_PositionSection> {
         const SizedBox(height: 12),
         KeyedSubtree(
           key: const ValueKey('00631l-position-compact-input-card'),
-          child: _SectionBlock(
-            title: '輸入持倉資料',
-            subtitle: input.hasPosition
-                ? '依目前市價估算；資料只保存在本機瀏覽器。'
-                : 'local-only，本機瀏覽器保存。清除資料後不會保留副本。',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (!_loaded) const LinearProgressIndicator(),
-                _StatusWrap(
-                  labels: [
-                    input.hasPosition ? '持倉資料已輸入' : '尚未輸入持倉',
-                    'local-only',
-                    '目前標的 ${widget.selectedEtf.code}',
-                    '行情來源 ${widget.selectedEtf.sourceStatusLabel}',
-                  ],
+          child: input.hasPosition
+              ? _CompactExpansionPanel(
+                  title: '輸入持倉資料',
+                  subtitle: '已保存本機持倉；需要修改股數、成本或備註時再展開。',
+                  child: inputForm,
+                )
+              : _SectionBlock(
+                  title: '輸入持倉資料',
+                  subtitle: 'local-only，本機瀏覽器保存。清除資料後不會保留副本。',
+                  child: inputForm,
                 ),
-                const SizedBox(height: 8),
-                if (!input.hasPosition) ...[
-                  const _EmptyPanel(
-                    title: '尚未輸入持倉',
-                    message: '填入持有股數與平均成本後，這裡會顯示目前市值、未實現損益與部位比例。',
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                _InputGrid(
-                  children: [
-                    _NumberField(
-                      label: '持有股數',
-                      controller: _sharesController,
-                      onChanged: (_) => setState(() {}),
-                    ),
-                    _NumberField(
-                      label: '平均成本',
-                      controller: _costController,
-                      onChanged: (_) => setState(() {}),
-                    ),
-                    _NumberField(
-                      label: '總資產，選填',
-                      controller: _assetsController,
-                      onChanged: (_) => setState(() {}),
-                    ),
-                    _NumberField(
-                      label: '費用，選填',
-                      controller: _feeController,
-                      onChanged: (_) => setState(() {}),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _noteController,
-                  decoration: const InputDecoration(labelText: '備註，選填'),
-                  minLines: 1,
-                  maxLines: 2,
-                  onChanged: (_) => setState(() {}),
-                ),
-                const SizedBox(height: 12),
-                _CompactExpansionPanel(
-                  title: '估算細節',
-                  subtitle:
-                      input.hasPosition ? '市值、成本、損益與部位比例。' : '輸入股數與成本後顯示完整估算。',
-                  child: _PositionResultGrid(summary: summary),
-                ),
-                if (_exportJson != null) ...[
-                  const SizedBox(height: 12),
-                  SelectableText(_exportJson!),
-                ],
-                const SizedBox(height: 10),
-                const Text('本區只做持倉資料狀態與估算顯示，非買賣建議。'),
-              ],
-            ),
-          ),
         ),
       ],
     );
@@ -10309,6 +10292,60 @@ class _SectionHeaderMetric {
   final String label;
   final String value;
   final String? caption;
+}
+
+class _CompactPageTitle extends StatelessWidget {
+  const _CompactPageTitle({
+    required this.title,
+    required this.subtitle,
+    required this.badges,
+  });
+
+  final String title;
+  final String subtitle;
+  final List<String> badges;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w700,
+                height: 1.3,
+              ),
+            ),
+            const SizedBox(height: 7),
+            _StatusWrap(labels: badges),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _SectionHeaderCard extends StatelessWidget {

@@ -40,10 +40,10 @@ class EndpointTests(unittest.TestCase):
         self.assertIn("serverTime", payload)
         self.assertEqual(payload["sourceContract"], "00631l_backend_health")
         self.assertNotEqual(payload["appVersion"], "3.4-live-backend")
-        self.assertEqual(payload["appVersion"], "5.59-compact-backtest-controls")
+        self.assertEqual(payload["appVersion"], "5.60-compact-position-entry")
         self.assertEqual(
             payload["release"]["tag"],
-            "00631l-lab-v5.59-compact-backtest-controls",
+            "00631l-lab-v5.60-compact-position-entry",
         )
         self.assertEqual(payload["release"]["version"], payload["appVersion"])
         self.assertIn("tag", payload["release"])
