@@ -305,6 +305,7 @@ void main() {
     final status = await repository.fetchOperationsStatus();
     final analysis = await repository.fetchAiAnalysisSummary();
     final catalog = await repository.fetchEtfCatalog();
+    final fastData = await repository.fetchFastLabData();
 
     expect(history.status, EtfDataStatus.cached);
     expect(history.sourceStatusLabel, 'static_official');
@@ -342,6 +343,18 @@ void main() {
     expect(catalog.items[1].priceHistoryCoverageTier, 'recent');
     expect(catalog.items[2].hasPriceHistory, isFalse);
     expect(analysis.disclaimer, '非買賣建議');
+    expect(fastData.priceHistory.points, hasLength(3));
+    expect(fastData.priceHistory.sourceStatusLabel, 'static_official');
+    expect(fastData.operationsStatus.priceHistoryRows, 3);
+    expect(
+        fastData.aiAnalysis.sourceStatuses['priceHistory'], 'static_official');
+    expect(fastData.snapshot.status, EtfDataStatus.error);
+    expect(fastData.snapshot.errorMessage, contains('Static public mode'));
+    expect(fastData.futuresQuote.status, EtfDataStatus.error);
+    expect(
+      fastData.futuresQuote.sourceContract,
+      'static_public_backend_required_tx_quote',
+    );
   });
 
   test('proxy repository maps AI analysis summary payload', () async {

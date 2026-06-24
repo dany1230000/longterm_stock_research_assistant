@@ -1498,3 +1498,8 @@ behind a compact expander.
 v5.61 shortens the AI page first screen. The daily interpretation and three
 brief cards stay visible first, while the matrix, data status, complete report,
 and integrity details move behind `進階 AI 明細`.
+
+v5.62 improves public static startup. Static mode now loads verified price
+history, operations status, AI summary, and ETF catalog through a dedicated fast
+path; live-only holdings, intraday NAV, and TX fields stay marked as backend
+required instead of falling through mock data.

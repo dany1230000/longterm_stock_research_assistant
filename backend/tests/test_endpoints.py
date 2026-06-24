@@ -40,10 +40,10 @@ class EndpointTests(unittest.TestCase):
         self.assertIn("serverTime", payload)
         self.assertEqual(payload["sourceContract"], "00631l_backend_health")
         self.assertNotEqual(payload["appVersion"], "3.4-live-backend")
-        self.assertEqual(payload["appVersion"], "5.61-ai-page-progressive-detail")
+        self.assertEqual(payload["appVersion"], "5.62-static-fast-start")
         self.assertEqual(
             payload["release"]["tag"],
-            "00631l-lab-v5.61-ai-page-progressive-detail",
+            "00631l-lab-v5.62-static-fast-start",
         )
         self.assertEqual(payload["release"]["version"], payload["appVersion"])
         self.assertIn("tag", payload["release"])

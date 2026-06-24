@@ -18,8 +18,102 @@ class Static00631LRepository extends Mock00631LRepository {
   final Duration timeout;
 
   @override
+  Future<Etf00631LLabData> fetchFastLabData() async {
+    final now = DateTime.now();
+    final profileFuture = fetchProfile();
+    final snapshotFuture = fetchDailySnapshot();
+    final futuresQuoteFuture = fetchFuturesQuote();
+    final priceHistoryFuture = fetchPriceHistory();
+    final operationsStatusFuture = fetchOperationsStatus();
+    final catalogFuture = fetchEtfCatalog();
+
+    final profile = await profileFuture;
+    final snapshot = await snapshotFuture;
+    final futuresQuote = await futuresQuoteFuture;
+    final priceHistory = await priceHistoryFuture;
+    final operationsStatus = await operationsStatusFuture;
+    final catalog = await catalogFuture;
+
+    return Etf00631LLabData(
+      profile: profile,
+      snapshot: snapshot,
+      intradayNav: null,
+      futuresQuote: futuresQuote,
+      holdingsHistory: EtfHoldingsHistory.empty(
+        lastFetchedAt: now,
+        status: EtfDataStatus.error,
+        sourceStatusLabel: 'backend_required',
+        errorMessage:
+            'Static public mode does not include official holdings history.',
+      ),
+      intradayNavHistory: EtfIntradayNavHistorySummary.empty(
+        lastFetchedAt: now,
+        status: EtfDataStatus.error,
+        sourceStatusLabel: 'backend_required',
+        errorMessage: 'Static public mode does not include live intraday NAV.',
+      ),
+      priceHistory: priceHistory,
+      operationsStatus: operationsStatus,
+      analysis: EtfAnalysisSummary.fromSnapshot(
+        snapshot: snapshot,
+        intradayNav: null,
+        now: now,
+      ),
+      aiAnalysis: _analysisFromStaticStatus(operationsStatus),
+      etfCatalog: catalog,
+      lastFetchedAt: now,
+    );
+  }
+
+  @override
+  Future<EtfDailyHoldingSnapshot> fetchDailySnapshot() async {
+    final now = DateTime.now();
+    return EtfDailyHoldingSnapshot(
+      tradeDate: DateTime(now.year, now.month, now.day),
+      fundNetAssetValue: 0,
+      navPerUnit: 0,
+      outstandingUnits: 0,
+      assetSummary: const EtfAssetSummary(
+        stock: 0,
+        etf: 0,
+        bond: 0,
+        futures: 0,
+      ),
+      cashHoldings: const [],
+      stockHoldings: const [],
+      futuresHoldings: const [],
+      status: EtfDataStatus.error,
+      lastFetchedAt: now,
+      sourceUpdatedAt: now,
+      sourceHash: 'static-public-backend-required',
+      errorMessage:
+          'Static public mode does not include official daily holdings; live backend is required.',
+    );
+  }
+
+  @override
   Future<EtfIntradayNav?> fetchIntradayNav() async {
     return null;
+  }
+
+  @override
+  Future<FuturesQuote> fetchFuturesQuote() async {
+    return FuturesQuote(
+      symbol: 'TX',
+      contractMonth: '',
+      txSymbol: null,
+      txPrice: null,
+      weightedIndex: null,
+      nightSessionChange: null,
+      status: EtfDataStatus.error,
+      lastFetchedAt: DateTime.now(),
+      sourceContract: 'static_public_backend_required_tx_quote',
+      sourceUrl: '',
+      dataTime: null,
+      isStale: true,
+      errorMessage:
+          'Static public mode does not include live TX quote; live backend is required.',
+    );
   }
 
   @override
@@ -269,6 +363,10 @@ class Static00631LRepository extends Mock00631LRepository {
   @override
   Future<EtfAiAnalysisSummary> fetchAiAnalysisSummary() async {
     final status = await fetchOperationsStatus();
+    return _analysisFromStaticStatus(status);
+  }
+
+  EtfAiAnalysisSummary _analysisFromStaticStatus(EtfOperationsStatus status) {
     final hasHistory = status.priceHistoryRows >= 2;
     return EtfAiAnalysisSummary(
       source: 'rule_based',
