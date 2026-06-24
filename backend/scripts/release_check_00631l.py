@@ -39,7 +39,13 @@ def main() -> int:
         _run_command("pages_deploy_status", ["cmd", "/c", "scripts\\00631l_check_pages_deploy.cmd"]),
         _run_command(
             "public_pages_checkup",
-            ["cmd", "/c", "scripts\\00631l_public_pages_checkup.cmd", "--skip-github-api"],
+            [
+                "cmd",
+                "/c",
+                "scripts\\00631l_public_pages_checkup.cmd",
+                "--skip-github-api",
+                "--summary-only",
+            ],
         ),
         _run_command(
             "pages_deploy_wait_dry_run",
@@ -403,6 +409,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_43_public_static_release_ui.md",
         "docs/00631l_v5_44_public_release_wait_summary.md",
         "docs/00631l_v5_45_brief_public_release_wait.md",
+        "docs/00631l_v5_46_brief_public_pages_checkup.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

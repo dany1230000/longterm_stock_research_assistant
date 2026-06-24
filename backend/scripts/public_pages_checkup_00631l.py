@@ -62,18 +62,9 @@ def main() -> int:
         expected_sha=expected_sha,
         github_api_mode="skipped" if args.skip_github_api else "checked",
     )
-    print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
-    summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
-    print(
-        "[summary] "
-        f"overallStatus={payload['overallStatus']} "
-        f"warnings={payload['warningCount']} "
-        f"failures={payload['failureCount']} "
-        f"rows={summary.get('staticRowCount') or 0} "
-        f"coverage={summary.get('coverageStart') or '-'}..{summary.get('coverageEnd') or '-'} "
-        f"workflow={summary.get('latestRunStatus') or 'unknown'}/{summary.get('latestRunConclusion') or 'unknown'} "
-        f"githubApi={summary.get('githubApiMode') or 'checked'}"
-    )
+    printable_payload = compact_public_pages_checkup_payload(payload) if args.summary_only else payload
+    print(json.dumps(printable_payload, ensure_ascii=False, indent=2, sort_keys=True))
+    _print_summary_line(payload)
     return 0 if args.soft_fail or payload["overallStatus"] != "FAIL" else 1
 
 
@@ -190,6 +181,21 @@ def build_public_pages_checkup(
     }
 
 
+def compact_public_pages_checkup_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    public_pages = payload.get("publicPages")
+    deploy_status = payload.get("deployStatus")
+    compact = {
+        key: value
+        for key, value in payload.items()
+        if key not in {"publicPages", "deployStatus"}
+    }
+    compact["publicPagesStatus"] = _nested_status(public_pages)
+    compact["pagesDeployStatus"] = _nested_status(deploy_status)
+    compact["publicChecks"] = _compact_checks(public_pages)
+    compact["deployChecks"] = _compact_checks(deploy_status)
+    return compact
+
+
 def _skipped_deploy_status(
     *,
     repo: str,
@@ -236,6 +242,36 @@ def _skipped_deploy_status(
 def _looks_rate_limited(payload: dict[str, Any]) -> bool:
     text = json.dumps(payload, ensure_ascii=False).lower()
     return "rate limit" in text or "api rate limit" in text or "http 403" in text
+
+
+def _nested_status(payload: Any) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        return {"overallStatus": "unavailable", "warningCount": 0, "failureCount": 0}
+    return {
+        "overallStatus": payload.get("overallStatus"),
+        "warningCount": payload.get("warningCount", len(payload.get("warnings") or [])),
+        "failureCount": payload.get("failureCount", len(payload.get("failures") or [])),
+    }
+
+
+def _compact_checks(payload: Any) -> list[dict[str, Any]]:
+    if not isinstance(payload, dict):
+        return []
+    checks = payload.get("checks")
+    if not isinstance(checks, list):
+        return []
+    compact: list[dict[str, Any]] = []
+    for check in checks:
+        if not isinstance(check, dict):
+            continue
+        compact.append(
+            {
+                "name": check.get("name"),
+                "status": check.get("status"),
+                "message": check.get("message"),
+            }
+        )
+    return compact
 
 
 def _release_marker_status(public_pages: dict[str, Any]) -> str:
@@ -285,6 +321,20 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
+def _print_summary_line(payload: dict[str, Any]) -> None:
+    summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+    print(
+        "[summary] "
+        f"overallStatus={payload['overallStatus']} "
+        f"warnings={payload['warningCount']} "
+        f"failures={payload['failureCount']} "
+        f"rows={summary.get('staticRowCount') or 0} "
+        f"coverage={summary.get('coverageStart') or '-'}..{summary.get('coverageEnd') or '-'} "
+        f"workflow={summary.get('latestRunStatus') or 'unknown'}/{summary.get('latestRunConclusion') or 'unknown'} "
+        f"githubApi={summary.get('githubApiMode') or 'checked'}"
+    )
+
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run a concise public 00631L Pages checkup for phone usage.",
@@ -305,6 +355,11 @@ def _parse_args() -> argparse.Namespace:
         "--public-only",
         action="store_true",
         help="Only check the public PWA/static data and skip GitHub workflow API calls.",
+    )
+    parser.add_argument(
+        "--summary-only",
+        action="store_true",
+        help="Print a compact daily checkup instead of full nested smoke payloads.",
     )
     parser.add_argument("--soft-fail", action="store_true")
     return parser.parse_args()

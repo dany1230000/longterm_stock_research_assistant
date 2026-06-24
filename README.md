@@ -1431,3 +1431,8 @@ available for debugging.
 v5.45 shortens that summary output further. Daily waits now show first/latest
 release-marker samples and the transition count; add `--include-attempts` only
 when each polling attempt is needed for debugging.
+
+v5.46 adds `--summary-only` to `scripts\00631l_public_pages_checkup.cmd` and
+uses it in release check. Daily public phone-app checks now show the public URL,
+release marker, row count, coverage, and workflow mode without printing full
+nested smoke payloads.

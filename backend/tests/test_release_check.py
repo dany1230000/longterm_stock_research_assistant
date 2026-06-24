@@ -99,6 +99,7 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertIn('"public_pages_checkup"', source)
         self.assertIn("scripts\\\\00631l_public_pages_checkup.cmd", source)
         self.assertIn('"--skip-github-api"', source)
+        self.assertIn('"--summary-only"', source)
 
     def test_release_check_runs_compact_public_release_marker_wait(self) -> None:
         source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(

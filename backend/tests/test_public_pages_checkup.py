@@ -1,6 +1,9 @@
 import unittest
 
-from backend.scripts.public_pages_checkup_00631l import build_public_pages_checkup
+from backend.scripts.public_pages_checkup_00631l import (
+    build_public_pages_checkup,
+    compact_public_pages_checkup_payload,
+)
 
 
 class PublicPagesCheckupTests(unittest.TestCase):
@@ -108,6 +111,21 @@ class PublicPagesCheckupTests(unittest.TestCase):
         self.assertTrue(
             any("--skip-github-api" in item for item in payload["actionItems"])
         )
+
+    def test_compact_public_pages_checkup_removes_nested_payloads(self) -> None:
+        payload = build_public_pages_checkup(
+            public_pages=_public_pages("PASS"),
+            deploy_status=_deploy_status("PASS", "completed", "success", "abc123fff"),
+            expected_sha="abc123",
+        )
+
+        compact = compact_public_pages_checkup_payload(payload)
+
+        self.assertNotIn("publicPages", compact)
+        self.assertNotIn("deployStatus", compact)
+        self.assertEqual(compact["publicPagesStatus"]["overallStatus"], "PASS")
+        self.assertEqual(compact["pagesDeployStatus"]["overallStatus"], "PASS")
+        self.assertIn("summary", compact)
 
 
 def _public_pages(status: str) -> dict:
