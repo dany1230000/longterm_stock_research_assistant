@@ -1349,3 +1349,8 @@ same maintenance summary.
 v5.26 makes history chart dates easier to read. Compact charts now show full
 start, middle, and end dates below the chart while keeping tap-to-inspect date
 details.
+
+v5.27 makes ETF data-completion counts stricter. The app now compares imported
+ETF price histories against the broader catalog count when available, so the
+visible gap does not disappear just because the history index itself is fully
+ready.

@@ -187,6 +187,27 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('ETF data completion denominator includes catalog gap',
+      (tester) async {
+    await _pumpLab(tester, _EtfCatalogGapOperationsRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('完整統計 344'), findsOneWidget);
+    expect(find.text('history ready 228 / 344'), findsOneWidget);
+    expect(find.text('缺口 116'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('關閉'));
+    await tester.pumpAndSettle();
+    await _tapSection(tester, 'settings');
+    await tester.pumpAndSettle();
+
+    expect(find.text('228 / 344'), findsWidgets);
+    expect(find.text('116'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('00631L lab remains readable on phone width', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -1295,6 +1316,29 @@ class _EtfReadinessOperationsRepository extends Mock00631LRepository {
   }
 }
 
+class _EtfCatalogGapOperationsRepository extends Mock00631LRepository {
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() {
+    return fetchLabData();
+  }
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    return _operationsStatusWithEtfHistory(
+      readyCount: 228,
+      rowCount: 228,
+      catalogRowCount: 344,
+      historyRowCount: 228,
+      tierCounts: const {
+        'long_term': 8,
+        'recent': 220,
+        'unavailable': 116,
+        'error': 0,
+      },
+    );
+  }
+}
+
 class _CatalogHistoryMetadataRepository extends Mock00631LRepository {
   @override
   Future<Etf00631LLabData> fetchFastLabData() {
@@ -1343,6 +1387,8 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
   required int readyCount,
   required int rowCount,
   required Map<String, int> tierCounts,
+  int? catalogRowCount,
+  int? historyRowCount,
 }) {
   final now = DateTime(2026, 6, 11, 10);
   return EtfOperationsStatus(
@@ -1377,10 +1423,10 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     priceHistoryCoverageEnd: DateTime(2026, 6, 18),
     priceHistoryCompleteFromListing: true,
     etfCatalogStatus: 'static_official',
-    etfCatalogRowCount: rowCount,
+    etfCatalogRowCount: catalogRowCount ?? rowCount,
     etfCatalogDataTime: now,
     etfPriceHistoryStatus: 'static_official',
-    etfPriceHistoryRowCount: rowCount,
+    etfPriceHistoryRowCount: historyRowCount ?? rowCount,
     etfPriceHistoryReadyCount: readyCount,
     etfPriceHistoryCoverageTierCounts: tierCounts,
     etfPriceHistoryDataTime: now,

@@ -1100,13 +1100,14 @@ class _SymbolSearchDataCompletionStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = data.operationsStatus;
-    final effectiveCatalogRowCount =
-        status.etfCatalogRowCount > catalogRowCount
-            ? status.etfCatalogRowCount
-            : catalogRowCount;
-    final historyTotal = status.etfPriceHistoryRowCount > 0
-        ? status.etfPriceHistoryRowCount
-        : effectiveCatalogRowCount;
+    final effectiveCatalogRowCount = _effectiveEtfCatalogRows(
+      status: status,
+      loadedCatalogRows: catalogRowCount,
+    );
+    final historyTotal = _etfDataCompletionTotal(
+      status: status,
+      catalogRows: effectiveCatalogRowCount,
+    );
     final readyRatio =
         historyTotal <= 0 ? 0.0 : readyHistoryCount / historyTotal * 100;
     final gap = (historyTotal - readyHistoryCount)
@@ -8600,9 +8601,10 @@ class _EtfResearchRoomReadinessPanel extends StatelessWidget {
     final status = data.operationsStatus;
     final price = data.priceHistory.completenessSummary();
     final etfReady = status.etfPriceHistoryReadyCount;
-    final etfTotal = status.etfPriceHistoryRowCount > 0
-        ? status.etfPriceHistoryRowCount
-        : data.etfCatalog.rowCount;
+    final etfTotal = _etfDataCompletionTotal(
+      status: status,
+      catalogRows: data.etfCatalog.rowCount,
+    );
     return KeyedSubtree(
       key: const ValueKey('00631l-etf-room-readiness-panel'),
       child: _SectionBlock(
@@ -8663,12 +8665,14 @@ class _EtfDataLibrarySummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = data.operationsStatus;
-    final catalogRows = data.etfCatalog.hasData
-        ? data.etfCatalog.rowCount
-        : status.etfCatalogRowCount;
-    final historyTotal = status.etfPriceHistoryRowCount > 0
-        ? status.etfPriceHistoryRowCount
-        : catalogRows;
+    final catalogRows = _effectiveEtfCatalogRows(
+      status: status,
+      loadedCatalogRows: data.etfCatalog.rowCount,
+    );
+    final historyTotal = _etfDataCompletionTotal(
+      status: status,
+      catalogRows: catalogRows,
+    );
     final tiers = status.etfPriceHistoryCoverageTierCounts;
     final longTerm = tiers['long_term'] ?? 0;
     final recent = tiers['recent'] ?? 0;
@@ -11095,6 +11099,28 @@ int _searchReadyHistoryCount(Etf00631LLabData data) {
   final catalogCount = _catalogHistoryReadyCount(data.etfCatalog);
   final operationsCount = data.operationsStatus.etfPriceHistoryReadyCount;
   return operationsCount > catalogCount ? operationsCount : catalogCount;
+}
+
+int _effectiveEtfCatalogRows({
+  required EtfOperationsStatus status,
+  required int loadedCatalogRows,
+}) {
+  return [
+    loadedCatalogRows,
+    status.etfCatalogRowCount,
+  ].fold<int>(0, (maxRows, rows) => rows > maxRows ? rows : maxRows);
+}
+
+int _etfDataCompletionTotal({
+  required EtfOperationsStatus status,
+  required int catalogRows,
+}) {
+  return [
+    catalogRows,
+    status.etfCatalogRowCount,
+    status.etfPriceHistoryRowCount,
+    status.etfPriceHistoryReadyCount,
+  ].fold<int>(0, (maxRows, rows) => rows > maxRows ? rows : maxRows);
 }
 
 List<EtfPriceHistory> _mergeSelectedComparisonHistories({
