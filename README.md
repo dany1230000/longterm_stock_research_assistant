@@ -1321,3 +1321,8 @@ coverage easier to verify before switching symbols or running comparisons.
 v5.20 adds an ETF room readiness panel to Settings. It summarizes public PWA,
 00631L core data, multi-ETF history readiness, selected symbol readiness,
 local-only position data, and rule-based AI status in one checklist.
+
+v5.21 improves the ETF comparison basket. History/backtest comparison now
+starts from the active ETF's peer group, lets users clear the basket, apply a
+peer preset, or view only the active ETF, and avoids treating 00631L as a fixed
+comparison baseline.

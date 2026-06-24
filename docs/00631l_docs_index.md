@@ -325,6 +325,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - AI today snapshot release: `docs\00631l_v5_18_ai_today_snapshot.md`
 - ETF data readiness ratio release: `docs\00631l_v5_19_etf_data_readiness_ratio.md`
 - ETF room readiness panel release: `docs\00631l_v5_20_etf_room_readiness_panel.md`
+- Custom ETF comparison basket release: `docs\00631l_v5_21_custom_etf_comparison_basket.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

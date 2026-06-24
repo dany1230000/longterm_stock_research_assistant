@@ -5090,8 +5090,14 @@ class _EtfHistoryComparisonPanel extends StatefulWidget {
 
 class _EtfHistoryComparisonPanelState
     extends State<_EtfHistoryComparisonPanel> {
-  _EtfComparisonFilter _filter = _EtfComparisonFilter.focused;
+  late _EtfComparisonFilter _filter;
   Set<String>? _selectedComparisonCodes;
+
+  @override
+  void initState() {
+    super.initState();
+    _filter = _defaultComparisonFilterForCode(widget.selectedHistory.code);
+  }
 
   @override
   void didUpdateWidget(covariant _EtfHistoryComparisonPanel oldWidget) {
@@ -5099,6 +5105,7 @@ class _EtfHistoryComparisonPanelState
     if (oldWidget.selectedEtfCode != widget.selectedEtfCode ||
         oldWidget.selectedHistory.code != widget.selectedHistory.code ||
         oldWidget.histories.length != widget.histories.length) {
+      _filter = _defaultComparisonFilterForCode(widget.selectedHistory.code);
       _selectedComparisonCodes = null;
     }
   }
@@ -5145,7 +5152,7 @@ class _EtfHistoryComparisonPanelState
       children: [
         _SectionHeaderCard(
           title: 'ETF 歷史比較',
-          subtitle: '建立自己的 1-5 檔比較 basket；結果只描述過去資料，不固定與 00631L 對照。',
+          subtitle: '建立自己的 1-5 檔比較 basket；預設依目前 ETF 類型帶入，可清空後自行勾選。',
           icon: Icons.stacked_line_chart_outlined,
           badges: const [
             '自選 basket',
@@ -5156,7 +5163,7 @@ class _EtfHistoryComparisonPanelState
             _SectionHeaderMetric(
               label: '比較檔數',
               value: formatInteger(usableMetrics.length),
-              caption: '目前 basket',
+              caption: usableMetrics.isEmpty ? '尚未選擇' : '目前 basket',
             ),
             _SectionHeaderMetric(
               label: '區間',
@@ -5201,16 +5208,66 @@ class _EtfHistoryComparisonPanelState
                 if (next.length < 5) {
                   next.add(code);
                 }
-              } else if (next.length > 1) {
+              } else {
                 next.remove(code);
               }
               _selectedComparisonCodes = next;
             });
           },
         ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            OutlinedButton.icon(
+              key: const ValueKey('00631l-etf-comparison-clear'),
+              onPressed: selectedCodes.isEmpty
+                  ? null
+                  : () {
+                      setState(() {
+                        _selectedComparisonCodes = <String>{};
+                      });
+                    },
+              icon: const Icon(Icons.remove_circle_outline, size: 16),
+              label: const Text('清空 basket'),
+            ),
+            OutlinedButton.icon(
+              key: const ValueKey('00631l-etf-comparison-apply-peer'),
+              onPressed: () {
+                setState(() {
+                  _filter = _defaultComparisonFilterForCode(
+                      widget.selectedHistory.code);
+                  final preset = _presetComparisonCodes(
+                    _filter,
+                    availableMetrics,
+                  );
+                  _selectedComparisonCodes = preset.take(5).toSet();
+                });
+              },
+              icon: const Icon(Icons.group_work_outlined, size: 16),
+              label: const Text('套用同類型'),
+            ),
+            OutlinedButton.icon(
+              key: const ValueKey('00631l-etf-comparison-selected-only'),
+              onPressed: () {
+                setState(() {
+                  final selectedCode =
+                      widget.selectedHistory.code.trim().toUpperCase();
+                  _selectedComparisonCodes = availableMetrics
+                          .any((metric) => metric.code == selectedCode)
+                      ? {selectedCode}
+                      : <String>{};
+                });
+              },
+              icon: const Icon(Icons.adjust_outlined, size: 16),
+              label: const Text('只看目前 ETF'),
+            ),
+          ],
+        ),
         const SizedBox(height: 6),
         Text(
-          '勾選 1-5 檔 ETF 建立 basket；類型篩選只是快速選取，仍可手動調整。',
+          '勾選 1-5 檔 ETF 建立 basket；類型篩選只是快速選取，沒有固定比較基準。',
           key: const ValueKey('00631l-etf-comparison-guidance'),
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: _marketMutedTextColor(context),
@@ -5299,15 +5356,14 @@ class _EtfHistoryComparisonPanelState
 
     final current = _selectedComparisonCodes;
     if (current == null) {
-      final selectedCode = widget.selectedHistory.code.trim().toUpperCase();
-      _selectedComparisonCodes = availableCodes.contains(selectedCode)
-          ? {selectedCode}
+      final preset = _presetComparisonCodes(_filter, availableMetrics);
+      _selectedComparisonCodes = preset.isNotEmpty
+          ? preset.take(5).toSet()
           : availableCodes.take(1).toSet();
     } else {
       final cleaned = current.where(availableCodes.contains).toSet();
-      _selectedComparisonCodes = cleaned.isEmpty
-          ? availableCodes.take(1).toSet()
-          : cleaned.take(5).toSet();
+      _selectedComparisonCodes =
+          cleaned.isEmpty ? <String>{} : cleaned.take(5).toSet();
     }
     return _selectedComparisonCodes!;
   }
@@ -10567,6 +10623,22 @@ bool _comparisonFilterIncludes(
     case _EtfComparisonFilter.all:
       return true;
   }
+}
+
+_EtfComparisonFilter _defaultComparisonFilterForCode(String code) {
+  final normalized = code.trim().toUpperCase();
+  if (const {'0050', '006208', '00692', '00850', '00922', '00923'}
+      .contains(normalized)) {
+    return _EtfComparisonFilter.market;
+  }
+  if (const {'0056', '00713', '00878', '00919', '00929', '00940'}
+      .contains(normalized)) {
+    return _EtfComparisonFilter.dividend;
+  }
+  if (const {'00757', '00881'}.contains(normalized)) {
+    return _EtfComparisonFilter.tech;
+  }
+  return _EtfComparisonFilter.focused;
 }
 
 Set<String> _presetComparisonCodes(

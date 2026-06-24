@@ -645,7 +645,7 @@ void main() {
     final initialComparisonSummary = tester.widget<Text>(
       find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
     );
-    expect(initialComparisonSummary.data, equals('目前 basket：0050'));
+    expect(initialComparisonSummary.data, contains('0050'));
     expect(initialComparisonSummary.data, isNot(contains('00631L')));
     expect(
       find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
@@ -672,15 +672,23 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
     );
     await tester.pumpAndSettle();
-    await tester.tap(
-      find.byKey(const ValueKey('00631l-etf-compare-chip-00631L')),
-    );
+    final clearComparison =
+        find.byKey(const ValueKey('00631l-etf-comparison-clear'));
+    await tester.ensureVisible(clearComparison);
+    await tester.pumpAndSettle();
+    await tester.tap(clearComparison);
+    await tester.pumpAndSettle();
+    final compare00631L =
+        find.byKey(const ValueKey('00631l-etf-compare-chip-00631L'));
+    await tester.ensureVisible(compare00631L);
+    await tester.pumpAndSettle();
+    await tester.tap(compare00631L);
     await tester.pumpAndSettle();
     final selectedSummaryAfterDeselect = tester.widget<Text>(
       find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
     );
-    expect(selectedSummaryAfterDeselect.data, contains('0050'));
     expect(selectedSummaryAfterDeselect.data, contains('00631L'));
+    expect(selectedSummaryAfterDeselect.data, isNot(contains('0050')));
 
     await tester.ensureVisible(
       find.byKey(const ValueKey('00631l-etf-comparison-filter-dividend')),
@@ -721,7 +729,16 @@ void main() {
           find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
         );
 
-    expect(selectedLabel().data, equals('目前 basket：00631L'));
+    expect(selectedLabel().data, contains('00631L'));
+    expect(selectedLabel().data, contains('0050'));
+
+    final clearButton =
+        find.byKey(const ValueKey('00631l-etf-comparison-clear'));
+    await tester.ensureVisible(clearButton);
+    await tester.pumpAndSettle();
+    await tester.tap(clearButton);
+    await tester.pumpAndSettle();
+    expect(selectedLabel().data, equals('尚未選擇比較 ETF'));
 
     final chip0050 = find.byKey(const ValueKey('00631l-etf-compare-chip-0050'));
     await tester.ensureVisible(chip0050);
@@ -730,9 +747,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(selectedLabel().data, contains('0050'));
+    expect(selectedLabel().data, isNot(contains('00631L')));
     await tester.tap(chip0050);
     await tester.pumpAndSettle();
     expect(selectedLabel().data, isNot(contains('0050')));
+    expect(selectedLabel().data, equals('尚未選擇比較 ETF'));
     _expectNoTradingActionText();
   });
 
