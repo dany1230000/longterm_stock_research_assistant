@@ -28,6 +28,7 @@ def export_static_00631l_data(
     minimum_row_count: int = 2,
     minimum_catalog_row_count: int = 0,
     warnings: list[str] | None = None,
+    release_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     generated_at = utc_now_iso()
     output = Path(output_dir)
@@ -79,6 +80,11 @@ def export_static_00631l_data(
         if strict:
             failures.append(message)
 
+    release_payload = _normalize_release_metadata(
+        release_metadata=release_metadata,
+        generated_at=generated_at,
+    )
+
     status_payload = {
         **status,
         "sourceStatus": "static_official" if is_ready else "unavailable",
@@ -120,7 +126,9 @@ def export_static_00631l_data(
             "status": "status.json",
             "etfCatalog": "etf_catalog.json",
             "etfPriceHistoryIndex": "etf_price_history_index.json",
+            "release": "release.json",
         },
+        "release": release_payload,
         "rowCount": row_count,
         "minimumRowCount": required_rows,
         "etfCatalogRowCount": catalog_row_count,
@@ -147,6 +155,7 @@ def export_static_00631l_data(
     _write_json(output / "status.json", status_payload)
     _write_json(output / "etf_catalog.json", catalog_payload)
     _write_json(output / "manifest.json", manifest_payload)
+    _write_json(output / "release.json", release_payload)
 
     return {
         "sourceStatus": status_payload["sourceStatus"],
@@ -168,6 +177,7 @@ def export_static_00631l_data(
             {},
         ),
         "minimumCatalogRowCount": catalog_min_rows,
+        "release": release_payload,
         "warnings": warnings,
         "failures": failures,
         "overallStatus": "FAIL" if failures else "PASS" if is_ready else "WARN",
@@ -225,6 +235,9 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
     failures = list(manifest.get("failures") or [])
     catalog_row_count = int(manifest.get("etfCatalogRowCount") or 0)
     etf_history_index = _read_optional_json(output / "etf_price_history_index.json")
+    release_payload = manifest.get("release")
+    if not isinstance(release_payload, dict) or not release_payload:
+        release_payload = _read_optional_json(output / "release.json")
     etf_tier_counts = manifest.get("etfPriceHistoryCoverageTierCounts")
     legacy_etf_summary: dict[str, Any] = {}
     if not isinstance(etf_tier_counts, dict) or not etf_tier_counts:
@@ -256,6 +269,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         or legacy_etf_summary.get("dataTime"),
         "etfPriceHistoryCoverageTierCounts": etf_tier_counts,
         "minimumCatalogRowCount": int(manifest.get("minimumCatalogRowCount") or 0),
+        "release": release_payload,
         "overallStatus": "FAIL" if failures else "PASS" if row_count >= 2 else "WARN",
         "warnings": warnings,
         "failures": failures,
@@ -382,6 +396,22 @@ def _export_static_etf_price_history(
     }
     _write_json(output_dir / "etf_price_history_index.json", payload)
     return payload
+
+
+def _normalize_release_metadata(
+    *,
+    release_metadata: dict[str, Any] | None,
+    generated_at: str,
+) -> dict[str, Any]:
+    source = release_metadata if isinstance(release_metadata, dict) else {}
+    return {
+        "sourceContract": "00631l_static_public_release_marker",
+        "generatedAt": generated_at,
+        "appVersion": str(source.get("appVersion") or ""),
+        "releaseTag": str(source.get("releaseTag") or ""),
+        "gitSha": str(source.get("gitSha") or ""),
+        "buildTime": str(source.get("buildTime") or generated_at),
+    }
 
 
 def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:

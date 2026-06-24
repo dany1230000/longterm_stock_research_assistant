@@ -28,18 +28,20 @@ from backend.scripts.check_public_pages_00631l import (  # noqa: E402
 
 def main() -> int:
     args = _parse_args()
+    expected_sha = (args.expected_sha or _git_head_sha()).strip()
     public_pages = run_public_pages_check(
         root_url=args.root_url,
         static_base_url=args.static_base_url,
         timeout=args.timeout,
         min_row_count=args.min_row_count,
+        expected_sha=expected_sha,
     )
     deploy_status = (
         _skipped_deploy_status(
             repo=args.repo,
             workflow=args.workflow,
             branch=args.branch,
-            expected_sha=(args.expected_sha or _git_head_sha()).strip(),
+            expected_sha=expected_sha,
             root_url=args.root_url,
             static_base_url=args.static_base_url,
         )
@@ -57,7 +59,7 @@ def main() -> int:
     payload = build_public_pages_checkup(
         public_pages=public_pages,
         deploy_status=deploy_status,
-        expected_sha=(args.expected_sha or _git_head_sha()).strip(),
+        expected_sha=expected_sha,
         github_api_mode="skipped" if args.skip_github_api else "checked",
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))

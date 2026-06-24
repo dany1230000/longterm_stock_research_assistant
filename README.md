@@ -1401,3 +1401,7 @@ v5.38 makes the public Pages checkup rate-limit friendly. Daily public app
 checks can run with `scripts\00631l_public_pages_checkup.cmd --skip-github-api`
 to verify the public PWA and static data without consuming GitHub workflow API
 quota; release checks still keep one deploy-status step for post-push context.
+
+v5.39 adds a public release marker to `00631l-static-data`. Static export now
+writes `release.json`, and public smoke checks report the deployed app version,
+release tag, commit SHA, and build time directly from the public Pages files.

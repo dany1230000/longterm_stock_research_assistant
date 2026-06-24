@@ -26,6 +26,7 @@ def main() -> int:
     parser.add_argument("--static-base-url", default=DEFAULT_STATIC_BASE_URL)
     parser.add_argument("--timeout", type=float, default=15.0)
     parser.add_argument("--min-row-count", type=int, default=DEFAULT_MIN_ROW_COUNT)
+    parser.add_argument("--expected-sha", default="")
     args = parser.parse_args()
 
     payload = run_public_pages_check(
@@ -33,6 +34,7 @@ def main() -> int:
         static_base_url=args.static_base_url,
         timeout=args.timeout,
         min_row_count=args.min_row_count,
+        expected_sha=args.expected_sha,
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
     print(
@@ -40,6 +42,8 @@ def main() -> int:
         f"overallStatus={payload['overallStatus']} "
         f"rows={payload.get('rowCount', 0)} "
         f"coverage={payload.get('coverageStart') or '-'}..{payload.get('coverageEnd') or '-'} "
+        f"release={payload.get('releaseTag') or '-'} "
+        f"sha={str(payload.get('releaseGitSha') or '-')[:12]} "
         f"warnings={payload['warningCount']} "
         f"failures={payload['failureCount']}"
     )
@@ -52,6 +56,7 @@ def run_public_pages_check(
     static_base_url: str = DEFAULT_STATIC_BASE_URL,
     timeout: float = 15.0,
     min_row_count: int = DEFAULT_MIN_ROW_COUNT,
+    expected_sha: str | None = None,
     fetcher: Fetcher = None,
 ) -> dict[str, Any]:
     fetch = fetcher or _fetch_url
@@ -67,6 +72,12 @@ def run_public_pages_check(
             min_row_count=min_row_count,
         ),
         _static_manifest_check(fetch, urljoin(normalized_static, "manifest.json"), timeout),
+        _static_release_check(
+            fetch,
+            urljoin(normalized_static, "release.json"),
+            timeout,
+            expected_sha=(expected_sha or "").strip(),
+        ),
     ]
     failures = [check["message"] for check in checks if check["status"] == "FAIL"]
     warnings = [check["message"] for check in checks if check["status"] == "WARN"]
@@ -77,6 +88,11 @@ def run_public_pages_check(
     row_count = _int(status_payload.get("rowCount")) if isinstance(status_payload, dict) else 0
     coverage_start = status_payload.get("coverageStart") if isinstance(status_payload, dict) else None
     coverage_end = status_payload.get("coverageEnd") if isinstance(status_payload, dict) else None
+    release_payload = next(
+        (check.get("payload") for check in checks if check["name"] == "static_release"),
+        {},
+    )
+    release = release_payload if isinstance(release_payload, dict) else {}
     overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
     return {
         "sourceContract": "00631l_public_pages_smoke",
@@ -88,6 +104,10 @@ def run_public_pages_check(
         "rowCount": row_count,
         "coverageStart": coverage_start,
         "coverageEnd": coverage_end,
+        "releaseTag": release.get("releaseTag"),
+        "releaseGitSha": release.get("gitSha"),
+        "releaseAppVersion": release.get("appVersion"),
+        "releaseBuildTime": release.get("buildTime"),
         "checks": [_strip_payload(check) for check in checks],
         "warnings": warnings,
         "failures": failures,
@@ -215,6 +235,44 @@ def _static_manifest_check(fetch: Fetcher, url: str, timeout: float) -> dict[str
         url=url,
         generatedAt=payload.get("generatedAt"),
         rowCount=_int(payload.get("rowCount")),
+    )
+
+
+def _static_release_check(
+    fetch: Fetcher,
+    url: str,
+    timeout: float,
+    *,
+    expected_sha: str,
+) -> dict[str, Any]:
+    response = _safe_fetch(fetch, url, timeout)
+    if response["status"] != "PASS":
+        return response | {"name": "static_release"}
+    payload = _json_payload(response)
+    if payload is None:
+        return _check("static_release", "WARN", "release.json is not valid JSON.", url=url)
+    warnings: list[str] = []
+    if payload.get("sourceContract") != "00631l_static_public_release_marker":
+        warnings.append("release sourceContract is unexpected")
+    git_sha = str(payload.get("gitSha") or "")
+    if expected_sha and git_sha and not git_sha.startswith(expected_sha[:12]):
+        warnings.append(
+            "public release SHA differs from expected: "
+            f"public={git_sha[:12]} expected={expected_sha[:12]}"
+        )
+    if not git_sha:
+        warnings.append("release gitSha missing")
+    if not payload.get("releaseTag"):
+        warnings.append("release tag missing")
+    return _check(
+        "static_release",
+        "WARN" if warnings else "PASS",
+        "; ".join(warnings) if warnings else "ok",
+        url=url,
+        releaseTag=payload.get("releaseTag"),
+        releaseGitSha=git_sha,
+        releaseAppVersion=payload.get("appVersion"),
+        payload=payload,
     )
 
 

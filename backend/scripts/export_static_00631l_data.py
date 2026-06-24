@@ -3,7 +3,9 @@ from __future__ import annotations
 import argparse
 from datetime import date, datetime, timezone
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
 
 
@@ -214,6 +216,7 @@ def main() -> int:
         minimum_row_count=args.min_row_count,
         minimum_catalog_row_count=args.min_etf_catalog_row_count,
         warnings=warnings,
+        release_metadata=_build_release_metadata(),
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
     print(build_static_export_summary_line(payload))
@@ -397,6 +400,34 @@ def _resolve_multi_etf_codes(
 
 def _is_all_local_codes_mode(value: str) -> bool:
     return str(value or "").strip().lower() in {"all-local", "local", "*"}
+
+
+def _build_release_metadata() -> dict[str, str]:
+    return {
+        "appVersion": settings.backend_app_version,
+        "releaseTag": settings.backend_release_tag,
+        "gitSha": (
+            os.getenv("GITHUB_SHA", "").strip()
+            or os.getenv("00631L_BACKEND_GIT_SHA", "").strip()
+            or _git_head_sha()
+        ),
+        "buildTime": os.getenv("00631L_BACKEND_BUILD_TIME", "").strip()
+        or datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+    }
+
+
+def _git_head_sha() -> str:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            text=True,
+            capture_output=True,
+            check=False,
+            cwd=ROOT,
+        )
+    except OSError:
+        return ""
+    return result.stdout.strip() if result.returncode == 0 else ""
 
 
 if __name__ == "__main__":

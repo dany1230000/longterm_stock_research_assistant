@@ -192,20 +192,40 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 etf_catalog_payload=_etf_catalog_payload(),
                 strict=True,
                 minimum_catalog_row_count=2,
+                release_metadata={
+                    "appVersion": "5.39-public-release-marker",
+                    "releaseTag": "00631l-lab-v5.39-public-release-marker",
+                    "gitSha": "abc123fff",
+                    "buildTime": "2026-06-24T08:00:00+00:00",
+                },
             )
 
             self.assertEqual(result["overallStatus"], "PASS")
             self.assertEqual(result["rowCount"], 3)
             self.assertEqual(result["etfCatalogRowCount"], 2)
+            self.assertEqual(
+                result["release"]["releaseTag"],
+                "00631l-lab-v5.39-public-release-marker",
+            )
             self.assertTrue((root / "static" / "price_history.json").exists())
             self.assertTrue((root / "static" / "performance.json").exists())
             self.assertTrue((root / "static" / "status.json").exists())
             self.assertTrue((root / "static" / "etf_catalog.json").exists())
             self.assertTrue((root / "static" / "manifest.json").exists())
+            self.assertTrue((root / "static" / "release.json").exists())
             manifest = json.loads(
                 (root / "static" / "manifest.json").read_text(encoding="utf-8")
             )
             self.assertEqual(manifest["files"]["etfCatalog"], "etf_catalog.json")
+            self.assertEqual(manifest["files"]["release"], "release.json")
+            self.assertEqual(
+                manifest["release"]["releaseTag"],
+                "00631l-lab-v5.39-public-release-marker",
+            )
+            release = json.loads(
+                (root / "static" / "release.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(release["gitSha"], "abc123fff")
             catalog = json.loads(
                 (root / "static" / "etf_catalog.json").read_text(encoding="utf-8")
             )
@@ -216,6 +236,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             self.assertEqual(status["overallStatus"], "PASS")
             self.assertEqual(status["sourceStatus"], "static_official")
             self.assertEqual(status["etfCatalogRowCount"], 2)
+            self.assertEqual(status["release"]["gitSha"], "abc123fff")
 
     def test_static_export_writes_selected_etf_price_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
