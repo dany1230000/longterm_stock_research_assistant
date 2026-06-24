@@ -1422,3 +1422,8 @@ Actions API, so post-push checks still work when API quota is limited.
 v5.43 reads that static `release.json` inside the PWA operations status. The
 settings page can show the public static release version, tag, commit, and
 build time directly on mobile.
+
+v5.44 adds `--summary-only` to
+`scripts\00631l_wait_public_release_marker.cmd`. Release checks now use compact
+public-release wait output by default, while the full sampled payload remains
+available for debugging.

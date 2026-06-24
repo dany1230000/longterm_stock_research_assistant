@@ -100,6 +100,15 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertIn("scripts\\\\00631l_public_pages_checkup.cmd", source)
         self.assertIn('"--skip-github-api"', source)
 
+    def test_release_check_runs_compact_public_release_marker_wait(self) -> None:
+        source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
+            encoding="utf-8",
+        )
+
+        self.assertIn('"public_release_marker_wait_dry_run"', source)
+        self.assertIn("scripts\\\\00631l_wait_public_release_marker.cmd", source)
+        self.assertIn('"--summary-only"', source)
+
     def test_static_summary_tier_guard_requires_tiers_when_etf_history_exists(self) -> None:
         self.assertTrue(
             _static_summary_has_usable_tiers(

@@ -37,18 +37,13 @@ def main() -> int:
         interval_seconds=args.interval_seconds,
         dry_run=args.dry_run,
     )
-    print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
-    summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
-    print(
-        "[summary] "
-        f"overallStatus={payload['overallStatus']} "
-        f"warnings={payload['warningCount']} "
-        f"failures={payload['failureCount']} "
-        f"matched={summary.get('matchedExpectedSha')} "
-        f"attempts={summary.get('sampleCount')} "
-        f"release={summary.get('latestReleaseTag') or '-'} "
-        f"sha={str(summary.get('latestReleaseGitSha') or '-')[:12]}"
+    printable_payload = (
+        compact_public_release_marker_wait_payload(payload)
+        if args.summary_only
+        else payload
     )
+    print(json.dumps(printable_payload, ensure_ascii=False, indent=2, sort_keys=True))
+    _print_summary_line(payload)
     return 0 if args.soft_fail or payload["overallStatus"] != "FAIL" else 1
 
 
@@ -105,6 +100,28 @@ def run_public_release_marker_wait(
         samples=samples,
         dry_run=False,
     )
+
+
+def compact_public_release_marker_wait_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    compact = {key: value for key, value in payload.items() if key != "samples"}
+    sample_summaries: list[dict[str, Any]] = []
+    for index, sample in enumerate(payload.get("samples") or [], start=1):
+        sample_summaries.append(
+            {
+                "attempt": index,
+                "overallStatus": sample.get("overallStatus"),
+                "releaseTag": sample.get("releaseTag"),
+                "releaseGitSha": sample.get("releaseGitSha"),
+                "releaseAppVersion": sample.get("releaseAppVersion"),
+                "rowCount": sample.get("rowCount"),
+                "coverageStart": sample.get("coverageStart"),
+                "coverageEnd": sample.get("coverageEnd"),
+                "warningCount": len(sample.get("warnings") or []),
+                "failureCount": len(sample.get("failures") or []),
+            }
+        )
+    compact["sampleSummaries"] = sample_summaries
+    return compact
 
 
 def _build_wait_payload(
@@ -227,6 +244,20 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
+def _print_summary_line(payload: dict[str, Any]) -> None:
+    summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+    print(
+        "[summary] "
+        f"overallStatus={payload['overallStatus']} "
+        f"warnings={payload['warningCount']} "
+        f"failures={payload['failureCount']} "
+        f"matched={summary.get('matchedExpectedSha')} "
+        f"attempts={summary.get('sampleCount')} "
+        f"release={summary.get('latestReleaseTag') or '-'} "
+        f"sha={str(summary.get('latestReleaseGitSha') or '-')[:12]}"
+    )
+
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
@@ -243,6 +274,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--interval-seconds", type=int, default=15)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--soft-fail", action="store_true")
+    parser.add_argument(
+        "--summary-only",
+        action="store_true",
+        help="Print compact attempt summaries instead of the full sampled payloads.",
+    )
     return parser.parse_args()
 
 

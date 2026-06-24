@@ -1,6 +1,7 @@
 import unittest
 
 from backend.scripts.wait_public_release_marker_00631l import (
+    compact_public_release_marker_wait_payload,
     run_public_release_marker_wait,
 )
 
@@ -73,6 +74,22 @@ class PublicReleaseMarkerWaitTests(unittest.TestCase):
 
         self.assertEqual(payload["overallStatus"], "PASS")
         self.assertTrue(payload["dryRun"])
+
+    def test_compact_payload_keeps_attempt_summary_without_full_samples(self) -> None:
+        payload = run_public_release_marker_wait(
+            expected_sha="new456",
+            attempts=2,
+            interval_seconds=0,
+            checker=lambda **kwargs: _public_pages("old123fff", status="WARN"),
+        )
+
+        compact = compact_public_release_marker_wait_payload(payload)
+
+        self.assertNotIn("samples", compact)
+        self.assertIn("sampleSummaries", compact)
+        self.assertEqual(len(compact["sampleSummaries"]), 2)
+        self.assertEqual(compact["sampleSummaries"][0]["releaseGitSha"], "old123fff")
+        self.assertEqual(compact["summary"]["expectedSha"], "new456")
 
 
 def _public_pages(

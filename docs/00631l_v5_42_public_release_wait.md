@@ -14,6 +14,7 @@ Useful options:
 
 ```cmd
 scripts\00631l_wait_public_release_marker.cmd --attempts 20 --interval-seconds 15
+scripts\00631l_wait_public_release_marker.cmd --summary-only
 scripts\00631l_wait_public_release_marker.cmd --dry-run
 ```
 
@@ -24,3 +25,6 @@ scripts\00631l_wait_public_release_marker.cmd --dry-run
 - `FAIL`: the public app or static data smoke check failed.
 
 This is intended for post-push validation when the GitHub API is rate-limited.
+
+Use `--summary-only` for normal daily logs. Run without it only when you need
+the full sampled public Pages payload for debugging.
