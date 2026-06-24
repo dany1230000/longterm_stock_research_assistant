@@ -15,6 +15,8 @@ class PublicPagesCheckupTests(unittest.TestCase):
         self.assertEqual(payload["failureCount"], 0)
         self.assertEqual(payload["summary"]["staticRowCount"], 2835)
         self.assertEqual(payload["summary"]["githubApiMode"], "checked")
+        self.assertEqual(payload["summary"]["releaseMarkerStatus"], "ready")
+        self.assertEqual(payload["summary"]["releaseGitSha"], "abc123fff")
 
     def test_public_pages_checkup_skips_workflow_warnings_in_public_only_mode(self) -> None:
         payload = build_public_pages_checkup(
@@ -29,6 +31,23 @@ class PublicPagesCheckupTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["latestRunStatus"], "skipped")
         self.assertEqual(payload["summary"]["latestRunConclusion"], "skipped")
         self.assertEqual(payload["warnings"], [])
+
+    def test_public_pages_checkup_adds_action_when_release_marker_is_missing(self) -> None:
+        public_pages = _public_pages("PASS")
+        public_pages["releaseTag"] = None
+        public_pages["releaseGitSha"] = None
+
+        payload = build_public_pages_checkup(
+            public_pages=public_pages,
+            deploy_status=_deploy_status("PASS", "completed", "success", "abc123fff"),
+            expected_sha="abc123",
+        )
+
+        self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertEqual(payload["summary"]["releaseMarkerStatus"], "not_checked")
+        self.assertTrue(
+            any("00631l_public_pages_checkup.cmd" in item for item in payload["actionItems"])
+        )
 
     def test_public_pages_checkup_warns_when_workflow_is_not_complete(self) -> None:
         payload = build_public_pages_checkup(
@@ -85,6 +104,9 @@ def _public_pages(status: str) -> dict:
         "rowCount": 2835,
         "coverageStart": "2014-10-31",
         "coverageEnd": "2026-06-24",
+        "releaseTag": "00631l-lab-v5.40-public-release-guidance",
+        "releaseGitSha": "abc123fff",
+        "releaseAppVersion": "5.40-public-release-guidance",
         "warnings": [] if status == "PASS" else ["temporary"],
         "failures": [] if status != "FAIL" else ["static payload invalid"],
     }

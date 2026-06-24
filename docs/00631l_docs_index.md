@@ -344,6 +344,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public Pages checkup release: `docs\00631l_v5_37_public_pages_checkup.md`
 - Public checkup rate-limit release: `docs\00631l_v5_38_public_checkup_rate_limit.md`
 - Public release marker: `docs\00631l_v5_39_public_release_marker.md`
+- Public release guidance: `docs\00631l_v5_40_public_release_guidance.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

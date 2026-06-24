@@ -132,6 +132,13 @@ def build_public_pages_checkup(
         warnings.append("static public data has fewer than 2 rows")
         action_items.append("Run scripts\\00631l_export_static_data.cmd --update before building Pages.")
 
+    release_marker_status = _release_marker_status(public_pages)
+    if release_marker_status != "ready":
+        action_items.append(
+            "Wait for GitHub Pages deployment, then rerun "
+            "scripts\\00631l_public_pages_checkup.cmd --skip-github-api."
+        )
+
     if _looks_rate_limited(deploy_status):
         action_items.append(
             "GitHub API is rate-limited; use scripts\\00631l_public_pages_checkup.cmd --skip-github-api "
@@ -155,6 +162,10 @@ def build_public_pages_checkup(
             "latestRunHeadSha": latest_sha,
             "latestRunUrl": deploy_summary.get("latestRunUrl"),
             "expectedSha": expected_sha,
+            "releaseMarkerStatus": release_marker_status,
+            "releaseTag": public_pages.get("releaseTag"),
+            "releaseGitSha": public_pages.get("releaseGitSha"),
+            "releaseAppVersion": public_pages.get("releaseAppVersion"),
         },
         "publicPages": public_pages,
         "deployStatus": deploy_status,
@@ -212,6 +223,15 @@ def _skipped_deploy_status(
 def _looks_rate_limited(payload: dict[str, Any]) -> bool:
     text = json.dumps(payload, ensure_ascii=False).lower()
     return "rate limit" in text or "api rate limit" in text or "http 403" in text
+
+
+def _release_marker_status(public_pages: dict[str, Any]) -> str:
+    if public_pages.get("releaseTag") and public_pages.get("releaseGitSha"):
+        return "ready"
+    text = json.dumps(public_pages, ensure_ascii=False).lower()
+    if "release.json" in text:
+        return "missing_or_pending"
+    return "not_checked"
 
 
 def _dedupe(items: list[str]) -> list[str]:

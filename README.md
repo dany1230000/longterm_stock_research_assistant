@@ -1405,3 +1405,7 @@ quota; release checks still keep one deploy-status step for post-push context.
 v5.39 adds a public release marker to `00631l-static-data`. Static export now
 writes `release.json`, and public smoke checks report the deployed app version,
 release tag, commit SHA, and build time directly from the public Pages files.
+
+v5.40 improves release-marker guidance. Public Pages checkup now reports
+`releaseMarkerStatus` and gives a concrete rerun command while GitHub Pages is
+still deploying the static bundle.
