@@ -893,6 +893,14 @@ void main() {
     expect(find.text('今日 AI 資料解讀'), findsOneWidget);
     expect(find.textContaining('official holdings'), findsWidgets);
     expect(find.textContaining('盤中 NAV'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('00631l-ai-interpretation-matrix')),
+      findsOneWidget,
+    );
+    expect(find.text('今日判讀矩陣'), findsOneWidget);
+    expect(find.text('資料新鮮度'), findsOneWidget);
+    expect(find.text('內容物變化'), findsOneWidget);
+    expect(find.text('歷史 coverage'), findsOneWidget);
     expect(find.byKey(const ValueKey('00631l-ai-daily-brief')), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-ai-intraday-brief')),

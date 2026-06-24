@@ -7016,6 +7016,8 @@ class _AiSection extends StatelessWidget {
       children: [
         _AiTodaySnapshotPanel(data: data, summary: summary),
         const SizedBox(height: 12),
+        _AiTodayInterpretationMatrix(data: data, summary: summary),
+        const SizedBox(height: 12),
         _SectionBlock(
           title: '今日 AI 快覽',
           subtitle: 'rule_based 分析；聚焦今日資料時間、內容物、折溢價偏離與維護狀態。',
@@ -7133,6 +7135,200 @@ class _AiSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AiTodayInterpretationMatrix extends StatelessWidget {
+  const _AiTodayInterpretationMatrix({
+    required this.data,
+    required this.summary,
+  });
+
+  final Etf00631LLabData data;
+  final EtfAiAnalysisSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final nav = data.intradayNav;
+    final session = nav?.marketSession() ??
+        IntradayMarketSession.evaluate(sourceAvailable: false);
+    final premium = nav?.premiumDiscountAssessment;
+    final holdings = data.holdingsHistory.trendSummary().latest;
+    final price = data.priceHistory.completenessSummary();
+    final items = [
+      _AiInterpretationItem(
+        label: '資料新鮮度',
+        value: session.dataFreshnessLabel,
+        detail:
+            'NAV ${_intradayDataTimeText(nav)}；holdings ${formatTaiwanDate(data.snapshot.tradeDate)}。',
+        status: session.dataFreshness,
+      ),
+      _AiInterpretationItem(
+        label: '折溢價狀態',
+        value: premium?.label ?? '資料不足',
+        detail:
+            premium == null ? '目前沒有可判斷的盤中折溢價資料。' : _premiumDescription(premium),
+        status: premium?.level.name ?? 'unavailable',
+      ),
+      _AiInterpretationItem(
+        label: '內容物變化',
+        value: holdings == null ? 'history 不足' : '已累積',
+        detail: holdings == null
+            ? '尚未累積 holdings history，請先跑 daily cycle。'
+            : 'TX ${formatNullablePercent(holdings.txWeightPct)}；台積電 ${formatNullablePercent(holdings.tsmcWeightPct)}；股票/期貨 ${formatNullablePercent(holdings.stockExposurePct)} / ${formatNullablePercent(holdings.futuresExposurePct)}。',
+        status: holdings == null
+            ? 'unavailable'
+            : data.holdingsHistory.sourceStatusLabel,
+      ),
+      _AiInterpretationItem(
+        label: '歷史 coverage',
+        value: '${formatInteger(price.rowCount)} rows',
+        detail:
+            '${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}；${price.isCompleteFromListing ? '上市日起完整' : '目前為部分區間'}。',
+        status: data.priceHistory.sourceStatusLabel,
+      ),
+    ];
+
+    return KeyedSubtree(
+      key: const ValueKey('00631l-ai-interpretation-matrix'),
+      child: _SectionBlock(
+        title: '今日判讀矩陣',
+        subtitle: 'rule_based 將今日資料拆成可檢查的四個面向；只描述資料狀態。',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final compact = constraints.maxWidth < 720;
+                final width = compact
+                    ? constraints.maxWidth
+                    : (constraints.maxWidth - 8) / 2;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final item in items)
+                      SizedBox(
+                        width: width,
+                        child: _AiInterpretationTile(item: item),
+                      ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${summary.disclaimer}；請以官方資料時間為準。',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiInterpretationItem {
+  const _AiInterpretationItem({
+    required this.label,
+    required this.value,
+    required this.detail,
+    required this.status,
+  });
+
+  final String label;
+  final String value;
+  final String detail;
+  final String status;
+}
+
+class _AiInterpretationTile extends StatelessWidget {
+  const _AiInterpretationTile({required this.item});
+
+  final _AiInterpretationItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final normalized = item.status.toLowerCase();
+    final color = normalized.contains('official') ||
+            normalized.contains('fresh') ||
+            normalized.contains('normal') ||
+            normalized.contains('cached') ||
+            normalized.contains('已')
+        ? _marketGreen
+        : normalized.contains('warn') ||
+                normalized.contains('stale') ||
+                normalized.contains('watch') ||
+                normalized.contains('elevated')
+            ? const Color(0xFFFBBF24)
+            : normalized.contains('error') ||
+                    normalized.contains('unavailable') ||
+                    normalized.contains('extreme')
+                ? _marketRed
+                : _marketBlue;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 4,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(10),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.label,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: _marketMutedTextColor(context),
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      item.value,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: _marketTextColor(context),
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      item.detail,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: _marketMutedTextColor(context),
+                            height: 1.25,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

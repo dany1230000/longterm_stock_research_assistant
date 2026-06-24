@@ -1335,3 +1335,8 @@ v5.23 compacts the position page. The account-style summary remains visible,
 while detailed value/cost/PnL calculations move into an expandable estimate
 detail block so mobile users can reach the local input and export controls
 faster.
+
+v5.24 strengthens the rule-based AI page with a daily interpretation matrix.
+It separates freshness, premium/discount, holdings movement, and historical
+coverage into short status cards while keeping the output non-directional and
+data-focused.
