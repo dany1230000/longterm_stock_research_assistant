@@ -149,11 +149,23 @@ def _bullets(
     backup: dict[str, Any],
     daily_cycle: dict[str, Any],
 ) -> list[str]:
+    latest_holding = _nested(operations, "holdingsHistory", "latestTradeDate")
+    latest_intraday = _nested(operations, "intradayNavHistory", "latestDataTime") or intraday.get("lastDataTime")
+    latest_intraday_point = _latest_intraday_point(intraday)
+    latest_point = _latest_holding_point(holdings)
+    premium_latest = (
+        latest_intraday_point.get("premiumDiscountPct")
+        if latest_intraday_point
+        else intraday.get("averagePremiumDiscountPct")
+    )
     bullets = [
-        f"今日資料狀態：{_readiness_label(readiness_level)}。本摘要只描述資料狀態、內容物變化與價格偏離。",
+        "當日重點："
+        f"readiness {_readiness_label(readiness_level)}；"
+        f"official holdings {latest_holding or 'unavailable'}；"
+        f"盤中 NAV {latest_intraday or 'unavailable'}。"
+        "本摘要只描述資料狀態、內容物變化與價格偏離。",
     ]
 
-    latest_holding = _nested(operations, "holdingsHistory", "latestTradeDate")
     holding_status = _nested(operations, "holdingsHistory", "sourceStatus") or holdings.get("sourceStatus")
     if latest_holding:
         bullets.append(
@@ -162,17 +174,19 @@ def _bullets(
     else:
         bullets.append("今日尚無 official holdings history 紀錄；請先執行 daily cycle 建立每日快照。")
 
-    latest_intraday = _nested(operations, "intradayNavHistory", "latestDataTime") or intraday.get("lastDataTime")
     intraday_status = _nested(operations, "intradayNavHistory", "sourceStatus") or intraday.get("sourceStatus")
-    premium = intraday.get("averagePremiumDiscountPct")
     if latest_intraday:
         bullets.append(
-            f"盤中 NAV 最新資料時間為 {latest_intraday}，sourceStatus {intraday_status}；平均折溢價 {_signed_pct(premium)}，狀態 {_premium_state_label(premium)}。"
+            "盤中折溢價最新："
+            f"市價 {_money(latest_intraday_point.get('marketPrice'))}，"
+            f"預估淨值 {_money(latest_intraday_point.get('estimatedNav'))}，"
+            f"最新偏離 {_signed_pct(premium_latest)}，"
+            f"日內區間 {_signed_pct(intraday.get('lowestPremiumDiscountPct'))} 到 {_signed_pct(intraday.get('highestPremiumDiscountPct'))}，"
+            f"平均 {_signed_pct(intraday.get('averagePremiumDiscountPct'))}；sourceStatus {intraday_status}。"
         )
     else:
         bullets.append("今日盤中 NAV 尚無可用紀錄，折溢價狀態暫時無法判斷。")
 
-    latest_point = _latest_holding_point(holdings)
     if latest_point:
         bullets.append(
             "今日內容物重點："
@@ -183,9 +197,18 @@ def _bullets(
             f"{_pct(latest_point.get('cashAndMarginPct'))}。"
         )
 
-    if premium is not None:
+    bullets.append(
+        "資料風險："
+        f"holdings {_status_or_unknown(holding_status)}，"
+        f"intraday {_status_or_unknown(intraday_status)}，"
+        f"price history {_status_or_unknown(price_history.get('sourceStatus'))}，"
+        f"integrity {integrity.get('overallStatus', 'unknown')}；"
+        "若狀態為 stale、error 或 unavailable，請先處理資料來源。"
+    )
+
+    if premium_latest is not None:
         bullets.append(
-            f"今日折溢價偏離為 {_signed_pct(premium)}，屬於 {_premium_state_label(premium)}；這是價格偏離提示。"
+            f"今日折溢價偏離為 {_signed_pct(premium_latest)}，屬於 {_premium_state_label(premium_latest)}；這是價格偏離提示。"
         )
 
     if price_history.get("rowCount", 0):
@@ -299,6 +322,16 @@ def _latest_holding_point(holdings: dict[str, Any]) -> dict[str, Any]:
     return {}
 
 
+def _latest_intraday_point(intraday: dict[str, Any]) -> dict[str, Any]:
+    items = intraday.get("items")
+    if not isinstance(items, list) or not items:
+        return {}
+    dict_items = [item for item in items if isinstance(item, dict)]
+    if not dict_items:
+        return {}
+    return sorted(dict_items, key=lambda item: str(item.get("dataTime") or ""))[-1]
+
+
 def _readiness_label(level: str) -> str:
     return {
         "ready": "可日常使用",
@@ -332,6 +365,18 @@ def _signed_pct(value: Any) -> str:
         return "unavailable"
     prefix = "+" if number > 0 else ""
     return f"{prefix}{number:.2f}%"
+
+
+def _money(value: Any) -> str:
+    number = _number(value)
+    if number is None:
+        return "unavailable"
+    return f"{number:.2f}"
+
+
+def _status_or_unknown(value: Any) -> str:
+    text = str(value or "").strip()
+    return text if text else "unknown"
 
 
 def _number(value: Any) -> float | None:

@@ -19,6 +19,11 @@ class RuleBasedAnalysisTests(unittest.TestCase):
         self.assertTrue(
             any("今日內容物重點" in item for item in payload["bullets"])
         )
+        self.assertTrue(any("當日重點" in item for item in payload["bullets"]))
+        self.assertTrue(
+            any("盤中折溢價最新" in item for item in payload["bullets"])
+        )
+        self.assertTrue(any("資料風險" in item for item in payload["bullets"]))
         self.assertIn("official", payload["sourceStatuses"]["holdingsHistory"])
         self.assertEqual(payload["actionItems"], ["目前沒有必要的程式操作；請持續確認官方資料時間。"])
 
@@ -103,7 +108,17 @@ def _context() -> dict:
         "intradayNavHistory": {
             "sourceStatus": "cached",
             "averagePremiumDiscountPct": 0.17,
+            "highestPremiumDiscountPct": 0.31,
+            "lowestPremiumDiscountPct": -0.08,
             "lastDataTime": "2026-06-09T12:13:15+08:00",
+            "items": [
+                {
+                    "marketPrice": 35.12,
+                    "estimatedNav": 35.06,
+                    "premiumDiscountPct": 0.17,
+                    "dataTime": "2026-06-09T12:13:15+08:00",
+                }
+            ],
         },
         "priceHistory": {
             "sourceStatus": "cached",

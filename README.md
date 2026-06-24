@@ -1263,3 +1263,7 @@ dates, row/sample count, and latest data date before the detailed cards.
 v5.6 makes the position page feel more like an account view. It adds a compact
 local-only position summary before the input form and keeps save/export/clear
 controls in place.
+
+v5.7 strengthens the rule-based AI summary. The backend now emits a clearer
+daily briefing for holdings date, intraday NAV time, premium-discount range,
+exposure context, and data-risk status.
