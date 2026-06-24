@@ -174,7 +174,7 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-data-completion-strip')),
       findsOneWidget,
     );
-    expect(find.text('ETF 資料補齊'), findsOneWidget);
+    expect(find.text('ETF 資料庫狀態'), findsOneWidget);
     expect(find.textContaining('完成度'), findsOneWidget);
     expect(find.text('catalog 16'), findsOneWidget);
     expect(find.text('完整統計 228'), findsOneWidget);
@@ -1037,7 +1037,7 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
-    expect(find.text('ETF 資料補齊'), findsOneWidget);
+    expect(find.text('ETF 資料庫狀態'), findsOneWidget);
     expect(find.text('catalog 檔數'), findsOneWidget);
     expect(find.text('歷史 ready'), findsOneWidget);
     expect(find.text('228 / 228'), findsOneWidget);
@@ -1046,6 +1046,7 @@ void main() {
     expect(find.text('recent'), findsOneWidget);
     expect(find.text('220'), findsWidgets);
     expect(find.text('完成度'), findsOneWidget);
+    expect(find.textContaining('不代表官方內容物已完整匯入'), findsOneWidget);
     expect(find.text('history ready ratio'), findsOneWidget);
     expect(find.text('尚未 ready'), findsOneWidget);
     _expectNoTradingActionText();

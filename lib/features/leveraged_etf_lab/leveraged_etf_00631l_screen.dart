@@ -1132,7 +1132,7 @@ class _SymbolSearchDataCompletionStrip extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'ETF 資料補齊',
+                    'ETF 資料庫狀態',
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
@@ -8735,10 +8735,10 @@ class _EtfDataLibrarySummary extends StatelessWidget {
     ];
 
     return _SectionBlock(
-      title: 'ETF 資料補齊',
+      title: 'ETF 資料庫狀態',
       subtitle: compact
-          ? '先看 ETF catalog 與歷史資料補齊度；缺口代表尚未有足夠歷史可供比較或回測。'
-          : '目前可搜尋的 ETF catalog 與已匯入歷史資料；歷史 ready 才能支援回測與比較。',
+          ? '先看 catalog 與歷史價格覆蓋；缺口代表尚未有足夠資料可供比較或回測。'
+          : '顯示可搜尋的 ETF catalog 與已匯入歷史價格；ready 代表可用於歷史、回測與比較，不代表官方內容物已完整匯入。',
       child: _ResponsiveMetricGrid(
         cards: cards,
       ),

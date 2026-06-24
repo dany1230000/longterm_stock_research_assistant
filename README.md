@@ -1366,3 +1366,8 @@ work now keeps that check clean before pushing.
 v5.30 adds that Dart formatting gate directly to `scripts\00631l_release_check.cmd`.
 Release validation now catches formatter drift before GitHub Pages starts its
 public build.
+
+v5.31 tightens ETF data readiness wording. The app now labels the section as
+`ETF 資料庫狀態` and clarifies that history-ready ETFs support history,
+backtest, and comparison, but do not imply that official holdings history is
+complete.

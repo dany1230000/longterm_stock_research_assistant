@@ -335,6 +335,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF import gap summary release: `docs\00631l_v5_28_etf_import_gap_summary.md`
 - Pages format alignment release: `docs\00631l_v5_29_pages_format_alignment.md`
 - Release format gate release: `docs\00631l_v5_30_release_format_gate.md`
+- ETF data status wording release: `docs\00631l_v5_31_etf_data_status_wording.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
