@@ -844,7 +844,9 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
     expect(find.text('設定'), findsWidgets);
+    expect(find.text('設定總覽'), findsOneWidget);
     expect(find.text('帳戶與偏好'), findsOneWidget);
+    expect(find.text('免登入'), findsOneWidget);
     expect(find.text('ETF 資料狀態'), findsOneWidget);
     expect(find.text('catalog'), findsWidgets);
     expect(find.text('ETF comparison'), findsOneWidget);

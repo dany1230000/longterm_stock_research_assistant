@@ -7239,6 +7239,12 @@ class _SettingsSection extends StatelessWidget {
           persistenceLabel: status.dataPersistenceLabel,
         ),
         const SizedBox(height: 10),
+        _SettingsQuickSummaryGrid(
+          data: data,
+          selectedEtf: selectedEtf,
+          readinessLabel: readiness.label,
+        ),
+        const SizedBox(height: 10),
         _SectionBlock(
           title: '帳戶與偏好',
           subtitle: '目前不需要登入。持倉資料預設只保存在本機瀏覽器。',
@@ -7668,6 +7674,55 @@ class _SettingsHeaderStrip extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SettingsQuickSummaryGrid extends StatelessWidget {
+  const _SettingsQuickSummaryGrid({
+    required this.data,
+    required this.selectedEtf,
+    required this.readinessLabel,
+  });
+
+  final Etf00631LLabData data;
+  final _SelectedEtfViewData selectedEtf;
+  final String readinessLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = data.operationsStatus;
+    return _SectionBlock(
+      title: '設定總覽',
+      subtitle: '常用狀態先放在這裡；維護診斷已收在下方。',
+      child: _ResponsiveMetricGrid(
+        cards: [
+          const _MetricCard(
+            label: '帳戶',
+            value: '免登入',
+            caption: '持倉只存在本機',
+            icon: Icons.person_outline,
+          ),
+          _MetricCard(
+            label: '目前 ETF',
+            value: selectedEtf.code,
+            caption: selectedEtf.priceHistory.sourceStatusLabel,
+            icon: Icons.search_outlined,
+          ),
+          _MetricCard(
+            label: '資料模式',
+            value: _frontendDataModeLabel,
+            caption: status.backendConnectionLabel,
+            icon: Icons.cloud_sync_outlined,
+          ),
+          _MetricCard(
+            label: '日常狀態',
+            value: readinessLabel,
+            caption: status.reportOverallStatus,
+            icon: Icons.fact_check_outlined,
+          ),
+        ],
       ),
     );
   }

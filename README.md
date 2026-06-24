@@ -1272,3 +1272,7 @@ v5.8 makes the AI page easier to scan on mobile. The page now opens with
 three compact briefing cards for daily status, intraday premium/discount
 context, and data-risk context, while the full rule-based report remains
 available in the detail panel.
+
+v5.9 makes the settings page feel more like an account/settings tab. It now
+starts with compact cards for no-login usage, selected ETF, frontend data mode,
+and daily readiness, while deployment diagnostics remain in expandable panels.
