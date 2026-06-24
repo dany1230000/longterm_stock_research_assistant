@@ -1553,3 +1553,8 @@ v5.73 carries ETF history missing-count metadata into the Flutter app. Static
 and live operations status now preserve `etfPriceHistoryMissingCount`, so the
 ETF data-library panel can show ready and missing histories directly instead of
 inferring the gap from row counts.
+
+v5.74 refreshes the next-direction roadmap around the current v5.73 baseline.
+The next checkpoints are selected ETF context, manual comparison baskets,
+history/backtest interaction, daily AI context, broader validated ETF coverage,
+and mobile packaging preflight.
