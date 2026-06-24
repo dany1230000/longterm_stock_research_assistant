@@ -1477,3 +1477,8 @@ directly under the local account summary.
 v5.56 adds a daily interpretation card to the AI page, combining holdings date,
 intraday NAV time, premium discount state, exposure weights, and the first
 program action item.
+
+v5.57 makes the bottom-right settings page more like an account/preferences
+area. Daily-use items stay visible first, while ETF data-library details,
+deployment readiness, and backend diagnostics are moved behind compact
+expanders.

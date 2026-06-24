@@ -225,6 +225,11 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.text('ETF 資料與比較能力'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('ETF 資料與比較能力'));
+    await tester.pumpAndSettle();
+
     expect(find.text('228 / 344'), findsWidgets);
     expect(find.text('116'), findsWidgets);
     _expectNoTradingActionText();
@@ -1080,17 +1085,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       find.byKey(const ValueKey('00631l-etf-room-readiness-panel')),
-      findsOneWidget,
+      findsNothing,
     );
-    expect(find.text('ETF 研究室完成度'), findsOneWidget);
-    expect(find.text('公開 PWA'), findsOneWidget);
     expect(find.text('設定'), findsWidgets);
     expect(find.text('設定總覽'), findsOneWidget);
     expect(find.text('帳戶與偏好'), findsOneWidget);
     expect(find.text('免登入'), findsOneWidget);
-    expect(find.text('ETF 資料狀態'), findsOneWidget);
-    expect(find.text('catalog'), findsWidgets);
-    expect(find.text('ETF comparison'), findsOneWidget);
+    expect(find.text('ETF 資料與比較能力'), findsOneWidget);
+    expect(find.text('ETF 研究室完成度'), findsNothing);
+    expect(find.text('公開 PWA'), findsNothing);
+    expect(find.text('catalog'), findsNothing);
+    expect(find.text('ETF comparison'), findsNothing);
     expect(find.text('ETF 資料預覽'), findsNothing);
     expect(find.text('元大台灣50正2'), findsNothing);
     expect(find.text('App 上架準備'), findsOneWidget);
@@ -1115,6 +1120,19 @@ void main() {
     expect(find.text('iOS'), findsOneWidget);
     expect(find.text('隱私與支援'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('ETF 資料與比較能力'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('ETF 資料與比較能力'));
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-etf-room-readiness-panel')),
+      findsOneWidget,
+    );
+    expect(find.text('ETF 研究室完成度'), findsOneWidget);
+    expect(find.text('公開 PWA'), findsOneWidget);
+    expect(find.text('catalog'), findsWidgets);
+    expect(find.text('ETF comparison'), findsOneWidget);
+
     await tester.scrollUntilVisible(
       find.text('資料模式與完整度'),
       220,
@@ -1137,6 +1155,12 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
+    expect(find.text('ETF 資料庫狀態'), findsNothing);
+    await tester.ensureVisible(find.text('ETF 資料與比較能力'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('ETF 資料與比較能力'));
+    await tester.pumpAndSettle();
+
     expect(find.text('ETF 資料庫狀態'), findsOneWidget);
     expect(find.text('catalog 檔數'), findsOneWidget);
     expect(find.text('歷史 ready'), findsOneWidget);
@@ -1146,7 +1170,7 @@ void main() {
     expect(find.text('recent'), findsOneWidget);
     expect(find.text('220'), findsWidgets);
     expect(find.text('完成度'), findsOneWidget);
-    expect(find.textContaining('不代表官方內容物已完整匯入'), findsOneWidget);
+    expect(find.textContaining('缺口代表尚未有足夠資料'), findsOneWidget);
     expect(find.text('history ready ratio'), findsOneWidget);
     expect(find.text('尚未 ready'), findsOneWidget);
     expect(find.text('public static release'), findsOneWidget);

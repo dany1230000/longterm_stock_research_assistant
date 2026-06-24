@@ -8414,13 +8414,9 @@ class _SettingsSection extends StatelessWidget {
           readinessLabel: readiness.label,
         ),
         const SizedBox(height: 10),
-        _EtfResearchRoomReadinessPanel(data: data, selectedEtf: selectedEtf),
-        const SizedBox(height: 10),
-        _EtfDataLibrarySummary(data: data),
-        const SizedBox(height: 10),
         _SectionBlock(
           title: '帳戶與偏好',
-          subtitle: '目前不需要登入。持倉資料預設只保存在本機瀏覽器。',
+          subtitle: '一般使用者只需要看這裡：登入、外觀、目前 ETF 與本機持倉狀態。',
           child: _StatusList(
             items: [
               const _StatusItem(
@@ -8452,33 +8448,9 @@ class _SettingsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        _SectionBlock(
-          title: 'ETF 資料狀態',
-          subtitle: '完整 ETF 清單已移到 ETF 分頁；設定頁只保留狀態摘要。',
-          child: _StatusList(
-            items: [
-              _StatusItem(
-                label: 'catalog',
-                status: data.etfCatalog.hasData
-                    ? data.etfCatalog.sourceStatusLabel
-                    : status.etfCatalogStatus,
-                detail:
-                    'rows ${data.etfCatalog.hasData ? data.etfCatalog.rowCount : status.etfCatalogRowCount}，dataTime ${_dateTimeOrDash(data.etfCatalog.dataTime ?? status.etfCatalogDataTime)}。',
-                action: '切到 ETF 分頁可搜尋代號、名稱與分類。',
-              ),
-              const _StatusItem(
-                label: 'ETF comparison',
-                status: 'available',
-                detail: '歷史回測頁可自選 1-5 檔 ETF，比較區間歷史報酬與回撤。',
-                action: '切到歷史回測頁，使用同類型篩選或手動勾選比較組合。',
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
         const _CompactExpansionPanel(
           title: 'App 上架準備',
-          subtitle: '目前是 PWA 完成版；原生 Android / iOS 還需要平台打包、簽章與商店資料。',
+          subtitle: 'PWA 已可用；原生 Android / iOS 的上架資料先收在這裡。',
           child: _StatusList(
             items: [
               _StatusItem(
@@ -8515,6 +8487,41 @@ class _SettingsSection extends StatelessWidget {
                 detail:
                     'public backend 已有 Docker / Render / CORS / persistent data 設計。',
                 action: '正式上架前確認 backend uptime、persistent volume 與公開 API URL。',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        _CompactExpansionPanel(
+          title: 'ETF 資料與比較能力',
+          subtitle: 'ETF 清單、歷史資料覆蓋、比較能力與研究室資料來源。',
+          child: Column(
+            children: [
+              _EtfResearchRoomReadinessPanel(
+                data: data,
+                selectedEtf: selectedEtf,
+              ),
+              const SizedBox(height: 10),
+              _EtfDataLibrarySummary(data: data, compact: true),
+              const SizedBox(height: 10),
+              _StatusList(
+                items: [
+                  _StatusItem(
+                    label: 'catalog',
+                    status: data.etfCatalog.hasData
+                        ? data.etfCatalog.sourceStatusLabel
+                        : status.etfCatalogStatus,
+                    detail:
+                        'rows ${data.etfCatalog.hasData ? data.etfCatalog.rowCount : status.etfCatalogRowCount}，dataTime ${_dateTimeOrDash(data.etfCatalog.dataTime ?? status.etfCatalogDataTime)}。',
+                    action: '左上角代號按鈕可搜尋代號、名稱與分類。',
+                  ),
+                  const _StatusItem(
+                    label: 'ETF comparison',
+                    status: 'available',
+                    detail: '歷史回測頁可自選 1-5 檔 ETF，比較同一區間的歷史報酬與回撤。',
+                    action: '在歷史回測頁使用同類型篩選或手動勾選比較組合。',
+                  ),
+                ],
               ),
             ],
           ),
