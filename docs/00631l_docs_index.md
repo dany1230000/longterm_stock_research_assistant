@@ -353,6 +353,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Brief public Pages checkup: `docs\00631l_v5_46_brief_public_pages_checkup.md`
 - Brief release check: `docs\00631l_v5_47_brief_release_check.md`
 - Selected ETF data context: `docs\00631l_v5_48_selected_etf_data_context.md`
+- Selected ETF AI briefing: `docs\00631l_v5_49_selected_etf_ai_briefing.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

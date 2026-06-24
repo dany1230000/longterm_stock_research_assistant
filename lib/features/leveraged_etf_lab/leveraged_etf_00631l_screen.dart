@@ -7799,29 +7799,14 @@ class _SelectedEtfAiSection extends StatelessWidget {
     final history = selectedEtf.priceHistory.completenessSummary();
     final performance = selectedEtf.priceHistory.performance;
     final latestDate = _dateOrDash(history.latest?.date);
-    final latestCloseChangeText = history.latestCloseChange == null
-        ? 'unavailable'
-        : '${history.latestCloseChange! >= 0 ? '+' : ''}${history.latestCloseChange!.toStringAsFixed(2)}';
-    final latestMove = history.latestCloseChange == null
-        ? '日變動資料不足'
-        : '最新交易日 $latestDate，日變動 $latestCloseChangeText / ${formatSignedNullablePercent(history.latestDailyReturnPct)}。';
     final priceField = history.hasAdjustedClose ? 'adjustedClose' : 'close';
     final adjustmentLabel = history.hasNonUnitAdjustment
         ? '已辨識'
         : history.hasAdjustedClose
             ? '調整價可用'
             : '未套用';
-    final bullets = [
-      '${selectedEtf.code} ${selectedEtf.name} 目前使用 ETF catalog 與 price history 產生摘要。',
-      latestMove,
-      '價格欄位 $priceField；分割調整 $adjustmentLabel。若該 ETF 曾分割，請先確認資料源是否提供 adjustmentFactor。',
-      '歷史 coverage ${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}，共 ${formatInteger(history.rowCount)} 筆。',
-      '最新收盤 ${_price(history.latest?.close)}；區間累積報酬 ${formatSignedNullablePercent(performance.totalReturnPct)}，最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}。',
-      selectedEtf.premiumDiscountPct == null
-          ? '此 ETF 目前沒有可用的盤中折溢價欄位。'
-          : 'catalog 折溢價 ${formatSignedNullablePercent(selectedEtf.premiumDiscountPct)}，請以資料時間為準。',
-      '官方每日內容物與 live intraday NAV 目前仍只完整接 00631L；不會把 00631L 資料套用到 ${selectedEtf.code}。',
-    ];
+    final bullets = _selectedEtfAnalysisBullets(selectedEtf);
+    final actions = _selectedEtfProgramActions(selectedEtf);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -7883,6 +7868,16 @@ class _SelectedEtfAiSection extends StatelessWidget {
               const SizedBox(height: 12),
               for (final bullet in bullets)
                 _BulletLine(text: bullet, icon: Icons.insights_outlined),
+              const SizedBox(height: 8),
+              Text(
+                '程式操作',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              for (final action in actions)
+                _BulletLine(text: action, icon: Icons.task_alt_outlined),
             ],
           ),
         ),
@@ -11960,6 +11955,69 @@ List<String> _completeDataBriefing(Etf00631LLabData data) {
     '維護狀態：backend ${data.operationsStatus.backendConnectionCaption}，report ${data.operationsStatus.reportOverallStatus}，export ${data.operationsStatus.exportAvailable ? 'ready' : 'missing'}，backup ${data.operationsStatus.backupAvailable ? 'ready' : 'missing'}。',
   );
   return lines;
+}
+
+List<String> _selectedEtfAnalysisBullets(_SelectedEtfViewData selectedEtf) {
+  final history = selectedEtf.historySummary;
+  final performance = selectedEtf.priceHistory.performance;
+  final latest = history.latest;
+  if (!selectedEtf.hasImportedHistory || latest == null) {
+    return [
+      '${selectedEtf.code} 目前資料不足，AI 只顯示 catalog/static/error 狀態，不產生歷史結論。',
+      '若要檢視歷史、回測或比較，需先匯入可驗證的 price history。',
+      'live intraday NAV 目前只完整接 00631L；不會把 00631L 的即時資料套用到 ${selectedEtf.code}。',
+      '此摘要只描述資料狀態，非買賣建議。',
+    ];
+  }
+  final latestChange = history.latestCloseChange == null
+      ? 'unavailable'
+      : '${history.latestCloseChange! >= 0 ? '+' : ''}${history.latestCloseChange!.toStringAsFixed(2)}';
+  final rangePosition = _selectedEtfRangePositionText(history);
+  final completeness = history.isCompleteFromListing ? '上市日起完整' : '部分區間';
+  return [
+    '${selectedEtf.code} 歷史 coverage ${selectedEtf.historyCoverageText}，共 ${formatInteger(history.rowCount)} 筆，資料範圍為 $completeness。',
+    '最新交易日 ${_dateOrDash(latest.date)}，收盤 ${_price(latest.performanceClose)}，日變動 $latestChange / ${formatSignedNullablePercent(history.latestDailyReturnPct)}。',
+    '區間累積報酬 ${formatSignedNullablePercent(performance.totalReturnPct)}，最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}，年化波動 ${formatNullablePercent(performance.annualizedVolatilityPct)}。',
+    '近一年區間 ${_price(history.trailingLowClose)} - ${_price(history.trailingHighClose)}；目前位置 $rangePosition。',
+    '價格欄位使用 ${selectedEtf.priceFieldLabel}；${selectedEtf.adjustmentContextLabel}。若資料含分割或調整，請以 adjustmentFactor 與調整價為準。',
+    selectedEtf.is00631L
+        ? '00631L 已接 live intraday NAV；官方 holdings 仍是每日快照。'
+        : '${selectedEtf.code} 尚未接 live intraday NAV；目前分析以歷史價格與 catalog 狀態為主。',
+    '回測不代表未來表現，非買賣建議。',
+  ];
+}
+
+List<String> _selectedEtfProgramActions(_SelectedEtfViewData selectedEtf) {
+  final actions = <String>[];
+  if (selectedEtf.hasImportedHistory) {
+    actions.add(
+      '若要刷新 ${selectedEtf.code} 歷史資料，執行 scripts\\00631l_import_etf_price_history.cmd。',
+    );
+  } else {
+    actions.add(
+      '若要啟用 ${selectedEtf.code} 歷史與回測，先匯入 ETF price history。',
+    );
+  }
+  if (!selectedEtf.is00631L) {
+    actions.add(
+      '若未來需要 ${selectedEtf.code} live NAV，需先建立官方來源 mapping 與 parser。',
+    );
+  }
+  actions.add('若資料時間不符合預期，先查看設定頁的 static/live mode 與資料覆蓋狀態。');
+  return actions;
+}
+
+String _selectedEtfRangePositionText(
+  EtfPriceHistoryCompletenessSummary history,
+) {
+  final latest = history.latest?.performanceClose;
+  final low = history.trailingLowClose;
+  final high = history.trailingHighClose;
+  if (latest == null || low == null || high == null || high <= low) {
+    return 'unavailable';
+  }
+  final position = ((latest - low) / (high - low) * 100).clamp(0, 100);
+  return '${position.toStringAsFixed(1)}% of 1Y range';
 }
 
 String _historyMetricLabel(String key) {

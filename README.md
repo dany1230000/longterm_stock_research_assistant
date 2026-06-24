@@ -1445,3 +1445,8 @@ v5.48 adds a selected ETF data-context card to the overview and AI pages. When
 the top-left selector switches away from 00631L, the app now shows history row
 count, coverage, price field, split-adjustment context, backtest readiness, and
 live NAV scope before any analysis text.
+
+v5.49 strengthens the selected ETF AI briefing. The rule-based summary now uses
+the selected ETF history to describe coverage, latest movement, return,
+drawdown, volatility, one-year range position, data field choice, and program
+actions for refreshing or extending verified data.

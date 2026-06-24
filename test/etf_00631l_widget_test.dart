@@ -871,6 +871,14 @@ void main() {
     expect(find.textContaining('rows 3'), findsWidgets);
     expect(find.textContaining('此檔尚未建立 live NAV mapping'), findsWidgets);
     expect(find.textContaining('分割調整 調整價可用'), findsWidgets);
+    expect(find.textContaining('近一年區間'), findsWidgets);
+    expect(find.textContaining('目前位置'), findsWidgets);
+    expect(find.textContaining('回測不代表未來表現'), findsWidgets);
+    expect(find.text('程式操作'), findsOneWidget);
+    expect(
+      find.textContaining('scripts\\00631l_import_etf_price_history.cmd'),
+      findsWidgets,
+    );
     expect(find.textContaining('2026/06/03'), findsWidgets);
     _expectNoTradingActionText();
   });
