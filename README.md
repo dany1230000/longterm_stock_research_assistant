@@ -1358,3 +1358,7 @@ ready.
 v5.28 makes ETF import status output stricter too. The multi-ETF history
 status command now prints catalogSymbols and gap, so daily maintenance can see
 which catalog rows still lack usable price-history coverage.
+
+v5.29 aligns local Dart formatting with the GitHub Pages workflow gate. The
+public Pages build runs `dart format --set-exit-if-changed .`, so local release
+work now keeps that check clean before pushing.

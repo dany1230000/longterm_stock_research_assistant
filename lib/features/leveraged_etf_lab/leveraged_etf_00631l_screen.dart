@@ -1110,9 +1110,8 @@ class _SymbolSearchDataCompletionStrip extends StatelessWidget {
     );
     final readyRatio =
         historyTotal <= 0 ? 0.0 : readyHistoryCount / historyTotal * 100;
-    final gap = (historyTotal - readyHistoryCount)
-        .clamp(0, historyTotal)
-        .toInt();
+    final gap =
+        (historyTotal - readyHistoryCount).clamp(0, historyTotal).toInt();
     final tiers = status.etfPriceHistoryCoverageTierCounts;
     final longTerm = tiers['long_term'] ?? 0;
     final recent = tiers['recent'] ?? 0;
@@ -1141,7 +1140,7 @@ class _SymbolSearchDataCompletionStrip extends StatelessWidget {
                   ),
                 ),
                 Text(
-                '完成度 ${formatNullablePercent(readyRatio)}',
+                  '完成度 ${formatNullablePercent(readyRatio)}',
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: _marketMutedTextColor(context),
                     fontWeight: FontWeight.w900,

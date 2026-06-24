@@ -164,8 +164,7 @@ void main() {
     _expectNoTradingActionText();
   });
 
-  testWidgets('symbol search shows ETF data completion status',
-      (tester) async {
+  testWidgets('symbol search shows ETF data completion status', (tester) async {
     await _pumpLab(tester, _EtfReadinessOperationsRepository());
 
     await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
