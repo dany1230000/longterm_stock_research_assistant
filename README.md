@@ -1436,3 +1436,7 @@ v5.46 adds `--summary-only` to `scripts\00631l_public_pages_checkup.cmd` and
 uses it in release check. Daily public phone-app checks now show the public URL,
 release marker, row count, coverage, and workflow mode without printing full
 nested smoke payloads.
+
+v5.47 makes `scripts\00631l_release_check.cmd` compact by default. Use
+`scripts\00631l_release_check.cmd --verbose` only when full per-step stdout and
+stderr tails are needed for debugging.

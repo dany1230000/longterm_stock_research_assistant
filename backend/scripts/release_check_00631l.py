@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import re
@@ -29,6 +30,7 @@ FORBIDDEN_TERMS = [
 
 
 def main() -> int:
+    args = _parse_args()
     steps = [
         _required_files_check(),
         _pwa_metadata_check(),
@@ -208,7 +210,8 @@ def main() -> int:
         "nextAction": next_action,
         "steps": steps,
     }
-    print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
+    printable_payload = payload if args.verbose else _compact_release_check_payload(payload)
+    print(json.dumps(printable_payload, ensure_ascii=True, indent=2, sort_keys=True))
     print(
         "[summary] "
         f"overallStatus={overall_status} "
@@ -216,6 +219,28 @@ def main() -> int:
         f"failures={len(failures)}"
     )
     return 1 if failures else 0
+
+
+def _compact_release_check_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    steps = payload.get("steps") if isinstance(payload.get("steps"), list) else []
+    compact_steps: list[dict[str, Any]] = []
+    for step in steps:
+        if not isinstance(step, dict):
+            continue
+        compact_steps.append(
+            {
+                "name": step.get("name"),
+                "status": step.get("status"),
+                "message": step.get("message"),
+                "exitCode": step.get("exitCode"),
+            }
+        )
+    return {
+        key: value for key, value in payload.items() if key != "steps"
+    } | {
+        "stepSummary": compact_steps,
+        "stepCount": len(compact_steps),
+    }
 
 
 def _required_files_check() -> dict[str, Any]:
@@ -410,6 +435,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_44_public_release_wait_summary.md",
         "docs/00631l_v5_45_brief_public_release_wait.md",
         "docs/00631l_v5_46_brief_public_pages_checkup.md",
+        "docs/00631l_v5_47_brief_release_check.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
@@ -765,6 +791,18 @@ def _tail(text: str, *, max_lines: int = 24) -> str:
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Run 00631L release validation with concise output by default.",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Print full per-step stdout/stderr tails for debugging.",
+    )
+    return parser.parse_args()
 
 
 if __name__ == "__main__":

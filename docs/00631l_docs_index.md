@@ -351,6 +351,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public release wait summary: `docs\00631l_v5_44_public_release_wait_summary.md`
 - Brief public release wait: `docs\00631l_v5_45_brief_public_release_wait.md`
 - Brief public Pages checkup: `docs\00631l_v5_46_brief_public_pages_checkup.md`
+- Brief release check: `docs\00631l_v5_47_brief_release_check.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

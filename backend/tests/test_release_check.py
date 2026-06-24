@@ -12,6 +12,7 @@ from backend.scripts.check_public_config_00631l import (
 from backend.scripts.deploy_precheck_00631l import run_deploy_precheck
 from backend.scripts.release_check_00631l import (
     ROOT,
+    _compact_release_check_payload,
     _has_overall,
     _iter_text_files,
     _required_files_check,
@@ -51,6 +52,31 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertTrue(_has_overall("overallStatus WARN", "WARN"))
         self.assertTrue(_has_overall('{"overallStatus": "PASS"}', "PASS"))
         self.assertFalse(_has_overall("[summary] overallStatus=PASS", "FAIL"))
+
+    def test_compact_release_check_payload_removes_step_output_tails(self) -> None:
+        payload = {
+            "sourceContract": "00631l_release_check",
+            "overallStatus": "WARN",
+            "warnings": ["smoke: reported overallStatus WARN"],
+            "failures": [],
+            "steps": [
+                {
+                    "name": "smoke",
+                    "status": "WARN",
+                    "message": "reported overallStatus WARN",
+                    "exitCode": 0,
+                    "stdoutTail": "long output",
+                    "stderrTail": "",
+                }
+            ],
+        }
+
+        compact = _compact_release_check_payload(payload)
+
+        self.assertNotIn("steps", compact)
+        self.assertEqual(compact["stepCount"], 1)
+        self.assertEqual(compact["stepSummary"][0]["name"], "smoke")
+        self.assertNotIn("stdoutTail", compact["stepSummary"][0])
 
     def test_release_check_uses_concise_etf_history_status(self) -> None:
         source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
