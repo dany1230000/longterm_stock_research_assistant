@@ -341,6 +341,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public Pages smoke release: `docs\00631l_v5_34_public_pages_smoke.md`
 - Pages deploy status release: `docs\00631l_v5_35_pages_deploy_status.md`
 - Pages deploy wait release: `docs\00631l_v5_36_pages_deploy_wait.md`
+- Public Pages checkup release: `docs\00631l_v5_37_public_pages_checkup.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

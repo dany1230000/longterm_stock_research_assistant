@@ -1392,3 +1392,7 @@ public phone deployment problems are visible from the local release flow.
 v5.36 adds a Pages deploy wait helper. After pushing a release, run
 `scripts\00631l_wait_pages_deploy.cmd` to wait for the GitHub Pages workflow to
 finish and confirm the public PWA smoke check passes for the expected commit.
+
+v5.37 adds `scripts\00631l_public_pages_checkup.cmd`, a short daily check for
+the public phone app. It reports the public URL, static data rows and coverage,
+and latest GitHub Pages workflow state in one output.
