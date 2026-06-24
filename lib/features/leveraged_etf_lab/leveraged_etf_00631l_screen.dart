@@ -3106,6 +3106,52 @@ class _SelectedEtfDataContextCard extends StatelessWidget {
   }
 }
 
+class _SelectedEtfHistoryReadinessStrip extends StatelessWidget {
+  const _SelectedEtfHistoryReadinessStrip({required this.selectedEtf});
+
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final history = selectedEtf.historySummary;
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-selected-etf-history-readiness-strip'),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              _CompactTextBadge(label: selectedEtf.code),
+              const SizedBox(width: 8),
+              Text(
+                'history ${selectedEtf.priceHistory.sourceStatusLabel}',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text('${formatInteger(history.rowCount)} rows'),
+              const SizedBox(width: 10),
+              Text(selectedEtf.historyCoverageText),
+              const SizedBox(width: 10),
+              Text(selectedEtf.backtestReadinessLabel),
+              const SizedBox(width: 10),
+              Text(selectedEtf.liveNavScopeLabel),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _SelectedEtfAtAGlancePanel extends StatelessWidget {
   const _SelectedEtfAtAGlancePanel({required this.selectedEtf});
 
@@ -5439,6 +5485,10 @@ class _HistoryBacktestSection extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 10),
+        ],
+        if (!selectedEtf.is00631L) ...[
+          _SelectedEtfHistoryReadinessStrip(selectedEtf: selectedEtf),
           const SizedBox(height: 10),
         ],
         _HistorySection(

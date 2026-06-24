@@ -1450,3 +1450,7 @@ v5.49 strengthens the selected ETF AI briefing. The rule-based summary now uses
 the selected ETF history to describe coverage, latest movement, return,
 drawdown, volatility, one-year range position, data field choice, and program
 actions for refreshing or extending verified data.
+
+v5.50 adds a compact selected ETF history-readiness strip to the history/backtest
+page. After switching the top-left symbol, users can see row count, coverage,
+backtest readiness, and live NAV scope before reading the full chart.

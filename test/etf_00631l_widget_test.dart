@@ -669,12 +669,18 @@ void main() {
     expect(find.textContaining('元大台灣50'), findsWidgets);
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     expect(
+      find.byKey(const ValueKey('00631l-selected-etf-history-readiness-strip')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-selected-history-quality-card')),
       findsOneWidget,
     );
     expect(find.text('0050 歷史資料'), findsOneWidget);
     expect(find.text('3 筆'), findsWidgets);
     expect(find.textContaining('2025/06/03 - 2026/06/03'), findsWidgets);
+    expect(find.textContaining('backtest ready'), findsWidgets);
+    expect(find.textContaining('live NAV 00631L only'), findsWidgets);
     expect(find.text('分割調整'), findsWidgets);
     expect(find.text('調整價可用'), findsWidgets);
     expect(find.byKey(const ValueKey('00631l-backtest-view')), findsOneWidget);
