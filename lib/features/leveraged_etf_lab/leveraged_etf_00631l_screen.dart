@@ -2597,7 +2597,7 @@ class _OverviewSection extends StatelessWidget {
         if (!selectedEtf.is00631L) ...[
           _SelectedEtfReadinessBanner(selectedEtf: selectedEtf),
           const SizedBox(height: 8),
-          _SelectedEtfDataContextCard(selectedEtf: selectedEtf),
+          _SelectedEtfHistoryReadinessStrip(selectedEtf: selectedEtf),
           const SizedBox(height: 8),
         ],
         _OverviewQualityRibbon(data: data, selectedEtf: selectedEtf),

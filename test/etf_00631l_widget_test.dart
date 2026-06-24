@@ -845,13 +845,15 @@ void main() {
     expect(find.textContaining('市價 · catalog'), findsWidgets);
     expect(find.text('官方內容物重點'), findsNothing);
     expect(
-      find.byKey(const ValueKey('00631l-selected-etf-data-context-card')),
+      find.byKey(const ValueKey('00631l-selected-etf-history-readiness-strip')),
       findsOneWidget,
     );
-    expect(find.text('資料脈絡'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-selected-etf-data-context-card')),
+      findsNothing,
+    );
     expect(find.text('backtest ready'), findsOneWidget);
     expect(find.text('live NAV 00631L only'), findsOneWidget);
-    expect(find.textContaining('非買賣建議'), findsWidgets);
 
     await _tapSection(tester, 'position');
     await tester.pumpAndSettle();

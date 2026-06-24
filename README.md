@@ -1454,3 +1454,7 @@ actions for refreshing or extending verified data.
 v5.50 adds a compact selected ETF history-readiness strip to the history/backtest
 page. After switching the top-left symbol, users can see row count, coverage,
 backtest readiness, and live NAV scope before reading the full chart.
+
+v5.51 makes the selected ETF overview more compact. The overview uses the short
+history-readiness strip, while the full selected ETF data-context card stays in
+the AI section for deeper explanation.
