@@ -832,10 +832,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       find.byKey(const ValueKey('00631l-selected-etf-readiness-banner')),
-      findsOneWidget,
+      findsNothing,
     );
-    expect(find.textContaining('0050 歷史與回測可用'), findsOneWidget);
-    expect(find.textContaining('已載入 3 筆歷史價格'), findsWidgets);
+    expect(find.textContaining('3 rows'), findsWidgets);
     expect(find.textContaining('0050 元大台灣50'), findsWidgets);
     expect(find.text('0050 核心資料'), findsOneWidget);
     expect(find.text('資料正確性'), findsOneWidget);

@@ -57,11 +57,11 @@ def _data_path(name: str, filename: str) -> str:
 class Settings:
     backend_app_version: str = os.getenv(
         "00631L_BACKEND_APP_VERSION",
-        "5.51-compact-selected-etf-overview",
+        "5.52-selected-etf-overview-dedup",
     ).strip()
     backend_release_tag: str = os.getenv(
         "00631L_BACKEND_RELEASE_TAG",
-        "00631l-lab-v5.51-compact-selected-etf-overview",
+        "00631l-lab-v5.52-selected-etf-overview-dedup",
     ).strip()
     backend_git_sha: str = os.getenv("00631L_BACKEND_GIT_SHA", "").strip()
     backend_build_time: str = os.getenv("00631L_BACKEND_BUILD_TIME", "").strip()

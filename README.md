@@ -1458,3 +1458,7 @@ backtest readiness, and live NAV scope before reading the full chart.
 v5.51 makes the selected ETF overview more compact. The overview uses the short
 history-readiness strip, while the full selected ETF data-context card stays in
 the AI section for deeper explanation.
+
+v5.52 removes duplicated selected ETF readiness content from the overview. The
+larger readiness banner is kept only for missing-history guidance in the
+history/backtest flow.
