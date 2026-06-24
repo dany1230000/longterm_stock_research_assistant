@@ -1427,3 +1427,7 @@ v5.44 adds `--summary-only` to
 `scripts\00631l_wait_public_release_marker.cmd`. Release checks now use compact
 public-release wait output by default, while the full sampled payload remains
 available for debugging.
+
+v5.45 shortens that summary output further. Daily waits now show first/latest
+release-marker samples and the transition count; add `--include-attempts` only
+when each polling attempt is needed for debugging.

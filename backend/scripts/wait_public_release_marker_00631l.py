@@ -38,7 +38,10 @@ def main() -> int:
         dry_run=args.dry_run,
     )
     printable_payload = (
-        compact_public_release_marker_wait_payload(payload)
+        compact_public_release_marker_wait_payload(
+            payload,
+            include_attempts=args.include_attempts,
+        )
         if args.summary_only
         else payload
     )
@@ -102,25 +105,16 @@ def run_public_release_marker_wait(
     )
 
 
-def compact_public_release_marker_wait_payload(payload: dict[str, Any]) -> dict[str, Any]:
+def compact_public_release_marker_wait_payload(
+    payload: dict[str, Any],
+    *,
+    include_attempts: bool = False,
+) -> dict[str, Any]:
     compact = {key: value for key, value in payload.items() if key != "samples"}
-    sample_summaries: list[dict[str, Any]] = []
-    for index, sample in enumerate(payload.get("samples") or [], start=1):
-        sample_summaries.append(
-            {
-                "attempt": index,
-                "overallStatus": sample.get("overallStatus"),
-                "releaseTag": sample.get("releaseTag"),
-                "releaseGitSha": sample.get("releaseGitSha"),
-                "releaseAppVersion": sample.get("releaseAppVersion"),
-                "rowCount": sample.get("rowCount"),
-                "coverageStart": sample.get("coverageStart"),
-                "coverageEnd": sample.get("coverageEnd"),
-                "warningCount": len(sample.get("warnings") or []),
-                "failureCount": len(sample.get("failures") or []),
-            }
-        )
-    compact["sampleSummaries"] = sample_summaries
+    sample_summaries = _sample_summaries(payload.get("samples") or [])
+    compact["attemptSummary"] = _attempt_summary(sample_summaries)
+    if include_attempts:
+        compact["sampleSummaries"] = sample_summaries
     return compact
 
 
@@ -240,6 +234,44 @@ def _dedupe(items: list[str]) -> list[str]:
     return output
 
 
+def _sample_summaries(samples: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    summaries: list[dict[str, Any]] = []
+    for index, sample in enumerate(samples, start=1):
+        summaries.append(
+            {
+                "attempt": index,
+                "overallStatus": sample.get("overallStatus"),
+                "releaseTag": sample.get("releaseTag"),
+                "releaseGitSha": sample.get("releaseGitSha"),
+                "releaseAppVersion": sample.get("releaseAppVersion"),
+                "rowCount": sample.get("rowCount"),
+                "coverageStart": sample.get("coverageStart"),
+                "coverageEnd": sample.get("coverageEnd"),
+                "warningCount": len(sample.get("warnings") or []),
+                "failureCount": len(sample.get("failures") or []),
+            }
+        )
+    return summaries
+
+
+def _attempt_summary(sample_summaries: list[dict[str, Any]]) -> dict[str, Any]:
+    first = sample_summaries[0] if sample_summaries else {}
+    latest = sample_summaries[-1] if sample_summaries else {}
+    transitions = 0
+    previous_sha = ""
+    for sample in sample_summaries:
+        release_sha = str(sample.get("releaseGitSha") or "")
+        if previous_sha and release_sha != previous_sha:
+            transitions += 1
+        previous_sha = release_sha
+    return {
+        "sampleCount": len(sample_summaries),
+        "first": first,
+        "latest": latest,
+        "releaseShaTransitionCount": transitions,
+    }
+
+
 def _now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
@@ -278,6 +310,11 @@ def _parse_args() -> argparse.Namespace:
         "--summary-only",
         action="store_true",
         help="Print compact attempt summaries instead of the full sampled payloads.",
+    )
+    parser.add_argument(
+        "--include-attempts",
+        action="store_true",
+        help="With --summary-only, include each compact polling attempt.",
     )
     return parser.parse_args()
 

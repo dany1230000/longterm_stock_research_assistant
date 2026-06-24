@@ -8,7 +8,7 @@ pushes.
 - `scripts\00631l_wait_public_release_marker.cmd` now supports
   `--summary-only`.
 - Summary mode keeps the top-level status, release tag, commit SHA, row count,
-  coverage, warnings, failures, and compact attempt summaries.
+  coverage, warnings, failures, and a compact attempt summary.
 - Summary mode omits the full sampled public Pages payloads, so daily logs stay
   readable.
 - `scripts\00631l_release_check.cmd` uses summary mode for its dry-run check.
@@ -20,7 +20,8 @@ scripts\00631l_wait_public_release_marker.cmd --expected-sha <commit> --summary-
 ```
 
 Use the command without `--summary-only` only when debugging the full public
-Pages check payload.
+Pages check payload. From v5.45 onward, add `--include-attempts` when you want
+every compact polling attempt in summary mode.
 
 ## Status Rules
 
