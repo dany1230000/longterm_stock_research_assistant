@@ -1388,3 +1388,7 @@ ready.
 v5.35 adds a GitHub Pages deployment-status check. It reports the latest Pages
 workflow run and GitHub Pages settings alongside the public smoke result, so
 public phone deployment problems are visible from the local release flow.
+
+v5.36 adds a Pages deploy wait helper. After pushing a release, run
+`scripts\00631l_wait_pages_deploy.cmd` to wait for the GitHub Pages workflow to
+finish and confirm the public PWA smoke check passes for the expected commit.
