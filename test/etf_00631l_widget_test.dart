@@ -443,6 +443,11 @@ void main() {
 
     expect(find.text('本機持倉'), findsOneWidget);
     expect(find.text('持倉狀態'), findsNothing);
+    expect(find.text('持倉帳戶摘要'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-position-account-strip')),
+      findsOneWidget,
+    );
     expect(find.text('尚未輸入持倉'), findsWidgets);
     expect(find.text('輸入持倉資料'), findsOneWidget);
     expect(
@@ -726,7 +731,7 @@ void main() {
     expect(find.textContaining('local-only'), findsWidgets);
     expect(find.text('目前標的 0050'), findsWidgets);
     expect(find.textContaining('行情來源'), findsWidgets);
-    expect(find.text('歷史來源 cached'), findsWidgets);
+    expect(find.textContaining('歷史來源 cached'), findsWidgets);
 
     await _tapSection(tester, 'ai');
     await tester.pumpAndSettle();

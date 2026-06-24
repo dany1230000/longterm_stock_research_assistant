@@ -6187,6 +6187,12 @@ class _PositionSectionState extends State<_PositionSection> {
           ],
         ),
         const SizedBox(height: 12),
+        _PositionAccountStrip(
+          input: input,
+          summary: summary,
+          selectedEtf: widget.selectedEtf,
+        ),
+        const SizedBox(height: 12),
         KeyedSubtree(
           key: const ValueKey('00631l-position-compact-input-card'),
           child: _SectionBlock(
@@ -6206,8 +6212,6 @@ class _PositionSectionState extends State<_PositionSection> {
                     '不會上傳',
                     '目前標的 ${widget.selectedEtf.code}',
                     '行情來源 ${widget.selectedEtf.sourceStatusLabel}',
-                    '歷史來源 ${widget.selectedEtf.priceHistory.sourceStatusLabel}',
-                    '市價 ${_price(widget.selectedEtf.marketPrice)}',
                     summary.dataTime == null
                         ? '資料時間 unavailable'
                         : '資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}',
@@ -6334,6 +6338,121 @@ class _PositionSectionState extends State<_PositionSection> {
       'feeAndTax': input.feeAndTax,
       'note': input.note,
     });
+  }
+}
+
+class _PositionAccountStrip extends StatelessWidget {
+  const _PositionAccountStrip({
+    required this.input,
+    required this.summary,
+    required this.selectedEtf,
+  });
+
+  final EtfPositionInput input;
+  final EtfPositionSummary summary;
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final dataTime = summary.dataTime == null
+        ? 'unavailable'
+        : formatTaiwanDateTimeSeconds(summary.dataTime!);
+    final items = [
+      _RangeContextItem(
+        label: '目前標的',
+        value: selectedEtf.code,
+        separator: ' ',
+      ),
+      _RangeContextItem(
+        label: '市值',
+        value: formatNtdAmount(summary.marketValue),
+        separator: ' ',
+      ),
+      _RangeContextItem(
+        label: '未實現損益',
+        value:
+            '${formatNtdAmount(summary.unrealizedPnl)} / ${formatSignedNullablePercent(summary.unrealizedPnlPct)}',
+        separator: ' ',
+      ),
+      _RangeContextItem(
+        label: '資料',
+        value: input.hasPosition ? '本機已輸入' : '尚未輸入',
+        separator: ' ',
+      ),
+    ];
+    return DecoratedBox(
+      key: const ValueKey('00631l-position-account-strip'),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '持倉帳戶摘要',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                const _CompactTextBadge(label: 'local-only'),
+              ],
+            ),
+            const SizedBox(height: 3),
+            Text(
+              '不需登入、不會上傳；估算依目前可用行情與資料時間。',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w700,
+                height: 1.25,
+              ),
+            ),
+            const SizedBox(height: 8),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final compact = constraints.maxWidth < 520;
+                final itemWidth = compact
+                    ? (constraints.maxWidth - 8) / 2
+                    : (constraints.maxWidth - 24) / 4;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final item in items)
+                      SizedBox(
+                        width: itemWidth.clamp(120, double.infinity),
+                        child: _RangeContextTile(item: item),
+                      ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '行情來源 ${selectedEtf.sourceStatusLabel}；歷史來源 ${selectedEtf.priceHistory.sourceStatusLabel}；資料時間 $dataTime。',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

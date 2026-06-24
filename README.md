@@ -1259,3 +1259,7 @@ snapshot.
 v5.5 makes the history/backtest date range easier to read. History charts and
 backtest results now show a compact range context strip with the selected
 dates, row/sample count, and latest data date before the detailed cards.
+
+v5.6 makes the position page feel more like an account view. It adds a compact
+local-only position summary before the input form and keeps save/export/clear
+controls in place.

@@ -310,6 +310,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Compact overview exposure release: `docs\00631l_v5_3_compact_overview_exposure.md`
 - Symbol search capability labels release: `docs\00631l_v5_4_symbol_search_capability_labels.md`
 - History/backtest range context release: `docs\00631l_v5_5_history_backtest_range_context.md`
+- Position account summary release: `docs\00631l_v5_6_position_account_summary.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
