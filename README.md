@@ -1513,3 +1513,7 @@ v5.64 makes the GitHub Pages static ETF import reproducible. The broad ETF
 history step now uses the committed TWSE ETF seed catalog in both Actions and
 the local Pages build script, so public static data does not depend on a
 maintainer-only local catalog file.
+
+v5.65 keeps static Pages build logs concise. ETF import and static export now
+support compact normal-run summaries, so daily validation shows status, row
+counts, ETF readiness, warnings, and failures without dumping every ETF row.

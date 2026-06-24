@@ -72,6 +72,46 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
     return " ".join(parts)
 
 
+def build_static_export_compact_response(
+    payload: dict[str, object],
+    *,
+    sample_size: int = 12,
+) -> dict[str, object]:
+    warnings = [
+        str(warning)
+        for warning in payload.get("warnings", [])
+        if warning is not None
+    ]
+    failures = [
+        str(failure)
+        for failure in payload.get("failures", [])
+        if failure is not None
+    ]
+    return {
+        "sourceStatus": payload.get("sourceStatus"),
+        "sourceContract": payload.get("sourceContract"),
+        "overallStatus": payload.get("overallStatus"),
+        "generatedAt": payload.get("generatedAt"),
+        "rowCount": payload.get("rowCount", 0),
+        "coverageStart": payload.get("coverageStart"),
+        "coverageEnd": payload.get("coverageEnd"),
+        "isCompleteFromListing": payload.get("isCompleteFromListing"),
+        "etfCatalogRowCount": payload.get("etfCatalogRowCount", 0),
+        "etfPriceHistoryReadyCount": payload.get("etfPriceHistoryReadyCount", 0),
+        "etfPriceHistoryRowCount": payload.get("etfPriceHistoryRowCount", 0),
+        "etfPriceHistoryCoverageTierCounts": payload.get(
+            "etfPriceHistoryCoverageTierCounts",
+            {},
+        ),
+        "outputDir": payload.get("outputDir"),
+        "release": payload.get("release"),
+        "warningCount": len(warnings),
+        "warningsSample": warnings[: max(sample_size, 0)],
+        "failureCount": len(failures),
+        "failures": failures,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Export static public 00631L data for Flutter Web / GitHub Pages.",
@@ -129,11 +169,21 @@ def main() -> int:
     )
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--status-only", action="store_true")
+    parser.add_argument(
+        "--summary-only",
+        action="store_true",
+        help="Print compact summary JSON instead of full warning/file details.",
+    )
     args = parser.parse_args()
 
     if args.status_only:
         payload = static_export_status(args.output_dir)
-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+        output_payload = (
+            build_static_export_compact_response(payload)
+            if args.summary_only
+            else payload
+        )
+        print(json.dumps(output_payload, ensure_ascii=False, indent=2, sort_keys=True))
         print(build_static_export_summary_line(payload))
         return 1 if payload["overallStatus"] == "FAIL" else 0
 
@@ -218,7 +268,12 @@ def main() -> int:
         warnings=warnings,
         release_metadata=_build_release_metadata(),
     )
-    print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+    output_payload = (
+        build_static_export_compact_response(payload)
+        if args.summary_only
+        else payload
+    )
+    print(json.dumps(output_payload, ensure_ascii=False, indent=2, sort_keys=True))
     print(build_static_export_summary_line(payload))
     return 1 if payload["overallStatus"] == "FAIL" else 0
 

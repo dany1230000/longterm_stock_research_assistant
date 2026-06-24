@@ -50,7 +50,7 @@ def main() -> int:
     parser.add_argument(
         "--summary-only",
         action="store_true",
-        help="With --status-only, print a compact index summary without every ETF item.",
+        help="Print a compact summary without every ETF item.",
     )
     parser.add_argument(
         "--allow-partial",
@@ -205,7 +205,8 @@ def main() -> int:
         "failures": failures,
         "errorMessage": "; ".join(failures) if failures else None,
     }
-    print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+    output_payload = build_import_summary_response(payload) if args.summary_only else payload
+    print(json.dumps(output_payload, ensure_ascii=False, indent=2, sort_keys=True))
     print(
         "[summary] "
         f"overallStatus={'FAIL' if failures else 'PASS'} "
@@ -220,6 +221,49 @@ def _resolve_codes(args: argparse.Namespace) -> list[str]:
         return parse_code_list(args.codes)
     payload = load_etf_catalog(args.catalog_path, fetched_at=utc_now_iso())
     return catalog_codes(payload, limit=args.limit)
+
+
+def build_import_summary_response(
+    payload: dict[str, object],
+    *,
+    sample_size: int = 12,
+) -> dict[str, object]:
+    items = [item for item in payload.get("items", []) if isinstance(item, dict)]
+    warnings = [
+        str(warning)
+        for warning in payload.get("warnings", [])
+        if warning is not None
+    ]
+    failures = [
+        str(failure)
+        for failure in payload.get("failures", [])
+        if failure is not None
+    ]
+    requested_codes = [
+        str(code)
+        for code in payload.get("requestedCodes", [])
+        if code is not None
+    ]
+    return {
+        "sourceStatus": payload.get("sourceStatus"),
+        "sourceContract": payload.get("sourceContract"),
+        "sourceUrl": payload.get("sourceUrl"),
+        "fetchedAt": payload.get("fetchedAt"),
+        "sourceUpdatedAt": payload.get("sourceUpdatedAt"),
+        "dataTime": payload.get("dataTime"),
+        "requestedCodeCount": len(requested_codes),
+        "requestedCodesSample": requested_codes[: max(sample_size, 0)],
+        "readyCount": payload.get("readyCount", 0),
+        "validationFailureCount": payload.get("validationFailureCount", 0),
+        "validationWarningCount": payload.get("validationWarningCount", 0),
+        "itemCount": len(items),
+        "sampleItems": items[: max(sample_size, 0)],
+        "warningCount": len(warnings),
+        "warningsSample": warnings[: max(sample_size, 0)],
+        "failureCount": len(failures),
+        "failures": failures,
+        "errorMessage": payload.get("errorMessage"),
+    }
 
 
 def build_status_summary_response(

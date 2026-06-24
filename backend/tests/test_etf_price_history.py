@@ -18,7 +18,10 @@ from backend.app.etf_price_history import (
 )
 from backend.app.main import create_app
 from backend.app.service import Etf00631LService
-from backend.scripts.import_etf_price_history import build_status_summary_response
+from backend.scripts.import_etf_price_history import (
+    build_import_summary_response,
+    build_status_summary_response,
+)
 
 
 class EtfPriceHistoryTests(unittest.TestCase):
@@ -643,6 +646,37 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn('"sourceStatus": "static_official"', completed.stdout)
         self.assertIn("[summary] overallStatus=PASS", completed.stdout)
+
+    def test_import_summary_response_keeps_cli_output_compact(self) -> None:
+        payload = {
+            "sourceStatus": "cached",
+            "sourceContract": "twse_multi_etf_price_history_import",
+            "sourceUrl": "fixture://twse",
+            "fetchedAt": "2026-06-24T00:00:00+00:00",
+            "sourceUpdatedAt": "2026-06-24",
+            "dataTime": "2026-06-24",
+            "requestedCodes": ["0050", "0056", "00631L"],
+            "readyCount": 230,
+            "validationFailureCount": 0,
+            "validationWarningCount": 1,
+            "items": [
+                {"code": "0050", "rowCount": 17},
+                {"code": "0056", "rowCount": 17},
+                {"code": "00631L", "rowCount": 1809},
+            ],
+            "warnings": ["0056: emptyMonths=1"],
+            "failures": [],
+            "errorMessage": None,
+        }
+
+        compact = build_import_summary_response(payload, sample_size=2)
+
+        self.assertEqual(compact["requestedCodeCount"], 3)
+        self.assertEqual(compact["readyCount"], 230)
+        self.assertEqual(compact["itemCount"], 3)
+        self.assertEqual(len(compact["sampleItems"]), 2)
+        self.assertEqual(compact["warningCount"], 1)
+        self.assertNotIn("items", compact)
 
 
 def _points(code: str) -> list[dict[str, object]]:

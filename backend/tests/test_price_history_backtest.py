@@ -15,6 +15,7 @@ from backend.app.price_history import (
 )
 from backend.app.static_export import export_static_00631l_data, static_export_status
 from backend.scripts.export_static_00631l_data import (
+    build_static_export_compact_response,
     build_static_export_summary_line,
     _merge_etf_price_history_seed_if_needed,
     _merge_seed_if_needed,
@@ -486,6 +487,41 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertIn("etfReady=15", line)
         self.assertIn("etfGap=0", line)
         self.assertIn("tiers=not_available", line)
+
+    def test_static_export_compact_response_keeps_cli_output_short(self) -> None:
+        compact = build_static_export_compact_response(
+            {
+                "sourceStatus": "static_official",
+                "sourceContract": "00631l_static_public_data",
+                "overallStatus": "PASS",
+                "generatedAt": "2026-06-24T00:00:00+00:00",
+                "rowCount": 2835,
+                "coverageStart": "2014-10-31",
+                "coverageEnd": "2026-06-24",
+                "isCompleteFromListing": True,
+                "etfCatalogRowCount": 345,
+                "etfPriceHistoryReadyCount": 230,
+                "etfPriceHistoryRowCount": 230,
+                "etfPriceHistoryCoverageTierCounts": {
+                    "long_term": 8,
+                    "recent": 222,
+                    "unavailable": 0,
+                    "error": 0,
+                },
+                "outputDir": "web/00631l-static-data",
+                "release": {"releaseTag": "00631l-lab-test"},
+                "warnings": ["seed merged", "recent import partial"],
+                "failures": [],
+                "files": {"priceHistory": "price_history.json"},
+            },
+            sample_size=1,
+        )
+
+        self.assertEqual(compact["rowCount"], 2835)
+        self.assertEqual(compact["etfPriceHistoryReadyCount"], 230)
+        self.assertEqual(compact["warningCount"], 2)
+        self.assertEqual(compact["warningsSample"], ["seed merged"])
+        self.assertNotIn("files", compact)
 
     def test_static_export_strict_fails_without_price_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
