@@ -3454,91 +3454,91 @@ class _SparklineChartState extends State<_SparklineChart> {
         SizedBox(
           height: 112,
           child: LineChart(
-        LineChartData(
-          minX: 0,
-          maxX: (spots.length - 1).toDouble(),
-          minY: chartMinY - padding,
-          maxY: chartMaxY + padding,
-          borderData: FlBorderData(show: false),
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: false,
-            getDrawingHorizontalLine: (_) => FlLine(
-              color: _marketBorderColor(context),
-              strokeWidth: 0.8,
-            ),
-          ),
-          titlesData: FlTitlesData(
-            topTitles: const AxisTitles(),
-            rightTitles: const AxisTitles(),
-            leftTitles: const AxisTitles(),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                interval: 1,
-                reservedSize: 32,
-                getTitlesWidget: (value, meta) {
-                  final index = value.round();
-                  if (!_isBottomDateTick(index, spotPoints.length)) {
-                    return const SizedBox.shrink();
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      _shortChartDate(spotPoints[index].date),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: _marketMutedTextColor(context),
-                        fontSize: 10,
-                        height: 1.05,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          lineTouchData: LineTouchData(
-            enabled: true,
-            touchCallback: (event, response) {
-              final touched = response?.lineBarSpots?.isNotEmpty == true
-                  ? response!.lineBarSpots!.first.spotIndex
-                  : null;
-              if (touched != null && touched != _touchedIndex) {
-                setState(() => _touchedIndex = touched);
-              }
-            },
-            touchTooltipData: LineTouchTooltipData(
-              getTooltipItems: (touchedSpots) => [
-                for (final spot in touchedSpots)
-                  LineTooltipItem(
-                    '${formatTaiwanDate(spotPoints[spot.spotIndex].date)}\n${_price(spot.y)}',
-                    const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 11,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          lineBarsData: [
-            LineChartBarData(
-              spots: spots,
-              barWidth: 2.2,
-              isCurved: true,
-              color: _marketBlue,
-              dotData: FlDotData(
-                show: hasManualSelection,
-                checkToShowDot: (spot, _) => spot.x == safeTouchedIndex,
-              ),
-              belowBarData: BarAreaData(
+            LineChartData(
+              minX: 0,
+              maxX: (spots.length - 1).toDouble(),
+              minY: chartMinY - padding,
+              maxY: chartMaxY + padding,
+              borderData: FlBorderData(show: false),
+              gridData: FlGridData(
                 show: true,
-                color: _marketBlue.withValues(alpha: 0.10),
+                drawVerticalLine: false,
+                getDrawingHorizontalLine: (_) => FlLine(
+                  color: _marketBorderColor(context),
+                  strokeWidth: 0.8,
+                ),
               ),
-            ),
-          ],
+              titlesData: FlTitlesData(
+                topTitles: const AxisTitles(),
+                rightTitles: const AxisTitles(),
+                leftTitles: const AxisTitles(),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    interval: 1,
+                    reservedSize: 32,
+                    getTitlesWidget: (value, meta) {
+                      final index = value.round();
+                      if (!_isBottomDateTick(index, spotPoints.length)) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          _shortChartDate(spotPoints[index].date),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: _marketMutedTextColor(context),
+                            fontSize: 10,
+                            height: 1.05,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              lineTouchData: LineTouchData(
+                enabled: true,
+                touchCallback: (event, response) {
+                  final touched = response?.lineBarSpots?.isNotEmpty == true
+                      ? response!.lineBarSpots!.first.spotIndex
+                      : null;
+                  if (touched != null && touched != _touchedIndex) {
+                    setState(() => _touchedIndex = touched);
+                  }
+                },
+                touchTooltipData: LineTouchTooltipData(
+                  getTooltipItems: (touchedSpots) => [
+                    for (final spot in touchedSpots)
+                      LineTooltipItem(
+                        '${formatTaiwanDate(spotPoints[spot.spotIndex].date)}\n${_price(spot.y)}',
+                        const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 11,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              lineBarsData: [
+                LineChartBarData(
+                  spots: spots,
+                  barWidth: 2.2,
+                  isCurved: true,
+                  color: _marketBlue,
+                  dotData: FlDotData(
+                    show: hasManualSelection,
+                    checkToShowDot: (spot, _) => spot.x == safeTouchedIndex,
+                  ),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    color: _marketBlue.withValues(alpha: 0.10),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -6728,6 +6728,8 @@ class _AiSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _AiTodaySnapshotPanel(data: data, summary: summary),
+        const SizedBox(height: 12),
         _SectionBlock(
           title: '今日 AI 快覽',
           subtitle: 'rule_based 分析；聚焦今日資料時間、內容物、折溢價偏離與維護狀態。',
@@ -6845,6 +6847,71 @@ class _AiSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AiTodaySnapshotPanel extends StatelessWidget {
+  const _AiTodaySnapshotPanel({
+    required this.data,
+    required this.summary,
+  });
+
+  final Etf00631LLabData data;
+  final EtfAiAnalysisSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final bullets = _aiTodaySnapshotBullets(data, summary);
+    final action = summary.actionItems.isEmpty
+        ? '目前沒有程式操作項目；請保留資料時間檢查。'
+        : summary.actionItems.first;
+    return DecoratedBox(
+      key: const ValueKey('00631l-ai-today-snapshot'),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 11, 12, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'AI'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '今日 AI 資料解讀',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                const _CompactTextBadge(label: 'rule_based'),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '只整理資料狀態、內容物、折溢價與資料風險；非買賣建議。',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            for (final bullet in bullets)
+              _BulletLine(text: bullet, icon: Icons.insights_outlined),
+            const SizedBox(height: 8),
+            _BulletLine(text: '程式操作：$action', icon: Icons.task_alt_outlined),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -10956,6 +11023,27 @@ String? _findAnalysisBullet(EtfAiAnalysisSummary summary, String marker) {
     }
   }
   return null;
+}
+
+List<String> _aiTodaySnapshotBullets(
+  Etf00631LLabData data,
+  EtfAiAnalysisSummary summary,
+) {
+  final price = data.priceHistory.completenessSummary();
+  final premiumAssessment = data.intradayNav?.premiumDiscountAssessment;
+  final holdingsDate = _dateOrDash(_latestHoldingsDate(data));
+  final intradayTime = _intradayDataTimeText(data.intradayNav);
+  final latestClose =
+      price.latest == null ? 'unavailable' : _price(price.latest!.close);
+  final premiumText = premiumAssessment == null
+      ? '目前沒有可判斷的盤中折溢價資料。'
+      : _premiumDescription(premiumAssessment);
+  return [
+    'official holdings：$holdingsDate；盤中 NAV：$intradayTime。',
+    '折溢價狀態：$premiumText',
+    '歷史資料：${formatInteger(price.rowCount)} 筆，coverage ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，最新收盤 $latestClose。',
+    '資料狀態：readiness ${summary.readinessLabel}；backend ${data.operationsStatus.backendConnectionLabel}；price history ${data.priceHistory.sourceStatusLabel}。',
+  ];
 }
 
 List<String> _completeDataBriefing(Etf00631LLabData data) {

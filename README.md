@@ -1309,3 +1309,7 @@ history/backtest data or only catalog fields, with program-operation guidance.
 v5.17 adds a date inspector below the overview price chart. The home chart keeps
 its one-year default window, but now shows the selected or latest date and value
 instead of leaving users to infer chart points from the line alone.
+
+v5.18 adds a top-level AI today snapshot. The AI page now starts with holdings
+date, intraday NAV time, premium/discount status, price history coverage, and
+program-operation guidance before the longer rule-based details.

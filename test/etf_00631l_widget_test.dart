@@ -858,6 +858,13 @@ void main() {
 
     await _tapSection(tester, 'ai');
     await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-ai-today-snapshot')),
+      findsOneWidget,
+    );
+    expect(find.text('今日 AI 資料解讀'), findsOneWidget);
+    expect(find.textContaining('official holdings'), findsWidgets);
+    expect(find.textContaining('盤中 NAV'), findsWidgets);
     expect(find.byKey(const ValueKey('00631l-ai-daily-brief')), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-ai-intraday-brief')),
