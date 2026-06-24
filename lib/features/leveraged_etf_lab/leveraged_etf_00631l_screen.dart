@@ -1167,6 +1167,21 @@ class _SymbolSearchResultTile extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                    const SizedBox(height: 3),
+                    Text(
+                      readiness.capabilityLabel,
+                      key: ValueKey(
+                        '00631l-symbol-capability-${item.code}',
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: hasHistory
+                            ? _marketBlue
+                            : _marketMutedTextColor(context),
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -9491,6 +9506,7 @@ _EtfHistoryReadiness _etfHistoryReadiness(EtfCatalogItem item) {
     badgeLabel: hasHistory ? '歷史/回測可用' : '僅 catalog',
     caption:
         hasHistory ? '已匯入歷史價格；切換後可查看歷史與回測。' : '尚未匯入可驗證歷史價格；只能顯示 catalog 欄位。',
+    capabilityLabel: hasHistory ? '切換後：歷史 / 回測 / 比較' : '切換後：catalog 快覽，歷史資料不足',
     trailingLabel: hasHistory ? '可切換' : 'catalog',
   );
 }
@@ -9500,12 +9516,14 @@ class _EtfHistoryReadiness {
     required this.hasHistory,
     required this.badgeLabel,
     required this.caption,
+    required this.capabilityLabel,
     required this.trailingLabel,
   });
 
   final bool hasHistory;
   final String badgeLabel;
   final String caption;
+  final String capabilityLabel;
   final String trailingLabel;
 
   String snackMessage(String code) {

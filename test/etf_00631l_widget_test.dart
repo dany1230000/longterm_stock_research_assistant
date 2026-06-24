@@ -126,6 +126,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.textContaining('可查看歷史與回測'), findsOneWidget);
+    expect(find.text('切換後：歷史 / 回測 / 比較'), findsOneWidget);
     expect(find.text('歷史/回測可用'), findsWidgets);
 
     await tester.enterText(
@@ -505,6 +506,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.textContaining('尚未匯入可驗證歷史價格'), findsOneWidget);
+    expect(find.text('切換後：catalog 快覽，歷史資料不足'), findsOneWidget);
 
     await tester.tap(
       find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),

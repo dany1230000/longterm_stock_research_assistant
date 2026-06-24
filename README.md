@@ -1251,3 +1251,7 @@ roadmap text.
 v5.3 shortens the mobile overview by replacing the stacked exposure bars with a
 single official-exposure row on phone width. Wider screens still use the fuller
 exposure layout.
+
+v5.4 makes the left-top symbol search clearer. Each ETF result now states
+whether switching enables history/backtest/comparison or only a catalog
+snapshot.
