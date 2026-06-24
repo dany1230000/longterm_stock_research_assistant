@@ -388,6 +388,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_38_public_checkup_rate_limit.md",
         "docs/00631l_v5_39_public_release_marker.md",
         "docs/00631l_v5_40_public_release_guidance.md",
+        "docs/00631l_v5_41_public_release_mismatch_guidance.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

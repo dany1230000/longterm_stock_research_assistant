@@ -1409,3 +1409,7 @@ release tag, commit SHA, and build time directly from the public Pages files.
 v5.40 improves release-marker guidance. Public Pages checkup now reports
 `releaseMarkerStatus` and gives a concrete rerun command while GitHub Pages is
 still deploying the static bundle.
+
+v5.41 adds explicit release mismatch guidance. If public Pages is reachable but
+`release.json` still points to an older commit, checkup reports
+`releaseMatchesExpected=false` with failures empty and a rerun action.

@@ -16,6 +16,7 @@ class PublicPagesCheckupTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["staticRowCount"], 2835)
         self.assertEqual(payload["summary"]["githubApiMode"], "checked")
         self.assertEqual(payload["summary"]["releaseMarkerStatus"], "ready")
+        self.assertTrue(payload["summary"]["releaseMatchesExpected"])
         self.assertEqual(payload["summary"]["releaseGitSha"], "abc123fff")
 
     def test_public_pages_checkup_skips_workflow_warnings_in_public_only_mode(self) -> None:
@@ -47,6 +48,20 @@ class PublicPagesCheckupTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["releaseMarkerStatus"], "not_checked")
         self.assertTrue(
             any("00631l_public_pages_checkup.cmd" in item for item in payload["actionItems"])
+        )
+
+    def test_public_pages_checkup_adds_action_when_release_sha_differs(self) -> None:
+        payload = build_public_pages_checkup(
+            public_pages=_public_pages("PASS"),
+            deploy_status=_deploy_status("PASS", "completed", "success", "abc123fff"),
+            expected_sha="new456",
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["failureCount"], 0)
+        self.assertFalse(payload["summary"]["releaseMatchesExpected"])
+        self.assertTrue(
+            any("previous release" in item for item in payload["actionItems"])
         )
 
     def test_public_pages_checkup_warns_when_workflow_is_not_complete(self) -> None:

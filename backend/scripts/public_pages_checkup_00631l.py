@@ -133,10 +133,22 @@ def build_public_pages_checkup(
         action_items.append("Run scripts\\00631l_export_static_data.cmd --update before building Pages.")
 
     release_marker_status = _release_marker_status(public_pages)
+    release_matches_expected = _release_matches_expected(public_pages, expected_sha)
     if release_marker_status != "ready":
         action_items.append(
             "Wait for GitHub Pages deployment, then rerun "
             "scripts\\00631l_public_pages_checkup.cmd --skip-github-api."
+        )
+    elif release_matches_expected is False:
+        warnings.append(
+            "public release SHA differs from expected: "
+            f"public={str(public_pages.get('releaseGitSha') or '')[:12]} "
+            f"expected={expected_sha[:12]}"
+        )
+        action_items.append(
+            "Public Pages is still serving a previous release; rerun "
+            "scripts\\00631l_public_pages_checkup.cmd --skip-github-api --expected-sha "
+            f"{expected_sha[:12]} after deployment finishes."
         )
 
     if _looks_rate_limited(deploy_status):
@@ -163,6 +175,7 @@ def build_public_pages_checkup(
             "latestRunUrl": deploy_summary.get("latestRunUrl"),
             "expectedSha": expected_sha,
             "releaseMarkerStatus": release_marker_status,
+            "releaseMatchesExpected": release_matches_expected,
             "releaseTag": public_pages.get("releaseTag"),
             "releaseGitSha": public_pages.get("releaseGitSha"),
             "releaseAppVersion": public_pages.get("releaseAppVersion"),
@@ -232,6 +245,15 @@ def _release_marker_status(public_pages: dict[str, Any]) -> str:
     if "release.json" in text:
         return "missing_or_pending"
     return "not_checked"
+
+
+def _release_matches_expected(public_pages: dict[str, Any], expected_sha: str) -> bool | None:
+    if not expected_sha:
+        return None
+    release_sha = str(public_pages.get("releaseGitSha") or "")
+    if not release_sha:
+        return None
+    return release_sha.startswith(expected_sha[:12])
 
 
 def _dedupe(items: list[str]) -> list[str]:
