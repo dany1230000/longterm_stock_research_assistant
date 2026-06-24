@@ -1521,3 +1521,8 @@ counts, ETF readiness, warnings, and failures without dumping every ETF row.
 v5.66 adds progress lines to long ETF history imports. GitHub Pages and local
 static builds now show compact `[progress]` updates while the seed catalog is
 being checked.
+
+v5.67 refreshes the committed official 00631L price-history seed and adds a
+strict coverage-age guard to static export. GitHub Pages will not replace public
+static data with a fallback whose price-history coverage is more than seven days
+old.

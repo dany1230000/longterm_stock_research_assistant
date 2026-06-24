@@ -15,6 +15,7 @@ from backend.app.price_history import (
 )
 from backend.app.static_export import export_static_00631l_data, static_export_status
 from backend.scripts.export_static_00631l_data import (
+    build_coverage_age_message,
     build_static_export_compact_response,
     build_static_export_summary_line,
     _merge_etf_price_history_seed_if_needed,
@@ -522,6 +523,30 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertEqual(compact["warningCount"], 2)
         self.assertEqual(compact["warningsSample"], ["seed merged"])
         self.assertNotIn("files", compact)
+
+    def test_static_export_coverage_age_guard(self) -> None:
+        self.assertIsNone(
+            build_coverage_age_message(
+                "2026-06-24",
+                max_age_days=7,
+                today=date(2026, 6, 24),
+            )
+        )
+        self.assertIsNone(
+            build_coverage_age_message(
+                "2026-06-18",
+                max_age_days=7,
+                today=date(2026, 6, 24),
+            )
+        )
+        self.assertIn(
+            "priceHistoryCoverageTooOld=2026-06-15",
+            build_coverage_age_message(
+                "2026-06-15",
+                max_age_days=7,
+                today=date(2026, 6, 24),
+            ),
+        )
 
     def test_static_export_strict_fails_without_price_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

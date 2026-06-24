@@ -371,6 +371,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Broad ETF seed catalog: `docs\00631l_v5_64_broad_etf_seed_catalog.md`
 - Concise static Pages build: `docs\00631l_v5_65_concise_static_pages_build.md`
 - ETF import progress: `docs\00631l_v5_66_etf_import_progress.md`
+- Static coverage guard: `docs\00631l_v5_67_static_coverage_guard.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

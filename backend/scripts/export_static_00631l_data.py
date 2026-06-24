@@ -142,6 +142,15 @@ def main() -> int:
         default=str(ROOT / "backend" / "seeds" / "twse_etf_catalog_seed.json"),
     )
     parser.add_argument("--min-row-count", type=int, default=2800)
+    parser.add_argument(
+        "--max-coverage-age-days",
+        type=int,
+        default=0,
+        help=(
+            "Fail in --strict mode when price-history coverageEnd is older "
+            "than this many days. 0 disables the guard."
+        ),
+    )
     parser.add_argument("--min-etf-catalog-row-count", type=int, default=100)
     parser.add_argument(
         "--multi-etf-codes",
@@ -268,6 +277,15 @@ def main() -> int:
         warnings=warnings,
         release_metadata=_build_release_metadata(),
     )
+    coverage_age_message = build_coverage_age_message(
+        payload.get("coverageEnd"),
+        max_age_days=args.max_coverage_age_days,
+    )
+    if coverage_age_message:
+        payload.setdefault("warnings", []).append(coverage_age_message)
+        if args.strict:
+            payload.setdefault("failures", []).append(coverage_age_message)
+            payload["overallStatus"] = "FAIL"
     output_payload = (
         build_static_export_compact_response(payload)
         if args.summary_only
@@ -276,6 +294,27 @@ def main() -> int:
     print(json.dumps(output_payload, ensure_ascii=False, indent=2, sort_keys=True))
     print(build_static_export_summary_line(payload))
     return 1 if payload["overallStatus"] == "FAIL" else 0
+
+
+def build_coverage_age_message(
+    coverage_end: object,
+    *,
+    max_age_days: int,
+    today: date | None = None,
+) -> str | None:
+    if max_age_days <= 0:
+        return None
+    parsed = _parse_iso_date(str(coverage_end or ""))
+    if parsed is None:
+        return "priceHistoryCoverageMissing=coverageEnd"
+    current = today or datetime.now(timezone.utc).date()
+    age_days = (current - parsed).days
+    if age_days <= max_age_days:
+        return None
+    return (
+        "priceHistoryCoverageTooOld="
+        f"{parsed.isoformat()}; ageDays={age_days}; maxAgeDays={max_age_days}"
+    )
 
 
 def _prepare_price_history_update_start(
@@ -299,6 +338,13 @@ def _prepare_price_history_update_start(
         warnings=warnings,
     )
     return store.default_incremental_start_date(default_start=default_start), "incremental"
+
+
+def _parse_iso_date(value: str) -> date | None:
+    try:
+        return datetime.strptime(value, "%Y-%m-%d").date()
+    except ValueError:
+        return None
 
 
 def _load_etf_catalog_payload(

@@ -19,6 +19,7 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--limit 0", workflow)
         self.assertIn("--summary-only", workflow)
         self.assertIn("--progress-every 25", workflow)
+        self.assertIn("--max-coverage-age-days 7", workflow)
         self.assertIn("--multi-etf-codes all-local", workflow)
 
     def test_local_pages_build_broad_import_uses_seed_catalog(self) -> None:
@@ -34,6 +35,7 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--limit 0", script)
         self.assertIn("--summary-only", script)
         self.assertIn("--progress-every 25", script)
+        self.assertIn("--max-coverage-age-days 7", script)
         self.assertIn("--multi-etf-codes all-local", script)
 
 
