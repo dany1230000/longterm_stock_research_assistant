@@ -1462,3 +1462,7 @@ the AI section for deeper explanation.
 v5.52 removes duplicated selected ETF readiness content from the overview. The
 larger readiness banner is kept only for missing-history guidance in the
 history/backtest flow.
+
+v5.53 strengthens the top-left ETF selector. Search rows now show capability
+badges for history, backtest, comparison, AI context, and live NAV scope before
+the user switches symbols.

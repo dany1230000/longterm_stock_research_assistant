@@ -1348,30 +1348,21 @@ class _SymbolSearchResultTile extends StatelessWidget {
                           _CompactTextBadge(label: historyMetadataLabel),
                       ],
                     ),
-                    const SizedBox(height: 3),
-                    Text(
-                      readiness.caption,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _marketMutedTextColor(context),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      readiness.capabilityLabel,
-                      key: ValueKey(
-                        '00631l-symbol-capability-${item.code}',
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: hasHistory
-                            ? _marketBlue
-                            : _marketMutedTextColor(context),
-                        fontWeight: FontWeight.w900,
-                      ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 5,
+                      runSpacing: 5,
+                      children: [
+                        for (final capability in readiness.capabilities)
+                          KeyedSubtree(
+                            key: ValueKey(
+                              '00631l-symbol-capability-${item.code}-${capability.key}',
+                            ),
+                            child: _CompactTextBadge(
+                              label: capability.label,
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ),
@@ -11186,13 +11177,49 @@ bool _hasImportedEtfHistory(String code) {
 
 _EtfHistoryReadiness _etfHistoryReadiness(EtfCatalogItem item) {
   final hasHistory = _catalogItemHasImportedEtfHistory(item);
+  final is00631L = item.code.trim().toUpperCase() == '00631L';
   return _EtfHistoryReadiness(
     hasHistory: hasHistory,
     badgeLabel: hasHistory ? '歷史/回測可用' : '僅 catalog',
-    caption:
-        hasHistory ? '已匯入歷史價格；切換後可查看歷史與回測。' : '尚未匯入可驗證歷史價格；只能顯示 catalog 欄位。',
-    capabilityLabel: hasHistory ? '切換後：歷史 / 回測 / 比較' : '切換後：catalog 快覽，歷史資料不足',
     trailingLabel: hasHistory ? '可切換' : 'catalog',
+    capabilities: [
+      _SymbolSearchCapability(
+        key: hasHistory ? 'history' : 'catalog',
+        label: hasHistory ? 'history ready' : 'catalog only',
+      ),
+      if (hasHistory) ...const [
+        _SymbolSearchCapability(key: 'backtest', label: 'backtest ready'),
+        _SymbolSearchCapability(key: 'compare', label: 'compare ready'),
+        _SymbolSearchCapability(key: 'ai-context', label: 'AI context'),
+      ] else ...const [
+        _SymbolSearchCapability(
+          key: 'history-missing',
+          label: 'history missing',
+        ),
+        _SymbolSearchCapability(
+          key: 'backtest-unavailable',
+          label: 'backtest unavailable',
+        ),
+        _SymbolSearchCapability(
+          key: 'ai-context-limited',
+          label: 'AI context limited',
+        ),
+      ],
+      if (is00631L) ...const [
+        _SymbolSearchCapability(
+          key: 'holdings-source',
+          label: 'holdings source-aware',
+        ),
+        _SymbolSearchCapability(
+          key: 'live-nav',
+          label: 'live NAV source-aware',
+        ),
+      ] else
+        const _SymbolSearchCapability(
+          key: 'live-nav-scope',
+          label: 'live NAV 00631L only',
+        ),
+    ],
   );
 }
 
@@ -11214,16 +11241,14 @@ class _EtfHistoryReadiness {
   const _EtfHistoryReadiness({
     required this.hasHistory,
     required this.badgeLabel,
-    required this.caption,
-    required this.capabilityLabel,
     required this.trailingLabel,
+    required this.capabilities,
   });
 
   final bool hasHistory;
   final String badgeLabel;
-  final String caption;
-  final String capabilityLabel;
   final String trailingLabel;
+  final List<_SymbolSearchCapability> capabilities;
 
   String snackMessage(String code) {
     if (hasHistory) {
@@ -11231,6 +11256,16 @@ class _EtfHistoryReadiness {
     }
     return '$code 目前只有 ETF catalog；尚未匯入可驗證歷史價格。';
   }
+}
+
+class _SymbolSearchCapability {
+  const _SymbolSearchCapability({
+    required this.key,
+    required this.label,
+  });
+
+  final String key;
+  final String label;
 }
 
 int _catalogHistoryReadyCount(EtfCatalog catalog) {

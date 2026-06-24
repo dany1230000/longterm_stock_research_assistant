@@ -130,9 +130,30 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
     );
-    expect(find.textContaining('可查看歷史與回測'), findsOneWidget);
-    expect(find.text('切換後：歷史 / 回測 / 比較'), findsOneWidget);
     expect(find.text('歷史/回測可用'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-capability-0050-history')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-capability-0050-backtest')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-capability-0050-compare')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-capability-0050-ai-context')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-symbol-capability-0050-live-nav-scope'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('live NAV 00631L only'), findsWidgets);
 
     await tester.enterText(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
@@ -531,10 +552,6 @@ void main() {
     );
     expect(find.byKey(const ValueKey('00631l-symbol-search-result-00631L')),
         findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
-      findsOneWidget,
-    );
 
     await tester.enterText(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
@@ -585,9 +602,28 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-catalog-only-00400A')),
       findsOneWidget,
     );
-    expect(find.textContaining('尚未匯入可驗證歷史價格'), findsOneWidget);
-    expect(find.text('切換後：catalog 快覽，歷史資料不足'), findsOneWidget);
-
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-capability-00400A-catalog')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-symbol-capability-00400A-history-missing'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-symbol-capability-00400A-backtest-unavailable'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-symbol-capability-00400A-ai-context-limited'),
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(const ValueKey('00631l-symbol-filter-ready')));
     await tester.pumpAndSettle();
     expect(
@@ -644,6 +680,18 @@ void main() {
     expect(
       find.byKey(const ValueKey('00631l-symbol-catalog-only-00701')),
       findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-capability-00701-history')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-capability-00701-backtest')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-capability-00701-compare')),
+      findsOneWidget,
     );
     _expectNoTradingActionText();
   });
