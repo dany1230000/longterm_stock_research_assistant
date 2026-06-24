@@ -6971,6 +6971,13 @@ class _PositionSectionState extends State<_PositionSection> {
           summary: summary,
           selectedEtf: widget.selectedEtf,
         ),
+        const SizedBox(height: 8),
+        _PositionActionBar(
+          hasPosition: input.hasPosition,
+          onSave: _save,
+          onExport: _export,
+          onClear: _clear,
+        ),
         const SizedBox(height: 12),
         KeyedSubtree(
           key: const ValueKey('00631l-position-compact-input-card'),
@@ -7038,28 +7045,6 @@ class _PositionSectionState extends State<_PositionSection> {
                       input.hasPosition ? '市值、成本、損益與部位比例。' : '輸入股數與成本後顯示完整估算。',
                   child: _PositionResultGrid(summary: summary),
                 ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    FilledButton.icon(
-                      onPressed: _save,
-                      icon: const Icon(Icons.save_outlined),
-                      label: const Text('保存本機資料'),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: _export,
-                      icon: const Icon(Icons.ios_share_outlined),
-                      label: const Text('匯出 JSON'),
-                    ),
-                    TextButton.icon(
-                      onPressed: _clear,
-                      icon: const Icon(Icons.delete_outline),
-                      label: const Text('清除本機資料'),
-                    ),
-                  ],
-                ),
                 if (_exportJson != null) ...[
                   const SizedBox(height: 12),
                   SelectableText(_exportJson!),
@@ -7117,6 +7102,57 @@ class _PositionSectionState extends State<_PositionSection> {
       'feeAndTax': input.feeAndTax,
       'note': input.note,
     });
+  }
+}
+
+class _PositionActionBar extends StatelessWidget {
+  const _PositionActionBar({
+    required this.hasPosition,
+    required this.onSave,
+    required this.onExport,
+    required this.onClear,
+  });
+
+  final bool hasPosition;
+  final VoidCallback onSave;
+  final VoidCallback onExport;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      key: const ValueKey('00631l-position-primary-actions'),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            FilledButton.icon(
+              onPressed: onSave,
+              icon: const Icon(Icons.save_outlined, size: 16),
+              label: Text(hasPosition ? '更新本機資料' : '保存本機資料'),
+            ),
+            OutlinedButton.icon(
+              onPressed: onExport,
+              icon: const Icon(Icons.ios_share_outlined, size: 16),
+              label: const Text('匯出 JSON'),
+            ),
+            TextButton.icon(
+              onPressed: onClear,
+              icon: const Icon(Icons.delete_outline, size: 16),
+              label: const Text('清除本機資料'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

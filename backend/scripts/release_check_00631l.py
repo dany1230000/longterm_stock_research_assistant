@@ -443,6 +443,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_52_selected_etf_overview_dedup.md",
         "docs/00631l_v5_53_etf_selector_confidence.md",
         "docs/00631l_v5_54_comparison_basket_context.md",
+        "docs/00631l_v5_55_compact_position_actions.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

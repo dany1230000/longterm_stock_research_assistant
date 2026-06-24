@@ -524,6 +524,10 @@ void main() {
       find.byKey(const ValueKey('00631l-position-account-strip')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-position-primary-actions')),
+      findsOneWidget,
+    );
     expect(find.text('尚未輸入持倉'), findsWidgets);
     expect(find.text('輸入持倉資料'), findsOneWidget);
     expect(

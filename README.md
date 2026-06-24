@@ -1470,3 +1470,6 @@ the user switches symbols.
 v5.54 clarifies ETF comparison as a user-selected basket. The history/backtest
 page now shows common coverage, minimum row count, and source status for the
 selected comparison set.
+
+v5.55 shortens the position page by moving save, JSON export, and clear actions
+directly under the local account summary.
