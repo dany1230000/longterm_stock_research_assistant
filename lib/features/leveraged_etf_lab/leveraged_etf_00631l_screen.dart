@@ -9160,8 +9160,21 @@ class _EtfDataLibrarySummary extends StatelessWidget {
       subtitle: compact
           ? '先看 catalog 與歷史價格覆蓋；缺口代表尚未有足夠資料可供比較或回測。'
           : '顯示可搜尋的 ETF catalog 與已匯入歷史價格；ready 代表可用於歷史、回測與比較，不代表官方內容物已完整匯入。',
-      child: _ResponsiveMetricGrid(
-        cards: cards,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _ResponsiveMetricGrid(
+            cards: cards,
+          ),
+          const SizedBox(height: 10),
+          _StatusRow(
+            item: _etfHistoryNextActionItem(
+              status: status,
+              historyTotal: historyTotal,
+              missingCount: notReady,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -12270,6 +12283,40 @@ String _etfCoverageTierDetail(EtfOperationsStatus status) {
     return 'coverage tier unavailable';
   }
   return 'long-term ${formatInteger(counts['long_term'] ?? 0)}, recent ${formatInteger(counts['recent'] ?? 0)}, unavailable ${formatInteger(counts['unavailable'] ?? 0)}, error ${formatInteger(counts['error'] ?? 0)}';
+}
+
+_StatusItem _etfHistoryNextActionItem({
+  required EtfOperationsStatus status,
+  required int historyTotal,
+  required int missingCount,
+}) {
+  if (historyTotal <= 0) {
+    return const _StatusItem(
+      label: '資料補齊動作',
+      status: 'catalog 未載入',
+      detail: 'ETF catalog 或 price-history index 尚未載入，無法計算缺口。',
+      action:
+          '請先執行 scripts\\00631l_import_etf_catalog.cmd，再執行 scripts\\00631l_import_missing_etf_batch.cmd。',
+    );
+  }
+  if (missingCount > 0) {
+    return _StatusItem(
+      label: '資料補齊動作',
+      status: '仍有 ${formatInteger(missingCount)} 檔缺口',
+      detail:
+          '目前已匯入 ${formatInteger(status.etfPriceHistoryReadyCount)} / ${formatInteger(historyTotal)} 檔 ETF 歷史；只會使用可驗證的官方資料。',
+      action:
+          '下一步可執行 scripts\\00631l_import_missing_etf_batch.cmd，完成後再跑 scripts\\00631l_export_static_data.cmd --status-only。',
+    );
+  }
+  return _StatusItem(
+    label: '資料補齊動作',
+    status: '缺口已清空',
+    detail:
+        '目前 ${formatInteger(status.etfPriceHistoryReadyCount)} / ${formatInteger(historyTotal)} 檔 ETF 歷史已可用。',
+    action:
+        '日常可執行 scripts\\00631l_import_etf_price_history.cmd --status-only --summary-only 追蹤資料狀態。',
+  );
 }
 
 List<_StatusItem> _holdingsCoverageItems(Etf00631LLabData data) {

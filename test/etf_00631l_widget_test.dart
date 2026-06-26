@@ -250,6 +250,11 @@ void main() {
 
     expect(find.text('228 / 344'), findsWidgets);
     expect(find.text('116'), findsWidgets);
+    expect(find.text('資料補齊動作'), findsOneWidget);
+    expect(
+      find.textContaining('scripts\\00631l_import_missing_etf_batch.cmd'),
+      findsOneWidget,
+    );
     _expectNoTradingActionText();
   });
 
@@ -1257,6 +1262,13 @@ void main() {
     expect(find.text('尚未 ready'), findsOneWidget);
     expect(find.text('公開靜態版本'), findsOneWidget);
     expect(find.text('5.42-public-release-wait'), findsOneWidget);
+    expect(find.text('資料補齊動作'), findsOneWidget);
+    expect(
+      find.textContaining(
+        'scripts\\00631l_import_etf_price_history.cmd --status-only',
+      ),
+      findsOneWidget,
+    );
     _expectNoTradingActionText();
   });
 

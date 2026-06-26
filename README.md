@@ -1520,6 +1520,11 @@ including backend connection, backend release, public static release, public
 deployment persistence, and backend-disconnected fallback guidance. Summary:
 `docs\00631l_v5_86_public_status_language.md`.
 
+v5.87 adds a `資料補齊動作` row to the ETF data-library status card, so missing
+ETF history gaps point directly to `scripts\00631l_import_missing_etf_batch.cmd`
+and the follow-up static status check. Summary:
+`docs\00631l_v5_87_etf_gap_action.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
