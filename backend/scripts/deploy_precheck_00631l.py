@@ -52,6 +52,7 @@ def run_deploy_precheck(root: Path = ROOT) -> dict[str, Any]:
         "scripts/00631l_open_lab.cmd",
         "scripts/00631l_daily_cycle.cmd",
         "scripts/00631l_release_check.cmd",
+        "scripts/00631l_import_missing_etf_batch.cmd",
         "scripts/00631l_apply_retention.cmd",
         "scripts/00631l_restore_dry_run.cmd",
         "docs/00631l_daily_usage.md",

@@ -25,6 +25,7 @@ from backend.scripts.import_etf_price_history import (
     build_import_summary_response,
     build_status_summary_response,
     filter_missing_codes,
+    select_import_codes,
     should_emit_progress,
 )
 
@@ -772,6 +773,40 @@ class EtfPriceHistoryTests(unittest.TestCase):
                 filter_missing_codes(["0050", "0056", "006208"], store),
                 ["0056", "006208"],
             )
+
+    def test_import_missing_only_catalog_batches_limit_after_filtering(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            catalog_path = root / "catalog.json"
+            save_etf_catalog(
+                {
+                    "sourceStatus": "official",
+                    "sourceContract": "twse_all_etf_catalog",
+                    "sourceUrl": "fixture://catalog",
+                    "fetchedAt": "2026-06-22T00:00:00+00:00",
+                    "rowCount": 4,
+                    "items": [
+                        {"code": "0050", "name": "ETF A"},
+                        {"code": "0056", "name": "ETF B"},
+                        {"code": "006208", "name": "ETF C"},
+                        {"code": "00878", "name": "ETF D"},
+                    ],
+                },
+                catalog_path,
+            )
+            store = EtfPriceHistoryStore(root / "history")
+            store.save_points("0050", _points("0050"))
+            store.save_points("0056", _points("0056"))
+            args = SimpleNamespace(
+                from_catalog=True,
+                catalog_path=str(catalog_path),
+                limit=1,
+                offset=0,
+                codes="00631L",
+                missing_only=True,
+            )
+
+            self.assertEqual(select_import_codes(args, store), ["006208"])
 
 
 def _points(code: str) -> list[dict[str, object]]:

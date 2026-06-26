@@ -113,9 +113,7 @@ def main() -> int:
         )
         return 1 if validation_failures else 0
 
-    codes = _resolve_codes(args)
-    if args.missing_only:
-        codes = filter_missing_codes(codes, store)
+    codes = select_import_codes(args, store)
     if not codes:
         now = utc_now_iso()
         payload = {
@@ -266,14 +264,40 @@ def main() -> int:
     return 1 if failures else 0
 
 
-def _resolve_codes(args: argparse.Namespace) -> list[str]:
+def select_import_codes(
+    args: argparse.Namespace,
+    store: EtfPriceHistoryStore,
+) -> list[str]:
+    if bool(getattr(args, "missing_only", False)) and bool(
+        getattr(args, "from_catalog", False)
+    ):
+        all_codes = _resolve_codes(args, apply_slice=False)
+        missing_codes = filter_missing_codes(all_codes, store)
+        return _slice_codes(missing_codes, args)
+    codes = _resolve_codes(args)
+    if bool(getattr(args, "missing_only", False)):
+        return filter_missing_codes(codes, store)
+    return codes
+
+
+def _resolve_codes(
+    args: argparse.Namespace,
+    *,
+    apply_slice: bool = True,
+) -> list[str]:
     if not args.from_catalog:
         return parse_code_list(args.codes)
     payload = load_etf_catalog(args.catalog_path, fetched_at=utc_now_iso())
     all_codes = catalog_codes(payload, limit=None)
+    if not apply_slice:
+        return all_codes
+    return _slice_codes(all_codes, args)
+
+
+def _slice_codes(codes: list[str], args: argparse.Namespace) -> list[str]:
     offset = max(0, int(getattr(args, "offset", 0) or 0))
     limit = max(0, int(getattr(args, "limit", 0) or 0))
-    sliced = all_codes[offset:]
+    sliced = codes[offset:]
     return sliced[:limit] if limit else sliced
 
 

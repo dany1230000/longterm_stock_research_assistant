@@ -73,11 +73,13 @@ Multi-ETF price-history status:
 scripts\00631l_import_etf_price_history.cmd --status-only --summary-only
 scripts\00631l_validate_etf_price_history.cmd
 scripts\00631l_import_etf_price_history.cmd --from-catalog --missing-only --limit 25 --allow-partial --summary-only --progress-every 5
+scripts\00631l_import_missing_etf_batch.cmd
 scripts\00631l_import_etf_price_history.cmd --from-catalog --offset 230 --limit 25 --allow-partial --summary-only --progress-every 5
 ```
 
 Use `--summary-only` for daily rowCount/readyCount/coverage checks. Use the validation command when full per-ETF detail is needed.
 Use `--missing-only` to skip ETF codes that already have ready price-history rows. Use `--offset` and `--limit` for broad catalog backfills so a failed or paused run can continue from the middle of the catalog. Full refresh mode uses the earliest supported ETF history start date; incremental mode starts from the latest cached month for each ETF.
+Use `scripts\00631l_import_missing_etf_batch.cmd` for the default safe local missing-only batch.
 
 ETF price-history coverage tiers:
 
@@ -1492,6 +1494,11 @@ wording, chart date-axis, selected ETF AI, and missing-only import pass. Summary
 v5.81 polishes the rightmost bottom tab into a user-facing `我的` page and
 replaces search/status debug labels with clearer Chinese readiness wording.
 Summary: `docs\00631l_v5_81_my_page_language_polish.md`.
+
+v5.82 adds `scripts\00631l_import_missing_etf_batch.cmd`, a safe default wrapper
+for local missing-only ETF price-history batches, and makes missing-only catalog
+batches apply `limit` after filtering ready ETFs. Summary:
+`docs\00631l_v5_82_missing_etf_batch_helper.md`.
 
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.

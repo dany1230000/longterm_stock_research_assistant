@@ -526,6 +526,7 @@ def _required_files_check() -> dict[str, Any]:
         "scripts/00631l_public_etf_catalog_batches.cmd",
         "scripts/00631l_import_etf_catalog.cmd",
         "scripts/00631l_import_etf_price_history.cmd",
+        "scripts/00631l_import_missing_etf_batch.cmd",
         "scripts/00631l_validate_etf_price_history.cmd",
         "scripts/00631l_daily_cycle_scheduled.cmd",
         "scripts/00631l_lan_info.cmd",
