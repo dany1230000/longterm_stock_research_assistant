@@ -24,6 +24,7 @@ from backend.scripts.import_etf_price_history import (
     _resolve_codes,
     build_import_summary_response,
     build_status_summary_response,
+    filter_missing_codes,
     should_emit_progress,
 )
 
@@ -761,6 +762,16 @@ class EtfPriceHistoryTests(unittest.TestCase):
             )
 
             self.assertEqual(_resolve_codes(args), ["0056", "006208"])
+
+    def test_import_missing_only_skips_ready_histories(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = EtfPriceHistoryStore(Path(temp_dir) / "history")
+            store.save_points("0050", _points("0050"))
+
+            self.assertEqual(
+                filter_missing_codes(["0050", "0056", "006208"], store),
+                ["0056", "006208"],
+            )
 
 
 def _points(code: str) -> list[dict[str, object]]:

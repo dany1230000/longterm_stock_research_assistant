@@ -72,11 +72,12 @@ Multi-ETF price-history status:
 ```cmd
 scripts\00631l_import_etf_price_history.cmd --status-only --summary-only
 scripts\00631l_validate_etf_price_history.cmd
+scripts\00631l_import_etf_price_history.cmd --from-catalog --missing-only --limit 25 --allow-partial --summary-only --progress-every 5
 scripts\00631l_import_etf_price_history.cmd --from-catalog --offset 230 --limit 25 --allow-partial --summary-only --progress-every 5
 ```
 
 Use `--summary-only` for daily rowCount/readyCount/coverage checks. Use the validation command when full per-ETF detail is needed.
-Use `--offset` and `--limit` for broad catalog backfills so a failed or paused run can continue from the middle of the catalog. Full refresh mode uses the earliest supported ETF history start date; incremental mode starts from the latest cached month for each ETF.
+Use `--missing-only` to skip ETF codes that already have ready price-history rows. Use `--offset` and `--limit` for broad catalog backfills so a failed or paused run can continue from the middle of the catalog. Full refresh mode uses the earliest supported ETF history start date; incremental mode starts from the latest cached month for each ETF.
 
 ETF price-history coverage tiers:
 

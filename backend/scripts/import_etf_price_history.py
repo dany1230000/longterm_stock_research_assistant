@@ -44,6 +44,11 @@ def main() -> int:
         default=0,
         help="Catalog symbol offset when --from-catalog is used.",
     )
+    parser.add_argument(
+        "--missing-only",
+        action="store_true",
+        help="Skip ETF codes that already have ready price-history rows.",
+    )
     parser.add_argument("--start-date", default="")
     parser.add_argument("--end-date", default="")
     parser.add_argument(
@@ -109,9 +114,30 @@ def main() -> int:
         return 1 if validation_failures else 0
 
     codes = _resolve_codes(args)
+    if args.missing_only:
+        codes = filter_missing_codes(codes, store)
     if not codes:
-        print("FAIL no ETF codes were resolved for import.")
-        return 1
+        now = utc_now_iso()
+        payload = {
+            "sourceStatus": "cached",
+            "sourceContract": "twse_multi_etf_price_history_import",
+            "sourceUrl": settings.twse_price_history_url_template,
+            "fetchedAt": now,
+            "sourceUpdatedAt": None,
+            "dataTime": None,
+            "requestedCodes": [],
+            "readyCount": store.index_response(fetched_at=now).get("readyCount", 0),
+            "validationFailureCount": 0,
+            "validationWarningCount": 0,
+            "items": [],
+            "warnings": ["No ETF codes require import after filters."],
+            "failures": [],
+            "errorMessage": None,
+        }
+        output_payload = build_import_summary_response(payload) if args.summary_only else payload
+        print(json.dumps(output_payload, ensure_ascii=False, indent=2, sort_keys=True))
+        print("[summary] overallStatus=PASS symbols=0 ready=" f"{payload['readyCount']} warnings=1 failures=0")
+        return 0
 
     default_start = ETF_PRICE_HISTORY_EARLIEST_START_DATE
     explicit_start = (
@@ -220,6 +246,7 @@ def main() -> int:
         "sourceUpdatedAt": index.get("sourceUpdatedAt"),
         "dataTime": index.get("dataTime"),
         "requestedCodes": codes,
+        "missingOnly": bool(args.missing_only),
         "readyCount": index.get("readyCount", 0),
         "validationFailureCount": index.get("validationFailureCount", 0),
         "validationWarningCount": index.get("validationWarningCount", 0),
@@ -248,6 +275,26 @@ def _resolve_codes(args: argparse.Namespace) -> list[str]:
     limit = max(0, int(getattr(args, "limit", 0) or 0))
     sliced = all_codes[offset:]
     return sliced[:limit] if limit else sliced
+
+
+def filter_missing_codes(
+    codes: list[str],
+    store: EtfPriceHistoryStore,
+) -> list[str]:
+    index = store.index_response(fetched_at=utc_now_iso())
+    ready_codes = {
+        str(item.get("code") or "").strip().upper()
+        for item in index.get("items", [])
+        if isinstance(item, dict)
+        and str(item.get("sourceStatus") or "") not in {"unavailable", "error"}
+        and int(item.get("rowCount") or 0) >= 2
+        and int(item.get("validationFailureCount") or 0) == 0
+    }
+    return [
+        code
+        for code in codes
+        if code.strip().upper() not in ready_codes
+    ]
 
 
 def should_emit_progress(position: int, total: int, every: int) -> bool:
