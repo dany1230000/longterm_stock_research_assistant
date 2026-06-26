@@ -19,9 +19,21 @@ def main() -> int:
         description="Check public GitHub Pages static 00631L data metadata.",
     )
     parser.add_argument("--base-url", default=DEFAULT_STATIC_BASE_URL)
+    parser.add_argument("--expected-release-tag", default="")
+    parser.add_argument("--expected-sha", default="")
+    parser.add_argument(
+        "--strict-release",
+        action="store_true",
+        help="Treat expected release tag/SHA mismatch as FAIL instead of WARN.",
+    )
     args = parser.parse_args()
 
-    payload = run_public_static_data_check(args.base_url)
+    payload = run_public_static_data_check(
+        args.base_url,
+        expected_release_tag=args.expected_release_tag,
+        expected_sha=args.expected_sha,
+        strict_release=args.strict_release,
+    )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
     print(
         "[summary] "
@@ -32,6 +44,7 @@ def main() -> int:
         f"{payload.get('coverageEnd') or 'unavailable'} "
         f"etfReady={payload.get('etfPriceHistoryReadyCount') or 0} "
         f"etfCatalogRows={payload.get('etfCatalogRowCount') or 0} "
+        f"releaseMatchesExpected={payload.get('releaseMatchesExpected')} "
         f"failures={len(payload['failures'])}"
     )
     return 1 if payload["overallStatus"] == "FAIL" else 0
@@ -41,6 +54,9 @@ def run_public_static_data_check(
     base_url: str,
     *,
     fetch_json: Callable[[str], dict[str, Any]] | None = None,
+    expected_release_tag: str = "",
+    expected_sha: str = "",
+    strict_release: bool = False,
 ) -> dict[str, Any]:
     normalized_base = base_url.rstrip("/") + "/"
     fetch = fetch_json or _fetch_json
@@ -73,6 +89,10 @@ def run_public_static_data_check(
         or (manifest.get("release") or {}).get("releaseTag")
         or "",
     )
+    git_sha = str(
+        release.get("gitSha") or (manifest.get("release") or {}).get("gitSha") or "",
+    )
+    release_mismatch: list[str] = []
 
     if not failures:
         if row_count < 2800:
@@ -83,6 +103,21 @@ def run_public_static_data_check(
             warnings.append("release marker is missing releaseTag")
         if source_status != "static_official":
             warnings.append(f"unexpected sourceStatus={source_status or 'missing'}")
+        if expected_release_tag and release_tag != expected_release_tag:
+            release_mismatch.append(
+                "releaseTag mismatch: "
+                f"expected {expected_release_tag}, got {release_tag or 'missing'}",
+            )
+        if expected_sha and not _sha_matches(git_sha, expected_sha):
+            release_mismatch.append(
+                "gitSha mismatch: "
+                f"expected {expected_sha}, got {git_sha or 'missing'}",
+            )
+        if release_mismatch:
+            if strict_release:
+                failures.extend(release_mismatch)
+            else:
+                warnings.extend(release_mismatch)
 
     overall_status = "FAIL" if failures else "WARN" if warnings else "PASS"
     return {
@@ -93,7 +128,10 @@ def run_public_static_data_check(
         "releaseTag": release_tag or None,
         "appVersion": release.get("appVersion")
         or (manifest.get("release") or {}).get("appVersion"),
-        "gitSha": release.get("gitSha") or (manifest.get("release") or {}).get("gitSha"),
+        "gitSha": git_sha or None,
+        "expectedReleaseTag": expected_release_tag or None,
+        "expectedSha": expected_sha or None,
+        "releaseMatchesExpected": not release_mismatch,
         "rowCount": row_count,
         "coverageStart": status.get("coverageStart") or manifest.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd") or manifest.get("coverageEnd"),
@@ -126,6 +164,18 @@ def _int(value: object) -> int:
         return int(value or 0)
     except (TypeError, ValueError):
         return 0
+
+
+def _sha_matches(actual_sha: str, expected_sha: str) -> bool:
+    if not expected_sha:
+        return True
+    if not actual_sha:
+        return False
+    normalized_actual = actual_sha.lower()
+    normalized_expected = expected_sha.lower()
+    return normalized_actual.startswith(normalized_expected) or normalized_expected.startswith(
+        normalized_actual,
+    )
 
 
 if __name__ == "__main__":

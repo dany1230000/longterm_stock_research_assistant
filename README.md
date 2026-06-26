@@ -1510,6 +1510,11 @@ daily checks show 00631L rows, coverage, ETF catalog readiness, missing count,
 and release marker in one summary. Summary:
 `docs\00631l_v5_84_public_static_status_check.md`.
 
+v5.85 adds optional expected release tag/SHA checks to that public static checker.
+Use `--expected-sha <commit> --strict-release` after a Pages deploy should have
+finished to verify the phone app is serving the intended bundle. Summary:
+`docs\00631l_v5_85_public_static_release_match.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
