@@ -19,7 +19,7 @@ Priority:
 
 1. Show exact backend release metadata in `/health`, `/ready`, and app status.
 2. Keep 00631L price history split-adjusted and verified.
-3. Expand ETF history readiness from the seed basket to broader imported coverage.
+3. Expand ETF history readiness from the seed group to broader imported coverage.
 4. Validate selected ETF history before allowing comparison/backtest confidence labels.
 5. Keep official daily holdings separate from intraday NAV and historical price data.
 
@@ -68,8 +68,8 @@ The current public baseline is v5.74. Continue with small, verifiable releases:
      first symbols.
    - Full refresh uses the earliest supported ETF history start date, not a
      truncated 2019 baseline.
-3. v5.76 ETF comparison basket polish.
-   - Let the user compare a manually selected basket instead of always comparing
+3. v5.76 ETF comparison group polish.
+   - Let the user compare a manually selected group instead of always comparing
      every ETF against 00631L.
    - Keep same-category suggestions as optional chips only.
 4. v5.77 history/backtest interaction polish.
@@ -78,7 +78,7 @@ The current public baseline is v5.74. Continue with small, verifiable releases:
    - Show tapped chart details with exact date and value.
 5. v5.78 daily AI context upgrade.
    - Analyze the selected ETF's current data state, latest history, coverage
-     quality, and comparison basket.
+     quality, and comparison group.
    - Keep action items limited to app/data maintenance steps.
 6. v5.79 public data completeness pass.
    - Increase the number of ready ETF histories where official data validates.

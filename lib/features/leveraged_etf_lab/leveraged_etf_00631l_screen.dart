@@ -5628,10 +5628,10 @@ class _EtfHistoryComparisonPanelState
       children: [
         _SectionHeaderCard(
           title: 'ETF 歷史比較',
-          subtitle: '建立自己的 1-5 檔比較 basket；預設依目前 ETF 類型帶入，可清空後自行勾選。',
+          subtitle: '建立自己的 1-5 檔比較組合；可用類型快速帶入，也可清空後自行勾選。',
           icon: Icons.stacked_line_chart_outlined,
           badges: const [
-            '自選 basket',
+            '自選組合',
             '最近 1 年',
             'static / proxy history',
           ],
@@ -5639,7 +5639,7 @@ class _EtfHistoryComparisonPanelState
             _SectionHeaderMetric(
               label: '比較檔數',
               value: formatInteger(usableMetrics.length),
-              caption: usableMetrics.isEmpty ? '尚未選擇' : '目前 basket',
+              caption: usableMetrics.isEmpty ? '尚未選擇' : '目前組合',
             ),
             _SectionHeaderMetric(
               label: '區間',
@@ -5706,7 +5706,7 @@ class _EtfHistoryComparisonPanelState
                       });
                     },
               icon: const Icon(Icons.remove_circle_outline, size: 16),
-              label: const Text('清空 basket'),
+              label: const Text('清空組合'),
             ),
             OutlinedButton.icon(
               key: const ValueKey('00631l-etf-comparison-apply-peer'),
@@ -5743,7 +5743,7 @@ class _EtfHistoryComparisonPanelState
         ),
         const SizedBox(height: 6),
         Text(
-          '勾選 1-5 檔 ETF 建立 basket；類型篩選只是快速選取，沒有固定比較基準。',
+          '勾選 1-5 檔 ETF 建立比較組合；類型篩選只是快速選取，沒有固定比較基準。',
           key: const ValueKey('00631l-etf-comparison-guidance'),
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: _marketMutedTextColor(context),
@@ -5754,7 +5754,7 @@ class _EtfHistoryComparisonPanelState
         Text(
           usableMetrics.isEmpty
               ? '尚未選擇比較 ETF'
-              : '目前 basket：${usableMetrics.map((metric) => metric.code).join(' / ')}',
+              : '目前組合：${usableMetrics.map((metric) => metric.code).join(' / ')}',
           key: const ValueKey('00631l-etf-comparison-selected-codes'),
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: _marketMutedTextColor(context),
@@ -5929,7 +5929,7 @@ class _ComparisonBasketContextCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '自選 basket 資料檢查',
+                    '自選比較組合檢查',
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -11829,9 +11829,9 @@ _EtfComparisonBasketContext _comparisonBasketContext(
   if (metrics.isEmpty) {
     return const _EtfComparisonBasketContext(
       labels: [
-        'basket empty',
-        'common range unavailable',
-        'min rows -',
+        '尚未選擇',
+        '共同區間不足',
+        '最少筆數 -',
       ],
       explanation: '尚未選擇比較 ETF；勾選 1-5 檔後，圖表會用同一期間起點重算百分比，沒有固定比較基準。',
     );
@@ -11864,16 +11864,16 @@ _EtfComparisonBasketContext _comparisonBasketContext(
   final codes = metrics.map((metric) => metric.code).join(' / ');
   return _EtfComparisonBasketContext(
     labels: [
-      'basket $codes',
+      '組合 $codes',
       hasCommonRange
-          ? 'common ${_dateOrDash(commonStart)} - ${_dateOrDash(commonEnd)}'
-          : 'common range unavailable',
-      'min rows ${formatInteger(minRows)}',
-      'status $statusLabel',
+          ? '共同區間 ${_dateOrDash(commonStart)} - ${_dateOrDash(commonEnd)}'
+          : '共同區間不足',
+      '最少筆數 ${formatInteger(minRows)}',
+      '來源 $statusLabel',
     ],
     explanation: hasCommonRange
-        ? '目前 basket 會用共同資料區間重算百分比；這是自選比較，不把任何 ETF 設成固定基準。'
-        : '目前 basket 的歷史區間沒有完整重疊；請調整 ETF 組合或確認 price history 匯入狀態。',
+        ? '目前比較組合會用共同資料區間重算百分比；這是自選比較，不把任何 ETF 設成固定基準。'
+        : '目前比較組合的歷史區間沒有完整重疊；請調整 ETF 組合或確認 price history 匯入狀態。',
   );
 }
 

@@ -379,6 +379,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Release metadata tags: `docs\00631l_v5_72_release_metadata_tags.md`
 - ETF missing count UI: `docs\00631l_v5_73_etf_missing_count_ui.md`
 - Data trust and batch import: `docs\00631l_v5_75_data_trust_batch_import.md`
+- Comparison group polish: `docs\00631l_v5_76_comparison_group_polish.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
