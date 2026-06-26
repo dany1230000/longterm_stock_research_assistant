@@ -383,6 +383,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Chart date axis polish: `docs\00631l_v5_77_chart_date_axis_polish.md`
 - Selected ETF AI daily context: `docs\00631l_v5_78_selected_etf_ai_daily_context.md`
 - Missing-only ETF import: `docs\00631l_v5_79_missing_only_import.md`
+- ETF research room checkpoint: `docs\00631l_v5_80_etf_research_room_checkpoint.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

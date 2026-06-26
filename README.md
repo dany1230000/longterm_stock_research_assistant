@@ -1485,6 +1485,10 @@ v5.78 improves selected ETF AI wording. The rule-based summary now describes the
 latest historical close move, keeps one-year range position in Chinese, and
 states when data is historical rather than intraday.
 
+v5.80 records the ETF research-room checkpoint after the data-trust, comparison
+wording, chart date-axis, selected ETF AI, and missing-only import pass. Summary:
+`docs\00631l_v5_80_etf_research_room_checkpoint.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
