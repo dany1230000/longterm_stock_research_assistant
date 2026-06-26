@@ -1480,6 +1480,10 @@ mobile UI.
 v5.77 makes chart date ticks easier to read by showing full `yyyy/MM/dd` labels
 while retaining tap details for exact date and value inspection.
 
+v5.78 improves selected ETF AI wording. The rule-based summary now describes the
+latest historical close move, keeps one-year range position in Chinese, and
+states when data is historical rather than intraday.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

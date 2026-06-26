@@ -1004,6 +1004,8 @@ void main() {
     expect(find.textContaining('分割調整 調整價可用'), findsWidgets);
     expect(find.textContaining('近一年區間'), findsWidgets);
     expect(find.textContaining('目前位置'), findsWidgets);
+    expect(find.textContaining('最新收盤較前一筆'), findsWidgets);
+    expect(find.textContaining('不是盤中即時價格'), findsWidgets);
     expect(find.textContaining('回測不代表未來表現'), findsWidgets);
     expect(find.text('程式操作'), findsOneWidget);
     expect(

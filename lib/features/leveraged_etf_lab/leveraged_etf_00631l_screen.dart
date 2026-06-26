@@ -12480,10 +12480,12 @@ List<String> _selectedEtfAnalysisBullets(_SelectedEtfViewData selectedEtf) {
       ? 'unavailable'
       : '${history.latestCloseChange! >= 0 ? '+' : ''}${history.latestCloseChange!.toStringAsFixed(2)}';
   final rangePosition = _selectedEtfRangePositionText(history);
+  final dailyMove = _selectedEtfDailyMoveText(history);
   final completeness = history.isCompleteFromListing ? '上市日起完整' : '部分區間';
   return [
     '${selectedEtf.code} 歷史 coverage ${selectedEtf.historyCoverageText}，共 ${formatInteger(history.rowCount)} 筆，資料範圍為 $completeness。',
     '最新交易日 ${_dateOrDash(latest.date)}，收盤 ${_price(latest.performanceClose)}，日變動 $latestChange / ${formatSignedNullablePercent(history.latestDailyReturnPct)}。',
+    '$dailyMove；這是歷史收盤資料，不是盤中即時價格。',
     '區間累積報酬 ${formatSignedNullablePercent(performance.totalReturnPct)}，最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}，年化波動 ${formatNullablePercent(performance.annualizedVolatilityPct)}。',
     '近一年區間 ${_price(history.trailingLowClose)} - ${_price(history.trailingHighClose)}；目前位置 $rangePosition。',
     '價格欄位使用 ${selectedEtf.priceFieldLabel}；${selectedEtf.adjustmentContextLabel}。若資料含分割或調整，請以 adjustmentFactor 與調整價為準。',
@@ -12524,7 +12526,20 @@ String _selectedEtfRangePositionText(
     return 'unavailable';
   }
   final position = ((latest - low) / (high - low) * 100).clamp(0, 100);
-  return '${position.toStringAsFixed(1)}% of 1Y range';
+  return '近一年區間 ${position.toStringAsFixed(1)}%';
+}
+
+String _selectedEtfDailyMoveText(EtfPriceHistoryCompletenessSummary history) {
+  final pct = history.latestDailyReturnPct;
+  if (pct == null) {
+    return '最新收盤缺少前一筆可比較資料';
+  }
+  final direction = pct > 0.05
+      ? '上升'
+      : pct < -0.05
+          ? '下降'
+          : '接近持平';
+  return '最新收盤較前一筆$direction ${formatSignedNullablePercent(pct)}';
 }
 
 String _historyMetricLabel(String key) {
