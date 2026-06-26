@@ -232,7 +232,7 @@ enum _LabSection {
   etf('ETF', Icons.dataset_outlined),
   position('持倉', Icons.account_balance_wallet_outlined),
   ai('AI', Icons.psychology_alt_outlined),
-  settings('設定', Icons.manage_accounts_outlined);
+  settings('我的', Icons.manage_accounts_outlined);
 
   const _LabSection(this.label, this.icon);
   final String label;
@@ -487,7 +487,7 @@ class _SelectedEtfViewData {
     if (is00631L) {
       return '00631L 完整研究室';
     }
-    return hasImportedHistory ? '歷史與回測可用' : 'catalog-only';
+    return hasImportedHistory ? '歷史與回測可用' : '僅清單資料';
   }
 
   String get readinessDetail {
@@ -533,11 +533,11 @@ class _SelectedEtfViewData {
   }
 
   String get backtestReadinessLabel {
-    return hasImportedHistory ? 'backtest ready' : 'backtest unavailable';
+    return hasImportedHistory ? '回測可用' : '回測未開';
   }
 
   String get liveNavScopeLabel {
-    return is00631L ? 'live NAV backend' : 'live NAV 00631L only';
+    return is00631L ? '盤中 NAV backend' : '盤中 NAV 限 00631L';
   }
 }
 
@@ -930,7 +930,7 @@ class _SymbolSearchSheet extends ConsumerStatefulWidget {
 enum _SymbolSearchHistoryFilter {
   all('全部'),
   ready('歷史可用'),
-  catalogOnly('catalog-only');
+  catalogOnly('未匯入歷史');
 
   const _SymbolSearchHistoryFilter(this.label);
 
@@ -1181,7 +1181,7 @@ class _SymbolSearchDataCompletionStrip extends StatelessWidget {
             const SizedBox(height: 8),
             _StatusWrap(
               labels: [
-                'history ready ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
+                '歷史可用 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
                 '缺口 ${formatInteger(gap)}',
               ],
             ),
@@ -2687,9 +2687,7 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
               value: selectedEtf.dataTime == null
                   ? _dateOrDash(priceSummary.coverageEnd)
                   : _sourceTimeText(selectedEtf.dataTime!),
-              caption: selectedEtf.hasImportedHistory
-                  ? 'history ready'
-                  : 'catalog only',
+              caption: selectedEtf.hasImportedHistory ? '歷史可用' : '僅清單資料',
               status: selectedEtf.sourceStatusLabel,
             ),
             _OverviewClockItem(
@@ -2983,7 +2981,7 @@ class _SelectedEtfReadinessBanner extends StatelessWidget {
                   ),
                 ),
                 _CompactTextBadge(
-                  label: ready ? 'history ready' : 'catalog-only',
+                  label: ready ? '歷史可用' : '僅清單資料',
                 ),
               ],
             ),
@@ -5491,8 +5489,8 @@ class _HistoryBacktestSection extends StatelessWidget {
             subtitle: '目前只找到 ETF catalog；歷史圖表與回測需要先匯入該 ETF 的可驗證歷史價格。',
             child: _StatusWrap(
               labels: [
-                'catalog only',
-                'history unavailable',
+                '僅清單資料',
+                '歷史未匯入',
                 '請先匯入歷史價格',
               ],
             ),
@@ -8909,7 +8907,7 @@ class _SettingsHeaderStrip extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '設定',
+                    '我的',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
@@ -8962,8 +8960,8 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = data.operationsStatus;
     return _SectionBlock(
-      title: '設定總覽',
-      subtitle: '常用狀態先放在這裡；維護診斷已收在下方。',
+      title: '我的總覽',
+      subtitle: '帳戶、外觀、目前 ETF 與本機資料放在這裡；維護診斷已收在下方。',
       child: _ResponsiveMetricGrid(
         cards: [
           const _MetricCard(
@@ -9111,7 +9109,7 @@ class _EtfDataLibrarySummary extends StatelessWidget {
       _MetricCard(
         label: '完成度',
         value: formatNullablePercent(readyRatio * 100),
-        caption: 'history ready ratio',
+        caption: '歷史可用比例',
         icon: Icons.fact_check_outlined,
       ),
       _MetricCard(
@@ -11547,44 +11545,44 @@ _EtfHistoryReadiness _etfHistoryReadiness(EtfCatalogItem item) {
   final is00631L = item.code.trim().toUpperCase() == '00631L';
   return _EtfHistoryReadiness(
     hasHistory: hasHistory,
-    badgeLabel: hasHistory ? '歷史/回測可用' : '僅 catalog',
-    trailingLabel: hasHistory ? '可切換' : 'catalog',
+    badgeLabel: hasHistory ? '歷史/回測可用' : '僅清單資料',
+    trailingLabel: hasHistory ? '可切換' : '清單資料',
     capabilities: [
       _SymbolSearchCapability(
         key: hasHistory ? 'history' : 'catalog',
-        label: hasHistory ? 'history ready' : 'catalog only',
+        label: hasHistory ? '歷史可用' : '僅清單',
       ),
       if (hasHistory) ...const [
-        _SymbolSearchCapability(key: 'backtest', label: 'backtest ready'),
-        _SymbolSearchCapability(key: 'compare', label: 'compare ready'),
-        _SymbolSearchCapability(key: 'ai-context', label: 'AI context'),
+        _SymbolSearchCapability(key: 'backtest', label: '回測可用'),
+        _SymbolSearchCapability(key: 'compare', label: '可比較'),
+        _SymbolSearchCapability(key: 'ai-context', label: 'AI 可解讀'),
       ] else ...const [
         _SymbolSearchCapability(
           key: 'history-missing',
-          label: 'history missing',
+          label: '缺歷史',
         ),
         _SymbolSearchCapability(
           key: 'backtest-unavailable',
-          label: 'backtest unavailable',
+          label: '回測未開',
         ),
         _SymbolSearchCapability(
           key: 'ai-context-limited',
-          label: 'AI context limited',
+          label: 'AI 有限',
         ),
       ],
       if (is00631L) ...const [
         _SymbolSearchCapability(
           key: 'holdings-source',
-          label: 'holdings source-aware',
+          label: '內容物來源',
         ),
         _SymbolSearchCapability(
           key: 'live-nav',
-          label: 'live NAV source-aware',
+          label: '盤中 NAV',
         ),
       ] else
         const _SymbolSearchCapability(
           key: 'live-nav-scope',
-          label: 'live NAV 00631L only',
+          label: '盤中 NAV 限 00631L',
         ),
     ],
   );

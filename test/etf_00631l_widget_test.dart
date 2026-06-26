@@ -69,7 +69,7 @@ void main() {
     expect(find.text('歷史回測'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI'), findsWidgets);
-    expect(find.text('設定'), findsWidgets);
+    expect(find.text('我的'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-button')),
       findsOneWidget,
@@ -114,7 +114,7 @@ void main() {
 
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
     expect(find.textContaining('可切換研究標的'), findsOneWidget);
-    expect(find.text('history ready 15 / 16'), findsOneWidget);
+    expect(find.text('歷史可用 15 / 16'), findsOneWidget);
     expect(find.text('資料細節'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
@@ -134,7 +134,7 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
       findsOneWidget,
     );
-    expect(find.textContaining('history ready'), findsWidgets);
+    expect(find.textContaining('歷史可用'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
@@ -162,7 +162,7 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.text('live NAV 00631L only'), findsWidgets);
+    expect(find.text('盤中 NAV 限 00631L'), findsWidgets);
 
     await tester.enterText(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
@@ -210,7 +210,7 @@ void main() {
     expect(find.textContaining('完成度'), findsOneWidget);
     expect(find.text('catalog 16'), findsNothing);
     expect(find.text('完整統計 228'), findsNothing);
-    expect(find.text('history ready 228 / 228'), findsOneWidget);
+    expect(find.text('歷史可用 228 / 228'), findsOneWidget);
     expect(find.text('缺口 0'), findsOneWidget);
     expect(find.text('long-term 8'), findsNothing);
     expect(find.text('recent 220'), findsNothing);
@@ -232,7 +232,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('完整統計 344'), findsNothing);
-    expect(find.text('history ready 228 / 344'), findsOneWidget);
+    expect(find.text('歷史可用 228 / 344'), findsOneWidget);
     expect(find.text('缺口 116'), findsOneWidget);
     await tester.tap(find.text('資料細節'));
     await tester.pumpAndSettle();
@@ -685,7 +685,7 @@ void main() {
       find.byKey(const ValueKey('00631l-selected-etf-readiness-banner')),
       findsOneWidget,
     );
-    expect(find.textContaining('00400A catalog-only'), findsOneWidget);
+    expect(find.textContaining('00400A 僅清單資料'), findsOneWidget);
     expect(find.textContaining('尚未匯入可驗證歷史價格'), findsWidgets);
 
     expect(find.text('ETF 歷史資料尚未匯入'), findsOneWidget);
@@ -764,8 +764,8 @@ void main() {
     expect(find.text('0050 歷史資料'), findsOneWidget);
     expect(find.text('3 筆'), findsWidgets);
     expect(find.textContaining('2025/06/03 - 2026/06/03'), findsWidgets);
-    expect(find.textContaining('backtest ready'), findsWidgets);
-    expect(find.textContaining('live NAV 00631L only'), findsWidgets);
+    expect(find.textContaining('回測可用'), findsWidgets);
+    expect(find.textContaining('盤中 NAV 限 00631L'), findsWidgets);
     expect(find.text('分割調整'), findsWidgets);
     expect(find.text('調整價可用'), findsWidgets);
     expect(find.byKey(const ValueKey('00631l-backtest-view')), findsOneWidget);
@@ -975,8 +975,8 @@ void main() {
       find.byKey(const ValueKey('00631l-selected-etf-data-context-card')),
       findsNothing,
     );
-    expect(find.text('backtest ready'), findsOneWidget);
-    expect(find.text('live NAV 00631L only'), findsOneWidget);
+    expect(find.text('回測可用'), findsOneWidget);
+    expect(find.text('盤中 NAV 限 00631L'), findsOneWidget);
 
     await _tapSection(tester, 'position');
     await tester.pumpAndSettle();
@@ -1169,8 +1169,8 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-room-readiness-panel')),
       findsNothing,
     );
-    expect(find.text('設定'), findsWidgets);
-    expect(find.text('設定總覽'), findsOneWidget);
+    expect(find.text('我的'), findsWidgets);
+    expect(find.text('我的總覽'), findsOneWidget);
     expect(find.text('帳戶與偏好'), findsOneWidget);
     expect(find.text('免登入'), findsOneWidget);
     expect(find.text('ETF 資料與比較能力'), findsOneWidget);
@@ -1253,7 +1253,7 @@ void main() {
     expect(find.text('220'), findsWidgets);
     expect(find.text('完成度'), findsOneWidget);
     expect(find.textContaining('缺口代表尚未有足夠資料'), findsOneWidget);
-    expect(find.text('history ready ratio'), findsOneWidget);
+    expect(find.text('歷史可用比例'), findsOneWidget);
     expect(find.text('尚未 ready'), findsOneWidget);
     expect(find.text('public static release'), findsOneWidget);
     expect(find.text('5.42-public-release-wait'), findsOneWidget);
@@ -1272,7 +1272,7 @@ void main() {
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
-    expect(find.text('設定'), findsWidgets);
+    expect(find.text('我的'), findsWidgets);
     expect(find.text('進階維護診斷'), findsOneWidget);
     expect(find.textContaining('mock'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);

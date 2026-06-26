@@ -1489,6 +1489,10 @@ v5.80 records the ETF research-room checkpoint after the data-trust, comparison
 wording, chart date-axis, selected ETF AI, and missing-only import pass. Summary:
 `docs\00631l_v5_80_etf_research_room_checkpoint.md`.
 
+v5.81 polishes the rightmost bottom tab into a user-facing `我的` page and
+replaces search/status debug labels with clearer Chinese readiness wording.
+Summary: `docs\00631l_v5_81_my_page_language_polish.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
