@@ -386,6 +386,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF research room checkpoint: `docs\00631l_v5_80_etf_research_room_checkpoint.md`
 - My page and language polish: `docs\00631l_v5_81_my_page_language_polish.md`
 - Missing ETF batch helper: `docs\00631l_v5_82_missing_etf_batch_helper.md`
+- Pages missing ETF batch: `docs\00631l_v5_83_pages_missing_etf_batch.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

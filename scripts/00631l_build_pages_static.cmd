@@ -9,6 +9,9 @@ if errorlevel 1 exit /b %ERRORLEVEL%
 call scripts\00631l_import_etf_price_history.cmd --from-catalog --catalog-path backend\seeds\twse_etf_catalog_seed.json --limit 0 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 25
 if errorlevel 1 exit /b %ERRORLEVEL%
 
+call scripts\00631l_import_missing_etf_batch.cmd --catalog-path backend\seeds\twse_etf_catalog_seed.json --limit 50 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 10
+if errorlevel 1 exit /b %ERRORLEVEL%
+
 call scripts\00631l_export_static_data.cmd --update --strict --max-coverage-age-days 7 --min-etf-catalog-row-count 100 --multi-etf-codes all-catalog --output-dir web\00631l-static-data --summary-only
 if errorlevel 1 exit /b %ERRORLEVEL%
 

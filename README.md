@@ -1500,6 +1500,10 @@ for local missing-only ETF price-history batches, and makes missing-only catalog
 batches apply `limit` after filtering ready ETFs. Summary:
 `docs\00631l_v5_82_missing_etf_batch_helper.md`.
 
+v5.83 wires the missing-only ETF batch into both local Pages builds and the
+GitHub Pages workflow, so public static builds can continue filling verified ETF
+history gaps. Summary: `docs\00631l_v5_83_pages_missing_etf_batch.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
