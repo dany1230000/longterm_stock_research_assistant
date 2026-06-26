@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from datetime import date, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 
 from fastapi.testclient import TestClient
 
@@ -12,6 +13,7 @@ from backend.app.config import Settings
 from backend.app.etf_catalog import save_etf_catalog
 from backend.app.etf_price_history import (
     DEFAULT_ETF_HISTORY_CODES,
+    ETF_PRICE_HISTORY_EARLIEST_START_DATE,
     EtfPriceHistoryStore,
     fetch_etf_price_history,
     validate_etf_price_records,
@@ -19,6 +21,7 @@ from backend.app.etf_price_history import (
 from backend.app.main import create_app
 from backend.app.service import Etf00631LService
 from backend.scripts.import_etf_price_history import (
+    _resolve_codes,
     build_import_summary_response,
     build_status_summary_response,
     should_emit_progress,
@@ -33,6 +36,9 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertIn("0056", DEFAULT_ETF_HISTORY_CODES)
         self.assertIn("00878", DEFAULT_ETF_HISTORY_CODES)
         self.assertIn("00940", DEFAULT_ETF_HISTORY_CODES)
+
+    def test_full_refresh_start_date_covers_early_twse_etfs(self) -> None:
+        self.assertLessEqual(ETF_PRICE_HISTORY_EARLIEST_START_DATE, date(2003, 1, 1))
 
     def test_multi_etf_store_keeps_non_split_etf_unadjusted(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -726,6 +732,35 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertFalse(should_emit_progress(2, 10, 3))
         self.assertTrue(should_emit_progress(3, 10, 3))
         self.assertTrue(should_emit_progress(10, 10, 3))
+
+    def test_import_resolves_catalog_offset_and_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            catalog_path = Path(temp_dir) / "catalog.json"
+            save_etf_catalog(
+                {
+                    "sourceStatus": "official",
+                    "sourceContract": "twse_all_etf_catalog",
+                    "sourceUrl": "fixture://catalog",
+                    "fetchedAt": "2026-06-22T00:00:00+00:00",
+                    "rowCount": 4,
+                    "items": [
+                        {"code": "0050", "name": "ETF A"},
+                        {"code": "0056", "name": "ETF B"},
+                        {"code": "006208", "name": "ETF C"},
+                        {"code": "00878", "name": "ETF D"},
+                    ],
+                },
+                catalog_path,
+            )
+            args = SimpleNamespace(
+                from_catalog=True,
+                catalog_path=str(catalog_path),
+                limit=2,
+                offset=1,
+                codes="00631L",
+            )
+
+            self.assertEqual(_resolve_codes(args), ["0056", "006208"])
 
 
 def _points(code: str) -> list[dict[str, object]]:

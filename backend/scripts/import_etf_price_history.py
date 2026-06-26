@@ -15,6 +15,7 @@ from backend.app.config import settings  # noqa: E402
 from backend.app.etf_catalog import load_etf_catalog  # noqa: E402
 from backend.app.etf_price_history import (  # noqa: E402
     DEFAULT_ETF_HISTORY_CODES,
+    ETF_PRICE_HISTORY_EARLIEST_START_DATE,
     EtfPriceHistoryStore,
     catalog_codes,
     fetch_etf_price_history,
@@ -37,12 +38,21 @@ def main() -> int:
         default=0,
         help="Maximum catalog symbols to import. 0 means all catalog symbols.",
     )
+    parser.add_argument(
+        "--offset",
+        type=int,
+        default=0,
+        help="Catalog symbol offset when --from-catalog is used.",
+    )
     parser.add_argument("--start-date", default="")
     parser.add_argument("--end-date", default="")
     parser.add_argument(
         "--full-refresh",
         action="store_true",
-        help="Fetch from 2019-01-01 instead of each ETF's latest cached month.",
+        help=(
+            "Fetch from the earliest supported ETF history start instead of "
+            "each ETF's latest cached month."
+        ),
     )
     parser.add_argument("--output-dir", default=settings.etf_price_history_dir)
     parser.add_argument("--seed-dir", default=settings.etf_price_history_seed_dir)
@@ -103,7 +113,7 @@ def main() -> int:
         print("FAIL no ETF codes were resolved for import.")
         return 1
 
-    default_start = date(2019, 1, 1)
+    default_start = ETF_PRICE_HISTORY_EARLIEST_START_DATE
     explicit_start = (
         datetime.strptime(args.start_date, "%Y-%m-%d").date()
         if args.start_date
@@ -233,7 +243,11 @@ def _resolve_codes(args: argparse.Namespace) -> list[str]:
     if not args.from_catalog:
         return parse_code_list(args.codes)
     payload = load_etf_catalog(args.catalog_path, fetched_at=utc_now_iso())
-    return catalog_codes(payload, limit=args.limit)
+    all_codes = catalog_codes(payload, limit=None)
+    offset = max(0, int(getattr(args, "offset", 0) or 0))
+    limit = max(0, int(getattr(args, "limit", 0) or 0))
+    sliced = all_codes[offset:]
+    return sliced[:limit] if limit else sliced
 
 
 def should_emit_progress(position: int, total: int, every: int) -> bool:

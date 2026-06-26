@@ -42,6 +42,11 @@ const _etfHistoryReadyCodes = {
   '00940',
 };
 
+const _knownSplitAdjustedEtfCodes = {
+  '0050',
+  '00631L',
+};
+
 class LeveragedEtf00631LScreen extends ConsumerStatefulWidget {
   const LeveragedEtf00631LScreen({super.key});
 
@@ -5000,6 +5005,11 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
             : '未套用';
     final coverageLabel = summary.isCompleteFromListing ? '完整上市日起' : '部分區間';
 
+    final adjustmentConfidenceKey =
+        _priceAdjustmentConfidenceKey(code, summary);
+    final adjustmentConfidenceLabel =
+        _priceAdjustmentConfidenceLabel(code, summary);
+
     return Card(
       key: const ValueKey('00631l-selected-history-quality-card'),
       elevation: 0,
@@ -5052,6 +5062,12 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
                       : '尚無歷史',
                 ),
                 _CompactTextBadge(label: coverageLabel),
+                KeyedSubtree(
+                  key: ValueKey(
+                    '00631l-history-adjustment-$adjustmentConfidenceKey',
+                  ),
+                  child: _CompactTextBadge(label: adjustmentConfidenceLabel),
+                ),
                 _CompactTextBadge(label: '價格欄位 $priceField'),
                 _CompactTextBadge(label: '分割調整 $splitAdjustmentLabel'),
               ],
@@ -11491,6 +11507,35 @@ EtfCatalogItem? _catalogItemByCode(EtfCatalog catalog, String code) {
     }
   }
   return null;
+}
+
+String _priceAdjustmentConfidenceKey(
+  String code,
+  EtfPriceHistoryCompletenessSummary summary,
+) {
+  final normalized = code.trim().toUpperCase();
+  if (summary.hasNonUnitAdjustment ||
+      _knownSplitAdjustedEtfCodes.contains(normalized)) {
+    return 'known-split';
+  }
+  if (summary.hasAdjustedClose) {
+    return 'close-mirrored';
+  }
+  return 'raw-close';
+}
+
+String _priceAdjustmentConfidenceLabel(
+  String code,
+  EtfPriceHistoryCompletenessSummary summary,
+) {
+  switch (_priceAdjustmentConfidenceKey(code, summary)) {
+    case 'known-split':
+      return summary.hasNonUnitAdjustment ? '分割已調整' : '分割規則已套用';
+    case 'close-mirrored':
+      return '調整價同收盤';
+    default:
+      return '原始收盤';
+  }
 }
 
 bool _hasImportedEtfHistory(String code) {

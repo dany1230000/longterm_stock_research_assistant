@@ -53,31 +53,40 @@ Priority:
 
 ## Near-Term Release Order
 
-The current public baseline is v5.73. Continue with small, verifiable releases:
+The current public baseline is v5.74. Continue with small, verifiable releases:
 
 1. v5.74 selected ETF search and context audit.
    - Confirm the top-left selector switches the quote, history, comparison,
      position context, and rule-based AI context together.
    - Keep catalog-only symbols visible but clearly marked as missing history.
-2. v5.75 ETF comparison basket polish.
+2. v5.75 data trust and batch import foundation.
+   - Keep split-adjusted price history explicit for known ETF split events.
+   - Mark selected ETF history that mirrors adjusted close to raw close, so
+     comparison and backtest confidence does not overstate split adjustment.
+   - Add local catalog `--offset` support so broad ETF history imports can
+     resume from the middle of the TWSE ETF catalog instead of replaying the
+     first symbols.
+   - Full refresh uses the earliest supported ETF history start date, not a
+     truncated 2019 baseline.
+3. v5.76 ETF comparison basket polish.
    - Let the user compare a manually selected basket instead of always comparing
      every ETF against 00631L.
    - Keep same-category suggestions as optional chips only.
-3. v5.76 history/backtest interaction polish.
+4. v5.77 history/backtest interaction polish.
    - Keep one-year as the default range.
    - Make date controls compact and clear on phone.
    - Show tapped chart details with exact date and value.
-4. v5.77 daily AI context upgrade.
+5. v5.78 daily AI context upgrade.
    - Analyze the selected ETF's current data state, latest history, coverage
      quality, and comparison basket.
    - Keep action items limited to app/data maintenance steps.
-5. v5.78 public data completeness pass.
+6. v5.79 public data completeness pass.
    - Increase the number of ready ETF histories where official data validates.
    - Keep unavailable catalog items visible as coverage gaps.
-6. v5.79 app-store packaging preflight.
+7. v5.80 app-store packaging preflight.
    - Add store-readiness checklist for PWA-to-mobile-shell packaging.
    - Keep the public backend requirement explicit.
-7. v5.80 ETF research-room checkpoint.
+8. v5.81 ETF research-room checkpoint.
    - Run full release check, public marker check, and public Pages checkup.
    - Summarize what is complete and what still depends on public backend or
      official source availability.

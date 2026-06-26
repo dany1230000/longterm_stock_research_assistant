@@ -855,6 +855,35 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('selected ETF history distinguishes close-mirrored adjustment',
+      (tester) async {
+    await _pumpLab(tester, _PriceHistoryRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '0056',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-symbol-search-result-0056')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(
+        const ValueKey('00631l-history-adjustment-close-mirrored'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-adjustment-known-split')),
+      findsNothing,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('ETF comparison chips update the selected basket',
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());
