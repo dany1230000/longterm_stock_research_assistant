@@ -10997,7 +10997,7 @@ class _ChartTouchDetail extends StatelessWidget {
 String _shortChartDate(DateTime date) {
   final mm = date.month.toString().padLeft(2, '0');
   final dd = date.day.toString().padLeft(2, '0');
-  return '${date.year}\n$mm/$dd';
+  return '${date.year}/$mm/$dd';
 }
 
 String _compactChartValue(double value) {

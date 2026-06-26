@@ -380,6 +380,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF missing count UI: `docs\00631l_v5_73_etf_missing_count_ui.md`
 - Data trust and batch import: `docs\00631l_v5_75_data_trust_batch_import.md`
 - Comparison group polish: `docs\00631l_v5_76_comparison_group_polish.md`
+- Chart date axis polish: `docs\00631l_v5_77_chart_date_axis_polish.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

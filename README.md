@@ -1477,6 +1477,9 @@ v5.76 renames the visible comparison wording to `比較組合`, keeping same-cat
 chips as quick-fill helpers while avoiding the engineering term `basket` in the
 mobile UI.
 
+v5.77 makes chart date ticks easier to read by showing full `yyyy/MM/dd` labels
+while retaining tap details for exact date and value inspection.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

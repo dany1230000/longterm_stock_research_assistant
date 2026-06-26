@@ -284,9 +284,9 @@ void main() {
     await _pumpLab(tester, _PriceHistoryRepository());
 
     expect(find.text('近一年走勢'), findsOneWidget);
-    expect(find.text('2024\n06/03'), findsOneWidget);
-    expect(find.text('2026\n06/01'), findsOneWidget);
-    expect(find.text('2026\n06/03'), findsOneWidget);
+    expect(find.text('2024/06/03'), findsWidgets);
+    expect(find.text('2026/06/01'), findsWidgets);
+    expect(find.text('2026/06/03'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
       findsOneWidget,
