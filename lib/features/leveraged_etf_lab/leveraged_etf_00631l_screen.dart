@@ -2295,8 +2295,10 @@ String _statusDisplay(String? rawStatus) {
     case 'mock_default':
       return 'Mock 預設';
     case 'backend disconnected':
+    case '後端未連線':
       return '後端未連線';
     case 'backend connected':
+    case '後端可連線':
       return '後端已連線';
   }
   return value;
@@ -5767,8 +5769,7 @@ class _EtfHistoryComparisonPanelState
             key: ValueKey('00631l-etf-comparison-return-chart'),
             child: _EmptyPanel(
               title: 'ETF 報酬比較圖暫無資料',
-              message:
-                  '請先匯入 ETF 歷史價格，或確認 static public data 內含 etf_price_history 檔案。',
+              message: '請先匯入 ETF 歷史價格，或確認公開靜態資料內含 etf_price_history 檔案。',
             ),
           )
         else ...[
@@ -8613,17 +8614,17 @@ class _SettingsSection extends StatelessWidget {
           child: _StatusList(
             items: [
               _StatusItem(
-                label: 'backend',
+                label: '後端連線',
                 status: status.sourceStatusLabel,
                 detail: status.backendConnectionCaption,
                 action: status.backendDisconnected
                     ? '請啟動 backend 或檢查公開 backend URL。'
-                    : 'backend reachable。',
+                    : '後端可連線。',
               ),
               _StatusItem(
-                label: 'backend release',
+                label: '後端版本',
                 status: status.backendAppVersion.isEmpty
-                    ? 'unknown'
+                    ? '未知'
                     : status.backendAppVersion,
                 detail: status.backendReleaseLabel,
                 action: status.backendGitSha.isEmpty
@@ -8633,9 +8634,9 @@ class _SettingsSection extends StatelessWidget {
               if (status.sourceStatusLabel == 'static_public_data' ||
                   status.staticReleaseGitSha.isNotEmpty)
                 _StatusItem(
-                  label: 'public static release',
+                  label: '公開靜態版本',
                   status: status.staticReleaseAppVersion.isEmpty
-                      ? 'not loaded'
+                      ? '未載入'
                       : status.staticReleaseAppVersion,
                   detail: status.staticReleaseLabel,
                   action: status.staticReleaseGitSha.isEmpty
@@ -8702,12 +8703,12 @@ class _SettingsSection extends StatelessWidget {
                 action: '必要時執行 report、export、backup scripts。',
               ),
               _StatusItem(
-                label: 'public deployment config',
+                label: '公開部署設定',
                 status: status.dataPersistenceLabel,
                 detail:
                     'API ${status.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : status.publicApiBaseUrl}，origins ${status.allowedOrigins.isEmpty ? 'local/LAN' : status.allowedOrigins.join(', ')}。',
                 action: status.dataPathPersistent
-                    ? 'persistent storage ready。'
+                    ? '持久化資料目錄可用。'
                     : '公開部署需設定 persistent volume。',
               ),
             ],
@@ -8985,9 +8986,9 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
           if (status.sourceStatusLabel == 'static_public_data' ||
               status.staticReleaseGitSha.isNotEmpty)
             _MetricCard(
-              label: 'public static release',
+              label: '公開靜態版本',
               value: status.staticReleaseAppVersion.isEmpty
-                  ? 'not loaded'
+                  ? '未載入'
                   : status.staticReleaseAppVersion,
               caption: _shortGitSha(status.staticReleaseGitSha),
               icon: Icons.verified_outlined,

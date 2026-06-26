@@ -330,7 +330,7 @@ void main() {
         status.staticReleaseGitSha, 'b611c2c21c031b2fea2f182a778a46776093bb3f');
     expect(status.staticReleaseLabel, contains('5.42-public-release-wait'));
     expect(status.backtestAvailable, isTrue);
-    expect(status.backendConnectionLabel, 'static public data');
+    expect(status.backendConnectionLabel, '公開靜態資料');
     expect(analysis.sourceStatusLabel, 'static_official');
     expect(analysis.sourceStatuses['intradayNav'], 'backend_required');
     expect(catalog.status, EtfDataStatus.cached);
@@ -393,8 +393,7 @@ void main() {
     expect(data.intradayNav?.status, EtfDataStatus.mock);
     expect(data.futuresQuote.status, EtfDataStatus.mock);
     expect(data.operationsStatus.backendDisconnected, isTrue);
-    expect(
-        data.operationsStatus.backendConnectionLabel, 'backend disconnected');
+    expect(data.operationsStatus.backendConnectionLabel, '後端未連線');
     expect(data.operationsStatus.errorMessage, contains('backend down'));
     expect(data.aiAnalysis.source, 'rule_based');
     expect(data.aiAnalysis.sourceStatusLabel, 'mock');
@@ -423,8 +422,7 @@ void main() {
 
     expect(data.profile.status, EtfDataStatus.mock);
     expect(data.operationsStatus.sourceStatusLabel, 'error');
-    expect(
-        data.operationsStatus.backendConnectionLabel, 'backend disconnected');
+    expect(data.operationsStatus.backendConnectionLabel, '後端未連線');
     expect(data.operationsStatus.priceHistoryRows, 3);
     expect(data.priceHistory.sourceStatusLabel, 'static_official');
     expect(data.aiAnalysis.sourceStatusLabel, 'static_official');

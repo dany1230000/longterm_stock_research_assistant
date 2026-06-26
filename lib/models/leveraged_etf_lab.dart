@@ -1325,7 +1325,7 @@ class EtfOperationsStatus {
       allowedOrigins: const [],
       dataRoot: '',
       dataPersistenceMode: 'local',
-      dataPersistenceWarning: 'backend disconnected; persistence unknown.',
+      dataPersistenceWarning: '後端未連線；持久化狀態未知。',
       dataPathWritable: false,
       dataPathPersistent: false,
       holdingsHistoryStatus: sourceStatusLabel,
@@ -1508,9 +1508,9 @@ class EtfOperationsStatus {
       return dataPersistenceWarning!;
     }
     if (dataPathPersistent) {
-      return 'public deployment data path is configured as persistent';
+      return '公開部署資料目錄已設定持久化';
     }
-    return 'public deployment should use a persistent volume';
+    return '公開部署建議使用持久化資料卷';
   }
 
   bool get backendDisconnected {
@@ -1522,43 +1522,42 @@ class EtfOperationsStatus {
 
   String get backendConnectionLabel {
     if (sourceStatusLabel == 'static_public_data') {
-      return 'static public data';
+      return '公開靜態資料';
     }
     if (backendDisconnected) {
-      return 'backend disconnected';
+      return '後端未連線';
     }
     if (sourceStatusLabel == 'mock') {
       return 'mock fallback';
     }
     if (sourceStatusLabel == 'unavailable') {
-      return 'backend unavailable';
+      return '後端暫不可用';
     }
     if (sourceStatusLabel == 'error') {
-      return 'backend error';
+      return '後端錯誤';
     }
-    return 'backend reachable';
+    return '後端可連線';
   }
 
   String get backendConnectionCaption {
     if (sourceStatusLabel == 'static_public_data') {
-      return 'historical data is loaded from static files; live intraday NAV needs backend';
+      return '歷史資料來自公開靜態檔；live 盤中 NAV 需要後端。';
     }
     if (backendDisconnected) {
-      return 'start scripts\\00631l_start_backend.cmd; fallback remains visible';
+      return '請啟動 scripts\\00631l_start_backend.cmd；fallback 仍會顯示。';
     }
     if (sourceStatusLabel == 'mock') {
-      return 'live proxy disabled or using safe fallback';
+      return 'live proxy 未啟用，或正在使用安全 fallback。';
     }
     if (sourceStatusLabel == 'unavailable' || sourceStatusLabel == 'error') {
-      return errorMessage ?? 'operations status unavailable';
+      return errorMessage ?? 'operations/status 暫不可用';
     }
-    return 'operations/status response received';
+    return '已收到 operations/status 回應。';
   }
 
   String get backendReleaseLabel {
-    final version = backendAppVersion.trim().isEmpty
-        ? 'backend version unknown'
-        : backendAppVersion.trim();
+    final version =
+        backendAppVersion.trim().isEmpty ? '後端版本未知' : backendAppVersion.trim();
     final tag = backendReleaseTag.trim();
     if (tag.isEmpty) {
       return version;
@@ -1829,7 +1828,7 @@ class EtfOperationsStatus {
     final lines = <String>[];
     if (backendDisconnected) {
       lines.add(
-          'backend disconnected: run scripts\\00631l_start_backend.cmd, then open /#/00631l-lab. mock/fallback remains visible.');
+          '後端未連線：請執行 scripts\\00631l_start_backend.cmd，再開啟 /#/00631l-lab；mock/fallback 仍會顯示。');
     }
     if (dailyCycleStatus == 'missing' || dailyCycleFinishedAt == null) {
       lines.add('尚未跑 daily cycle：請執行 scripts\\00631l_daily_cycle.cmd。');

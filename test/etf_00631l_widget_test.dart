@@ -1255,7 +1255,7 @@ void main() {
     expect(find.textContaining('缺口代表尚未有足夠資料'), findsOneWidget);
     expect(find.text('歷史可用比例'), findsOneWidget);
     expect(find.text('尚未 ready'), findsOneWidget);
-    expect(find.text('public static release'), findsOneWidget);
+    expect(find.text('公開靜態版本'), findsOneWidget);
     expect(find.text('5.42-public-release-wait'), findsOneWidget);
     _expectNoTradingActionText();
   });

@@ -597,8 +597,7 @@ EtfOperationsStatus _backendDisconnectedOperationsStatus(
     holdingsIntegrityRecordCount: status.holdingsIntegrityRecordCount,
     holdingsMissingWeekdayCount: status.holdingsMissingWeekdayCount,
     holdingsMissingWeekdays: status.holdingsMissingWeekdays,
-    errorMessage:
-        'backend disconnected; showing mock/fallback operations status. $error',
+    errorMessage: '後端未連線；目前顯示 mock/fallback operations 狀態。$error',
   );
 }
 

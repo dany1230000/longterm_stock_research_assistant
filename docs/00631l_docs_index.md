@@ -389,6 +389,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Pages missing ETF batch: `docs\00631l_v5_83_pages_missing_etf_batch.md`
 - Public static status check: `docs\00631l_v5_84_public_static_status_check.md`
 - Public static release match: `docs\00631l_v5_85_public_static_release_match.md`
+- Public status language: `docs\00631l_v5_86_public_status_language.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
