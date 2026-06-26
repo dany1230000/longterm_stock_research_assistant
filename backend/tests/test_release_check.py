@@ -189,6 +189,7 @@ class ReleaseCheckTests(unittest.TestCase):
                 "web/index.html",
                 "web/manifest.json",
                 "scripts/00631l_check_public_config.cmd",
+                "scripts/00631l_check_public_static_data.cmd",
                 "scripts/00631l_build_web_public.cmd",
                 "scripts/00631l_backend_prod_check.cmd",
                 "scripts/00631l_backend_docker_check.cmd",

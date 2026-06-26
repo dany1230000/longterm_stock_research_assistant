@@ -1504,6 +1504,12 @@ v5.83 wires the missing-only ETF batch into both local Pages builds and the
 GitHub Pages workflow, so public static builds can continue filling verified ETF
 history gaps. Summary: `docs\00631l_v5_83_pages_missing_etf_batch.md`.
 
+v5.84 adds `scripts\00631l_check_public_static_data.cmd`, a read-only public
+Pages checker that merges `status.json`, `manifest.json`, and `release.json` so
+daily checks show 00631L rows, coverage, ETF catalog readiness, missing count,
+and release marker in one summary. Summary:
+`docs\00631l_v5_84_public_static_status_check.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
