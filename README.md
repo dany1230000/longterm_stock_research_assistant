@@ -1614,6 +1614,11 @@ v6.4 makes the Pages ETF history import/probe use a runtime TWSE ETF catalog
 with seed fallback, so new catalog symbols are not missed by the missing-only
 probe. Summary: `docs\00631l_v6_4_runtime_catalog_probe.md`.
 
+v6.5 separates the current ETF catalog count from retained ETF history index
+rows. Classified out-of-catalog history rows are reported as
+`etfPriceHistoryOutOfCatalogCount` instead of causing a public static-data WARN
+by themselves. Summary: `docs\00631l_v6_5_public_catalog_universe.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

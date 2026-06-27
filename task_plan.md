@@ -240,6 +240,30 @@ Completed in v6.4:
 - Runtime catalog falls back to committed seed when live catalog import fails.
 - Targeted and full validation passed with accepted WARN states only.
 
+## Phase 17 - v6.5 Public Catalog Universe
+
+Status: complete
+
+Objective: distinguish the current runtime ETF catalog universe from retained
+ETF history index evidence in public static-data checks.
+
+- Report retained history rows outside the current catalog as
+  `etfPriceHistoryOutOfCatalogCount`.
+- Keep unclassified ETF gaps as the maintenance signal.
+- Stop warning solely because the retained history index has more symbols than
+  the current catalog snapshot.
+- Add tests and docs.
+
+Completed in v6.5:
+
+- Public static checker reports `etfPriceHistoryOutOfCatalogCount` and compact
+  `etfOutOfCatalog`.
+- Public static checker no longer warns only because retained history rows
+  exceed the current catalog snapshot.
+- WARN behavior remains when out-of-catalog rows still include unclassified
+  gaps.
+- Targeted and full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

@@ -102,3 +102,19 @@
 - Updated Pages workflow and local Pages build helper to import runtime ETF catalog with seed fallback before ETF history refresh/probe work.
 - Targeted v6.4 validation PASS: `py -m unittest backend.tests.test_static_pages_pipeline backend.tests.test_release_check`.
 - Full v6.4 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (265 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.
+- Public Pages marker updated to v6.4 and public static check showed all ETF
+  gaps classified: `etfPriceHistoryUnclassifiedGapCount=0`, with remaining
+  gap reasons split between official empty and source error states.
+- Started v6.5 to stop treating retained, classified out-of-catalog history
+  rows as a standalone public static-data WARN.
+- Updated the public static checker to report
+  `etfPriceHistoryOutOfCatalogCount` / compact `etfOutOfCatalog`, while keeping
+  WARN behavior when out-of-catalog rows still contain unclassified gaps.
+- Added v6.5 docs and release-check required artifact entries.
+- Targeted v6.5 validation PASS: `py -m unittest backend.tests.test_public_static_data_check backend.tests.test_release_check`.
+- Full v6.5 validation PASS/WARN accepted: `flutter analyze` PASS;
+  `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS
+  (266 tests); `scripts\00631l_release_check.cmd` WARN with failures=0;
+  `git diff --check` PASS.
+- Error: PowerShell rejected `&&` as a command separator during tag/push.
+  Resolution: run tag and push commands separately.

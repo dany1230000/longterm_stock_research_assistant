@@ -70,6 +70,9 @@ class PublicStaticDataCheckTests(unittest.TestCase):
                     "etfPriceHistoryRowCount": 345,
                     "etfPriceHistoryReadyCount": 231,
                     "etfPriceHistoryMissingCount": 114,
+                    "etfPriceHistoryGapReasonCounts": {
+                        "not_saved": 2,
+                    },
                 }
             if url.endswith("release.json"):
                 return {
@@ -86,7 +89,39 @@ class PublicStaticDataCheckTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "WARN")
         self.assertEqual(payload["etfPriceHistoryCompletionTotal"], 345)
         self.assertEqual(payload["etfPriceHistoryCompletionGap"], 114)
-        self.assertTrue(any("history=345" in item for item in payload["warnings"]))
+        self.assertEqual(payload["etfPriceHistoryOutOfCatalogCount"], 2)
+        self.assertTrue(any("unclassified=2" in item for item in payload["warnings"]))
+
+    def test_history_index_can_retain_classified_out_of_catalog_symbols(self) -> None:
+        def fetch_json(url: str) -> dict[str, object]:
+            if url.endswith("status.json"):
+                return {"sourceStatus": "static_official", "rowCount": 2837}
+            if url.endswith("manifest.json"):
+                return {
+                    "etfCatalogRowCount": 343,
+                    "etfPriceHistoryRowCount": 345,
+                    "etfPriceHistoryReadyCount": 231,
+                    "etfPriceHistoryMissingCount": 114,
+                    "etfPriceHistoryGapReasonCounts": {
+                        "official_empty": 94,
+                        "source_error": 20,
+                    },
+                }
+            if url.endswith("release.json"):
+                return {
+                    "releaseTag": "00631l-lab-v6.5-public-catalog-universe",
+                    "gitSha": "abc123",
+                }
+            raise AssertionError(url)
+
+        payload = run_public_static_data_check(
+            "https://example.test/static",
+            fetch_json=fetch_json,
+        )
+
+        self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertEqual(payload["etfPriceHistoryOutOfCatalogCount"], 2)
+        self.assertEqual(payload["etfPriceHistoryUnclassifiedGapCount"], 0)
 
     def test_unclassified_gap_count_is_zero_when_not_saved_is_clear(self) -> None:
         def fetch_json(url: str) -> dict[str, object]:

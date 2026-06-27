@@ -58,6 +58,7 @@ def main() -> int:
         f"etfCompletionGap={payload.get('etfPriceHistoryCompletionGap') or 0} "
         f"etfAttempted={payload.get('etfPriceHistoryAttemptedCount') or 0} "
         f"etfUnclassified={payload.get('etfPriceHistoryUnclassifiedGapCount') or 0} "
+        f"etfOutOfCatalog={payload.get('etfPriceHistoryOutOfCatalogCount') or 0} "
         f"etfCatalogRows={payload.get('etfCatalogRowCount') or 0} "
         f"gap={_gap_reason_summary(payload.get('etfPriceHistoryGapReasonCounts'))} "
         f"releaseMatchesExpected={payload.get('releaseMatchesExpected')} "
@@ -127,16 +128,19 @@ def run_public_static_data_check(
     etf_completion_gap = max(0, etf_completion_total - etf_ready)
     gap_counts = gap_reason_counts if isinstance(gap_reason_counts, dict) else {}
     etf_unclassified_gap = _int(gap_counts.get("not_saved"))
+    etf_out_of_catalog = max(0, etf_history_rows - catalog_rows)
 
     if not failures:
         if row_count < 2800:
             warnings.append(f"00631L rowCount below expected floor: {row_count}")
         if catalog_rows < 100:
             warnings.append(f"ETF catalog rows below expected floor: {catalog_rows}")
-        if etf_history_rows and catalog_rows and etf_history_rows > catalog_rows:
+        if etf_out_of_catalog and etf_unclassified_gap:
             warnings.append(
-                "ETF history index has more symbols than the catalog snapshot: "
-                f"history={etf_history_rows}, catalog={catalog_rows}",
+                "ETF history index has more symbols than the catalog snapshot "
+                "and still has unclassified gaps: "
+                f"history={etf_history_rows}, catalog={catalog_rows}, "
+                f"unclassified={etf_unclassified_gap}",
             )
         if max_unclassified_gap >= 0 and etf_unclassified_gap > max_unclassified_gap:
             warnings.append(
@@ -187,6 +191,7 @@ def run_public_static_data_check(
         "etfPriceHistoryCompletionGap": etf_completion_gap,
         "etfPriceHistoryAttemptedCount": etf_attempted,
         "etfPriceHistoryUnclassifiedGapCount": etf_unclassified_gap,
+        "etfPriceHistoryOutOfCatalogCount": etf_out_of_catalog,
         "expectedMaxUnclassifiedGap": max_unclassified_gap
         if max_unclassified_gap >= 0
         else None,
