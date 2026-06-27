@@ -1564,6 +1564,11 @@ histories can now be classified as `official_empty` only when a STOCK_DAY import
 attempt actually returned no rows for the requested months. Summary:
 `docs\00631l_v5_94_etf_import_attempts.md`.
 
+v5.95 adds ETF gap-reason counts to the public static-data check output, so
+daily Pages verification can show whether remaining ETF history gaps are
+not-saved, official-empty, validation-related, or source-related. Summary:
+`docs\00631l_v5_95_public_gap_summary.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

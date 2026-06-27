@@ -398,6 +398,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Release static guard: `docs\00631l_v5_92_release_static_guard.md`
 - ETF gap classification: `docs\00631l_v5_93_etf_gap_classification.md`
 - ETF import attempts: `docs\00631l_v5_94_etf_import_attempts.md`
+- Public gap summary: `docs\00631l_v5_95_public_gap_summary.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

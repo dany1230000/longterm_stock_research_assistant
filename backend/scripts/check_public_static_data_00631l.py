@@ -44,6 +44,7 @@ def main() -> int:
         f"{payload.get('coverageEnd') or 'unavailable'} "
         f"etfReady={payload.get('etfPriceHistoryReadyCount') or 0} "
         f"etfCatalogRows={payload.get('etfCatalogRowCount') or 0} "
+        f"gap={_gap_reason_summary(payload.get('etfPriceHistoryGapReasonCounts'))} "
         f"releaseMatchesExpected={payload.get('releaseMatchesExpected')} "
         f"failures={len(payload['failures'])}"
     )
@@ -83,6 +84,11 @@ def run_public_static_data_check(
     catalog_rows = _int(manifest.get("etfCatalogRowCount"))
     etf_ready = _int(manifest.get("etfPriceHistoryReadyCount"))
     etf_missing = _int(manifest.get("etfPriceHistoryMissingCount"))
+    gap_reason_counts = (
+        manifest.get("etfPriceHistoryGapReasonCounts")
+        or status.get("etfPriceHistoryGapReasonCounts")
+        or {}
+    )
     source_status = str(status.get("sourceStatus") or manifest.get("sourceStatus") or "")
     release_tag = str(
         release.get("releaseTag")
@@ -142,6 +148,9 @@ def run_public_static_data_check(
             "etfPriceHistoryCoverageTierCounts",
         )
         or {},
+        "etfPriceHistoryGapReasonCounts": gap_reason_counts
+        if isinstance(gap_reason_counts, dict)
+        else {},
         "warnings": warnings,
         "failures": failures,
     }
@@ -176,6 +185,25 @@ def _sha_matches(actual_sha: str, expected_sha: str) -> bool:
     return normalized_actual.startswith(normalized_expected) or normalized_expected.startswith(
         normalized_actual,
     )
+
+
+def _gap_reason_summary(value: object) -> str:
+    if not isinstance(value, dict) or not value:
+        return "unavailable"
+    ordered = [
+        "official_empty",
+        "not_saved",
+        "insufficient_rows",
+        "validation_error",
+        "source_error",
+        "not_ready",
+    ]
+    parts = [
+        f"{key}={_int(value.get(key))}"
+        for key in ordered
+        if _int(value.get(key)) > 0
+    ]
+    return ",".join(parts) if parts else "clear"
 
 
 if __name__ == "__main__":
