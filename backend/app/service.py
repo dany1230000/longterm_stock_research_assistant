@@ -19,6 +19,7 @@ from .etf_catalog import (
 from .etf_price_history import (
     DEFAULT_ETF_HISTORY_CODES,
     EtfPriceHistoryStore,
+    catalog_codes,
     fetch_etf_price_history,
     normalize_etf_code,
     parse_code_list,
@@ -138,6 +139,7 @@ class Etf00631LService:
                 "analysisSummary": "/api/etf/00631l/analysis/summary",
                 "priceHistory": "/api/etf/00631l/history/price",
                 "pricePerformance": "/api/etf/00631l/history/performance",
+                "etfHistoryGaps": "/api/etf/history/gaps",
                 "txQuote": "/api/etf/00631l/tx-quote",
                 "etfCatalog": "/api/etf/catalog",
                 "backtestDefaults": "/api/etf/00631l/backtest/defaults",
@@ -632,6 +634,36 @@ class Etf00631LService:
 
     def etf_price_history_index(self) -> dict[str, Any]:
         return self._etf_price_history_store.index_response(fetched_at=utc_now_iso())
+
+    def etf_price_history_gaps(
+        self,
+        *,
+        reason: str | None = None,
+        limit: int = 50,
+        from_catalog: bool = False,
+    ) -> dict[str, Any]:
+        now = utc_now_iso()
+        codes: list[str] | None = None
+        catalog_row_count = 0
+        if from_catalog:
+            catalog = load_etf_catalog(
+                self._config.etf_catalog_path,
+                fetched_at=now,
+                seed_path=self._config.etf_catalog_seed_path,
+            )
+            catalog_row_count = int(catalog.get("rowCount") or 0)
+            codes = catalog_codes(catalog)
+        payload = self._etf_price_history_store.gap_details_response(
+            fetched_at=now,
+            codes=codes,
+            reason=reason,
+            limit=limit,
+        )
+        return {
+            **payload,
+            "fromCatalog": from_catalog,
+            "catalogRowCount": catalog_row_count,
+        }
 
     def etf_price_history(self, *, code: str, limit: int = 5000) -> dict[str, Any]:
         now = utc_now_iso()

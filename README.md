@@ -1641,6 +1641,10 @@ v6.10 adds compact ETF gap reason samples, so settings/status and public static
 checks can show short code examples for each gap reason without loading the full
 gap-detail file. Summary: `docs\00631l_v6_10_gap_reason_samples.md`.
 
+v6.11 adds `GET /api/etf/history/gaps` for filtering ETF price-history gaps by
+reason and inspecting full detail from the backend. Summary:
+`docs\00631l_v6_11_gap_detail_api.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

@@ -720,6 +720,58 @@ Custodian Fee
             self.assertEqual(payload["backendHealth"]["publicApiBaseUrl"], "https://api.example.com")
             self.assertEqual(payload["backendHealth"]["allowedOrigins"], ["https://00631l.example.com"])
 
+    def test_etf_history_gaps_endpoint_filters_gap_reason(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            catalog_seed = root / "catalog_seed.json"
+            catalog_seed.write_text(
+                json.dumps(
+                    {
+                        "items": [
+                            {"code": "00999", "name": "ETF A"},
+                            {"code": "00998", "name": "ETF B"},
+                        ],
+                    },
+                ),
+                encoding="utf-8",
+            )
+            service = Etf00631LService(
+                config=Settings(
+                    data_dir=str(root / "data"),
+                    etf_price_history_dir=str(root / "etf_history"),
+                    etf_catalog_path=str(root / "catalog.json"),
+                    etf_catalog_seed_path=str(catalog_seed),
+                ),
+            )
+            service._etf_price_history_store.record_import_attempt(
+                "00999",
+                {
+                    "attemptedAt": "2026-06-21T00:00:00+00:00",
+                    "sourceStatus": "error",
+                    "sourceUrl": "https://example.test/STOCK_DAY?stockNo=00999",
+                    "requestedMonths": 1,
+                    "rowCount": 0,
+                    "warnings": ["emptyMonths=1"],
+                    "errorMessage": None,
+                },
+            )
+            main_module.service = service
+
+            response = self.client.get(
+                "/api/etf/history/gaps?reason=official_empty&limit=1&fromCatalog=true",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["sourceContract"], "twse_multi_etf_price_history_gaps")
+        self.assertTrue(payload["fromCatalog"])
+        self.assertEqual(payload["catalogRowCount"], 2)
+        self.assertEqual(payload["reason"], "official_empty")
+        self.assertEqual(payload["returnedCount"], 1)
+        self.assertEqual(payload["items"][0]["code"], "00999")
+        self.assertEqual(payload["items"][0]["gapReason"], "official_empty")
+        self.assertEqual(payload["gapReasonSamples"]["official_empty"], ["00999"])
+
     def test_operations_status_reports_missing_daily_cycle_status(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             main_module.service = Etf00631LService(

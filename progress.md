@@ -206,3 +206,14 @@
   `flutter test` PASS (95 tests), `flutter build web` PASS, backend tests PASS
   (269 tests), `scripts\00631l_release_check.cmd` WARN with failures=0, and
   `git diff --check` PASS.
+- v6.10 committed/pushed as `4ccfc5f`, tag
+  `00631l-lab-v6.10-gap-reason-samples`.
+- Public Pages marker updated to v6.10. Strict public static-data check PASS
+  with gap samples for `official_empty` and `source_error`.
+- Started v6.11 to add a read-only ETF history gap detail endpoint.
+- Added `GET /api/etf/history/gaps` with `reason`, `limit`, and `fromCatalog`.
+- Targeted backend tests for store gap details and endpoint filtering passed.
+- Full v6.11 validation PASS/WARN accepted: `flutter analyze` PASS,
+  `flutter test` PASS (95 tests), `flutter build web` PASS, backend tests PASS
+  (271 tests), `scripts\00631l_release_check.cmd` WARN with failures=0, and
+  `git diff --check` PASS.

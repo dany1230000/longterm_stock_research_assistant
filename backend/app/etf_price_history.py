@@ -391,6 +391,42 @@ class EtfPriceHistoryStore:
             else "No multi-ETF price history is saved yet.",
         }
 
+    def gap_details_response(
+        self,
+        *,
+        fetched_at: str,
+        codes: list[str] | tuple[str, ...] | None = None,
+        reason: str | None = None,
+        limit: int = 50,
+    ) -> dict[str, Any]:
+        normalized_reason = str(reason or "").strip()
+        page_limit = max(1, min(int(limit or 50), 500))
+        index = self.index_response(fetched_at=fetched_at, codes=codes)
+        all_items = _gap_detail_items(index.get("items") or [])
+        filtered_items = [
+            item
+            for item in all_items
+            if not normalized_reason or item.get("gapReason") == normalized_reason
+        ]
+        return {
+            "sourceStatus": index.get("sourceStatus"),
+            "sourceContract": "twse_multi_etf_price_history_gaps",
+            "sourceUrl": index.get("sourceUrl"),
+            "fetchedAt": fetched_at,
+            "sourceUpdatedAt": index.get("sourceUpdatedAt"),
+            "dataTime": index.get("dataTime"),
+            "isStale": index.get("isStale"),
+            "reason": normalized_reason or None,
+            "limit": page_limit,
+            "rowCount": len(filtered_items),
+            "returnedCount": min(len(filtered_items), page_limit),
+            "gapDetailCount": index.get("gapDetailCount", len(all_items)),
+            "gapReasonCounts": index.get("gapReasonCounts", {}),
+            "gapReasonSamples": index.get("gapReasonSamples", {}),
+            "items": filtered_items[:page_limit],
+            "errorMessage": index.get("errorMessage"),
+        }
+
     def _write_records(self, code: str, records: list[dict[str, Any]]) -> None:
         self.root_dir.mkdir(parents=True, exist_ok=True)
         ordered = sorted(records, key=lambda item: str(item.get("date") or ""))
@@ -608,6 +644,39 @@ def _gap_reason_samples(
         if len(bucket) < limit_per_reason and code not in bucket:
             bucket.append(code)
     return samples
+
+
+def _gap_detail_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    details: list[dict[str, Any]] = []
+    for item in items:
+        row_count = int(item.get("rowCount") or 0)
+        validation_failure_count = int(item.get("validationFailureCount") or 0)
+        if row_count >= 2 and validation_failure_count == 0:
+            continue
+        attempt = item.get("lastImportAttempt")
+        if not isinstance(attempt, dict):
+            attempt = {}
+        reason = str(item.get("gapReason") or "") or _gap_reason(
+            row_count=row_count,
+            source_status=str(item.get("sourceStatus") or ""),
+            validation_failure_count=validation_failure_count,
+        )
+        details.append(
+            {
+                "code": normalize_etf_code(str(item.get("code") or "")),
+                "gapReason": reason,
+                "coverageTier": str(item.get("coverageTier") or "unavailable"),
+                "rowCount": row_count,
+                "validationFailureCount": validation_failure_count,
+                "sourceStatus": str(item.get("sourceStatus") or "unavailable"),
+                "sourceUrl": str(item.get("sourceUrl") or ""),
+                "lastAttemptAt": attempt.get("attemptedAt"),
+                "requestedMonths": int(attempt.get("requestedMonths") or 0),
+                "errorMessage": item.get("errorMessage")
+                or attempt.get("errorMessage"),
+            }
+        )
+    return sorted(details, key=lambda row: str(row.get("code") or ""))
 
 
 def _gap_reason(

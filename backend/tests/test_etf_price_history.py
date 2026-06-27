@@ -471,6 +471,48 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(index["attemptedCount"], 1)
         self.assertEqual(index["gapReasonSamples"]["official_empty"], ["00999"])
 
+    def test_gap_details_response_filters_reason_and_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = EtfPriceHistoryStore(Path(temp_dir))
+            store.record_import_attempt(
+                "00999",
+                {
+                    "attemptedAt": "2026-06-21T00:00:00+00:00",
+                    "sourceStatus": "error",
+                    "sourceUrl": "https://example.test/STOCK_DAY?stockNo=00999",
+                    "requestedMonths": 1,
+                    "rowCount": 0,
+                    "warnings": ["emptyMonths=1"],
+                    "errorMessage": None,
+                },
+            )
+            store.record_import_attempt(
+                "00998",
+                {
+                    "attemptedAt": "2026-06-21T00:00:00+00:00",
+                    "sourceStatus": "error",
+                    "sourceUrl": "https://example.test/STOCK_DAY?stockNo=00998",
+                    "requestedMonths": 1,
+                    "rowCount": 0,
+                    "warnings": [],
+                    "errorMessage": "HTTP 500",
+                },
+            )
+
+            payload = store.gap_details_response(
+                fetched_at="2026-06-21T00:00:00+00:00",
+                reason="official_empty",
+                limit=1,
+            )
+
+        self.assertEqual(payload["sourceContract"], "twse_multi_etf_price_history_gaps")
+        self.assertEqual(payload["reason"], "official_empty")
+        self.assertEqual(payload["rowCount"], 1)
+        self.assertEqual(payload["returnedCount"], 1)
+        self.assertEqual(payload["items"][0]["code"], "00999")
+        self.assertEqual(payload["items"][0]["gapReason"], "official_empty")
+        self.assertEqual(payload["gapReasonSamples"]["official_empty"], ["00999"])
+
     def test_index_response_can_include_catalog_only_missing_codes(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             store = EtfPriceHistoryStore(Path(temp_dir))

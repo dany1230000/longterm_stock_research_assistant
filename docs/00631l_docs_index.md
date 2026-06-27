@@ -414,6 +414,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF gap detail export: `docs\00631l_v6_8_etf_gap_detail_export.md`
 - ETF gap detail status: `docs\00631l_v6_9_gap_detail_status.md`
 - ETF gap reason samples: `docs\00631l_v6_10_gap_reason_samples.md`
+- ETF gap detail API: `docs\00631l_v6_11_gap_detail_api.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

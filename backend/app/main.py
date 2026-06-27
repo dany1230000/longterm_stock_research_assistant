@@ -144,6 +144,18 @@ def create_app(
     def etf_history_status() -> dict:
         return current_service().etf_price_history_index()
 
+    @fastapi_app.get("/api/etf/history/gaps")
+    def etf_history_gaps(
+        reason: str | None = None,
+        limit: int = Query(50, ge=1, le=500),
+        fromCatalog: bool = False,
+    ) -> dict:
+        return current_service().etf_price_history_gaps(
+            reason=reason,
+            limit=limit,
+            from_catalog=fromCatalog,
+        )
+
     @fastapi_app.get("/api/etf/history/price")
     def etf_history_price(
         code: str,

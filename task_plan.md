@@ -364,6 +364,20 @@ the full gap-detail JSON.
 - Keep samples as maintenance evidence only; unavailable histories are still
   excluded from history/backtest/comparison views.
 
+## Phase 23 - v6.11 Gap Detail API
+
+Status: complete
+
+Objective: expose full ETF price-history gap detail through a backend endpoint
+so maintenance tools and future UI can inspect gaps without downloading static
+JSON manually.
+
+- Add `GET /api/etf/history/gaps`.
+- Support `reason`, `limit`, and `fromCatalog` query parameters.
+- Return gap reason counts, samples, detail rows, and catalog row count when the
+  catalog universe is requested.
+- Keep the endpoint read-only and clearly scoped to data verification.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
