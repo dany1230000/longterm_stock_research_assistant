@@ -76,3 +76,10 @@
 - Targeted v6.0 validation PASS: `py -m unittest backend.tests.test_public_etf_attempt_restore backend.tests.test_static_pages_pipeline backend.tests.test_release_check`.
 - Public restore dry-run PASS: `scripts\00631l_restore_public_etf_attempts.cmd --dry-run` restored 20 public attempt records from the current static index.
 - Full v6.0 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (263 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.
+- v6.0 committed/pushed as `48c8385`, tag `00631l-lab-v6.0-public-attempt-carry-forward`.
+- Public Pages marker updated to v6.0 and public static check WARN/failures=0. Attempted count increased to 40, with `official_empty=20`, `source_error=20`, `not_saved=74`.
+- Started v6.1 to run three bounded missing-ETF probe batches per Pages deployment.
+- Updated Pages workflow and local Pages build helper to run three 20-symbol probe batches with `--skip-attempted`.
+- Added `docs\00631l_v6_1_public_probe_batches.md` and release-check/docs index entries.
+- Targeted v6.1 validation PASS: `py -m unittest backend.tests.test_static_pages_pipeline backend.tests.test_release_check`.
+- Full v6.1 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (263 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.

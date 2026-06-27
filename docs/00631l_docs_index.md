@@ -404,6 +404,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public ETF count consistency: `docs\00631l_v5_98_public_etf_count_consistency.md`
 - Skip attempted ETF probe: `docs\00631l_v5_99_skip_attempted_probe.md`
 - Public attempt carry-forward: `docs\00631l_v6_0_public_attempt_carry_forward.md`
+- Public ETF probe batches: `docs\00631l_v6_1_public_probe_batches.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

@@ -69,8 +69,11 @@ if "%REFRESH_ETF_HISTORY%"=="1" (
 )
 
 if "%PROBE_MISSING%"=="1" (
-    call scripts\00631l_probe_missing_etf_reasons.cmd --catalog-path backend\seeds\twse_etf_catalog_seed.json --limit 20 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 10
-    if errorlevel 1 exit /b %ERRORLEVEL%
+    for /L %%I in (1,1,3) do (
+        echo [00631L] Probe missing ETF gap reason batch %%I/3.
+        call scripts\00631l_probe_missing_etf_reasons.cmd --catalog-path backend\seeds\twse_etf_catalog_seed.json --limit 20 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 10
+        if errorlevel 1 exit /b %ERRORLEVEL%
+    )
 ) else (
     echo [00631L] Skipping missing ETF reason probe for local fast Pages build.
     echo [00631L] Run scripts\00631l_build_pages_static.cmd --probe-missing to classify a small missing batch.

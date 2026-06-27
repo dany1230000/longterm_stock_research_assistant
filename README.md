@@ -1596,6 +1596,11 @@ before running missing-only probes in GitHub Pages. This lets scheduled builds
 carry gap evidence forward across clean runners. Summary:
 `docs\00631l_v6_0_public_attempt_carry_forward.md`.
 
+v6.1 runs three bounded missing-ETF probe batches per Pages deployment after
+restoring public attempt evidence, so remaining ETF history gaps can be
+classified faster while keeping static export resilient. Summary:
+`docs\00631l_v6_1_public_probe_batches.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

@@ -154,6 +154,28 @@ Completed in v6.0:
 - Restore dry-run confirmed the current public index can restore 20 attempt
   records.
 - Full validation passed with accepted WARN states only.
+- Public Pages marker and static check passed on v6.0. Public attempted count
+  increased from 20 to 40, proving carry-forward works.
+
+## Phase 13 - v6.1 Public Probe Batches
+
+Status: complete
+
+Objective: reduce the remaining `not_saved` ETF gap more quickly by probing a
+small bounded series of batches per public deployment.
+
+- Run three missing-ETF probe batches per GitHub Pages deployment.
+- Keep each batch limited to 20 symbols.
+- Keep each batch on `--missing-only --skip-attempted`.
+- Mirror the same three-batch behavior in local Pages build when
+  `--probe-missing` is requested.
+- Add tests and docs.
+
+Completed in v6.1:
+
+- Pages workflow runs three 20-symbol missing probe batches after restore.
+- Local Pages build mirrors the same three-batch probe.
+- Targeted and full validation passed with accepted WARN states only.
 
 ## Phase 5 - Backtest and Position UX
 
