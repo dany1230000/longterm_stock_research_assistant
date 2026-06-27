@@ -49,6 +49,14 @@ def main() -> int:
         action="store_true",
         help="Skip ETF codes that already have ready price-history rows.",
     )
+    parser.add_argument(
+        "--skip-attempted",
+        action="store_true",
+        help=(
+            "When used with --missing-only, also skip codes that already have "
+            "local import-attempt evidence."
+        ),
+    )
     parser.add_argument("--start-date", default="")
     parser.add_argument("--end-date", default="")
     parser.add_argument(
@@ -127,6 +135,8 @@ def main() -> int:
             "sourceUpdatedAt": None,
             "dataTime": None,
             "requestedCodes": [],
+            "missingOnly": bool(args.missing_only),
+            "skipAttempted": bool(args.skip_attempted),
             "readyCount": store.index_response(fetched_at=now).get("readyCount", 0),
             "validationFailureCount": 0,
             "validationWarningCount": 0,
@@ -278,6 +288,7 @@ def main() -> int:
         "dataTime": index.get("dataTime"),
         "requestedCodes": codes,
         "missingOnly": bool(args.missing_only),
+        "skipAttempted": bool(args.skip_attempted),
         "readyCount": index.get("readyCount", 0),
         "validationFailureCount": index.get("validationFailureCount", 0),
         "validationWarningCount": index.get("validationWarningCount", 0),
@@ -306,10 +317,15 @@ def select_import_codes(
     ):
         all_codes = _resolve_codes(args, apply_slice=False)
         missing_codes = filter_missing_codes(all_codes, store)
+        if bool(getattr(args, "skip_attempted", False)):
+            missing_codes = filter_attempted_codes(missing_codes, store)
         return _slice_codes(missing_codes, args)
     codes = _resolve_codes(args)
     if bool(getattr(args, "missing_only", False)):
-        return filter_missing_codes(codes, store)
+        missing_codes = filter_missing_codes(codes, store)
+        return filter_attempted_codes(missing_codes, store) if bool(
+            getattr(args, "skip_attempted", False)
+        ) else missing_codes
     return codes
 
 
@@ -354,6 +370,17 @@ def filter_missing_codes(
     ]
 
 
+def filter_attempted_codes(
+    codes: list[str],
+    store: EtfPriceHistoryStore,
+) -> list[str]:
+    return [
+        code
+        for code in codes
+        if store.import_attempt(code.strip().upper()) is None
+    ]
+
+
 def should_emit_progress(position: int, total: int, every: int) -> bool:
     if every <= 0 or total <= 0 or position <= 0:
         return False
@@ -390,6 +417,8 @@ def build_import_summary_response(
         "dataTime": payload.get("dataTime"),
         "requestedCodeCount": len(requested_codes),
         "requestedCodesSample": requested_codes[: max(sample_size, 0)],
+        "missingOnly": payload.get("missingOnly", False),
+        "skipAttempted": payload.get("skipAttempted", False),
         "readyCount": payload.get("readyCount", 0),
         "validationFailureCount": payload.get("validationFailureCount", 0),
         "validationWarningCount": payload.get("validationWarningCount", 0),

@@ -61,3 +61,9 @@
 - Implemented v5.98 public ETF count consistency output and WARN behavior.
 - Public static check now reports `etfPriceHistoryRowCount=345`, `etfCatalogRowCount=343`, `etfPriceHistoryCompletionGap=114`, and WARN/failures=0 for the count mismatch.
 - v5.98 validation: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (259 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.
+- Started v5.99 to prevent the public missing-ETF probe from repeatedly checking symbols that already have import-attempt evidence.
+- Added `--skip-attempted` to `backend\scripts\import_etf_price_history.py` and wired it into the local probe helper plus GitHub Pages workflow.
+- Added importer and static pipeline tests for the skip-attempted behavior.
+- Added `docs\00631l_v5_99_skip_attempted_probe.md` and indexed it in README/docs/release-check required artifacts.
+- Targeted validation PASS: `py -m unittest backend.tests.test_etf_price_history backend.tests.test_static_pages_pipeline backend.tests.test_release_check`; `scripts\00631l_probe_missing_etf_reasons.cmd --status-only` PASS with ready 231, attempted 20, gap 116.
+- Full v5.99 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (261 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.

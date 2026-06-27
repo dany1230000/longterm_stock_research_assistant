@@ -482,6 +482,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_96_missing_etf_reason_probe.md",
         "docs/00631l_v5_97_pages_missing_probe.md",
         "docs/00631l_v5_98_public_etf_count_consistency.md",
+        "docs/00631l_v5_99_skip_attempted_probe.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

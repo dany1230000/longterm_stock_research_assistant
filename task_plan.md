@@ -106,6 +106,28 @@ Completed in v5.98:
 - Count mismatch between public catalog and ETF history index is surfaced as WARN with failures=0.
 - Public check on v5.97 output now reports history=345, catalog=343, completionGap=114.
 
+## Phase 11 - v5.99 Skip Attempted Missing ETF Probe
+
+Status: complete
+
+Objective: make scheduled public missing-ETF probes continue to later missing
+symbols instead of repeating symbols that already have local import-attempt
+evidence.
+
+- Add `--skip-attempted` to `backend/scripts/import_etf_price_history.py`.
+- Use it in the local missing-reason probe helper and GitHub Pages workflow.
+- Add importer and pipeline tests so batch selection filters existing attempt
+  evidence before applying the probe limit.
+- Document the maintenance behavior and keep generated attempts ignored.
+
+Completed in v5.99:
+
+- `--skip-attempted` skips existing import-attempt evidence in missing-only
+  batches before `--limit` is applied.
+- Local probe helper and Pages workflow both use the flag.
+- Targeted backend tests, full Flutter/backend validation, and release check
+  passed with only accepted WARN states.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

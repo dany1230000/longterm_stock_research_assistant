@@ -76,7 +76,7 @@ jobs:
       - name: Probe missing ETF gap reasons
         timeout-minutes: 6
         continue-on-error: true
-        run: python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --catalog-path backend/seeds/twse_etf_catalog_seed.json --limit 20 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10
+        run: python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --skip-attempted --catalog-path backend/seeds/twse_etf_catalog_seed.json --limit 20 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10
 
       - name: Export static 00631L data
         run: python backend/scripts/export_static_00631l_data.py --update --strict --min-row-count 2800 --max-coverage-age-days 7 --min-etf-catalog-row-count 100 --multi-etf-codes all-catalog --seed-price-history-path backend/seeds/00631l_price_history_seed.jsonl --seed-etf-catalog-path backend/seeds/twse_etf_catalog_seed.json --output-dir web/00631l-static-data --summary-only

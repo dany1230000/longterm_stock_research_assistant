@@ -24,6 +24,7 @@ from backend.scripts.import_etf_price_history import (
     _resolve_codes,
     build_import_summary_response,
     build_status_summary_response,
+    filter_attempted_codes,
     filter_missing_codes,
     select_import_codes,
     should_emit_progress,
@@ -866,6 +867,25 @@ class EtfPriceHistoryTests(unittest.TestCase):
                 ["0056", "006208"],
             )
 
+    def test_import_missing_only_can_skip_already_attempted_histories(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = EtfPriceHistoryStore(Path(temp_dir) / "history")
+            store.record_import_attempt(
+                "0056",
+                {
+                    "sourceStatus": "official_empty",
+                    "sourceUrl": "fixture://0056",
+                    "attemptedAt": "2026-06-27T00:00:00+00:00",
+                    "emptyMonths": ["2026-06"],
+                    "errorMessage": "",
+                },
+            )
+
+            self.assertEqual(
+                filter_attempted_codes(["0050", "0056", "006208"], store),
+                ["0050", "006208"],
+            )
+
     def test_import_missing_only_catalog_batches_limit_after_filtering(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -896,6 +916,51 @@ class EtfPriceHistoryTests(unittest.TestCase):
                 offset=0,
                 codes="00631L",
                 missing_only=True,
+                skip_attempted=False,
+            )
+
+            self.assertEqual(select_import_codes(args, store), ["006208"])
+
+    def test_import_missing_only_catalog_batches_can_skip_attempted_before_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            catalog_path = root / "catalog.json"
+            save_etf_catalog(
+                {
+                    "sourceStatus": "official",
+                    "sourceContract": "twse_all_etf_catalog",
+                    "sourceUrl": "fixture://catalog",
+                    "fetchedAt": "2026-06-22T00:00:00+00:00",
+                    "rowCount": 4,
+                    "items": [
+                        {"code": "0050", "name": "ETF A"},
+                        {"code": "0056", "name": "ETF B"},
+                        {"code": "006208", "name": "ETF C"},
+                        {"code": "00878", "name": "ETF D"},
+                    ],
+                },
+                catalog_path,
+            )
+            store = EtfPriceHistoryStore(root / "history")
+            store.save_points("0050", _points("0050"))
+            store.record_import_attempt(
+                "0056",
+                {
+                    "sourceStatus": "official_empty",
+                    "sourceUrl": "fixture://0056",
+                    "attemptedAt": "2026-06-27T00:00:00+00:00",
+                    "emptyMonths": ["2026-06"],
+                    "errorMessage": "",
+                },
+            )
+            args = SimpleNamespace(
+                from_catalog=True,
+                catalog_path=str(catalog_path),
+                limit=1,
+                offset=0,
+                codes="00631L",
+                missing_only=True,
+                skip_attempted=True,
             )
 
             self.assertEqual(select_import_codes(args, store), ["006208"])

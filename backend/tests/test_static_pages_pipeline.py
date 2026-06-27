@@ -34,6 +34,7 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--missing-only", workflow)
         self.assertIn("--limit 50", workflow)
         self.assertIn("Probe missing ETF gap reasons", workflow)
+        self.assertIn("--skip-attempted", workflow)
         self.assertIn("--limit 20", workflow)
         self.assertIn("--start-date 2026-06-01", workflow)
         self.assertIn("--progress-every 10", workflow)
@@ -75,6 +76,11 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--max-coverage-age-days 7", script)
         self.assertIn("--multi-etf-codes all-catalog", script)
         self.assertIn("scripts\\00631l_guard_static_public_regression.cmd", script)
+
+        probe_script = (
+            ROOT / "scripts" / "00631l_probe_missing_etf_reasons.cmd"
+        ).read_text(encoding="utf-8")
+        self.assertIn("--skip-attempted", probe_script)
 
     def test_broad_etf_price_seed_is_committed_for_pages_reproducibility(self) -> None:
         seed_dir = ROOT / "backend" / "seeds" / "etf_price_history_seed"
