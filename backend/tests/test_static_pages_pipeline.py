@@ -12,6 +12,12 @@ class StaticPagesPipelineTests(unittest.TestCase):
             encoding="utf-8",
         )
 
+        refresh_condition = (
+            "if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && "
+            "(inputs.refresh_etf_histories == 'true' || inputs.full_etf_refresh == 'true'))"
+        )
+        self.assertIn("refresh_etf_histories", workflow)
+        self.assertGreaterEqual(workflow.count(refresh_condition), 2)
         self.assertIn("full_etf_refresh", workflow)
         self.assertIn(
             "if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full_etf_refresh == 'true')",
@@ -39,8 +45,12 @@ class StaticPagesPipelineTests(unittest.TestCase):
         )
 
         self.assertIn("--full-etf-refresh", script)
+        self.assertIn("--refresh-etf-history", script)
         self.assertIn("FULL_ETF_REFRESH", script)
+        self.assertIn("REFRESH_ETF_HISTORY", script)
+        self.assertIn("Skipping selected ETF price-history refresh", script)
         self.assertIn("Skipping broad all-catalog ETF recent refresh", script)
+        self.assertIn("Skipping missing-only ETF history batch", script)
         self.assertIn("--from-catalog", script)
         self.assertIn(
             "--catalog-path backend\\seeds\\twse_etf_catalog_seed.json",

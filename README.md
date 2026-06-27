@@ -1537,6 +1537,12 @@ TWSE STOCK_DAY rows in local cache but not in the committed Pages seed set; it
 is now included so public static readiness can match local validation. Summary:
 `docs\00631l_v5_89_etf_seed_ready_reconcile.md`.
 
+v5.90 separates normal Pages publishing from ETF history maintenance. Push builds
+now skip selected/missing ETF history refresh and rely on strict 00631L export
+plus committed ETF seeds; schedule/manual dispatch or local
+`--refresh-etf-history` / `--full-etf-refresh` runs the slower maintenance
+refresh. Summary: `docs\00631l_v5_90_pages_maintenance_split.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
