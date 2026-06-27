@@ -51,5 +51,8 @@ if "%REFRESH_ETF_HISTORY%"=="1" (
 call scripts\00631l_export_static_data.cmd --update --strict --max-coverage-age-days 7 --min-etf-catalog-row-count 100 --multi-etf-codes all-catalog --output-dir web\00631l-static-data --summary-only
 if errorlevel 1 exit /b %ERRORLEVEL%
 
+call scripts\00631l_guard_static_public_regression.cmd --local-dir web\00631l-static-data
+if errorlevel 1 exit /b %ERRORLEVEL%
+
 flutter build web --base-href="/longterm_stock_research_assistant/" --dart-define=USE_00631L_STATIC_DATA=true --dart-define=00631L_STATIC_DATA_BASE_URL=00631l-static-data
 exit /b %ERRORLEVEL%

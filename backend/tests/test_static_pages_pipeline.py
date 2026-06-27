@@ -37,6 +37,8 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--progress-every 10", workflow)
         self.assertIn("--max-coverage-age-days 7", workflow)
         self.assertIn("--multi-etf-codes all-catalog", workflow)
+        self.assertIn("Guard public static data regression", workflow)
+        self.assertIn("guard_static_public_regression_00631l.py", workflow)
         self.assertIn("fetch-depth: 0", workflow)
 
     def test_local_pages_build_full_catalog_import_is_explicit(self) -> None:
@@ -65,6 +67,7 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--progress-every 10", script)
         self.assertIn("--max-coverage-age-days 7", script)
         self.assertIn("--multi-etf-codes all-catalog", script)
+        self.assertIn("scripts\\00631l_guard_static_public_regression.cmd", script)
 
     def test_broad_etf_price_seed_is_committed_for_pages_reproducibility(self) -> None:
         seed_dir = ROOT / "backend" / "seeds" / "etf_price_history_seed"
@@ -92,6 +95,19 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertTrue(all(record["code"] == "00407A" for record in records))
         self.assertTrue(all(record["sourceStatus"] == "official" for record in records))
         self.assertTrue(all(record["sourceContract"] == "twse_stock_day_json" for record in records))
+
+    def test_00631l_static_seed_includes_latest_official_rows(self) -> None:
+        seed_path = ROOT / "backend" / "seeds" / "00631l_price_history_seed.jsonl"
+        records = [
+            json.loads(line)
+            for line in seed_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+
+        self.assertEqual(records[-2]["date"], "2026-06-25")
+        self.assertEqual(records[-1]["date"], "2026-06-26")
+        self.assertEqual(records[-1]["sourceStatus"], "official")
+        self.assertEqual(records[-1]["sourceContract"], "twse_stock_day_json")
 
 
 if __name__ == "__main__":

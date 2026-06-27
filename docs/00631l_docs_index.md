@@ -394,6 +394,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Fast Pages static build: `docs\00631l_v5_88_pages_fast_static_build.md`
 - ETF seed readiness reconcile: `docs\00631l_v5_89_etf_seed_ready_reconcile.md`
 - Pages maintenance split: `docs\00631l_v5_90_pages_maintenance_split.md`
+- Static regression guard: `docs\00631l_v5_91_static_regression_guard.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

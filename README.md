@@ -1543,6 +1543,13 @@ plus committed ETF seeds; schedule/manual dispatch or local
 `--refresh-etf-history` / `--full-etf-refresh` runs the slower maintenance
 refresh. Summary: `docs\00631l_v5_90_pages_maintenance_split.md`.
 
+v5.91 adds a public static regression guard. GitHub Pages now compares the new
+local static export with the currently published static status before upload and
+fails if coverage, row count, or ETF ready count would move backward. The 00631L
+official price-history seed is also updated through 2026-06-26 so clean runners
+can restore the latest validated coverage. Summary:
+`docs\00631l_v5_91_static_regression_guard.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
