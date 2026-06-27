@@ -48,6 +48,10 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
     etf_ready_rows = int(payload.get("etfPriceHistoryReadyCount") or 0)
     etf_history_rows = int(payload.get("etfPriceHistoryRowCount") or 0)
     etf_attempted_rows = int(payload.get("etfPriceHistoryAttemptedCount") or 0)
+    etf_out_of_catalog_rows = int(
+        payload.get("etfPriceHistoryOutOfCatalogCount")
+        or max(0, etf_history_rows - etf_catalog_rows)
+    )
     etf_missing_rows = int(
         payload.get("etfPriceHistoryMissingCount")
         or max(0, max(etf_catalog_rows, etf_history_rows, etf_ready_rows) - etf_ready_rows)
@@ -70,6 +74,7 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
         f"etfCatalogRows={etf_catalog_rows}",
         f"etfMissing={etf_missing_rows}",
         f"etfAttempted={etf_attempted_rows}",
+        f"etfOutOfCatalog={etf_out_of_catalog_rows}",
         f"tiers={tier_text}",
     ]
     if payload.get("outputDir"):
@@ -111,6 +116,10 @@ def build_static_export_compact_response(
         "etfPriceHistoryRowCount": payload.get("etfPriceHistoryRowCount", 0),
         "etfPriceHistoryMissingCount": payload.get("etfPriceHistoryMissingCount", 0),
         "etfPriceHistoryAttemptedCount": payload.get("etfPriceHistoryAttemptedCount", 0),
+        "etfPriceHistoryOutOfCatalogCount": payload.get(
+            "etfPriceHistoryOutOfCatalogCount",
+            0,
+        ),
         "etfPriceHistoryCoverageTierCounts": payload.get(
             "etfPriceHistoryCoverageTierCounts",
             {},

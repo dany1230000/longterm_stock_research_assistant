@@ -118,3 +118,24 @@
   `git diff --check` PASS.
 - Error: PowerShell rejected `&&` as a command separator during tag/push.
   Resolution: run tag and push commands separately.
+- v6.5 committed/pushed as `ca1679e`, tag
+  `00631l-lab-v6.5-public-catalog-universe`.
+- Public Pages marker and public static checks passed on v6.5. Public static
+  data reports `etfPriceHistoryUnclassifiedGapCount=0`,
+  `etfPriceHistoryOutOfCatalogCount=2`, `official_empty=94`, and
+  `source_error=20`.
+- Started v6.6 to carry the public ETF library universe metrics into static
+  export, backend operations status, Flutter repositories, and app status UI.
+- Error: PowerShell file rewrite via `Set-Content` corrupted the Dart screen
+  file encoding. Resolution: restored only the affected file from HEAD and
+  continued with small `apply_patch` edits.
+- Added `etfPriceHistoryOutOfCatalogCount` / `outOfCatalogCount` across static
+  export, operations/status, Flutter models, proxy/static/cached repositories,
+  and app status details.
+- Updated classified-gap handling so unclassified `not_saved` gaps drive probe
+  actions, while classified gaps are shown as status evidence.
+- Targeted v6.6 validation PASS: `py -m unittest backend.tests.test_price_history_backtest backend.tests.test_public_static_data_check`; `flutter test test\etf_00631l_proxy_repository_test.dart test\etf_00631l_widget_test.dart`.
+- Full v6.6 validation PASS/WARN accepted: `flutter analyze` PASS;
+  `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS
+  (266 tests); `scripts\00631l_release_check.cmd` WARN with failures=0;
+  `git diff --check` PASS.

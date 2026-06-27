@@ -409,6 +409,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public unclassified gap threshold: `docs\00631l_v6_3_public_unclassified_threshold.md`
 - Runtime catalog probe: `docs\00631l_v6_4_runtime_catalog_probe.md`
 - Public catalog universe: `docs\00631l_v6_5_public_catalog_universe.md`
+- ETF library status: `docs\00631l_v6_6_etf_library_status.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

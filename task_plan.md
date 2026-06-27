@@ -264,6 +264,28 @@ Completed in v6.5:
   gaps.
 - Targeted and full validation passed with accepted WARN states only.
 
+## Phase 18 - v6.6 ETF Library Status
+
+Status: complete
+
+Objective: carry ETF library completeness status from maintenance scripts into
+static export, backend status, Flutter repositories, and the app UI.
+
+- Add `etfPriceHistoryOutOfCatalogCount` to static export and static status.
+- Add `outOfCatalogCount` to backend operations/status `etfPriceHistory`.
+- Add the field to Flutter operations models and repositories.
+- Show retained history count in app status details.
+- Make classified gaps distinct from unclassified maintenance gaps.
+- Add backend and frontend tests.
+
+Completed in v6.6:
+
+- Static export, operations/status, Flutter repositories, and app status now
+  carry out-of-catalog ETF history counts.
+- Classified ETF history gaps no longer show the same program action as
+  unclassified `not_saved` gaps.
+- Targeted and full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

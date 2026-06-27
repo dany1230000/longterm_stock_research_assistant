@@ -69,6 +69,8 @@ def export_static_00631l_data(
         strict=strict,
     )
     catalog_row_count = int(catalog_payload.get("rowCount") or 0)
+    etf_history_row_count = int(etf_history_payload["rowCount"])
+    etf_out_of_catalog_count = max(0, etf_history_row_count - catalog_row_count)
     catalog_min_rows = max(0, int(minimum_catalog_row_count))
     catalog_ready = catalog_min_rows == 0 or catalog_row_count >= catalog_min_rows
     if catalog_min_rows > 0 and not catalog_ready:
@@ -96,6 +98,7 @@ def export_static_00631l_data(
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
         "etfPriceHistoryAttemptedCount": etf_history_payload.get("attemptedCount", 0),
+        "etfPriceHistoryOutOfCatalogCount": etf_out_of_catalog_count,
         "etfPriceHistoryGapReasonCounts": etf_history_payload.get(
             "gapReasonCounts",
             {},
@@ -139,10 +142,11 @@ def export_static_00631l_data(
         "minimumRowCount": required_rows,
         "etfCatalogRowCount": catalog_row_count,
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
-        "etfPriceHistoryRowCount": etf_history_payload["rowCount"],
+        "etfPriceHistoryRowCount": etf_history_row_count,
         "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
         "etfPriceHistoryAttemptedCount": etf_history_payload.get("attemptedCount", 0),
+        "etfPriceHistoryOutOfCatalogCount": etf_out_of_catalog_count,
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
         "etfPriceHistoryCoverageTierCounts": etf_history_payload.get(
             "coverageTierCounts",
@@ -181,10 +185,11 @@ def export_static_00631l_data(
         "minimumRowCount": required_rows,
         "etfCatalogRowCount": catalog_row_count,
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
-        "etfPriceHistoryRowCount": etf_history_payload["rowCount"],
+        "etfPriceHistoryRowCount": etf_history_row_count,
         "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
         "etfPriceHistoryAttemptedCount": etf_history_payload.get("attemptedCount", 0),
+        "etfPriceHistoryOutOfCatalogCount": etf_out_of_catalog_count,
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
         "etfPriceHistoryCoverageTierCounts": etf_history_payload.get(
             "coverageTierCounts",
@@ -295,6 +300,10 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         "etfPriceHistoryRowCount": etf_history_row_count,
         "etfPriceHistoryReadyCount": etf_history_ready_count,
         "etfPriceHistoryMissingCount": etf_history_missing_count,
+        "etfPriceHistoryOutOfCatalogCount": int(
+            manifest.get("etfPriceHistoryOutOfCatalogCount")
+            or max(0, etf_history_row_count - catalog_row_count)
+        ),
         "etfPriceHistoryAttemptedCount": int(
             manifest.get("etfPriceHistoryAttemptedCount")
             or etf_history_index.get("attemptedCount")

@@ -473,6 +473,7 @@ EtfOperationsStatus _cachedOperationsStatus(EtfOperationsStatus status) {
     etfPriceHistoryReadyCount: status.etfPriceHistoryReadyCount,
     etfPriceHistoryMissingCount: status.etfPriceHistoryMissingCount,
     etfPriceHistoryAttemptedCount: status.etfPriceHistoryAttemptedCount,
+    etfPriceHistoryOutOfCatalogCount: status.etfPriceHistoryOutOfCatalogCount,
     etfPriceHistoryCoverageTierCounts: status.etfPriceHistoryCoverageTierCounts,
     etfPriceHistoryGapReasonCounts: status.etfPriceHistoryGapReasonCounts,
     etfPriceHistoryDataTime: status.etfPriceHistoryDataTime,
@@ -564,6 +565,7 @@ EtfOperationsStatus _backendDisconnectedOperationsStatus(
     etfPriceHistoryReadyCount: status.etfPriceHistoryReadyCount,
     etfPriceHistoryMissingCount: status.etfPriceHistoryMissingCount,
     etfPriceHistoryAttemptedCount: status.etfPriceHistoryAttemptedCount,
+    etfPriceHistoryOutOfCatalogCount: status.etfPriceHistoryOutOfCatalogCount,
     etfPriceHistoryCoverageTierCounts: status.etfPriceHistoryCoverageTierCounts,
     etfPriceHistoryGapReasonCounts: status.etfPriceHistoryGapReasonCounts,
     etfPriceHistoryDataTime: status.etfPriceHistoryDataTime,
@@ -686,6 +688,7 @@ EtfOperationsStatus _mergeOperationsPriceHistory(
     etfPriceHistoryReadyCount: primary.etfPriceHistoryReadyCount,
     etfPriceHistoryMissingCount: primary.etfPriceHistoryMissingCount,
     etfPriceHistoryAttemptedCount: primary.etfPriceHistoryAttemptedCount,
+    etfPriceHistoryOutOfCatalogCount: primary.etfPriceHistoryOutOfCatalogCount,
     etfPriceHistoryCoverageTierCounts:
         primary.etfPriceHistoryCoverageTierCounts,
     etfPriceHistoryGapReasonCounts: primary.etfPriceHistoryGapReasonCounts,

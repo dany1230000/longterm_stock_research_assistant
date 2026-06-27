@@ -1266,6 +1266,7 @@ class EtfOperationsStatus {
     this.etfPriceHistoryReadyCount = 0,
     this.etfPriceHistoryMissingCount = 0,
     this.etfPriceHistoryAttemptedCount = 0,
+    this.etfPriceHistoryOutOfCatalogCount = 0,
     this.etfPriceHistoryCoverageTierCounts = const {},
     this.etfPriceHistoryGapReasonCounts = const {},
     this.etfPriceHistoryDataTime,
@@ -1350,6 +1351,7 @@ class EtfOperationsStatus {
       etfPriceHistoryReadyCount: 0,
       etfPriceHistoryMissingCount: 0,
       etfPriceHistoryAttemptedCount: 0,
+      etfPriceHistoryOutOfCatalogCount: 0,
       etfPriceHistoryCoverageTierCounts: const {},
       etfPriceHistoryGapReasonCounts: const {},
       etfPriceHistoryDataTime: null,
@@ -1438,6 +1440,7 @@ class EtfOperationsStatus {
   final int etfPriceHistoryReadyCount;
   final int etfPriceHistoryMissingCount;
   final int etfPriceHistoryAttemptedCount;
+  final int etfPriceHistoryOutOfCatalogCount;
   final Map<String, int> etfPriceHistoryCoverageTierCounts;
   final Map<String, int> etfPriceHistoryGapReasonCounts;
   final DateTime? etfPriceHistoryDataTime;

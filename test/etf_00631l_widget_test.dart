@@ -250,11 +250,9 @@ void main() {
 
     expect(find.text('228 / 344'), findsWidgets);
     expect(find.text('116'), findsWidgets);
-    expect(find.text('資料補齊動作'), findsOneWidget);
-    expect(
-      find.textContaining('scripts\\00631l_import_missing_etf_batch.cmd'),
-      findsOneWidget,
-    );
+    expect(find.text('資料整理'), findsOneWidget);
+    expect(find.textContaining('缺口已分類'), findsOneWidget);
+    expect(find.textContaining('scheduled static export'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -1264,6 +1262,7 @@ void main() {
     expect(find.text('5.42-public-release-wait'), findsOneWidget);
     expect(find.text('資料補齊動作'), findsOneWidget);
     expect(find.text('資料缺口原因'), findsOneWidget);
+    expect(find.textContaining('retained history 0'), findsOneWidget);
     expect(
       find.textContaining(
         'scripts\\00631l_import_etf_price_history.cmd --status-only',
@@ -1613,6 +1612,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
   int? historyRowCount,
   int missingCount = 0,
   int attemptedCount = 0,
+  int outOfCatalogCount = 0,
   Map<String, int> gapReasonCounts = const {
     'official_empty': 0,
     'not_saved': 0,
@@ -1666,6 +1666,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     etfPriceHistoryReadyCount: readyCount,
     etfPriceHistoryMissingCount: missingCount,
     etfPriceHistoryAttemptedCount: attemptedCount,
+    etfPriceHistoryOutOfCatalogCount: outOfCatalogCount,
     etfPriceHistoryCoverageTierCounts: tierCounts,
     etfPriceHistoryGapReasonCounts: gapReasonCounts,
     etfPriceHistoryDataTime: now,

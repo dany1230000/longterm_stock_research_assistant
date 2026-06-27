@@ -198,6 +198,7 @@ void main() {
     expect(status.etfPriceHistoryRowCount, 5);
     expect(status.etfPriceHistoryReadyCount, 5);
     expect(status.etfPriceHistoryAttemptedCount, 2);
+    expect(status.etfPriceHistoryOutOfCatalogCount, 1);
     expect(status.etfPriceHistoryCoverageTierCounts['long_term'], 2);
     expect(status.etfPriceHistoryCoverageTierCounts['recent'], 3);
     expect(status.etfPriceHistoryGapReasonCounts['not_saved'], 0);
@@ -326,6 +327,7 @@ void main() {
     expect(status.etfPriceHistoryReadyCount, 1);
     expect(status.etfPriceHistoryMissingCount, 2);
     expect(status.etfPriceHistoryAttemptedCount, 1);
+    expect(status.etfPriceHistoryOutOfCatalogCount, 1);
     expect(status.etfPriceHistoryCoverageTierCounts['recent'], 1);
     expect(status.etfPriceHistoryGapReasonCounts['not_saved'], 2);
     expect(status.staticReleaseAppVersion, '5.42-public-release-wait');
@@ -873,6 +875,7 @@ Map<String, Object?> _operationsStatusPayload() {
       'rowCount': 5,
       'readyCount': 5,
       'attemptedCount': 2,
+      'outOfCatalogCount': 1,
       'coverageTierCounts': {
         'long_term': 2,
         'recent': 3,
@@ -1148,6 +1151,7 @@ Map<String, Object?> _staticStatusPayload() {
     'rowCount': 3,
     'etfPriceHistoryMissingCount': 2,
     'etfPriceHistoryAttemptedCount': 1,
+    'etfPriceHistoryOutOfCatalogCount': 1,
     'isCompleteFromListing': false,
     'isStale': false,
     'outputDir': 'web/00631l-static-data',
@@ -1178,6 +1182,7 @@ Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
     'readyCount': 1,
     'missingCount': 2,
     'attemptedCount': 1,
+    'outOfCatalogCount': 1,
     'coverageTierCounts': {
       'long_term': 0,
       'recent': 1,

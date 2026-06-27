@@ -1619,6 +1619,11 @@ rows. Classified out-of-catalog history rows are reported as
 `etfPriceHistoryOutOfCatalogCount` instead of causing a public static-data WARN
 by themselves. Summary: `docs\00631l_v6_5_public_catalog_universe.md`.
 
+v6.6 carries `etfPriceHistoryOutOfCatalogCount` into static export, backend
+operations status, Flutter repositories, and the app status UI. Classified
+missing histories are shown separately from unclassified gaps. Summary:
+`docs\00631l_v6_6_etf_library_status.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

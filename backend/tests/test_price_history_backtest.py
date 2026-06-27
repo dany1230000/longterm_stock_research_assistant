@@ -518,6 +518,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
 
         self.assertEqual(status["etfPriceHistoryRowCount"], 2)
         self.assertEqual(status["etfPriceHistoryReadyCount"], 2)
+        self.assertEqual(status["etfPriceHistoryOutOfCatalogCount"], 2)
         self.assertEqual(status["etfPriceHistoryCoverageTierCounts"]["long_term"], 1)
         self.assertEqual(status["etfPriceHistoryCoverageTierCounts"]["recent"], 1)
 
@@ -531,6 +532,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 "etfPriceHistoryReadyCount": 228,
                 "etfPriceHistoryRowCount": 228,
                 "etfPriceHistoryMissingCount": 116,
+                "etfPriceHistoryOutOfCatalogCount": 2,
                 "etfCatalogRowCount": 344,
                 "etfPriceHistoryCoverageTierCounts": {
                     "long_term": 8,
@@ -549,6 +551,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertIn("etfRows=228", line)
         self.assertIn("etfCatalogRows=344", line)
         self.assertIn("etfMissing=116", line)
+        self.assertIn("etfOutOfCatalog=2", line)
         self.assertIn("tiers=long_term:8,recent:220,unavailable:0,error:0", line)
 
     def test_static_export_summary_line_does_not_infer_missing_tier_counts(self) -> None:
@@ -581,6 +584,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 "etfCatalogRowCount": 345,
                 "etfPriceHistoryReadyCount": 230,
                 "etfPriceHistoryRowCount": 230,
+                "etfPriceHistoryOutOfCatalogCount": 2,
                 "etfPriceHistoryCoverageTierCounts": {
                     "long_term": 8,
                     "recent": 222,
@@ -598,6 +602,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
 
         self.assertEqual(compact["rowCount"], 2835)
         self.assertEqual(compact["etfPriceHistoryReadyCount"], 230)
+        self.assertEqual(compact["etfPriceHistoryOutOfCatalogCount"], 2)
         self.assertEqual(compact["warningCount"], 2)
         self.assertEqual(compact["warningsSample"], ["seed merged"])
         self.assertNotIn("files", compact)

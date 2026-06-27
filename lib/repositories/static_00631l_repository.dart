@@ -211,6 +211,11 @@ class Static00631LRepository extends Mock00631LRepository {
       etfHistoryPayload?['attemptedCount'] ??
           statusPayload?['etfPriceHistoryAttemptedCount'],
     );
+    final etfHistoryOutOfCatalogCount = _int(
+      etfHistoryPayload?['outOfCatalogCount'] ??
+          statusPayload?['etfPriceHistoryOutOfCatalogCount'] ??
+          (etfHistoryRowCount - catalogRowCount).clamp(0, etfHistoryRowCount),
+    );
     final etfHistoryCoverageTierCounts =
         _intMap(etfHistoryPayload?['coverageTierCounts']);
     final etfHistoryGapReasonCounts = _intMap(
@@ -235,6 +240,7 @@ class Static00631LRepository extends Mock00631LRepository {
         etfPriceHistoryReadyCount: etfHistoryReadyCount,
         etfPriceHistoryMissingCount: etfHistoryMissingCount,
         etfPriceHistoryAttemptedCount: etfHistoryAttemptedCount,
+        etfPriceHistoryOutOfCatalogCount: etfHistoryOutOfCatalogCount,
         etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
         etfPriceHistoryGapReasonCounts: etfHistoryGapReasonCounts,
         etfPriceHistoryDataTime: etfHistoryDataTime,
@@ -264,6 +270,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryReadyCount: etfHistoryReadyCount,
       etfPriceHistoryMissingCount: etfHistoryMissingCount,
       etfPriceHistoryAttemptedCount: etfHistoryAttemptedCount,
+      etfPriceHistoryOutOfCatalogCount: etfHistoryOutOfCatalogCount,
       etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
       etfPriceHistoryGapReasonCounts: etfHistoryGapReasonCounts,
       etfPriceHistoryDataTime: etfHistoryDataTime,
@@ -294,6 +301,7 @@ class Static00631LRepository extends Mock00631LRepository {
     int etfPriceHistoryReadyCount = 0,
     int etfPriceHistoryMissingCount = 0,
     int etfPriceHistoryAttemptedCount = 0,
+    int etfPriceHistoryOutOfCatalogCount = 0,
     Map<String, int> etfPriceHistoryCoverageTierCounts = const {},
     Map<String, int> etfPriceHistoryGapReasonCounts = const {},
     DateTime? etfPriceHistoryDataTime,
@@ -349,6 +357,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryReadyCount: etfPriceHistoryReadyCount,
       etfPriceHistoryMissingCount: etfPriceHistoryMissingCount,
       etfPriceHistoryAttemptedCount: etfPriceHistoryAttemptedCount,
+      etfPriceHistoryOutOfCatalogCount: etfPriceHistoryOutOfCatalogCount,
       etfPriceHistoryCoverageTierCounts: etfPriceHistoryCoverageTierCounts,
       etfPriceHistoryGapReasonCounts: etfPriceHistoryGapReasonCounts,
       etfPriceHistoryDataTime: etfPriceHistoryDataTime,
