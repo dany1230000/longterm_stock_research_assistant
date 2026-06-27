@@ -83,3 +83,9 @@
 - Added `docs\00631l_v6_1_public_probe_batches.md` and release-check/docs index entries.
 - Targeted v6.1 validation PASS: `py -m unittest backend.tests.test_static_pages_pipeline backend.tests.test_release_check`.
 - Full v6.1 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (263 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.
+- v6.1 committed/pushed as `d89f554`, tag `00631l-lab-v6.1-public-probe-batches`.
+- Public Pages marker updated to v6.1 and public static check PASS. Attempted count increased to 100; `not_saved` dropped to 16; `official_empty=80`; `source_error=20`.
+- Started v6.2 to expose the remaining unprobed ETF gap as `etfPriceHistoryUnclassifiedGapCount`.
+- Updated public static checker, tests, README, docs index, release-check artifact list, and v6.2 summary.
+- Targeted v6.2 validation PASS: `py -m unittest backend.tests.test_public_static_data_check backend.tests.test_release_check`.
+- Full v6.2 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (264 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.

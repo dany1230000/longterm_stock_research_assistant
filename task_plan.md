@@ -176,6 +176,25 @@ Completed in v6.1:
 - Pages workflow runs three 20-symbol missing probe batches after restore.
 - Local Pages build mirrors the same three-batch probe.
 - Targeted and full validation passed with accepted WARN states only.
+- Public Pages marker and static check passed on v6.1. Public attempted count
+  increased to 100 and `not_saved` dropped to 16.
+
+## Phase 14 - v6.2 Public Unclassified ETF Gap
+
+Status: complete
+
+Objective: make the remaining unprobed ETF history gap visible as its own
+public static-data check metric.
+
+- Add `etfPriceHistoryUnclassifiedGapCount` to the public static checker.
+- Derive it from `etfPriceHistoryGapReasonCounts.not_saved`.
+- Print it in the compact summary as `etfUnclassified`.
+- Add tests and docs.
+
+Completed in v6.2:
+
+- Public static checker now reports unclassified ETF gaps directly.
+- Targeted and full validation passed with accepted WARN states only.
 
 ## Phase 5 - Backtest and Position UX
 

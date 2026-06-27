@@ -1601,6 +1601,11 @@ restoring public attempt evidence, so remaining ETF history gaps can be
 classified faster while keeping static export resilient. Summary:
 `docs\00631l_v6_1_public_probe_batches.md`.
 
+v6.2 adds `etfPriceHistoryUnclassifiedGapCount` to the public static-data check,
+making the remaining unprobed ETF history gap visible without reading the full
+gap-reason map. Summary:
+`docs\00631l_v6_2_public_unclassified_gap.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

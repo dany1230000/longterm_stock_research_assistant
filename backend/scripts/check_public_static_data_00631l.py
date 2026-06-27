@@ -46,6 +46,7 @@ def main() -> int:
         f"etfRows={payload.get('etfPriceHistoryRowCount') or 0} "
         f"etfCompletionGap={payload.get('etfPriceHistoryCompletionGap') or 0} "
         f"etfAttempted={payload.get('etfPriceHistoryAttemptedCount') or 0} "
+        f"etfUnclassified={payload.get('etfPriceHistoryUnclassifiedGapCount') or 0} "
         f"etfCatalogRows={payload.get('etfCatalogRowCount') or 0} "
         f"gap={_gap_reason_summary(payload.get('etfPriceHistoryGapReasonCounts'))} "
         f"releaseMatchesExpected={payload.get('releaseMatchesExpected')} "
@@ -112,6 +113,8 @@ def run_public_static_data_check(
     release_mismatch: list[str] = []
     etf_completion_total = max(catalog_rows, etf_history_rows, etf_ready)
     etf_completion_gap = max(0, etf_completion_total - etf_ready)
+    gap_counts = gap_reason_counts if isinstance(gap_reason_counts, dict) else {}
+    etf_unclassified_gap = _int(gap_counts.get("not_saved"))
 
     if not failures:
         if row_count < 2800:
@@ -166,13 +169,12 @@ def run_public_static_data_check(
         "etfPriceHistoryCompletionTotal": etf_completion_total,
         "etfPriceHistoryCompletionGap": etf_completion_gap,
         "etfPriceHistoryAttemptedCount": etf_attempted,
+        "etfPriceHistoryUnclassifiedGapCount": etf_unclassified_gap,
         "etfPriceHistoryCoverageTierCounts": manifest.get(
             "etfPriceHistoryCoverageTierCounts",
         )
         or {},
-        "etfPriceHistoryGapReasonCounts": gap_reason_counts
-        if isinstance(gap_reason_counts, dict)
-        else {},
+        "etfPriceHistoryGapReasonCounts": gap_counts,
         "warnings": warnings,
         "failures": failures,
     }

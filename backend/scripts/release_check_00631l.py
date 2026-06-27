@@ -485,6 +485,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_99_skip_attempted_probe.md",
         "docs/00631l_v6_0_public_attempt_carry_forward.md",
         "docs/00631l_v6_1_public_probe_batches.md",
+        "docs/00631l_v6_2_public_unclassified_gap.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
