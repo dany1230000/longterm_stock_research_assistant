@@ -1525,6 +1525,13 @@ ETF history gaps point directly to `scripts\00631l_import_missing_etf_batch.cmd`
 and the follow-up static status check. Summary:
 `docs\00631l_v5_87_etf_gap_action.md`.
 
+v5.88 makes GitHub Pages static publishing faster. Push builds now skip the
+broad all-catalog recent ETF refresh and keep the selected ETF import plus
+missing-only batch; weekday schedule or manual dispatch with
+`full_etf_refresh=true` still runs the broad refresh. Local full refresh is
+available with `scripts\00631l_build_pages_static.cmd --full-etf-refresh`.
+Summary: `docs\00631l_v5_88_pages_fast_static_build.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

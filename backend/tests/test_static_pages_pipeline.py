@@ -6,11 +6,16 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class StaticPagesPipelineTests(unittest.TestCase):
-    def test_github_pages_broad_import_uses_seed_catalog(self) -> None:
+    def test_github_pages_full_catalog_import_is_schedule_or_manual_only(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "deploy_web.yml").read_text(
             encoding="utf-8",
         )
 
+        self.assertIn("full_etf_refresh", workflow)
+        self.assertIn(
+            "if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full_etf_refresh == 'true')",
+            workflow,
+        )
         self.assertIn("--from-catalog", workflow)
         self.assertIn(
             "--catalog-path backend/seeds/twse_etf_catalog_seed.json",
@@ -27,11 +32,14 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--multi-etf-codes all-catalog", workflow)
         self.assertIn("fetch-depth: 0", workflow)
 
-    def test_local_pages_build_broad_import_uses_seed_catalog(self) -> None:
+    def test_local_pages_build_full_catalog_import_is_explicit(self) -> None:
         script = (ROOT / "scripts" / "00631l_build_pages_static.cmd").read_text(
             encoding="utf-8",
         )
 
+        self.assertIn("--full-etf-refresh", script)
+        self.assertIn("FULL_ETF_REFRESH", script)
+        self.assertIn("Skipping broad all-catalog ETF recent refresh", script)
         self.assertIn("--from-catalog", script)
         self.assertIn(
             "--catalog-path backend\\seeds\\twse_etf_catalog_seed.json",

@@ -2,6 +2,11 @@ name: Deploy Flutter Web To GitHub Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      full_etf_refresh:
+        description: "Run broad all-catalog recent ETF refresh before export"
+        required: false
+        default: "false"
   schedule:
     - cron: "30 8 * * 1-5"
   push:
@@ -52,6 +57,7 @@ jobs:
         run: python backend/scripts/import_etf_price_history.py --codes 00631L,0050,0056,006208,00692,00713,00757,00850,00878,00881,00919,00922,00923,00929,00940 --start-date 2026-01-01 --output-dir backend/data/etf_price_history --summary-only --progress-every 5
 
       - name: Import broad ETF recent price history
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full_etf_refresh == 'true')
         timeout-minutes: 15
         continue-on-error: true
         run: python backend/scripts/import_etf_price_history.py --from-catalog --catalog-path backend/seeds/twse_etf_catalog_seed.json --limit 0 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 25
