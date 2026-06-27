@@ -135,6 +135,7 @@ def export_static_00631l_data(
             "status": "status.json",
             "etfCatalog": "etf_catalog.json",
             "etfPriceHistoryIndex": "etf_price_history_index.json",
+            "etfPriceHistoryGaps": "etf_price_history_gaps.json",
             "release": "release.json",
         },
         "release": release_payload,
@@ -145,6 +146,10 @@ def export_static_00631l_data(
         "etfPriceHistoryRowCount": etf_history_row_count,
         "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
+        "etfPriceHistoryGapDetailCount": etf_history_payload.get(
+            "gapDetailCount",
+            0,
+        ),
         "etfPriceHistoryAttemptedCount": etf_history_payload.get("attemptedCount", 0),
         "etfPriceHistoryOutOfCatalogCount": etf_out_of_catalog_count,
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
@@ -188,6 +193,10 @@ def export_static_00631l_data(
         "etfPriceHistoryRowCount": etf_history_row_count,
         "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
+        "etfPriceHistoryGapDetailCount": etf_history_payload.get(
+            "gapDetailCount",
+            0,
+        ),
         "etfPriceHistoryAttemptedCount": etf_history_payload.get("attemptedCount", 0),
         "etfPriceHistoryOutOfCatalogCount": etf_out_of_catalog_count,
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
@@ -225,6 +234,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             "etfCatalogRowCount": 0,
             "etfCatalogDataTime": None,
             "etfPriceHistoryAttemptedCount": 0,
+            "etfPriceHistoryGapDetailCount": 0,
             "minimumCatalogRowCount": 0,
             "overallStatus": "WARN",
             "warnings": ["Static public data export does not exist yet."],
@@ -249,6 +259,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             "etfCatalogRowCount": 0,
             "etfCatalogDataTime": None,
             "etfPriceHistoryAttemptedCount": 0,
+            "etfPriceHistoryGapDetailCount": 0,
             "minimumCatalogRowCount": 0,
             "overallStatus": "FAIL",
             "warnings": [],
@@ -300,6 +311,12 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         "etfPriceHistoryRowCount": etf_history_row_count,
         "etfPriceHistoryReadyCount": etf_history_ready_count,
         "etfPriceHistoryMissingCount": etf_history_missing_count,
+        "etfPriceHistoryGapDetailCount": int(
+            manifest.get("etfPriceHistoryGapDetailCount")
+            or etf_history_index.get("gapDetailCount")
+            or _read_optional_json(output / "etf_price_history_gaps.json").get("rowCount")
+            or 0,
+        ),
         "etfPriceHistoryOutOfCatalogCount": int(
             manifest.get("etfPriceHistoryOutOfCatalogCount")
             or max(0, etf_history_row_count - catalog_row_count)
@@ -386,6 +403,24 @@ def _export_static_etf_price_history(
     history_dir = output_dir / "etf_price_history"
     history_dir.mkdir(parents=True, exist_ok=True)
     if store is None:
+        gap_payload = {
+            "sourceStatus": "unavailable",
+            "sourceContract": "twse_multi_etf_static_price_history_gaps",
+            "generatedAt": generated_at,
+            "dataTime": None,
+            "rowCount": len(codes),
+            "reasonCounts": {"store_not_configured": len(codes)},
+            "items": [
+                {
+                    "code": str(code),
+                    "gapReason": "store_not_configured",
+                    "rowCount": 0,
+                    "sourceStatus": "unavailable",
+                    "errorMessage": "ETF price history store is not configured.",
+                }
+                for code in codes
+            ],
+        }
         payload = {
             "sourceStatus": "unavailable",
             "sourceContract": "twse_multi_etf_static_price_history_index",
@@ -394,12 +429,14 @@ def _export_static_etf_price_history(
             "rowCount": 0,
             "readyCount": 0,
             "missingCount": len(codes),
+            "gapDetailCount": len(codes),
             "attemptedCount": 0,
             "gapReasonCounts": {"store_not_configured": len(codes)},
             "items": [],
             "errorMessage": "ETF price history store is not configured.",
         }
         _write_json(output_dir / "etf_price_history_index.json", payload)
+        _write_json(output_dir / "etf_price_history_gaps.json", gap_payload)
         return payload
 
     items: list[dict[str, Any]] = []
@@ -432,9 +469,19 @@ def _export_static_etf_price_history(
 
     tier_counts = _coverage_tier_counts(items)
     gap_reason_counts = _gap_reason_counts(items)
+    gap_detail_items = _gap_detail_items(items)
     if strict and codes and ready_count == 0:
         failures.append("No selected ETF price history is available for static export.")
 
+    gap_payload = {
+        "sourceStatus": "static_official" if items else "unavailable",
+        "sourceContract": "twse_multi_etf_static_price_history_gaps",
+        "generatedAt": generated_at,
+        "dataTime": latest,
+        "rowCount": len(gap_detail_items),
+        "reasonCounts": gap_reason_counts,
+        "items": gap_detail_items,
+    }
     payload = {
         "sourceStatus": "static_official" if ready_count else "unavailable",
         "sourceContract": "twse_multi_etf_static_price_history_index",
@@ -443,6 +490,7 @@ def _export_static_etf_price_history(
         "rowCount": len(items),
         "readyCount": ready_count,
         "missingCount": len(missing_codes),
+        "gapDetailCount": len(gap_detail_items),
         "attemptedCount": sum(1 for item in items if item.get("lastImportAttempt")),
         "missingSample": missing_codes[:10],
         "coverageTierCounts": tier_counts,
@@ -451,6 +499,7 @@ def _export_static_etf_price_history(
         "errorMessage": None if ready_count else "No selected ETF price history is available.",
     }
     _write_json(output_dir / "etf_price_history_index.json", payload)
+    _write_json(output_dir / "etf_price_history_gaps.json", gap_payload)
     return payload
 
 
@@ -501,6 +550,41 @@ def _gap_reason_counts(items: list[dict[str, Any]]) -> dict[str, int]:
             )
         counts[reason] = counts.get(reason, 0) + 1
     return counts
+
+
+def _gap_detail_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    details: list[dict[str, Any]] = []
+    for item in items:
+        row_count = int(item.get("rowCount") or 0)
+        validation_failure_count = int(item.get("validationFailureCount") or 0)
+        if row_count >= 2 and validation_failure_count == 0:
+            continue
+        attempt = item.get("lastImportAttempt")
+        if not isinstance(attempt, dict):
+            attempt = {}
+        reason = str(item.get("gapReason") or "")
+        if not reason:
+            reason = _gap_reason(
+                row_count=row_count,
+                source_status=str(item.get("sourceStatus") or ""),
+                validation_failure_count=validation_failure_count,
+            )
+        details.append(
+            {
+                "code": str(item.get("code") or ""),
+                "gapReason": reason,
+                "coverageTier": str(item.get("coverageTier") or "unavailable"),
+                "rowCount": row_count,
+                "validationFailureCount": validation_failure_count,
+                "sourceStatus": str(item.get("sourceStatus") or "unavailable"),
+                "sourceUrl": str(item.get("sourceUrl") or ""),
+                "lastAttemptAt": attempt.get("attemptedAt"),
+                "requestedMonths": int(attempt.get("requestedMonths") or 0),
+                "errorMessage": item.get("errorMessage")
+                or attempt.get("errorMessage"),
+            }
+        )
+    return sorted(details, key=lambda row: str(row.get("code") or ""))
 
 
 def _gap_reason(

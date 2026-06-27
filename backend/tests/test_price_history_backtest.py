@@ -229,6 +229,10 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 (root / "static" / "manifest.json").read_text(encoding="utf-8")
             )
             self.assertEqual(manifest["files"]["etfCatalog"], "etf_catalog.json")
+            self.assertEqual(
+                manifest["files"]["etfPriceHistoryGaps"],
+                "etf_price_history_gaps.json",
+            )
             self.assertEqual(manifest["files"]["release"], "release.json")
             self.assertEqual(
                 manifest["release"]["releaseTag"],
@@ -316,15 +320,25 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
+            gaps = json.loads(
+                (root / "static" / "etf_price_history_gaps.json").read_text(
+                    encoding="utf-8"
+                )
+            )
 
         self.assertEqual(result["overallStatus"], "PASS")
         self.assertEqual(result["etfPriceHistoryRowCount"], 2)
         self.assertEqual(result["etfPriceHistoryReadyCount"], 1)
+        self.assertEqual(result["etfPriceHistoryGapDetailCount"], 1)
         self.assertEqual(result["etfPriceHistoryCoverageTierCounts"]["unavailable"], 1)
         self.assertEqual(index["rowCount"], 2)
         self.assertEqual(index["readyCount"], 1)
+        self.assertEqual(index["gapDetailCount"], 1)
         self.assertEqual(index["items"][1]["code"], "00999")
         self.assertEqual(index["items"][1]["coverageTier"], "unavailable")
+        self.assertEqual(gaps["rowCount"], 1)
+        self.assertEqual(gaps["items"][0]["code"], "00999")
+        self.assertEqual(gaps["items"][0]["gapReason"], "not_saved")
 
     def test_static_export_all_catalog_resolves_catalog_codes(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -532,6 +546,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 "etfPriceHistoryReadyCount": 228,
                 "etfPriceHistoryRowCount": 228,
                 "etfPriceHistoryMissingCount": 116,
+                "etfPriceHistoryGapDetailCount": 116,
                 "etfPriceHistoryOutOfCatalogCount": 2,
                 "etfCatalogRowCount": 344,
                 "etfPriceHistoryCoverageTierCounts": {
@@ -551,6 +566,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertIn("etfRows=228", line)
         self.assertIn("etfCatalogRows=344", line)
         self.assertIn("etfMissing=116", line)
+        self.assertIn("etfGapDetails=116", line)
         self.assertIn("etfOutOfCatalog=2", line)
         self.assertIn("tiers=long_term:8,recent:220,unavailable:0,error:0", line)
 
@@ -568,6 +584,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
 
         self.assertIn("etfReady=15", line)
         self.assertIn("etfMissing=0", line)
+        self.assertIn("etfGapDetails=0", line)
         self.assertIn("tiers=not_available", line)
 
     def test_static_export_compact_response_keeps_cli_output_short(self) -> None:
@@ -584,6 +601,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 "etfCatalogRowCount": 345,
                 "etfPriceHistoryReadyCount": 230,
                 "etfPriceHistoryRowCount": 230,
+                "etfPriceHistoryGapDetailCount": 114,
                 "etfPriceHistoryOutOfCatalogCount": 2,
                 "etfPriceHistoryCoverageTierCounts": {
                     "long_term": 8,
@@ -603,6 +621,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertEqual(compact["rowCount"], 2835)
         self.assertEqual(compact["etfPriceHistoryReadyCount"], 230)
         self.assertEqual(compact["etfPriceHistoryOutOfCatalogCount"], 2)
+        self.assertEqual(compact["etfPriceHistoryGapDetailCount"], 114)
         self.assertEqual(compact["warningCount"], 2)
         self.assertEqual(compact["warningsSample"], ["seed merged"])
         self.assertNotIn("files", compact)

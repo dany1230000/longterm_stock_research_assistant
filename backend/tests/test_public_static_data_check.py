@@ -21,6 +21,7 @@ class PublicStaticDataCheckTests(unittest.TestCase):
                     "etfPriceHistoryRowCount": 347,
                     "etfPriceHistoryReadyCount": 230,
                     "etfPriceHistoryMissingCount": 117,
+                    "etfPriceHistoryGapDetailCount": 117,
                     "etfPriceHistoryAttemptedCount": 4,
                     "etfPriceHistoryCoverageTierCounts": {
                         "long_term": 8,
@@ -37,6 +38,11 @@ class PublicStaticDataCheckTests(unittest.TestCase):
                     "appVersion": "5.83-pages-missing-batch",
                     "gitSha": "180fd42",
                 }
+            if url.endswith("etf_price_history_gaps.json"):
+                return {
+                    "rowCount": 117,
+                    "items": [{"code": "00999", "gapReason": "not_saved"}],
+                }
             raise AssertionError(url)
 
         payload = run_public_static_data_check(
@@ -51,6 +57,7 @@ class PublicStaticDataCheckTests(unittest.TestCase):
         self.assertEqual(payload["etfPriceHistoryRowCount"], 347)
         self.assertEqual(payload["etfPriceHistoryReadyCount"], 230)
         self.assertEqual(payload["etfPriceHistoryMissingCount"], 117)
+        self.assertEqual(payload["etfPriceHistoryGapDetailCount"], 117)
         self.assertEqual(payload["etfPriceHistoryCompletionTotal"], 347)
         self.assertEqual(payload["etfPriceHistoryCompletionGap"], 117)
         self.assertEqual(payload["etfPriceHistoryAttemptedCount"], 4)
@@ -79,6 +86,8 @@ class PublicStaticDataCheckTests(unittest.TestCase):
                     "releaseTag": "00631l-lab-v5.97-pages-missing-probe",
                     "gitSha": "d0e87eb",
                 }
+            if url.endswith("etf_price_history_gaps.json"):
+                return {"rowCount": 114, "items": []}
             raise AssertionError(url)
 
         payload = run_public_static_data_check(
@@ -91,6 +100,39 @@ class PublicStaticDataCheckTests(unittest.TestCase):
         self.assertEqual(payload["etfPriceHistoryCompletionGap"], 114)
         self.assertEqual(payload["etfPriceHistoryOutOfCatalogCount"], 2)
         self.assertTrue(any("unclassified=2" in item for item in payload["warnings"]))
+
+    def test_warns_when_gap_detail_count_is_lower_than_missing_count(self) -> None:
+        def fetch_json(url: str) -> dict[str, object]:
+            if url.endswith("status.json"):
+                return {"sourceStatus": "static_official", "rowCount": 2837}
+            if url.endswith("manifest.json"):
+                return {
+                    "etfCatalogRowCount": 347,
+                    "etfPriceHistoryRowCount": 347,
+                    "etfPriceHistoryReadyCount": 232,
+                    "etfPriceHistoryMissingCount": 115,
+                    "etfPriceHistoryGapReasonCounts": {
+                        "official_empty": 95,
+                        "source_error": 20,
+                    },
+                }
+            if url.endswith("release.json"):
+                return {
+                    "releaseTag": "00631l-lab-v6.8-etf-gap-detail",
+                    "gitSha": "abc123",
+                }
+            if url.endswith("etf_price_history_gaps.json"):
+                return {"rowCount": 100, "items": []}
+            raise AssertionError(url)
+
+        payload = run_public_static_data_check(
+            "https://example.test/static",
+            fetch_json=fetch_json,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["etfPriceHistoryGapDetailCount"], 100)
+        self.assertTrue(any("gap detail count" in item for item in payload["warnings"]))
 
     def test_history_index_can_retain_classified_out_of_catalog_symbols(self) -> None:
         def fetch_json(url: str) -> dict[str, object]:

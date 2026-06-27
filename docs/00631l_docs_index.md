@@ -411,6 +411,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public catalog universe: `docs\00631l_v6_5_public_catalog_universe.md`
 - ETF library status: `docs\00631l_v6_6_etf_library_status.md`
 - Public gap release guard: `docs\00631l_v6_7_public_gap_release_guard.md`
+- ETF gap detail export: `docs\00631l_v6_8_etf_gap_detail_export.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

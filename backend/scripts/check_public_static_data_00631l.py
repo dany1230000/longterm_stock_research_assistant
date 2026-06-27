@@ -56,6 +56,7 @@ def main() -> int:
         f"etfReady={payload.get('etfPriceHistoryReadyCount') or 0} "
         f"etfRows={payload.get('etfPriceHistoryRowCount') or 0} "
         f"etfCompletionGap={payload.get('etfPriceHistoryCompletionGap') or 0} "
+        f"etfGapDetails={payload.get('etfPriceHistoryGapDetailCount') or 0} "
         f"etfAttempted={payload.get('etfPriceHistoryAttemptedCount') or 0} "
         f"etfUnclassified={payload.get('etfPriceHistoryUnclassifiedGapCount') or 0} "
         f"etfOutOfCatalog={payload.get('etfPriceHistoryOutOfCatalogCount') or 0} "
@@ -96,6 +97,10 @@ def run_public_static_data_check(
     except Exception as error:  # noqa: BLE001 - release marker is useful but non-critical.
         release = {}
         warnings.append(f"release.json: {error}")
+    try:
+        gap_details = fetch(urljoin(normalized_base, "etf_price_history_gaps.json"))
+    except Exception:
+        gap_details = {}
 
     row_count = _int(status.get("rowCount") or manifest.get("rowCount"))
     catalog_rows = _int(manifest.get("etfCatalogRowCount"))
@@ -105,6 +110,11 @@ def run_public_static_data_check(
     )
     etf_ready = _int(manifest.get("etfPriceHistoryReadyCount"))
     etf_missing = _int(manifest.get("etfPriceHistoryMissingCount"))
+    etf_gap_detail_count = _int(
+        manifest.get("etfPriceHistoryGapDetailCount")
+        or status.get("etfPriceHistoryGapDetailCount")
+        or gap_details.get("rowCount"),
+    )
     etf_attempted = _int(
         manifest.get("etfPriceHistoryAttemptedCount")
         or status.get("etfPriceHistoryAttemptedCount"),
@@ -147,6 +157,11 @@ def run_public_static_data_check(
                 "ETF unclassified gap above target: "
                 f"current={etf_unclassified_gap}, target={max_unclassified_gap}",
             )
+        if etf_gap_detail_count and etf_gap_detail_count < etf_missing:
+            warnings.append(
+                "ETF gap detail count is lower than missing count: "
+                f"details={etf_gap_detail_count}, missing={etf_missing}",
+            )
         if not release_tag:
             warnings.append("release marker is missing releaseTag")
         if source_status != "static_official":
@@ -187,6 +202,7 @@ def run_public_static_data_check(
         "etfPriceHistoryRowCount": etf_history_rows,
         "etfPriceHistoryReadyCount": etf_ready,
         "etfPriceHistoryMissingCount": etf_missing,
+        "etfPriceHistoryGapDetailCount": etf_gap_detail_count,
         "etfPriceHistoryCompletionTotal": etf_completion_total,
         "etfPriceHistoryCompletionGap": etf_completion_gap,
         "etfPriceHistoryAttemptedCount": etf_attempted,

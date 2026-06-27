@@ -1628,6 +1628,11 @@ v6.7 makes release check run the public static-data check with
 `--max-unclassified-gap 0`, so unclassified ETF history gaps cannot silently
 return. Summary: `docs\00631l_v6_7_public_gap_release_guard.md`.
 
+v6.8 adds `etf_price_history_gaps.json` to public static export so unavailable
+ETF histories have inspectable code-level reasons, and public checks report
+`etfPriceHistoryGapDetailCount`. Summary:
+`docs\00631l_v6_8_etf_gap_detail_export.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

@@ -309,6 +309,31 @@ Completed in v6.7:
   release is newer.
 - Targeted and full validation passed with accepted WARN states only.
 
+## Phase 20 - v6.8 ETF Gap Detail Export
+
+Status: complete
+
+Objective: make classified ETF history gaps inspectable at symbol level in the
+public static data contract.
+
+- Export `etf_price_history_gaps.json` beside the static ETF history index.
+- Include code-level gap reason, row count, source status, latest attempt time,
+  requested month count, and error message.
+- Surface `etfPriceHistoryGapDetailCount` in static status, manifest, and public
+  static-data checks.
+- Keep gap details as maintenance evidence only; do not treat unavailable
+  histories as usable backtest data.
+
+Completed in v6.8:
+
+- Static export writes `etf_price_history_gaps.json` and includes it in the
+  manifest files map.
+- Static status, static export summary, compact output, and public static checks
+  report `etfPriceHistoryGapDetailCount`.
+- Public static checks warn if the gap-detail file is present but has fewer
+  rows than the missing ETF history count.
+- Targeted and full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

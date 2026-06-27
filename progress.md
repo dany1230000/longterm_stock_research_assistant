@@ -159,3 +159,20 @@
   `flutter build web` PASS; backend tests PASS (268 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.7 committed/pushed as `2b286bb`, tag
+  `00631l-lab-v6.7-public-gap-release-guard`.
+- Public Pages marker updated to v6.7 and public static check passed with
+  `etfPriceHistoryUnclassifiedGapCount=0`, `etfPriceHistoryOutOfCatalogCount=0`,
+  ready 232 / rows 347, official empty 95, and source error 20.
+- Started v6.8 to export symbol-level ETF history gap details for public static
+  maintenance checks.
+- Added `etf_price_history_gaps.json` to static export, manifest/status
+  `etfPriceHistoryGapDetailCount`, and public static checker output.
+- Targeted v6.8 validation PASS: `py -m unittest
+  backend.tests.test_price_history_backtest
+  backend.tests.test_public_static_data_check backend.tests.test_release_check`.
+- Full v6.8 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (95 tests);
+  `flutter build web` PASS; backend tests PASS (269 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
