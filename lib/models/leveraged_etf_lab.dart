@@ -1270,6 +1270,7 @@ class EtfOperationsStatus {
     this.etfPriceHistoryOutOfCatalogCount = 0,
     this.etfPriceHistoryCoverageTierCounts = const {},
     this.etfPriceHistoryGapReasonCounts = const {},
+    this.etfPriceHistoryGapReasonSamples = const {},
     this.etfPriceHistoryDataTime,
     this.backtestStatus = 'unavailable',
     this.backtestAvailable = false,
@@ -1356,6 +1357,7 @@ class EtfOperationsStatus {
       etfPriceHistoryOutOfCatalogCount: 0,
       etfPriceHistoryCoverageTierCounts: const {},
       etfPriceHistoryGapReasonCounts: const {},
+      etfPriceHistoryGapReasonSamples: const {},
       etfPriceHistoryDataTime: null,
       backtestStatus: sourceStatusLabel,
       backtestAvailable: false,
@@ -1446,6 +1448,7 @@ class EtfOperationsStatus {
   final int etfPriceHistoryOutOfCatalogCount;
   final Map<String, int> etfPriceHistoryCoverageTierCounts;
   final Map<String, int> etfPriceHistoryGapReasonCounts;
+  final Map<String, List<String>> etfPriceHistoryGapReasonSamples;
   final DateTime? etfPriceHistoryDataTime;
   final String backtestStatus;
   final bool backtestAvailable;

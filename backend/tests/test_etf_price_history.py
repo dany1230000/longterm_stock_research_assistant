@@ -440,6 +440,8 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(index["gapReasonCounts"]["insufficient_rows"], 1)
         self.assertEqual(index["gapReasonCounts"]["validation_error"], 1)
         self.assertEqual(index["gapReasonCounts"]["not_saved"], 0)
+        self.assertEqual(index["gapReasonSamples"]["insufficient_rows"], ["0050"])
+        self.assertEqual(index["gapReasonSamples"]["validation_error"], ["00878"])
 
     def test_import_attempt_classifies_official_empty_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -467,6 +469,7 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(index["missingCount"], 1)
         self.assertEqual(index["gapDetailCount"], 1)
         self.assertEqual(index["attemptedCount"], 1)
+        self.assertEqual(index["gapReasonSamples"]["official_empty"], ["00999"])
 
     def test_index_response_can_include_catalog_only_missing_codes(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -363,6 +363,9 @@ class Proxy00631LRepository extends Official00631LRepository {
       etfPriceHistoryGapReasonCounts: _intMap(
         etfPriceHistory['gapReasonCounts'],
       ),
+      etfPriceHistoryGapReasonSamples: _stringListMap(
+        etfPriceHistory['gapReasonSamples'],
+      ),
       etfPriceHistoryDataTime:
           _wallClockDateTime(etfPriceHistory['dataTime']) ??
               _nullableDate(etfPriceHistory['dataTime']),
@@ -602,6 +605,15 @@ Map<String, int> _intMap(Object? value) {
     final number =
         item is num ? item.toInt() : int.tryParse(item.toString()) ?? 0;
     return MapEntry(key.toString(), number);
+  });
+}
+
+Map<String, List<String>> _stringListMap(Object? value) {
+  if (value is! Map) {
+    return const {};
+  }
+  return value.map((key, item) {
+    return MapEntry(key.toString(), _stringList(item));
   });
 }
 

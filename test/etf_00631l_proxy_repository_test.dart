@@ -203,6 +203,7 @@ void main() {
     expect(status.etfPriceHistoryCoverageTierCounts['long_term'], 2);
     expect(status.etfPriceHistoryCoverageTierCounts['recent'], 3);
     expect(status.etfPriceHistoryGapReasonCounts['not_saved'], 0);
+    expect(status.etfPriceHistoryGapReasonSamples, isEmpty);
     expect(status.etfPriceHistoryDataTime, DateTime(2026, 6, 12));
     expect(status.collectorOneShotCommand, contains('00631l_collect_snapshot'));
     expect(status.backendAppVersion, '4.54-test');
@@ -332,6 +333,8 @@ void main() {
     expect(status.etfPriceHistoryOutOfCatalogCount, 1);
     expect(status.etfPriceHistoryCoverageTierCounts['recent'], 1);
     expect(status.etfPriceHistoryGapReasonCounts['not_saved'], 2);
+    expect(status.etfPriceHistoryGapReasonSamples['not_saved'],
+        ['00631L', '00999']);
     expect(status.staticReleaseAppVersion, '5.42-public-release-wait');
     expect(status.staticReleaseTag, '00631l-lab-v5.42-public-release-wait');
     expect(
@@ -894,6 +897,7 @@ Map<String, Object?> _operationsStatusPayload() {
         'source_error': 0,
         'not_ready': 0,
       },
+      'gapReasonSamples': {},
       'dataTime': '2026-06-12',
       'isStale': false,
       'errorMessage': null,
@@ -1202,6 +1206,9 @@ Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
       'validation_error': 0,
       'source_error': 0,
       'not_ready': 0,
+    },
+    'gapReasonSamples': {
+      'not_saved': ['00631L', '00999'],
     },
     'items': [
       {

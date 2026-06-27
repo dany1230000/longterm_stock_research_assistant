@@ -12314,8 +12314,28 @@ String _etfGapReasonDetail(EtfOperationsStatus status) {
   return 'gap: ${parts.join(', ')}';
 }
 
+String _etfGapReasonSampleDetail(EtfOperationsStatus status) {
+  final samples = status.etfPriceHistoryGapReasonSamples;
+  if (samples.isEmpty) {
+    return 'sample codes unavailable';
+  }
+  final parts = <String>[];
+  for (final entry in samples.entries) {
+    final codes = entry.value.where((code) => code.trim().isNotEmpty).take(5);
+    if (codes.isEmpty) {
+      continue;
+    }
+    parts.add('${entry.key}: ${codes.join(', ')}');
+  }
+  if (parts.isEmpty) {
+    return 'sample codes unavailable';
+  }
+  return 'sample codes ${parts.join(' / ')}';
+}
+
 _StatusItem _etfHistoryGapReasonItem(EtfOperationsStatus status) {
   final detail = _etfGapReasonDetail(status);
+  final sampleDetail = _etfGapReasonSampleDetail(status);
   final missing = status.etfPriceHistoryMissingCount;
   final unclassified = status.etfPriceHistoryGapReasonCounts['not_saved'] ?? 0;
   final outOfCatalog = status.etfPriceHistoryOutOfCatalogCount;
@@ -12323,7 +12343,7 @@ _StatusItem _etfHistoryGapReasonItem(EtfOperationsStatus status) {
     label: '資料缺口原因',
     status: missing > 0 ? '${formatInteger(missing)} 檔待補' : 'clear',
     detail:
-        '$detail; 缺口明細 ${formatInteger(status.etfPriceHistoryGapDetailCount)}; attempted ${formatInteger(status.etfPriceHistoryAttemptedCount)}; retained history ${formatInteger(outOfCatalog)}',
+        '$detail; $sampleDetail; 缺口明細 ${formatInteger(status.etfPriceHistoryGapDetailCount)}; attempted ${formatInteger(status.etfPriceHistoryAttemptedCount)}; retained history ${formatInteger(outOfCatalog)}',
     action: unclassified > 0
         ? '可執行 scripts\\00631l_probe_missing_etf_reasons.cmd，將缺口分類成官方空資料、來源錯誤、驗證錯誤或可用資料。'
         : '目前 ETF history index 沒有待補缺口；維持 release check 即可。',

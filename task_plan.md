@@ -349,6 +349,21 @@ status and the app settings page.
   classified gap evidence from raw missing counts.
 - Add backend, repository, and widget tests.
 
+## Phase 22 - v6.10 Gap Reason Samples
+
+Status: complete
+
+Objective: make classified ETF history gaps easier to inspect without opening
+the full gap-detail JSON.
+
+- Add short `gapReasonSamples` code lists to backend ETF history index.
+- Export samples in static public status, manifest, ETF history index, and gap
+  detail files.
+- Carry samples through operations/status and Flutter repositories.
+- Show short sample codes in the app settings ETF data-library status.
+- Keep samples as maintenance evidence only; unavailable histories are still
+  excluded from history/backtest/comparison views.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

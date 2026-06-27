@@ -252,6 +252,10 @@ void main() {
     expect(find.text('116'), findsWidgets);
     expect(find.text('資料整理'), findsOneWidget);
     expect(find.textContaining('缺口已分類'), findsOneWidget);
+    expect(
+      find.textContaining('sample codes not_saved: 00999, 00998'),
+      findsOneWidget,
+    );
     expect(find.textContaining('scheduled static export'), findsOneWidget);
     _expectNoTradingActionText();
   });
@@ -1557,6 +1561,9 @@ class _EtfCatalogGapOperationsRepository extends Mock00631LRepository {
         'unavailable': 116,
         'error': 0,
       },
+      gapReasonSamples: const {
+        'not_saved': ['00999', '00998'],
+      },
     );
   }
 }
@@ -1622,6 +1629,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     'source_error': 0,
     'not_ready': 0,
   },
+  Map<String, List<String>> gapReasonSamples = const {},
 }) {
   final now = DateTime(2026, 6, 11, 10);
   return EtfOperationsStatus(
@@ -1671,6 +1679,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     etfPriceHistoryOutOfCatalogCount: outOfCatalogCount,
     etfPriceHistoryCoverageTierCounts: tierCounts,
     etfPriceHistoryGapReasonCounts: gapReasonCounts,
+    etfPriceHistoryGapReasonSamples: gapReasonSamples,
     etfPriceHistoryDataTime: now,
     backtestStatus: 'static_official',
     backtestAvailable: true,

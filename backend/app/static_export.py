@@ -103,6 +103,10 @@ def export_static_00631l_data(
             "gapReasonCounts",
             {},
         ),
+        "etfPriceHistoryGapReasonSamples": etf_history_payload.get(
+            "gapReasonSamples",
+            {},
+        ),
         "minimumCatalogRowCount": catalog_min_rows,
         "warnings": warnings,
         "failures": failures,
@@ -161,6 +165,10 @@ def export_static_00631l_data(
             "gapReasonCounts",
             {},
         ),
+        "etfPriceHistoryGapReasonSamples": etf_history_payload.get(
+            "gapReasonSamples",
+            {},
+        ),
         "minimumCatalogRowCount": catalog_min_rows,
         "coverageStart": status.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd"),
@@ -208,6 +216,10 @@ def export_static_00631l_data(
             "gapReasonCounts",
             {},
         ),
+        "etfPriceHistoryGapReasonSamples": etf_history_payload.get(
+            "gapReasonSamples",
+            {},
+        ),
         "minimumCatalogRowCount": catalog_min_rows,
         "release": release_payload,
         "warnings": warnings,
@@ -235,6 +247,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             "etfCatalogDataTime": None,
             "etfPriceHistoryAttemptedCount": 0,
             "etfPriceHistoryGapDetailCount": 0,
+            "etfPriceHistoryGapReasonSamples": {},
             "minimumCatalogRowCount": 0,
             "overallStatus": "WARN",
             "warnings": ["Static public data export does not exist yet."],
@@ -260,6 +273,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             "etfCatalogDataTime": None,
             "etfPriceHistoryAttemptedCount": 0,
             "etfPriceHistoryGapDetailCount": 0,
+            "etfPriceHistoryGapReasonSamples": {},
             "minimumCatalogRowCount": 0,
             "overallStatus": "FAIL",
             "warnings": [],
@@ -276,11 +290,14 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         release_payload = _read_optional_json(output / "release.json")
     etf_tier_counts = manifest.get("etfPriceHistoryCoverageTierCounts")
     etf_gap_reason_counts = manifest.get("etfPriceHistoryGapReasonCounts")
+    etf_gap_reason_samples = manifest.get("etfPriceHistoryGapReasonSamples")
     legacy_etf_summary: dict[str, Any] = {}
     if not isinstance(etf_tier_counts, dict) or not etf_tier_counts:
         etf_tier_counts = etf_history_index.get("coverageTierCounts", {})
     if not isinstance(etf_gap_reason_counts, dict) or not etf_gap_reason_counts:
         etf_gap_reason_counts = etf_history_index.get("gapReasonCounts", {})
+    if not isinstance(etf_gap_reason_samples, dict) or not etf_gap_reason_samples:
+        etf_gap_reason_samples = etf_history_index.get("gapReasonSamples", {})
     if not isinstance(etf_tier_counts, dict) or not etf_tier_counts:
         legacy_etf_summary = _derive_static_etf_summary(output)
         etf_tier_counts = legacy_etf_summary.get("coverageTierCounts", {})
@@ -332,6 +349,9 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         or legacy_etf_summary.get("dataTime"),
         "etfPriceHistoryCoverageTierCounts": etf_tier_counts,
         "etfPriceHistoryGapReasonCounts": etf_gap_reason_counts,
+        "etfPriceHistoryGapReasonSamples": etf_gap_reason_samples
+        if isinstance(etf_gap_reason_samples, dict)
+        else {},
         "minimumCatalogRowCount": int(manifest.get("minimumCatalogRowCount") or 0),
         "release": release_payload,
         "overallStatus": "FAIL" if failures else "PASS" if row_count >= 2 else "WARN",
@@ -410,6 +430,7 @@ def _export_static_etf_price_history(
             "dataTime": None,
             "rowCount": len(codes),
             "reasonCounts": {"store_not_configured": len(codes)},
+            "reasonSamples": {"store_not_configured": [str(code) for code in codes[:5]]},
             "items": [
                 {
                     "code": str(code),
@@ -432,6 +453,7 @@ def _export_static_etf_price_history(
             "gapDetailCount": len(codes),
             "attemptedCount": 0,
             "gapReasonCounts": {"store_not_configured": len(codes)},
+            "gapReasonSamples": {"store_not_configured": [str(code) for code in codes[:5]]},
             "items": [],
             "errorMessage": "ETF price history store is not configured.",
         }
@@ -469,6 +491,7 @@ def _export_static_etf_price_history(
 
     tier_counts = _coverage_tier_counts(items)
     gap_reason_counts = _gap_reason_counts(items)
+    gap_reason_samples = _gap_reason_samples(items)
     gap_detail_items = _gap_detail_items(items)
     if strict and codes and ready_count == 0:
         failures.append("No selected ETF price history is available for static export.")
@@ -480,6 +503,7 @@ def _export_static_etf_price_history(
         "dataTime": latest,
         "rowCount": len(gap_detail_items),
         "reasonCounts": gap_reason_counts,
+        "reasonSamples": gap_reason_samples,
         "items": gap_detail_items,
     }
     payload = {
@@ -495,6 +519,7 @@ def _export_static_etf_price_history(
         "missingSample": missing_codes[:10],
         "coverageTierCounts": tier_counts,
         "gapReasonCounts": gap_reason_counts,
+        "gapReasonSamples": gap_reason_samples,
         "items": items,
         "errorMessage": None if ready_count else "No selected ETF price history is available.",
     }
@@ -550,6 +575,33 @@ def _gap_reason_counts(items: list[dict[str, Any]]) -> dict[str, int]:
             )
         counts[reason] = counts.get(reason, 0) + 1
     return counts
+
+
+def _gap_reason_samples(
+    items: list[dict[str, Any]],
+    *,
+    limit_per_reason: int = 5,
+) -> dict[str, list[str]]:
+    samples: dict[str, list[str]] = {}
+    for item in items:
+        row_count = int(item.get("rowCount") or 0)
+        validation_failure_count = int(item.get("validationFailureCount") or 0)
+        if row_count >= 2 and validation_failure_count == 0:
+            continue
+        reason = str(item.get("gapReason") or "")
+        if not reason:
+            reason = _gap_reason(
+                row_count=row_count,
+                source_status=str(item.get("sourceStatus") or ""),
+                validation_failure_count=validation_failure_count,
+            )
+        code = str(item.get("code") or "").strip().upper()
+        if not code:
+            continue
+        bucket = samples.setdefault(reason, [])
+        if len(bucket) < limit_per_reason and code not in bucket:
+            bucket.append(code)
+    return samples
 
 
 def _gap_detail_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:

@@ -349,6 +349,7 @@ class EtfPriceHistoryStore:
         ]
         tier_counts = _coverage_tier_counts(items)
         gap_reason_counts = _gap_reason_counts(items)
+        gap_reason_samples = _gap_reason_samples(items)
         attempted_count = sum(1 for item in items if item.get("lastImportAttempt"))
         has_local = any(self._has_local_records(str(item.get("code") or "")) for item in items)
         source_status = "error" if validation_failure_count else (
@@ -378,6 +379,7 @@ class EtfPriceHistoryStore:
             "attemptedCount": attempted_count,
             "coverageTierCounts": tier_counts,
             "gapReasonCounts": gap_reason_counts,
+            "gapReasonSamples": gap_reason_samples,
             "validationFailureCount": validation_failure_count,
             "validationWarningCount": validation_warning_count,
             "validationFailures": validation_failures,
@@ -581,6 +583,31 @@ def _gap_reason_counts(items: list[dict[str, Any]]) -> dict[str, int]:
         )
         counts[reason] = counts.get(reason, 0) + 1
     return counts
+
+
+def _gap_reason_samples(
+    items: list[dict[str, Any]],
+    *,
+    limit_per_reason: int = 5,
+) -> dict[str, list[str]]:
+    samples: dict[str, list[str]] = {}
+    for item in items:
+        row_count = int(item.get("rowCount") or 0)
+        validation_failure_count = int(item.get("validationFailureCount") or 0)
+        if row_count >= 2 and validation_failure_count == 0:
+            continue
+        reason = str(item.get("gapReason") or "") or _gap_reason(
+            row_count=row_count,
+            source_status=str(item.get("sourceStatus") or ""),
+            validation_failure_count=validation_failure_count,
+        )
+        code = normalize_etf_code(str(item.get("code") or ""))
+        if not code:
+            continue
+        bucket = samples.setdefault(reason, [])
+        if len(bucket) < limit_per_reason and code not in bucket:
+            bucket.append(code)
+    return samples
 
 
 def _gap_reason(

@@ -477,6 +477,7 @@ EtfOperationsStatus _cachedOperationsStatus(EtfOperationsStatus status) {
     etfPriceHistoryOutOfCatalogCount: status.etfPriceHistoryOutOfCatalogCount,
     etfPriceHistoryCoverageTierCounts: status.etfPriceHistoryCoverageTierCounts,
     etfPriceHistoryGapReasonCounts: status.etfPriceHistoryGapReasonCounts,
+    etfPriceHistoryGapReasonSamples: status.etfPriceHistoryGapReasonSamples,
     etfPriceHistoryDataTime: status.etfPriceHistoryDataTime,
     backtestStatus: status.backtestStatus,
     backtestAvailable: status.backtestAvailable,
@@ -570,6 +571,7 @@ EtfOperationsStatus _backendDisconnectedOperationsStatus(
     etfPriceHistoryOutOfCatalogCount: status.etfPriceHistoryOutOfCatalogCount,
     etfPriceHistoryCoverageTierCounts: status.etfPriceHistoryCoverageTierCounts,
     etfPriceHistoryGapReasonCounts: status.etfPriceHistoryGapReasonCounts,
+    etfPriceHistoryGapReasonSamples: status.etfPriceHistoryGapReasonSamples,
     etfPriceHistoryDataTime: status.etfPriceHistoryDataTime,
     backtestStatus: status.backtestStatus,
     backtestAvailable: status.backtestAvailable,
@@ -695,6 +697,7 @@ EtfOperationsStatus _mergeOperationsPriceHistory(
     etfPriceHistoryCoverageTierCounts:
         primary.etfPriceHistoryCoverageTierCounts,
     etfPriceHistoryGapReasonCounts: primary.etfPriceHistoryGapReasonCounts,
+    etfPriceHistoryGapReasonSamples: primary.etfPriceHistoryGapReasonSamples,
     etfPriceHistoryDataTime: primary.etfPriceHistoryDataTime,
     backtestStatus: fallback.backtestStatus,
     backtestAvailable: fallback.backtestAvailable,

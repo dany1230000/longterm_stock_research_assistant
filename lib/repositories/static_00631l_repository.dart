@@ -226,6 +226,10 @@ class Static00631LRepository extends Mock00631LRepository {
       etfHistoryPayload?['gapReasonCounts'] ??
           statusPayload?['etfPriceHistoryGapReasonCounts'],
     );
+    final etfHistoryGapReasonSamples = _stringListMap(
+      etfHistoryPayload?['gapReasonSamples'] ??
+          statusPayload?['etfPriceHistoryGapReasonSamples'],
+    );
     final etfHistoryDataTime = _date(etfHistoryPayload?['dataTime']) ??
         _wallClockDateTime(etfHistoryPayload?['dataTime']);
     if (statusPayload == null) {
@@ -248,6 +252,7 @@ class Static00631LRepository extends Mock00631LRepository {
         etfPriceHistoryOutOfCatalogCount: etfHistoryOutOfCatalogCount,
         etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
         etfPriceHistoryGapReasonCounts: etfHistoryGapReasonCounts,
+        etfPriceHistoryGapReasonSamples: etfHistoryGapReasonSamples,
         etfPriceHistoryDataTime: etfHistoryDataTime,
         staticReleaseAppVersion: _string(releasePayload?['appVersion']),
         staticReleaseTag: _string(releasePayload?['releaseTag']),
@@ -279,6 +284,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryOutOfCatalogCount: etfHistoryOutOfCatalogCount,
       etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
       etfPriceHistoryGapReasonCounts: etfHistoryGapReasonCounts,
+      etfPriceHistoryGapReasonSamples: etfHistoryGapReasonSamples,
       etfPriceHistoryDataTime: etfHistoryDataTime,
       staticReleaseAppVersion: _string(releasePayload?['appVersion']),
       staticReleaseTag: _string(releasePayload?['releaseTag']),
@@ -311,6 +317,7 @@ class Static00631LRepository extends Mock00631LRepository {
     int etfPriceHistoryOutOfCatalogCount = 0,
     Map<String, int> etfPriceHistoryCoverageTierCounts = const {},
     Map<String, int> etfPriceHistoryGapReasonCounts = const {},
+    Map<String, List<String>> etfPriceHistoryGapReasonSamples = const {},
     DateTime? etfPriceHistoryDataTime,
     String staticReleaseAppVersion = '',
     String staticReleaseTag = '',
@@ -368,6 +375,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryOutOfCatalogCount: etfPriceHistoryOutOfCatalogCount,
       etfPriceHistoryCoverageTierCounts: etfPriceHistoryCoverageTierCounts,
       etfPriceHistoryGapReasonCounts: etfPriceHistoryGapReasonCounts,
+      etfPriceHistoryGapReasonSamples: etfPriceHistoryGapReasonSamples,
       etfPriceHistoryDataTime: etfPriceHistoryDataTime,
       backtestStatus: rowCount >= 2 ? 'static_official' : 'unavailable',
       backtestAvailable: rowCount >= 2,
@@ -610,6 +618,13 @@ List<Object?> _list(Object? value) {
   return const [];
 }
 
+List<String> _stringList(Object? value) {
+  return [
+    for (final item in _list(value))
+      if (item != null) item.toString(),
+  ];
+}
+
 Map<String, int> _intMap(Object? value) {
   if (value is! Map) {
     return const {};
@@ -619,6 +634,13 @@ Map<String, int> _intMap(Object? value) {
         item is num ? item.toInt() : int.tryParse(item.toString()) ?? 0;
     return MapEntry(key.toString(), number);
   });
+}
+
+Map<String, List<String>> _stringListMap(Object? value) {
+  if (value is! Map) {
+    return const {};
+  }
+  return value.map((key, item) => MapEntry(key.toString(), _stringList(item)));
 }
 
 String _string(Object? value, {String fallback = ''}) {

@@ -62,6 +62,7 @@ def main() -> int:
         f"etfOutOfCatalog={payload.get('etfPriceHistoryOutOfCatalogCount') or 0} "
         f"etfCatalogRows={payload.get('etfCatalogRowCount') or 0} "
         f"gap={_gap_reason_summary(payload.get('etfPriceHistoryGapReasonCounts'))} "
+        f"samples={_gap_reason_samples_summary(payload.get('etfPriceHistoryGapReasonSamples'))} "
         f"releaseMatchesExpected={payload.get('releaseMatchesExpected')} "
         f"failures={len(payload['failures'])}"
     )
@@ -122,6 +123,12 @@ def run_public_static_data_check(
     gap_reason_counts = (
         manifest.get("etfPriceHistoryGapReasonCounts")
         or status.get("etfPriceHistoryGapReasonCounts")
+        or {}
+    )
+    gap_reason_samples = (
+        manifest.get("etfPriceHistoryGapReasonSamples")
+        or status.get("etfPriceHistoryGapReasonSamples")
+        or gap_details.get("reasonSamples")
         or {}
     )
     source_status = str(status.get("sourceStatus") or manifest.get("sourceStatus") or "")
@@ -216,6 +223,9 @@ def run_public_static_data_check(
         )
         or {},
         "etfPriceHistoryGapReasonCounts": gap_counts,
+        "etfPriceHistoryGapReasonSamples": gap_reason_samples
+        if isinstance(gap_reason_samples, dict)
+        else {},
         "warnings": warnings,
         "failures": failures,
     }
@@ -268,6 +278,27 @@ def _gap_reason_summary(value: object) -> str:
         for key in ordered
         if _int(value.get(key)) > 0
     ]
+    return ",".join(parts) if parts else "clear"
+
+
+def _gap_reason_samples_summary(value: object) -> str:
+    if not isinstance(value, dict) or not value:
+        return "unavailable"
+    parts: list[str] = []
+    for key in (
+        "official_empty",
+        "not_saved",
+        "insufficient_rows",
+        "validation_error",
+        "source_error",
+        "not_ready",
+    ):
+        raw_codes = value.get(key)
+        if not isinstance(raw_codes, list):
+            continue
+        codes = [str(code) for code in raw_codes if str(code).strip()][:3]
+        if codes:
+            parts.append(f"{key}:{'/'.join(codes)}")
     return ",".join(parts) if parts else "clear"
 
 

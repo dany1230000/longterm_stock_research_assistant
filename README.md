@@ -1637,6 +1637,10 @@ v6.9 carries that gap-detail count into backend operations status, Flutter
 repositories, and the app settings page as `缺口明細`. Summary:
 `docs\00631l_v6_9_gap_detail_status.md`.
 
+v6.10 adds compact ETF gap reason samples, so settings/status and public static
+checks can show short code examples for each gap reason without loading the full
+gap-detail file. Summary: `docs\00631l_v6_10_gap_reason_samples.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

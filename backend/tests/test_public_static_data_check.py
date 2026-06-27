@@ -31,6 +31,10 @@ class PublicStaticDataCheckTests(unittest.TestCase):
                         "official_empty": 4,
                         "not_saved": 113,
                     },
+                    "etfPriceHistoryGapReasonSamples": {
+                        "official_empty": ["00998"],
+                        "not_saved": ["00999"],
+                    },
                 }
             if url.endswith("release.json"):
                 return {
@@ -64,6 +68,10 @@ class PublicStaticDataCheckTests(unittest.TestCase):
         self.assertEqual(payload["etfPriceHistoryUnclassifiedGapCount"], 113)
         self.assertEqual(payload["etfPriceHistoryGapReasonCounts"]["official_empty"], 4)
         self.assertEqual(payload["etfPriceHistoryGapReasonCounts"]["not_saved"], 113)
+        self.assertEqual(
+            payload["etfPriceHistoryGapReasonSamples"]["not_saved"],
+            ["00999"],
+        )
         self.assertEqual(payload["releaseTag"], "00631l-lab-v5.83-pages-missing-batch")
         self.assertEqual(payload["failures"], [])
 

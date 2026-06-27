@@ -192,3 +192,17 @@
   `flutter build web` PASS; backend tests PASS (269 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Started v6.10 to add compact ETF price-history gap reason samples.
+- Added `gapReasonSamples` to backend ETF price-history index, static public
+  export/status/manifest, operations/status, Flutter models and repositories,
+  app settings status detail, and public static-data check output.
+- Error: accidentally ran `dart format` on Python files again. Dart formatter
+  rejected Python syntax and did not modify those files. Resolution: reran
+  `dart format` only on Dart files.
+- Targeted validation PASS: backend ETF price-history/static/public/endpoints
+  tests passed, `flutter analyze` passed, and targeted Flutter proxy/widget
+  tests passed.
+- Full v6.10 validation PASS/WARN accepted: `flutter analyze` PASS,
+  `flutter test` PASS (95 tests), `flutter build web` PASS, backend tests PASS
+  (269 tests), `scripts\00631l_release_check.cmd` WARN with failures=0, and
+  `git diff --check` PASS.
