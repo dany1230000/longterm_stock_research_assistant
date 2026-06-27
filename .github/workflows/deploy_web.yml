@@ -55,6 +55,14 @@ jobs:
       - name: Run tests
         run: flutter test
 
+      - name: Import ETF catalog for price-history selection
+        timeout-minutes: 2
+        continue-on-error: true
+        shell: bash
+        run: |
+          mkdir -p backend/data
+          python backend/scripts/import_etf_catalog.py --output backend/data/etf_catalog.json || cp backend/seeds/twse_etf_catalog_seed.json backend/data/etf_catalog.json
+
       - name: Import selected ETF price history
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.refresh_etf_histories == 'true' || inputs.full_etf_refresh == 'true'))
         timeout-minutes: 8
@@ -65,7 +73,7 @@ jobs:
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full_etf_refresh == 'true')
         timeout-minutes: 15
         continue-on-error: true
-        run: python backend/scripts/import_etf_price_history.py --from-catalog --catalog-path backend/seeds/twse_etf_catalog_seed.json --limit 0 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 25
+        run: python backend/scripts/import_etf_price_history.py --from-catalog --catalog-path backend/data/etf_catalog.json --limit 0 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 25
 
       - name: Restore public ETF attempt evidence
         timeout-minutes: 2
@@ -76,7 +84,7 @@ jobs:
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.refresh_etf_histories == 'true' || inputs.full_etf_refresh == 'true'))
         timeout-minutes: 10
         continue-on-error: true
-        run: python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --skip-attempted --catalog-path backend/seeds/twse_etf_catalog_seed.json --limit 50 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10
+        run: python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --skip-attempted --catalog-path backend/data/etf_catalog.json --limit 50 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10
 
       - name: Probe missing ETF gap reasons
         timeout-minutes: 18
@@ -85,7 +93,7 @@ jobs:
         run: |
           for batch in 1 2 3; do
             echo "Probe missing ETF gap reasons batch ${batch}/3"
-            python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --skip-attempted --catalog-path backend/seeds/twse_etf_catalog_seed.json --limit 20 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10 || echo "WARN: missing ETF probe batch ${batch} did not complete"
+            python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --skip-attempted --catalog-path backend/data/etf_catalog.json --limit 20 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10 || echo "WARN: missing ETF probe batch ${batch} did not complete"
           done
 
       - name: Export static 00631L data

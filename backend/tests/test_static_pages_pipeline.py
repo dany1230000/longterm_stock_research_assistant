@@ -19,13 +19,16 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("refresh_etf_histories", workflow)
         self.assertGreaterEqual(workflow.count(refresh_condition), 2)
         self.assertIn("full_etf_refresh", workflow)
+        self.assertIn("Import ETF catalog for price-history selection", workflow)
+        self.assertIn("import_etf_catalog.py --output backend/data/etf_catalog.json", workflow)
+        self.assertIn("cp backend/seeds/twse_etf_catalog_seed.json backend/data/etf_catalog.json", workflow)
         self.assertIn(
             "if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full_etf_refresh == 'true')",
             workflow,
         )
         self.assertIn("--from-catalog", workflow)
         self.assertIn(
-            "--catalog-path backend/seeds/twse_etf_catalog_seed.json",
+            "--catalog-path backend/data/etf_catalog.json",
             workflow,
         )
         self.assertIn("--limit 0", workflow)
@@ -57,6 +60,9 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--refresh-etf-history", script)
         self.assertIn("--probe-missing", script)
         self.assertIn("--restore-public-attempts", script)
+        self.assertIn("scripts\\00631l_import_etf_catalog.cmd", script)
+        self.assertIn("backend\\data\\etf_catalog.json", script)
+        self.assertIn("backend\\seeds\\twse_etf_catalog_seed.json", script)
         self.assertIn("FULL_ETF_REFRESH", script)
         self.assertIn("REFRESH_ETF_HISTORY", script)
         self.assertIn("PROBE_MISSING", script)
@@ -68,7 +74,7 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("Skipping missing ETF reason probe", script)
         self.assertIn("--from-catalog", script)
         self.assertIn(
-            "--catalog-path backend\\seeds\\twse_etf_catalog_seed.json",
+            "--catalog-path backend\\data\\etf_catalog.json",
             script,
         )
         self.assertIn("--limit 0", script)

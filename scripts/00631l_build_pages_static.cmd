@@ -37,6 +37,17 @@ exit /b 2
 
 :after_args
 
+if not "%REFRESH_ETF_HISTORY%%FULL_ETF_REFRESH%%PROBE_MISSING%"=="000" (
+    if not exist backend\data mkdir backend\data
+    call scripts\00631l_import_etf_catalog.cmd --output backend\data\etf_catalog.json
+    if errorlevel 1 (
+        echo [00631L] WARN ETF catalog import failed; using committed seed catalog for this local run.
+        copy /Y backend\seeds\twse_etf_catalog_seed.json backend\data\etf_catalog.json >nul
+    )
+) else (
+    echo [00631L] Skipping runtime ETF catalog import for fast Pages build.
+)
+
 if "%REFRESH_ETF_HISTORY%"=="1" (
     call scripts\00631l_import_etf_price_history.cmd --codes 00631L,0050,0056,006208,00692,00713,00757,00850,00878,00881,00919,00922,00923,00929,00940 --start-date 2019-01-01 --summary-only --progress-every 5
     if errorlevel 1 exit /b %ERRORLEVEL%
@@ -46,7 +57,7 @@ if "%REFRESH_ETF_HISTORY%"=="1" (
 )
 
 if "%FULL_ETF_REFRESH%"=="1" (
-    call scripts\00631l_import_etf_price_history.cmd --from-catalog --catalog-path backend\seeds\twse_etf_catalog_seed.json --limit 0 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 25
+    call scripts\00631l_import_etf_price_history.cmd --from-catalog --catalog-path backend\data\etf_catalog.json --limit 0 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 25
     if errorlevel 1 exit /b %ERRORLEVEL%
 ) else (
     echo [00631L] Skipping broad all-catalog ETF recent refresh for fast Pages build.
@@ -62,7 +73,7 @@ if "%RESTORE_PUBLIC_ATTEMPTS%"=="1" (
 )
 
 if "%REFRESH_ETF_HISTORY%"=="1" (
-    call scripts\00631l_import_missing_etf_batch.cmd --catalog-path backend\seeds\twse_etf_catalog_seed.json --limit 50 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 10
+    call scripts\00631l_import_missing_etf_batch.cmd --catalog-path backend\data\etf_catalog.json --limit 50 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 10
     if errorlevel 1 exit /b %ERRORLEVEL%
 ) else (
     echo [00631L] Skipping missing-only ETF history batch for fast Pages build.
@@ -71,7 +82,7 @@ if "%REFRESH_ETF_HISTORY%"=="1" (
 if "%PROBE_MISSING%"=="1" (
     for /L %%I in (1,1,3) do (
         echo [00631L] Probe missing ETF gap reason batch %%I/3.
-        call scripts\00631l_probe_missing_etf_reasons.cmd --catalog-path backend\seeds\twse_etf_catalog_seed.json --limit 20 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 10
+        call scripts\00631l_probe_missing_etf_reasons.cmd --catalog-path backend\data\etf_catalog.json --limit 20 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 10
         if errorlevel 1 exit /b %ERRORLEVEL%
     )
 ) else (

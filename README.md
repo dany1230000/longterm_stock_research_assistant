@@ -1610,6 +1610,10 @@ v6.3 adds `--max-unclassified-gap` to the public static-data check, so daily
 verification can warn when any ETF history gap remains unclassified. Summary:
 `docs\00631l_v6_3_public_unclassified_threshold.md`.
 
+v6.4 makes the Pages ETF history import/probe use a runtime TWSE ETF catalog
+with seed fallback, so new catalog symbols are not missed by the missing-only
+probe. Summary: `docs\00631l_v6_4_runtime_catalog_probe.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

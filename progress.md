@@ -95,3 +95,10 @@
 - Updated checker, tests, README, docs index, release-check artifact list, and v6.3 summary.
 - Targeted v6.3 validation PASS: `py -m unittest backend.tests.test_public_static_data_check backend.tests.test_release_check`.
 - Full v6.3 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (265 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.
+- v6.3 committed/pushed as `42974a6`, tag `00631l-lab-v6.3-public-gap-threshold`.
+- Public Pages marker updated to v6.3. `scripts\00631l_check_public_static_data.cmd --max-unclassified-gap 0` returned WARN/failures=0 with `etfUnclassified=2`.
+- Diagnosed remaining public `not_saved` symbols: `009823` and `009824`. They are not present in the committed seed catalog used by the import/probe step.
+- Started v6.4 to import a runtime ETF catalog before Pages ETF price-history imports and use that runtime catalog for missing-only probes.
+- Updated Pages workflow and local Pages build helper to import runtime ETF catalog with seed fallback before ETF history refresh/probe work.
+- Targeted v6.4 validation PASS: `py -m unittest backend.tests.test_static_pages_pipeline backend.tests.test_release_check`.
+- Full v6.4 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (265 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.

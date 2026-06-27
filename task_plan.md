@@ -213,6 +213,32 @@ Completed in v6.3:
 
 - Public static checker supports `--max-unclassified-gap`.
 - Targeted and full validation passed with accepted WARN states only.
+- Public Pages marker and static check passed on v6.3. The threshold check
+  correctly returned WARN/failures=0 because two ETF gaps remain unclassified.
+- Diagnosis found those two codes, `009823` and `009824`, are present in the
+  public static catalog but absent from the committed seed catalog used by the
+  import/probe step.
+
+## Phase 16 - v6.4 Runtime Catalog Probe
+
+Status: complete
+
+Objective: use a current runtime ETF catalog for public missing-only imports and
+probe batches, with seed fallback when live catalog import is unavailable.
+
+- Import the current TWSE ETF catalog before ETF history imports in Pages.
+- Fall back to the committed seed catalog if catalog import fails.
+- Point broad import, missing-only import, and probe batches at
+  `backend/data/etf_catalog.json`.
+- Mirror the same behavior in local Pages build helper.
+- Add tests and docs.
+
+Completed in v6.4:
+
+- Pages workflow and local Pages helper import runtime ETF catalog before ETF
+  price-history refresh/probe work.
+- Runtime catalog falls back to committed seed when live catalog import fails.
+- Targeted and full validation passed with accepted WARN states only.
 
 ## Phase 5 - Backtest and Position UX
 
