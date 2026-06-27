@@ -176,3 +176,19 @@
   `flutter build web` PASS; backend tests PASS (269 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.8 committed/pushed as `8098ac8`, tag
+  `00631l-lab-v6.8-etf-gap-detail-export`.
+- Public Pages marker updated to v6.8 and public static check passed with
+  `etfPriceHistoryGapDetailCount=115`, ready 232 / rows 347, unclassified gap 0.
+- Started v6.9 to carry gap-detail readiness into backend operations status and
+  Flutter app settings.
+- Added backend `gapDetailCount`, Flutter `etfPriceHistoryGapDetailCount`,
+  repository mappings, and settings UI `缺口明細` text.
+- Targeted v6.9 validation PASS: backend ETF history/endpoints/static tests and
+  Flutter proxy/widget tests passed. Initial format check changed two Dart files;
+  rerun after formatting is required for final validation.
+- Full v6.9 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS after formatting; `flutter analyze` PASS; `flutter test` PASS (95 tests);
+  `flutter build web` PASS; backend tests PASS (269 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

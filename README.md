@@ -1633,6 +1633,10 @@ ETF histories have inspectable code-level reasons, and public checks report
 `etfPriceHistoryGapDetailCount`. Summary:
 `docs\00631l_v6_8_etf_gap_detail_export.md`.
 
+v6.9 carries that gap-detail count into backend operations status, Flutter
+repositories, and the app settings page as `缺口明細`. Summary:
+`docs\00631l_v6_9_gap_detail_status.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

@@ -1262,6 +1262,7 @@ void main() {
     expect(find.text('5.42-public-release-wait'), findsOneWidget);
     expect(find.text('資料補齊動作'), findsOneWidget);
     expect(find.text('資料缺口原因'), findsOneWidget);
+    expect(find.textContaining('缺口明細 0'), findsOneWidget);
     expect(find.textContaining('retained history 0'), findsOneWidget);
     expect(
       find.textContaining(
@@ -1665,6 +1666,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     etfPriceHistoryRowCount: historyRowCount ?? rowCount,
     etfPriceHistoryReadyCount: readyCount,
     etfPriceHistoryMissingCount: missingCount,
+    etfPriceHistoryGapDetailCount: missingCount,
     etfPriceHistoryAttemptedCount: attemptedCount,
     etfPriceHistoryOutOfCatalogCount: outOfCatalogCount,
     etfPriceHistoryCoverageTierCounts: tierCounts,

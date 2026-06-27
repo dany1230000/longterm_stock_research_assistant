@@ -334,6 +334,21 @@ Completed in v6.8:
   rows than the missing ETF history count.
 - Targeted and full validation passed with accepted WARN states only.
 
+## Phase 21 - v6.9 Gap Detail Status
+
+Status: complete
+
+Objective: carry symbol-level ETF gap detail readiness into backend operations
+status and the app settings page.
+
+- Add `gapDetailCount` to the backend multi-ETF price-history index and
+  operations/status response.
+- Add `etfPriceHistoryGapDetailCount` to Flutter operations models and
+  repositories.
+- Show `缺口明細` in the app ETF data library status so users can distinguish
+  classified gap evidence from raw missing counts.
+- Add backend, repository, and widget tests.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

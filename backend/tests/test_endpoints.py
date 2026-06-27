@@ -649,6 +649,7 @@ Custodian Fee
             )
             self.assertIn("txQuote", payload)
             self.assertIn(payload["txQuote"]["sourceStatus"], {"unavailable", "cached", "official"})
+            self.assertIn("gapDetailCount", payload["etfPriceHistory"])
             self.assertEqual(payload["statusSummary"]["export"], "cached")
             self.assertEqual(payload["statusSummary"]["report"], "cached")
             self.assertIn("integrity", payload)

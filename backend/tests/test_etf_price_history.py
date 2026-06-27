@@ -436,6 +436,7 @@ class EtfPriceHistoryTests(unittest.TestCase):
 
         self.assertEqual(missing["gapReason"], "not_saved")
         self.assertEqual(index["missingCount"], 2)
+        self.assertEqual(index["gapDetailCount"], 2)
         self.assertEqual(index["gapReasonCounts"]["insufficient_rows"], 1)
         self.assertEqual(index["gapReasonCounts"]["validation_error"], 1)
         self.assertEqual(index["gapReasonCounts"]["not_saved"], 0)
@@ -464,6 +465,7 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(status["lastImportAttempt"]["requestedMonths"], 1)
         self.assertEqual(index["gapReasonCounts"]["official_empty"], 1)
         self.assertEqual(index["missingCount"], 1)
+        self.assertEqual(index["gapDetailCount"], 1)
         self.assertEqual(index["attemptedCount"], 1)
 
     def test_index_response_can_include_catalog_only_missing_codes(self) -> None:
@@ -501,6 +503,7 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(index["rowCount"], 2)
         self.assertEqual(index["readyCount"], 1)
         self.assertEqual(index["missingCount"], 1)
+        self.assertEqual(index["gapDetailCount"], 1)
         self.assertEqual(index["gapReasonCounts"]["not_saved"], 1)
 
     def test_status_summary_omits_full_item_dump(self) -> None:

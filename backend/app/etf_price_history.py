@@ -374,6 +374,7 @@ class EtfPriceHistoryStore:
             "rowCount": len(items),
             "readyCount": len(ready_items),
             "missingCount": max(0, len(items) - len(ready_items)),
+            "gapDetailCount": max(0, len(items) - len(ready_items)),
             "attemptedCount": attempted_count,
             "coverageTierCounts": tier_counts,
             "gapReasonCounts": gap_reason_counts,

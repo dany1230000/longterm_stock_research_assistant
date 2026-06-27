@@ -12273,7 +12273,7 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
       label: 'ETF history',
       status: data.operationsStatus.etfPriceHistoryStatus,
       detail:
-          'ready ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / symbols ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}; attempted ${formatInteger(data.operationsStatus.etfPriceHistoryAttemptedCount)}; retained history ${formatInteger(data.operationsStatus.etfPriceHistoryOutOfCatalogCount)}; ${_etfCoverageTierDetail(data.operationsStatus)}; ${_etfGapReasonDetail(data.operationsStatus)}; dataTime ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}.',
+          'ready ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / symbols ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}; 缺口明細 ${formatInteger(data.operationsStatus.etfPriceHistoryGapDetailCount)}; attempted ${formatInteger(data.operationsStatus.etfPriceHistoryAttemptedCount)}; retained history ${formatInteger(data.operationsStatus.etfPriceHistoryOutOfCatalogCount)}; ${_etfCoverageTierDetail(data.operationsStatus)}; ${_etfGapReasonDetail(data.operationsStatus)}; dataTime ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}.',
       action: data.operationsStatus.etfPriceHistoryReadyCount > 0
           ? 'ETF price history imported for comparison data foundation.'
           : 'Run scripts\\00631l_import_etf_price_history.cmd to import selected ETF price history.',
@@ -12323,7 +12323,7 @@ _StatusItem _etfHistoryGapReasonItem(EtfOperationsStatus status) {
     label: '資料缺口原因',
     status: missing > 0 ? '${formatInteger(missing)} 檔待補' : 'clear',
     detail:
-        '$detail; attempted ${formatInteger(status.etfPriceHistoryAttemptedCount)}; retained history ${formatInteger(outOfCatalog)}',
+        '$detail; 缺口明細 ${formatInteger(status.etfPriceHistoryGapDetailCount)}; attempted ${formatInteger(status.etfPriceHistoryAttemptedCount)}; retained history ${formatInteger(outOfCatalog)}',
     action: unclassified > 0
         ? '可執行 scripts\\00631l_probe_missing_etf_reasons.cmd，將缺口分類成官方空資料、來源錯誤、驗證錯誤或可用資料。'
         : '目前 ETF history index 沒有待補缺口；維持 release check 即可。',
