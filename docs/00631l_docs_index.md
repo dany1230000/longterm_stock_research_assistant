@@ -401,6 +401,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public gap summary: `docs\00631l_v5_95_public_gap_summary.md`
 - Missing ETF reason probe: `docs\00631l_v5_96_missing_etf_reason_probe.md`
 - Pages missing ETF probe: `docs\00631l_v5_97_pages_missing_probe.md`
+- Public ETF count consistency: `docs\00631l_v5_98_public_etf_count_consistency.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

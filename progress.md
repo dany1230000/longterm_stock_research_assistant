@@ -55,3 +55,9 @@
 - Implemented v5.97 Pages missing ETF probe step and local `--probe-missing` helper flag.
 - Ran `scripts\00631l_build_pages_static.cmd --probe-missing`: PASS. It probed 20 missing ETF symbols, produced warnings for official empty months, had failures=0, and generated static output with `etfPriceHistoryAttemptedCount=20`.
 - v5.97 validation: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (258 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.
+- v5.97 committed and pushed as `d0e87eb`, tag `00631l-lab-v5.97-pages-missing-probe`.
+- Public Pages marker updated to v5.97 and strict public static check PASS. Public output now shows `etfPriceHistoryAttemptedCount=20`, `official_empty=20`, `not_saved=94`.
+- Started v5.98 after observing that public checker printed catalog rows but not ETF history row count/completion gap, making catalog/history count differences hard to interpret.
+- Implemented v5.98 public ETF count consistency output and WARN behavior.
+- Public static check now reports `etfPriceHistoryRowCount=345`, `etfCatalogRowCount=343`, `etfPriceHistoryCompletionGap=114`, and WARN/failures=0 for the count mismatch.
+- v5.98 validation: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (259 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.

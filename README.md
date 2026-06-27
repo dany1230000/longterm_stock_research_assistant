@@ -1580,6 +1580,12 @@ history gaps without blocking the 00631L app when a source is temporarily
 unavailable. Local opt-in: `scripts\00631l_build_pages_static.cmd --probe-missing`.
 Summary: `docs\00631l_v5_97_pages_missing_probe.md`.
 
+v5.98 makes the public static-data checker show ETF history row count and
+completion gap separately from the current catalog row count. If those counts
+temporarily differ, the checker returns WARN with an explanation instead of
+hiding the mismatch. Summary:
+`docs\00631l_v5_98_public_etf_count_consistency.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

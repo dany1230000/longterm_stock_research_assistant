@@ -90,6 +90,22 @@ Completed in v5.97:
 - Backend tests lock the workflow and local script behavior.
 - Local probe run classified 20 missing ETF attempts and produced `etfPriceHistoryAttemptedCount=20` in the generated static output.
 
+## Phase 10 - v5.98 Public ETF Count Consistency
+
+Status: complete
+
+Objective: make public static-data checks explain ETF catalog/history count differences instead of hiding them.
+
+- Add `etfPriceHistoryRowCount`, completion total, and completion gap to public static check output.
+- Warn when the ETF history index has more symbols than the current catalog snapshot.
+- Keep this as a visibility/checking change only; do not alter source data or app calculations.
+
+Completed in v5.98:
+
+- Public static checker now prints ETF history row count and completion gap.
+- Count mismatch between public catalog and ETF history index is surfaced as WARN with failures=0.
+- Public check on v5.97 output now reports history=345, catalog=343, completionGap=114.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

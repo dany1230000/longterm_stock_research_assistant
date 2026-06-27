@@ -18,6 +18,7 @@ class PublicStaticDataCheckTests(unittest.TestCase):
             if url.endswith("manifest.json"):
                 return {
                     "etfCatalogRowCount": 347,
+                    "etfPriceHistoryRowCount": 347,
                     "etfPriceHistoryReadyCount": 230,
                     "etfPriceHistoryMissingCount": 117,
                     "etfPriceHistoryAttemptedCount": 4,
@@ -47,13 +48,44 @@ class PublicStaticDataCheckTests(unittest.TestCase):
         self.assertEqual(payload["sourceStatus"], "static_official")
         self.assertEqual(payload["rowCount"], 2837)
         self.assertEqual(payload["etfCatalogRowCount"], 347)
+        self.assertEqual(payload["etfPriceHistoryRowCount"], 347)
         self.assertEqual(payload["etfPriceHistoryReadyCount"], 230)
         self.assertEqual(payload["etfPriceHistoryMissingCount"], 117)
+        self.assertEqual(payload["etfPriceHistoryCompletionTotal"], 347)
+        self.assertEqual(payload["etfPriceHistoryCompletionGap"], 117)
         self.assertEqual(payload["etfPriceHistoryAttemptedCount"], 4)
         self.assertEqual(payload["etfPriceHistoryGapReasonCounts"]["official_empty"], 4)
         self.assertEqual(payload["etfPriceHistoryGapReasonCounts"]["not_saved"], 113)
         self.assertEqual(payload["releaseTag"], "00631l-lab-v5.83-pages-missing-batch")
         self.assertEqual(payload["failures"], [])
+
+    def test_warns_when_history_index_exceeds_catalog_snapshot(self) -> None:
+        def fetch_json(url: str) -> dict[str, object]:
+            if url.endswith("status.json"):
+                return {"sourceStatus": "static_official", "rowCount": 2837}
+            if url.endswith("manifest.json"):
+                return {
+                    "etfCatalogRowCount": 343,
+                    "etfPriceHistoryRowCount": 345,
+                    "etfPriceHistoryReadyCount": 231,
+                    "etfPriceHistoryMissingCount": 114,
+                }
+            if url.endswith("release.json"):
+                return {
+                    "releaseTag": "00631l-lab-v5.97-pages-missing-probe",
+                    "gitSha": "d0e87eb",
+                }
+            raise AssertionError(url)
+
+        payload = run_public_static_data_check(
+            "https://example.test/static",
+            fetch_json=fetch_json,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["etfPriceHistoryCompletionTotal"], 345)
+        self.assertEqual(payload["etfPriceHistoryCompletionGap"], 114)
+        self.assertTrue(any("history=345" in item for item in payload["warnings"]))
 
     def test_expected_release_mismatch_is_warning_by_default(self) -> None:
         def fetch_json(url: str) -> dict[str, object]:

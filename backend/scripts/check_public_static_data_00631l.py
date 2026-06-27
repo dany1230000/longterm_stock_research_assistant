@@ -43,6 +43,8 @@ def main() -> int:
         f"coverage={payload.get('coverageStart') or 'unavailable'}.."
         f"{payload.get('coverageEnd') or 'unavailable'} "
         f"etfReady={payload.get('etfPriceHistoryReadyCount') or 0} "
+        f"etfRows={payload.get('etfPriceHistoryRowCount') or 0} "
+        f"etfCompletionGap={payload.get('etfPriceHistoryCompletionGap') or 0} "
         f"etfAttempted={payload.get('etfPriceHistoryAttemptedCount') or 0} "
         f"etfCatalogRows={payload.get('etfCatalogRowCount') or 0} "
         f"gap={_gap_reason_summary(payload.get('etfPriceHistoryGapReasonCounts'))} "
@@ -83,6 +85,10 @@ def run_public_static_data_check(
 
     row_count = _int(status.get("rowCount") or manifest.get("rowCount"))
     catalog_rows = _int(manifest.get("etfCatalogRowCount"))
+    etf_history_rows = _int(
+        manifest.get("etfPriceHistoryRowCount")
+        or status.get("etfPriceHistoryRowCount"),
+    )
     etf_ready = _int(manifest.get("etfPriceHistoryReadyCount"))
     etf_missing = _int(manifest.get("etfPriceHistoryMissingCount"))
     etf_attempted = _int(
@@ -104,12 +110,19 @@ def run_public_static_data_check(
         release.get("gitSha") or (manifest.get("release") or {}).get("gitSha") or "",
     )
     release_mismatch: list[str] = []
+    etf_completion_total = max(catalog_rows, etf_history_rows, etf_ready)
+    etf_completion_gap = max(0, etf_completion_total - etf_ready)
 
     if not failures:
         if row_count < 2800:
             warnings.append(f"00631L rowCount below expected floor: {row_count}")
         if catalog_rows < 100:
             warnings.append(f"ETF catalog rows below expected floor: {catalog_rows}")
+        if etf_history_rows and catalog_rows and etf_history_rows > catalog_rows:
+            warnings.append(
+                "ETF history index has more symbols than the catalog snapshot: "
+                f"history={etf_history_rows}, catalog={catalog_rows}",
+            )
         if not release_tag:
             warnings.append("release marker is missing releaseTag")
         if source_status != "static_official":
@@ -147,8 +160,11 @@ def run_public_static_data_check(
         "coverageStart": status.get("coverageStart") or manifest.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd") or manifest.get("coverageEnd"),
         "etfCatalogRowCount": catalog_rows,
+        "etfPriceHistoryRowCount": etf_history_rows,
         "etfPriceHistoryReadyCount": etf_ready,
         "etfPriceHistoryMissingCount": etf_missing,
+        "etfPriceHistoryCompletionTotal": etf_completion_total,
+        "etfPriceHistoryCompletionGap": etf_completion_gap,
         "etfPriceHistoryAttemptedCount": etf_attempted,
         "etfPriceHistoryCoverageTierCounts": manifest.get(
             "etfPriceHistoryCoverageTierCounts",
