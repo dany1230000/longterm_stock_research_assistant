@@ -1532,6 +1532,11 @@ missing-only batch; weekday schedule or manual dispatch with
 available with `scripts\00631l_build_pages_static.cmd --full-etf-refresh`.
 Summary: `docs\00631l_v5_88_pages_fast_static_build.md`.
 
+v5.89 reconciles one verified official ETF history seed. `00407A` had recent
+TWSE STOCK_DAY rows in local cache but not in the committed Pages seed set; it
+is now included so public static readiness can match local validation. Summary:
+`docs\00631l_v5_89_etf_seed_ready_reconcile.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

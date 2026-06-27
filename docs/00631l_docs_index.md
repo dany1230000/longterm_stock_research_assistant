@@ -392,6 +392,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public status language: `docs\00631l_v5_86_public_status_language.md`
 - ETF gap action: `docs\00631l_v5_87_etf_gap_action.md`
 - Fast Pages static build: `docs\00631l_v5_88_pages_fast_static_build.md`
+- ETF seed readiness reconcile: `docs\00631l_v5_89_etf_seed_ready_reconcile.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

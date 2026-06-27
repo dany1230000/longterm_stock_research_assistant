@@ -468,6 +468,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_86_public_status_language.md",
         "docs/00631l_v5_87_etf_gap_action.md",
         "docs/00631l_v5_88_pages_fast_static_build.md",
+        "docs/00631l_v5_89_etf_seed_ready_reconcile.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

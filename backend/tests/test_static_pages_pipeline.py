@@ -1,3 +1,4 @@
+import json
 import unittest
 from pathlib import Path
 
@@ -60,9 +61,27 @@ class StaticPagesPipelineTests(unittest.TestCase):
         seed_files = sorted(seed_dir.glob("*.jsonl"))
 
         self.assertGreaterEqual(len(seed_files), 200)
+        self.assertTrue((seed_dir / "00407A.jsonl").exists())
         self.assertTrue((seed_dir / "00631L.jsonl").exists())
         self.assertTrue((seed_dir / "0050.jsonl").exists())
         self.assertTrue((seed_dir / "00878.jsonl").exists())
+
+    def test_00407a_seed_rows_are_official_recent_history(self) -> None:
+        seed_path = ROOT / "backend" / "seeds" / "etf_price_history_seed" / "00407A.jsonl"
+        records = [
+            json.loads(line)
+            for line in seed_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+
+        self.assertEqual([record["date"] for record in records], [
+            "2026-06-24",
+            "2026-06-25",
+            "2026-06-26",
+        ])
+        self.assertTrue(all(record["code"] == "00407A" for record in records))
+        self.assertTrue(all(record["sourceStatus"] == "official" for record in records))
+        self.assertTrue(all(record["sourceContract"] == "twse_stock_day_json" for record in records))
 
 
 if __name__ == "__main__":
