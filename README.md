@@ -1624,6 +1624,10 @@ operations status, Flutter repositories, and the app status UI. Classified
 missing histories are shown separately from unclassified gaps. Summary:
 `docs\00631l_v6_6_etf_library_status.md`.
 
+v6.7 makes release check run the public static-data check with
+`--max-unclassified-gap 0`, so unclassified ETF history gaps cannot silently
+return. Summary: `docs\00631l_v6_7_public_gap_release_guard.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

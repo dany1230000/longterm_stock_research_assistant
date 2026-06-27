@@ -286,6 +286,29 @@ Completed in v6.6:
   unclassified `not_saved` gaps.
 - Targeted and full validation passed with accepted WARN states only.
 
+## Phase 19 - v6.7 Public Gap Release Guard
+
+Status: complete
+
+Objective: make release check enforce that public ETF history gaps are
+classified.
+
+- Run public static-data check with `--max-unclassified-gap 0`.
+- Keep classified `official_empty` and `source_error` gaps as explainable data
+  status, not release failures.
+- Add docs and release-check artifact coverage.
+
+Completed in v6.7:
+
+- Release check now runs the public static-data check with
+  `--max-unclassified-gap 0`.
+- The public static-data step passes when ETF history gaps are classified and
+  no `not_saved` maintenance gap remains.
+- The static public regression guard still fails same-release regressions, but
+  treats stale local ignored static exports as warnings when the public Pages
+  release is newer.
+- Targeted and full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

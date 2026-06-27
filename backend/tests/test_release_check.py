@@ -101,6 +101,16 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertIn('"public_pages"', source)
         self.assertIn("scripts\\\\00631l_check_public_pages.cmd", source)
 
+    def test_release_check_requires_no_unclassified_public_etf_gap(self) -> None:
+        source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
+            encoding="utf-8",
+        )
+
+        self.assertIn('"public_static_data"', source)
+        self.assertIn("scripts\\\\00631l_check_public_static_data.cmd", source)
+        self.assertIn('"--max-unclassified-gap"', source)
+        self.assertIn('"0"', source)
+
     def test_release_check_runs_pages_deploy_status(self) -> None:
         source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
             encoding="utf-8",

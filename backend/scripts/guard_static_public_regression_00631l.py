@@ -66,22 +66,44 @@ def run_static_public_regression_guard(
         _int(resolved_remote.get("etfPriceHistoryReadyCount")) if resolved_remote else 0
     )
     remote_release = _release_dict(resolved_remote) if resolved_remote else {}
+    local_release_id = _release_id(local_release)
+    remote_release_id = _release_id(remote_release)
+    local_release_matches_public = bool(
+        local_release_id and remote_release_id and local_release_id == remote_release_id
+    )
+    local_release_differs_from_public = bool(
+        local_release_id and remote_release_id and local_release_id != remote_release_id
+    )
+    if resolved_remote and local_release_differs_from_public:
+        warnings.append(
+            "local static export release differs from public; regenerate static data "
+            f"before deploy: local={local_release_id}, public={remote_release_id}"
+        )
 
     if resolved_remote:
         local_day = _parse_day(local_end)
         remote_day = _parse_day(remote_end)
         if local_day is not None and remote_day is not None and local_day < remote_day:
-            failures.append(
-                f"localCoverageEnd {local_end} is older than public {remote_end}"
+            _add_regression(
+                failures,
+                warnings,
+                local_release_differs_from_public,
+                f"localCoverageEnd {local_end} is older than public {remote_end}",
             )
         elif local_day == remote_day and local_rows < remote_rows:
-            failures.append(
-                f"local rowCount {local_rows} is lower than public {remote_rows}"
+            _add_regression(
+                failures,
+                warnings,
+                local_release_differs_from_public,
+                f"local rowCount {local_rows} is lower than public {remote_rows}",
             )
         if local_etf_ready < remote_etf_ready:
-            failures.append(
+            _add_regression(
+                failures,
+                warnings,
+                local_release_differs_from_public,
                 "local ETF ready count "
-                f"{local_etf_ready} is lower than public {remote_etf_ready}"
+                f"{local_etf_ready} is lower than public {remote_etf_ready}",
             )
 
     overall = "FAIL" if failures else "WARN" if warnings else "PASS"
@@ -98,6 +120,7 @@ def run_static_public_regression_guard(
             "localEtfReadyCount": local_etf_ready,
             "localReleaseTag": local_release.get("releaseTag"),
             "localGitSha": local_release.get("gitSha"),
+            "localReleaseMatchesPublic": local_release_matches_public,
             "publicCoverageEnd": remote_end,
             "publicRowCount": remote_rows,
             "publicEtfReadyCount": remote_etf_ready,
@@ -105,6 +128,26 @@ def run_static_public_regression_guard(
             "publicGitSha": remote_release.get("gitSha"),
         },
     }
+
+
+def _add_regression(
+    failures: list[str],
+    warnings: list[str],
+    local_release_differs_from_public: bool,
+    message: str,
+) -> None:
+    if local_release_differs_from_public:
+        warnings.append(f"staleLocalStaticExport={message}")
+    else:
+        failures.append(message)
+
+
+def _release_id(release: dict[str, Any]) -> str | None:
+    git_sha = _text_or_none(release.get("gitSha"))
+    release_tag = _text_or_none(release.get("releaseTag"))
+    if git_sha:
+        return git_sha
+    return release_tag
 
 
 def _fetch_remote_status(public_base_url: str, timeout_seconds: int) -> dict[str, Any]:

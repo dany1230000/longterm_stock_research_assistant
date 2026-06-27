@@ -46,16 +46,58 @@ class StaticPublicRegressionGuardTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "FAIL")
         self.assertIn("local ETF ready count 230 is lower", payload["failures"][0])
 
+    def test_stale_local_release_warns_instead_of_failing(self) -> None:
+        payload = run_static_public_regression_guard(
+            local_dir="unused",
+            local_status=_status(
+                "2026-06-24",
+                2835,
+                230,
+                release_tag="older",
+                git_sha="old123",
+            ),
+            remote_status=_status(
+                "2026-06-26",
+                2837,
+                231,
+                release_tag="newer",
+                git_sha="new456",
+            ),
+        )
 
-def _status(coverage_end: str, row_count: int, etf_ready: int):
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["failures"], [])
+        self.assertTrue(
+            any(
+                "local static export release differs from public" in warning
+                for warning in payload["warnings"]
+            )
+        )
+        self.assertTrue(
+            any(
+                "staleLocalStaticExport=localCoverageEnd" in warning
+                for warning in payload["warnings"]
+            )
+        )
+        self.assertFalse(payload["summary"]["localReleaseMatchesPublic"])
+
+
+def _status(
+    coverage_end: str,
+    row_count: int,
+    etf_ready: int,
+    *,
+    release_tag: str = "test",
+    git_sha: str = "abc123",
+):
     return {
         "coverageStart": "2014-10-31",
         "coverageEnd": coverage_end,
         "rowCount": row_count,
         "etfPriceHistoryReadyCount": etf_ready,
         "release": {
-            "releaseTag": "test",
-            "gitSha": "abc123",
+            "releaseTag": release_tag,
+            "gitSha": git_sha,
         },
     }
 

@@ -139,3 +139,23 @@
   `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS
   (266 tests); `scripts\00631l_release_check.cmd` WARN with failures=0;
   `git diff --check` PASS.
+- v6.6 committed/pushed as `8fcbbb2`, tag
+  `00631l-lab-v6.6-etf-library-status`.
+- Public Pages marker and public static check passed on v6.6. Public static
+  data reports ready 232 / rows 347, unclassified gap 0, out-of-catalog 0,
+  official empty 95, and source error 20.
+- Started v6.7 to make release check enforce `--max-unclassified-gap 0` for the
+  public static-data check.
+- Initial v6.7 release check found `static_public_regression_guard` failing
+  because local ignored static export was older than the public Pages export
+  and had one fewer ETF ready row. Fixed the guard so same-release regressions
+  still fail, while stale local exports warn and ask for regeneration.
+- Targeted v6.7 validation PASS: `py -m unittest
+  backend.tests.test_static_public_regression_guard
+  backend.tests.test_release_check`; `scripts\00631l_guard_static_public_regression.cmd`
+  returns WARN with failures=0 for the stale local export case.
+- Full v6.7 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (95 tests);
+  `flutter build web` PASS; backend tests PASS (268 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
