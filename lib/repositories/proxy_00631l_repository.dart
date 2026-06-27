@@ -356,6 +356,9 @@ class Proxy00631LRepository extends Official00631LRepository {
       etfPriceHistoryCoverageTierCounts: _intMap(
         etfPriceHistory['coverageTierCounts'],
       ),
+      etfPriceHistoryGapReasonCounts: _intMap(
+        etfPriceHistory['gapReasonCounts'],
+      ),
       etfPriceHistoryDataTime:
           _wallClockDateTime(etfPriceHistory['dataTime']) ??
               _nullableDate(etfPriceHistory['dataTime']),

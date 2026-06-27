@@ -397,6 +397,9 @@ def build_status_summary_response(
     tier_counts = payload.get("coverageTierCounts")
     if not isinstance(tier_counts, dict):
         tier_counts = _coverage_tier_counts(items)
+    gap_reason_counts = payload.get("gapReasonCounts")
+    if not isinstance(gap_reason_counts, dict):
+        gap_reason_counts = _gap_reason_counts(items)
     ready_count = int(payload.get("readyCount") or 0)
     history_row_count = int(payload.get("rowCount") or 0)
     completion_total = max(catalog_row_count, history_row_count, ready_count)
@@ -418,6 +421,7 @@ def build_status_summary_response(
         "validationWarningCount": payload.get("validationWarningCount", 0),
         "validationFailures": payload.get("validationFailures", []),
         "coverageTierCounts": tier_counts,
+        "gapReasonCounts": gap_reason_counts,
         "sampleCodes": [str(item.get("code")) for item in sample_items if item.get("code")],
         "suppressedItemCount": max(len(items) - len(sample_items), 0),
     }
@@ -428,6 +432,35 @@ def _coverage_tier_counts(items: list[dict[str, object]]) -> dict[str, int]:
     for item in items:
         tier = str(item.get("coverageTier") or "unavailable")
         counts[tier] = counts.get(tier, 0) + 1
+    return counts
+
+
+def _gap_reason_counts(items: list[dict[str, object]]) -> dict[str, int]:
+    counts = {
+        "not_saved": 0,
+        "insufficient_rows": 0,
+        "validation_error": 0,
+        "source_error": 0,
+        "not_ready": 0,
+    }
+    for item in items:
+        row_count = int(item.get("rowCount") or 0)
+        validation_failure_count = int(item.get("validationFailureCount") or 0)
+        if row_count >= 2 and validation_failure_count == 0:
+            continue
+        reason = str(item.get("gapReason") or "")
+        if not reason:
+            if validation_failure_count > 0:
+                reason = "validation_error"
+            elif str(item.get("sourceStatus") or "").lower() == "error":
+                reason = "source_error"
+            elif row_count <= 0:
+                reason = "not_saved"
+            elif row_count < 2:
+                reason = "insufficient_rows"
+            else:
+                reason = "not_ready"
+        counts[reason] = counts.get(reason, 0) + 1
     return counts
 
 

@@ -95,6 +95,10 @@ def export_static_00631l_data(
         "etfCatalogRowCount": catalog_row_count,
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
+        "etfPriceHistoryGapReasonCounts": etf_history_payload.get(
+            "gapReasonCounts",
+            {},
+        ),
         "minimumCatalogRowCount": catalog_min_rows,
         "warnings": warnings,
         "failures": failures,
@@ -142,6 +146,10 @@ def export_static_00631l_data(
             "coverageTierCounts",
             {},
         ),
+        "etfPriceHistoryGapReasonCounts": etf_history_payload.get(
+            "gapReasonCounts",
+            {},
+        ),
         "minimumCatalogRowCount": catalog_min_rows,
         "coverageStart": status.get("coverageStart"),
         "coverageEnd": status.get("coverageEnd"),
@@ -177,6 +185,10 @@ def export_static_00631l_data(
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
         "etfPriceHistoryCoverageTierCounts": etf_history_payload.get(
             "coverageTierCounts",
+            {},
+        ),
+        "etfPriceHistoryGapReasonCounts": etf_history_payload.get(
+            "gapReasonCounts",
             {},
         ),
         "minimumCatalogRowCount": catalog_min_rows,
@@ -242,12 +254,17 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
     if not isinstance(release_payload, dict) or not release_payload:
         release_payload = _read_optional_json(output / "release.json")
     etf_tier_counts = manifest.get("etfPriceHistoryCoverageTierCounts")
+    etf_gap_reason_counts = manifest.get("etfPriceHistoryGapReasonCounts")
     legacy_etf_summary: dict[str, Any] = {}
     if not isinstance(etf_tier_counts, dict) or not etf_tier_counts:
         etf_tier_counts = etf_history_index.get("coverageTierCounts", {})
+    if not isinstance(etf_gap_reason_counts, dict) or not etf_gap_reason_counts:
+        etf_gap_reason_counts = etf_history_index.get("gapReasonCounts", {})
     if not isinstance(etf_tier_counts, dict) or not etf_tier_counts:
         legacy_etf_summary = _derive_static_etf_summary(output)
         etf_tier_counts = legacy_etf_summary.get("coverageTierCounts", {})
+    if (not isinstance(etf_gap_reason_counts, dict) or not etf_gap_reason_counts) and legacy_etf_summary:
+        etf_gap_reason_counts = legacy_etf_summary.get("gapReasonCounts", {})
     etf_history_row_count = int(manifest.get("etfPriceHistoryRowCount") or 0)
     etf_history_ready_count = int(manifest.get("etfPriceHistoryReadyCount") or 0)
     etf_history_missing_count = int(manifest.get("etfPriceHistoryMissingCount") or 0)
@@ -277,6 +294,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         or etf_history_index.get("dataTime")
         or legacy_etf_summary.get("dataTime"),
         "etfPriceHistoryCoverageTierCounts": etf_tier_counts,
+        "etfPriceHistoryGapReasonCounts": etf_gap_reason_counts,
         "minimumCatalogRowCount": int(manifest.get("minimumCatalogRowCount") or 0),
         "release": release_payload,
         "overallStatus": "FAIL" if failures else "PASS" if row_count >= 2 else "WARN",
@@ -355,6 +373,8 @@ def _export_static_etf_price_history(
             "dataTime": None,
             "rowCount": 0,
             "readyCount": 0,
+            "missingCount": len(codes),
+            "gapReasonCounts": {"store_not_configured": len(codes)},
             "items": [],
             "errorMessage": "ETF price history store is not configured.",
         }
@@ -390,6 +410,7 @@ def _export_static_etf_price_history(
         items.append(status)
 
     tier_counts = _coverage_tier_counts(items)
+    gap_reason_counts = _gap_reason_counts(items)
     if strict and codes and ready_count == 0:
         failures.append("No selected ETF price history is available for static export.")
 
@@ -403,6 +424,7 @@ def _export_static_etf_price_history(
         "missingCount": len(missing_codes),
         "missingSample": missing_codes[:10],
         "coverageTierCounts": tier_counts,
+        "gapReasonCounts": gap_reason_counts,
         "items": items,
         "errorMessage": None if ready_count else "No selected ETF price history is available.",
     }
@@ -434,6 +456,47 @@ def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
     return counts
 
 
+def _gap_reason_counts(items: list[dict[str, Any]]) -> dict[str, int]:
+    counts = {
+        "not_saved": 0,
+        "insufficient_rows": 0,
+        "validation_error": 0,
+        "source_error": 0,
+        "not_ready": 0,
+    }
+    for item in items:
+        row_count = int(item.get("rowCount") or 0)
+        validation_failure_count = int(item.get("validationFailureCount") or 0)
+        if row_count >= 2 and validation_failure_count == 0:
+            continue
+        reason = str(item.get("gapReason") or "")
+        if not reason:
+            reason = _gap_reason(
+                row_count=row_count,
+                source_status=str(item.get("sourceStatus") or ""),
+                validation_failure_count=validation_failure_count,
+            )
+        counts[reason] = counts.get(reason, 0) + 1
+    return counts
+
+
+def _gap_reason(
+    *,
+    row_count: int,
+    source_status: str,
+    validation_failure_count: int,
+) -> str:
+    if validation_failure_count > 0:
+        return "validation_error"
+    if str(source_status or "").lower() == "error":
+        return "source_error"
+    if row_count <= 0:
+        return "not_saved"
+    if row_count < 2:
+        return "insufficient_rows"
+    return "not_ready"
+
+
 def _derive_static_etf_summary(output_dir: Path) -> dict[str, Any]:
     history_dir = output_dir / "etf_price_history"
     if not history_dir.exists():
@@ -462,6 +525,7 @@ def _derive_static_etf_summary(output_dir: Path) -> dict[str, Any]:
         "readyCount": sum(1 for item in items if int(item.get("rowCount") or 0) >= 2),
         "dataTime": latest,
         "coverageTierCounts": _coverage_tier_counts(items),
+        "gapReasonCounts": _gap_reason_counts(items),
     }
 
 

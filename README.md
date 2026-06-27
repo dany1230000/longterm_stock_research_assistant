@@ -1554,6 +1554,11 @@ v5.92 moves that static regression guard into the normal release check as a real
 public comparison, so local validation fails before commit when static coverage
 would move backward. Summary: `docs\00631l_v5_92_release_static_guard.md`.
 
+v5.93 adds ETF price-history gap classification. Static/public and live/backend
+status now distinguish not-saved, insufficient-row, validation, and source-error
+gaps instead of showing only one missing count. Summary:
+`docs\00631l_v5_93_etf_gap_classification.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

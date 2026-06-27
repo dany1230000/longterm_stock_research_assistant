@@ -9174,6 +9174,10 @@ class _EtfDataLibrarySummary extends StatelessWidget {
               missingCount: notReady,
             ),
           ),
+          const SizedBox(height: 8),
+          _StatusRow(
+            item: _etfHistoryGapReasonItem(status),
+          ),
         ],
       ),
     );
@@ -12269,7 +12273,7 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
       label: 'ETF history',
       status: data.operationsStatus.etfPriceHistoryStatus,
       detail:
-          'ready ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / symbols ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}; ${_etfCoverageTierDetail(data.operationsStatus)}; dataTime ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}.',
+          'ready ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / symbols ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}; ${_etfCoverageTierDetail(data.operationsStatus)}; ${_etfGapReasonDetail(data.operationsStatus)}; dataTime ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}.',
       action: data.operationsStatus.etfPriceHistoryReadyCount > 0
           ? 'ETF price history imported for comparison data foundation.'
           : 'Run scripts\\00631l_import_etf_price_history.cmd to import selected ETF price history.',
@@ -12283,6 +12287,42 @@ String _etfCoverageTierDetail(EtfOperationsStatus status) {
     return 'coverage tier unavailable';
   }
   return 'long-term ${formatInteger(counts['long_term'] ?? 0)}, recent ${formatInteger(counts['recent'] ?? 0)}, unavailable ${formatInteger(counts['unavailable'] ?? 0)}, error ${formatInteger(counts['error'] ?? 0)}';
+}
+
+String _etfGapReasonDetail(EtfOperationsStatus status) {
+  final counts = status.etfPriceHistoryGapReasonCounts;
+  if (counts.isEmpty) {
+    return 'gap reason unavailable';
+  }
+  final parts = <String>[
+    if ((counts['not_saved'] ?? 0) > 0)
+      'not saved ${formatInteger(counts['not_saved'] ?? 0)}',
+    if ((counts['insufficient_rows'] ?? 0) > 0)
+      'few rows ${formatInteger(counts['insufficient_rows'] ?? 0)}',
+    if ((counts['validation_error'] ?? 0) > 0)
+      'validation ${formatInteger(counts['validation_error'] ?? 0)}',
+    if ((counts['source_error'] ?? 0) > 0)
+      'source error ${formatInteger(counts['source_error'] ?? 0)}',
+    if ((counts['not_ready'] ?? 0) > 0)
+      'not ready ${formatInteger(counts['not_ready'] ?? 0)}',
+  ];
+  if (parts.isEmpty) {
+    return 'gap reason clear';
+  }
+  return 'gap: ${parts.join(', ')}';
+}
+
+_StatusItem _etfHistoryGapReasonItem(EtfOperationsStatus status) {
+  final detail = _etfGapReasonDetail(status);
+  final missing = status.etfPriceHistoryMissingCount;
+  return _StatusItem(
+    label: '資料缺口原因',
+    status: missing > 0 ? '${formatInteger(missing)} 檔待補' : 'clear',
+    detail: detail,
+    action: missing > 0
+        ? '依照上方資料補齊動作處理；此列只用來說明目前缺口分類。'
+        : '目前 ETF history index 沒有待補缺口；維持 release check 即可。',
+  );
 }
 
 _StatusItem _etfHistoryNextActionItem({

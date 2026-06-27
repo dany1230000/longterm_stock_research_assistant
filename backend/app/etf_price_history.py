@@ -219,6 +219,7 @@ class EtfPriceHistoryStore:
                 "validationStatus": validation["overallStatus"],
                 "validationFailureCount": validation["failureCount"],
                 "validationWarningCount": validation["warningCount"],
+                "gapReason": "not_saved",
                 "errorMessage": "No local ETF price history is saved for this code.",
             }
         coverage_start = str(records[0].get("date"))
@@ -253,6 +254,13 @@ class EtfPriceHistoryStore:
             "validationStatus": validation["overallStatus"],
             "validationFailureCount": validation["failureCount"],
             "validationWarningCount": validation["warningCount"],
+            "gapReason": _gap_reason(
+                row_count=len(records),
+                source_status="error"
+                if validation["failureCount"]
+                else source_info["sourceStatus"],
+                validation_failure_count=int(validation["failureCount"]),
+            ),
             "errorMessage": "; ".join(validation["failures"])
             if validation["failureCount"]
             else None,
@@ -285,6 +293,7 @@ class EtfPriceHistoryStore:
             for failure in (item.get("validation") or {}).get("failures", [])
         ]
         tier_counts = _coverage_tier_counts(items)
+        gap_reason_counts = _gap_reason_counts(items)
         has_local = any(self._has_local_records(str(item.get("code") or "")) for item in items)
         source_status = "error" if validation_failure_count else (
             "cached" if has_local and ready_items else "static_official" if ready_items else "unavailable"
@@ -308,7 +317,9 @@ class EtfPriceHistoryStore:
             "isStale": not bool(ready_items),
             "rowCount": len(items),
             "readyCount": len(ready_items),
+            "missingCount": max(0, len(items) - len(ready_items)),
             "coverageTierCounts": tier_counts,
+            "gapReasonCounts": gap_reason_counts,
             "validationFailureCount": validation_failure_count,
             "validationWarningCount": validation_warning_count,
             "validationFailures": validation_failures,
@@ -478,6 +489,45 @@ def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
         tier = str(item.get("coverageTier") or "unavailable")
         counts[tier] = counts.get(tier, 0) + 1
     return counts
+
+
+def _gap_reason_counts(items: list[dict[str, Any]]) -> dict[str, int]:
+    counts = {
+        "not_saved": 0,
+        "insufficient_rows": 0,
+        "validation_error": 0,
+        "source_error": 0,
+        "not_ready": 0,
+    }
+    for item in items:
+        row_count = int(item.get("rowCount") or 0)
+        validation_failure_count = int(item.get("validationFailureCount") or 0)
+        if row_count >= 2 and validation_failure_count == 0:
+            continue
+        reason = str(item.get("gapReason") or "") or _gap_reason(
+            row_count=row_count,
+            source_status=str(item.get("sourceStatus") or ""),
+            validation_failure_count=validation_failure_count,
+        )
+        counts[reason] = counts.get(reason, 0) + 1
+    return counts
+
+
+def _gap_reason(
+    *,
+    row_count: int,
+    source_status: str,
+    validation_failure_count: int,
+) -> str:
+    if validation_failure_count > 0:
+        return "validation_error"
+    if str(source_status or "").lower() == "error":
+        return "source_error"
+    if row_count <= 0:
+        return "not_saved"
+    if row_count < 2:
+        return "insufficient_rows"
+    return "not_ready"
 
 
 def fetch_etf_price_history(

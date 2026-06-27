@@ -1263,6 +1263,7 @@ void main() {
     expect(find.text('公開靜態版本'), findsOneWidget);
     expect(find.text('5.42-public-release-wait'), findsOneWidget);
     expect(find.text('資料補齊動作'), findsOneWidget);
+    expect(find.text('資料缺口原因'), findsOneWidget);
     expect(
       find.textContaining(
         'scripts\\00631l_import_etf_price_history.cmd --status-only',
@@ -1611,6 +1612,13 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
   int? catalogRowCount,
   int? historyRowCount,
   int missingCount = 0,
+  Map<String, int> gapReasonCounts = const {
+    'not_saved': 0,
+    'insufficient_rows': 0,
+    'validation_error': 0,
+    'source_error': 0,
+    'not_ready': 0,
+  },
 }) {
   final now = DateTime(2026, 6, 11, 10);
   return EtfOperationsStatus(
@@ -1656,6 +1664,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     etfPriceHistoryReadyCount: readyCount,
     etfPriceHistoryMissingCount: missingCount,
     etfPriceHistoryCoverageTierCounts: tierCounts,
+    etfPriceHistoryGapReasonCounts: gapReasonCounts,
     etfPriceHistoryDataTime: now,
     backtestStatus: 'static_official',
     backtestAvailable: true,

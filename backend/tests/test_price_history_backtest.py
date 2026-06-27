@@ -832,6 +832,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             self.assertEqual(result["overallStatus"], "PASS")
             self.assertEqual(result["etfPriceHistoryReadyCount"], 1)
             self.assertEqual(result["etfPriceHistoryMissingCount"], 1)
+            self.assertEqual(result["etfPriceHistoryGapReasonCounts"]["not_saved"], 1)
             self.assertFalse(any("etfPriceHistoryMissing=00878" in item for item in result["warnings"]))
 
 

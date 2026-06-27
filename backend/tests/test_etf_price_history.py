@@ -410,6 +410,35 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(index["coverageTierCounts"]["recent"], 1)
         self.assertEqual(index["coverageTierCounts"]["long_term"], 1)
 
+    def test_index_classifies_price_history_gap_reasons(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = EtfPriceHistoryStore(Path(temp_dir))
+            store.save_points("0050", _points("0050")[:1])
+            store.save_points(
+                "00878",
+                [
+                    {
+                        "code": "00878",
+                        "date": "2026-06-01",
+                        "open": -1,
+                        "high": -1,
+                        "low": -1,
+                        "close": -1,
+                        "volume": 100,
+                        "sourceUrl": "fixture://bad",
+                    }
+                ],
+            )
+
+            missing = store.status("00919", fetched_at="2026-06-21T00:00:00+00:00")
+            index = store.index_response(fetched_at="2026-06-21T00:00:00+00:00")
+
+        self.assertEqual(missing["gapReason"], "not_saved")
+        self.assertEqual(index["missingCount"], 2)
+        self.assertEqual(index["gapReasonCounts"]["insufficient_rows"], 1)
+        self.assertEqual(index["gapReasonCounts"]["validation_error"], 1)
+        self.assertEqual(index["gapReasonCounts"]["not_saved"], 0)
+
     def test_status_summary_omits_full_item_dump(self) -> None:
         payload = {
             "sourceStatus": "cached",
