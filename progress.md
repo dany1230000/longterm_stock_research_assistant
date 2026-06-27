@@ -67,3 +67,12 @@
 - Added `docs\00631l_v5_99_skip_attempted_probe.md` and indexed it in README/docs/release-check required artifacts.
 - Targeted validation PASS: `py -m unittest backend.tests.test_etf_price_history backend.tests.test_static_pages_pipeline backend.tests.test_release_check`; `scripts\00631l_probe_missing_etf_reasons.cmd --status-only` PASS with ready 231, attempted 20, gap 116.
 - Full v5.99 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (261 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.
+- v5.99 committed/pushed as `34e5f5f`, tag `00631l-lab-v5.99-skip-attempted-probe`.
+- Public Pages marker updated to v5.99 and public static check PASS, but public `etfPriceHistoryAttemptedCount` remained 20 (`official_empty=20`, `not_saved=96`). Finding: GitHub Actions runners do not keep the local `_attempts` directory, so public deployments need to restore attempt evidence from the previous static export before probing.
+- Started v6.0 public ETF attempt carry-forward.
+- Added `backend\scripts\restore_public_etf_attempts.py` and `scripts\00631l_restore_public_etf_attempts.cmd`.
+- Updated GitHub Pages workflow to restore public attempt evidence before missing-only ETF imports, and changed missing-only batch helpers to use `--skip-attempted`.
+- Added v6.0 tests and docs for public attempt carry-forward.
+- Targeted v6.0 validation PASS: `py -m unittest backend.tests.test_public_etf_attempt_restore backend.tests.test_static_pages_pipeline backend.tests.test_release_check`.
+- Public restore dry-run PASS: `scripts\00631l_restore_public_etf_attempts.cmd --dry-run` restored 20 public attempt records from the current static index.
+- Full v6.0 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (263 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.

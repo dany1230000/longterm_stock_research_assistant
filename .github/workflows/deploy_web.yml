@@ -67,11 +67,16 @@ jobs:
         continue-on-error: true
         run: python backend/scripts/import_etf_price_history.py --from-catalog --catalog-path backend/seeds/twse_etf_catalog_seed.json --limit 0 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 25
 
+      - name: Restore public ETF attempt evidence
+        timeout-minutes: 2
+        continue-on-error: true
+        run: python backend/scripts/restore_public_etf_attempts.py --output-dir backend/data/etf_price_history --summary-only
+
       - name: Import missing ETF price history batch
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.refresh_etf_histories == 'true' || inputs.full_etf_refresh == 'true'))
         timeout-minutes: 10
         continue-on-error: true
-        run: python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --catalog-path backend/seeds/twse_etf_catalog_seed.json --limit 50 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10
+        run: python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --skip-attempted --catalog-path backend/seeds/twse_etf_catalog_seed.json --limit 50 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10
 
       - name: Probe missing ETF gap reasons
         timeout-minutes: 6

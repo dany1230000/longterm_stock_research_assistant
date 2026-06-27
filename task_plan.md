@@ -127,6 +127,33 @@ Completed in v5.99:
 - Local probe helper and Pages workflow both use the flag.
 - Targeted backend tests, full Flutter/backend validation, and release check
   passed with only accepted WARN states.
+- Public Pages marker and static data check passed on v5.99, but public
+  `attemptedCount` stayed at 20 because a clean GitHub Actions runner does not
+  retain the previous `_attempts` directory.
+
+## Phase 12 - v6.0 Public Attempt Carry-Forward
+
+Status: complete
+
+Objective: restore public ETF import-attempt evidence from the previous static
+export before the next public missing-ETF probe runs.
+
+- Add a script that reads public `etf_price_history_index.json` and restores
+  `lastImportAttempt` payloads into the local ETF price-history store.
+- Run that restore step in the GitHub Pages workflow before missing-only ETF
+  imports and probes.
+- Keep missing-only batches on `--skip-attempted` so restored evidence advances
+  the next batch.
+- Add tests, docs, and release-check required artifacts.
+
+Completed in v6.0:
+
+- Added public static attempt restore script and Windows wrapper.
+- GitHub Pages restores public attempt evidence before missing-only ETF imports.
+- Missing-only local and public batches skip already-attempted symbols.
+- Restore dry-run confirmed the current public index can restore 20 attempt
+  records.
+- Full validation passed with accepted WARN states only.
 
 ## Phase 5 - Backtest and Position UX
 

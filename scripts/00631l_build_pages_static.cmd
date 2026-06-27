@@ -6,6 +6,7 @@ cd /d "%~dp0.."
 set "FULL_ETF_REFRESH=0"
 set "REFRESH_ETF_HISTORY=0"
 set "PROBE_MISSING=0"
+set "RESTORE_PUBLIC_ATTEMPTS=0"
 
 :parse_args
 if "%~1"=="" goto after_args
@@ -25,8 +26,13 @@ if /I "%~1"=="--probe-missing" (
     shift
     goto parse_args
 )
+if /I "%~1"=="--restore-public-attempts" (
+    set "RESTORE_PUBLIC_ATTEMPTS=1"
+    shift
+    goto parse_args
+)
 echo Unknown argument: %~1
-echo Usage: scripts\00631l_build_pages_static.cmd [--refresh-etf-history] [--full-etf-refresh] [--probe-missing]
+echo Usage: scripts\00631l_build_pages_static.cmd [--refresh-etf-history] [--full-etf-refresh] [--probe-missing] [--restore-public-attempts]
 exit /b 2
 
 :after_args
@@ -45,6 +51,14 @@ if "%FULL_ETF_REFRESH%"=="1" (
 ) else (
     echo [00631L] Skipping broad all-catalog ETF recent refresh for fast Pages build.
     echo [00631L] Run scripts\00631l_build_pages_static.cmd --full-etf-refresh for scheduled/manual full refresh.
+)
+
+if "%RESTORE_PUBLIC_ATTEMPTS%"=="1" (
+    call scripts\00631l_restore_public_etf_attempts.cmd --output-dir backend\data\etf_price_history
+    if errorlevel 1 exit /b %ERRORLEVEL%
+) else (
+    echo [00631L] Skipping public ETF attempt restore for local fast Pages build.
+    echo [00631L] Run scripts\00631l_build_pages_static.cmd --restore-public-attempts to reuse public gap evidence.
 )
 
 if "%REFRESH_ETF_HISTORY%"=="1" (

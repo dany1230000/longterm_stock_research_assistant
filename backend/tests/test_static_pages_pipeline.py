@@ -33,6 +33,8 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--progress-every 25", workflow)
         self.assertIn("--missing-only", workflow)
         self.assertIn("--limit 50", workflow)
+        self.assertIn("Restore public ETF attempt evidence", workflow)
+        self.assertIn("restore_public_etf_attempts.py", workflow)
         self.assertIn("Probe missing ETF gap reasons", workflow)
         self.assertIn("--skip-attempted", workflow)
         self.assertIn("--limit 20", workflow)
@@ -52,11 +54,14 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--full-etf-refresh", script)
         self.assertIn("--refresh-etf-history", script)
         self.assertIn("--probe-missing", script)
+        self.assertIn("--restore-public-attempts", script)
         self.assertIn("FULL_ETF_REFRESH", script)
         self.assertIn("REFRESH_ETF_HISTORY", script)
         self.assertIn("PROBE_MISSING", script)
+        self.assertIn("RESTORE_PUBLIC_ATTEMPTS", script)
         self.assertIn("Skipping selected ETF price-history refresh", script)
         self.assertIn("Skipping broad all-catalog ETF recent refresh", script)
+        self.assertIn("Skipping public ETF attempt restore", script)
         self.assertIn("Skipping missing-only ETF history batch", script)
         self.assertIn("Skipping missing ETF reason probe", script)
         self.assertIn("--from-catalog", script)
@@ -69,6 +74,7 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--progress-every 25", script)
         self.assertIn("scripts\\00631l_import_missing_etf_batch.cmd", script)
         self.assertIn("scripts\\00631l_probe_missing_etf_reasons.cmd", script)
+        self.assertIn("scripts\\00631l_restore_public_etf_attempts.cmd", script)
         self.assertIn("--limit 50", script)
         self.assertIn("--limit 20", script)
         self.assertIn("--start-date 2026-06-01", script)
@@ -81,6 +87,11 @@ class StaticPagesPipelineTests(unittest.TestCase):
             ROOT / "scripts" / "00631l_probe_missing_etf_reasons.cmd"
         ).read_text(encoding="utf-8")
         self.assertIn("--skip-attempted", probe_script)
+
+        missing_script = (
+            ROOT / "scripts" / "00631l_import_missing_etf_batch.cmd"
+        ).read_text(encoding="utf-8")
+        self.assertIn("--skip-attempted", missing_script)
 
     def test_broad_etf_price_seed_is_committed_for_pages_reproducibility(self) -> None:
         seed_dir = ROOT / "backend" / "seeds" / "etf_price_history_seed"

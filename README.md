@@ -1591,6 +1591,11 @@ import-attempt evidence, so scheduled Pages builds can advance to later missing
 ETF histories instead of repeating the same first batch. Summary:
 `docs\00631l_v5_99_skip_attempted_probe.md`.
 
+v6.0 restores public ETF import-attempt evidence from the previous static export
+before running missing-only probes in GitHub Pages. This lets scheduled builds
+carry gap evidence forward across clean runners. Summary:
+`docs\00631l_v6_0_public_attempt_carry_forward.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
