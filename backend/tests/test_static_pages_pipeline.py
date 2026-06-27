@@ -33,6 +33,8 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--progress-every 25", workflow)
         self.assertIn("--missing-only", workflow)
         self.assertIn("--limit 50", workflow)
+        self.assertIn("Probe missing ETF gap reasons", workflow)
+        self.assertIn("--limit 20", workflow)
         self.assertIn("--start-date 2026-06-01", workflow)
         self.assertIn("--progress-every 10", workflow)
         self.assertIn("--max-coverage-age-days 7", workflow)
@@ -48,11 +50,14 @@ class StaticPagesPipelineTests(unittest.TestCase):
 
         self.assertIn("--full-etf-refresh", script)
         self.assertIn("--refresh-etf-history", script)
+        self.assertIn("--probe-missing", script)
         self.assertIn("FULL_ETF_REFRESH", script)
         self.assertIn("REFRESH_ETF_HISTORY", script)
+        self.assertIn("PROBE_MISSING", script)
         self.assertIn("Skipping selected ETF price-history refresh", script)
         self.assertIn("Skipping broad all-catalog ETF recent refresh", script)
         self.assertIn("Skipping missing-only ETF history batch", script)
+        self.assertIn("Skipping missing ETF reason probe", script)
         self.assertIn("--from-catalog", script)
         self.assertIn(
             "--catalog-path backend\\seeds\\twse_etf_catalog_seed.json",
@@ -62,7 +67,9 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("--summary-only", script)
         self.assertIn("--progress-every 25", script)
         self.assertIn("scripts\\00631l_import_missing_etf_batch.cmd", script)
+        self.assertIn("scripts\\00631l_probe_missing_etf_reasons.cmd", script)
         self.assertIn("--limit 50", script)
+        self.assertIn("--limit 20", script)
         self.assertIn("--start-date 2026-06-01", script)
         self.assertIn("--progress-every 10", script)
         self.assertIn("--max-coverage-age-days 7", script)

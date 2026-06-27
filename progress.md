@@ -49,3 +49,9 @@
 - Added `scripts\00631l_probe_missing_etf_reasons.cmd` and `docs\00631l_v5_96_missing_etf_reason_probe.md`.
 - Fixed importer status-only catalog mode; probe status now reports `rowCount=347`, `readyCount=231`, `not_saved=116`, `attemptedCount=0`.
 - Validation before commit: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (258 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.
+- v5.96 committed and pushed as `d6a20f6`, tag `00631l-lab-v5.96-missing-etf-reason-probe`.
+- Public Pages marker updated to v5.96 and `scripts\00631l_check_public_static_data.cmd --expected-sha d6a20f6 --strict-release` PASS. Public ETF static status: ready 231, catalog 347, missing/not_saved 116, attempted 0.
+- Started v5.97 to run a small missing ETF probe in public Pages build before static export.
+- Implemented v5.97 Pages missing ETF probe step and local `--probe-missing` helper flag.
+- Ran `scripts\00631l_build_pages_static.cmd --probe-missing`: PASS. It probed 20 missing ETF symbols, produced warnings for official empty months, had failures=0, and generated static output with `etfPriceHistoryAttemptedCount=20`.
+- v5.97 validation: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (258 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.

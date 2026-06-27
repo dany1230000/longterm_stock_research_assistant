@@ -5,6 +5,7 @@ cd /d "%~dp0.."
 
 set "FULL_ETF_REFRESH=0"
 set "REFRESH_ETF_HISTORY=0"
+set "PROBE_MISSING=0"
 
 :parse_args
 if "%~1"=="" goto after_args
@@ -19,8 +20,13 @@ if /I "%~1"=="--full-etf-refresh" (
     shift
     goto parse_args
 )
+if /I "%~1"=="--probe-missing" (
+    set "PROBE_MISSING=1"
+    shift
+    goto parse_args
+)
 echo Unknown argument: %~1
-echo Usage: scripts\00631l_build_pages_static.cmd [--refresh-etf-history] [--full-etf-refresh]
+echo Usage: scripts\00631l_build_pages_static.cmd [--refresh-etf-history] [--full-etf-refresh] [--probe-missing]
 exit /b 2
 
 :after_args
@@ -46,6 +52,14 @@ if "%REFRESH_ETF_HISTORY%"=="1" (
     if errorlevel 1 exit /b %ERRORLEVEL%
 ) else (
     echo [00631L] Skipping missing-only ETF history batch for fast Pages build.
+)
+
+if "%PROBE_MISSING%"=="1" (
+    call scripts\00631l_probe_missing_etf_reasons.cmd --catalog-path backend\seeds\twse_etf_catalog_seed.json --limit 20 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 10
+    if errorlevel 1 exit /b %ERRORLEVEL%
+) else (
+    echo [00631L] Skipping missing ETF reason probe for local fast Pages build.
+    echo [00631L] Run scripts\00631l_build_pages_static.cmd --probe-missing to classify a small missing batch.
 )
 
 call scripts\00631l_export_static_data.cmd --update --strict --max-coverage-age-days 7 --min-etf-catalog-row-count 100 --multi-etf-codes all-catalog --output-dir web\00631l-static-data --summary-only

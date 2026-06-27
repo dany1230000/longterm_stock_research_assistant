@@ -72,6 +72,24 @@ Completed in v5.96:
 - Fixed importer `--status-only --from-catalog` so catalog-only missing ETFs are counted as `not_saved` gaps.
 - Verified status now reports catalog 347, ready 231, missing/not_saved 116, attempted 0 before any missing probe run.
 
+## Phase 9 - v5.97 Public Pages Missing ETF Probe
+
+Status: complete
+
+Objective: make the public static deployment perform a small missing-ETF probe before static export so `not_saved` gaps can gradually become ready histories or classified attempt evidence.
+
+- Add a lightweight GitHub Pages workflow step that probes a limited batch of missing ETF histories before export.
+- Keep the step `continue-on-error` so source outages do not block static history for 00631L.
+- Add a local opt-in flag to the Pages build helper for the same probe.
+- Document that probe output is generated deployment data, not committed runtime state.
+
+Completed in v5.97:
+
+- GitHub Pages static workflow now runs a 20-symbol missing ETF reason probe before static export.
+- Local `scripts\00631l_build_pages_static.cmd --probe-missing` verifies the same path on demand.
+- Backend tests lock the workflow and local script behavior.
+- Local probe run classified 20 missing ETF attempts and produced `etfPriceHistoryAttemptedCount=20` in the generated static output.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

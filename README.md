@@ -1574,6 +1574,12 @@ metadata for ETF price-history gaps. Missing ETF histories can now be probed in
 small batches, with evidence surfaced through backend/static/public status.
 Summary: `docs\00631l_v5_96_missing_etf_reason_probe.md`.
 
+v5.97 runs that missing ETF probe as a small `continue-on-error` step in the
+GitHub Pages static build, so public data can gradually classify or fill ETF
+history gaps without blocking the 00631L app when a source is temporarily
+unavailable. Local opt-in: `scripts\00631l_build_pages_static.cmd --probe-missing`.
+Summary: `docs\00631l_v5_97_pages_missing_probe.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
