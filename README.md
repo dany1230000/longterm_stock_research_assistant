@@ -1550,6 +1550,10 @@ official price-history seed is also updated through 2026-06-26 so clean runners
 can restore the latest validated coverage. Summary:
 `docs\00631l_v5_91_static_regression_guard.md`.
 
+v5.92 moves that static regression guard into the normal release check as a real
+public comparison, so local validation fails before commit when static coverage
+would move backward. Summary: `docs\00631l_v5_92_release_static_guard.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

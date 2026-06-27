@@ -395,6 +395,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF seed readiness reconcile: `docs\00631l_v5_89_etf_seed_ready_reconcile.md`
 - Pages maintenance split: `docs\00631l_v5_90_pages_maintenance_split.md`
 - Static regression guard: `docs\00631l_v5_91_static_regression_guard.md`
+- Release static guard: `docs\00631l_v5_92_release_static_guard.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

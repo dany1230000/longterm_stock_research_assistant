@@ -54,8 +54,8 @@ def main() -> int:
             ["cmd", "/c", "scripts\\00631l_check_public_static_data.cmd"],
         ),
         _run_command(
-            "static_public_regression_guard_dry_run",
-            ["cmd", "/c", "scripts\\00631l_guard_static_public_regression.cmd", "--dry-run"],
+            "static_public_regression_guard",
+            ["cmd", "/c", "scripts\\00631l_guard_static_public_regression.cmd"],
         ),
         _run_command(
             "pages_deploy_wait_dry_run",
@@ -475,6 +475,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v5_89_etf_seed_ready_reconcile.md",
         "docs/00631l_v5_90_pages_maintenance_split.md",
         "docs/00631l_v5_91_static_regression_guard.md",
+        "docs/00631l_v5_92_release_static_guard.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
