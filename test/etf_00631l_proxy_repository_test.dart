@@ -877,6 +877,7 @@ Map<String, Object?> _operationsStatusPayload() {
         'error': 0,
       },
       'gapReasonCounts': {
+        'official_empty': 0,
         'not_saved': 0,
         'insufficient_rows': 0,
         'validation_error': 0,
@@ -1179,6 +1180,7 @@ Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
       'error': 0,
     },
     'gapReasonCounts': {
+      'official_empty': 0,
       'not_saved': 2,
       'insufficient_rows': 0,
       'validation_error': 0,

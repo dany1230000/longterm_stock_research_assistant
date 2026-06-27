@@ -439,6 +439,31 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(index["gapReasonCounts"]["validation_error"], 1)
         self.assertEqual(index["gapReasonCounts"]["not_saved"], 0)
 
+    def test_import_attempt_classifies_official_empty_history(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = EtfPriceHistoryStore(Path(temp_dir))
+            store.record_import_attempt(
+                "00999",
+                {
+                    "attemptedAt": "2026-06-21T00:00:00+00:00",
+                    "sourceStatus": "error",
+                    "sourceUrl": "https://example.test/STOCK_DAY?stockNo=00999",
+                    "requestedMonths": 1,
+                    "rowCount": 0,
+                    "warnings": ["emptyMonths=1"],
+                    "errorMessage": None,
+                },
+            )
+
+            status = store.status("00999", fetched_at="2026-06-21T00:00:00+00:00")
+            index = store.index_response(fetched_at="2026-06-21T00:00:00+00:00")
+
+        self.assertEqual(status["gapReason"], "official_empty")
+        self.assertEqual(status["sourceStatus"], "unavailable")
+        self.assertEqual(status["lastImportAttempt"]["requestedMonths"], 1)
+        self.assertEqual(index["gapReasonCounts"]["official_empty"], 1)
+        self.assertEqual(index["missingCount"], 1)
+
     def test_status_summary_omits_full_item_dump(self) -> None:
         payload = {
             "sourceStatus": "cached",

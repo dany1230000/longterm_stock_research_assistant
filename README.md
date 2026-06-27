@@ -1559,6 +1559,11 @@ status now distinguish not-saved, insufficient-row, validation, and source-error
 gaps instead of showing only one missing count. Summary:
 `docs\00631l_v5_93_etf_gap_classification.md`.
 
+v5.94 persists ETF import-attempt evidence in local data state. Missing ETF
+histories can now be classified as `official_empty` only when a STOCK_DAY import
+attempt actually returned no rows for the requested months. Summary:
+`docs\00631l_v5_94_etf_import_attempts.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

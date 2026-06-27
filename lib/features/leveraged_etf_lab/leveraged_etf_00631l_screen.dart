@@ -12295,6 +12295,8 @@ String _etfGapReasonDetail(EtfOperationsStatus status) {
     return 'gap reason unavailable';
   }
   final parts = <String>[
+    if ((counts['official_empty'] ?? 0) > 0)
+      'official empty ${formatInteger(counts['official_empty'] ?? 0)}',
     if ((counts['not_saved'] ?? 0) > 0)
       'not saved ${formatInteger(counts['not_saved'] ?? 0)}',
     if ((counts['insufficient_rows'] ?? 0) > 0)

@@ -68,6 +68,12 @@ class EtfPriceHistoryStore:
             raise ValueError("ETF code is required")
         return self.root_dir / f"{normalized}.jsonl"
 
+    def attempt_path_for(self, code: str) -> Path:
+        normalized = normalize_etf_code(code)
+        if not normalized:
+            raise ValueError("ETF code is required")
+        return self.root_dir / "_attempts" / f"{normalized}.json"
+
     def seed_path_for(self, code: str) -> Path | None:
         if self.seed_dir is None:
             return None
@@ -87,7 +93,43 @@ class EtfPriceHistoryStore:
             for path in self.seed_dir.glob("*.jsonl")
             if normalize_etf_code(path.stem)
         } if self.seed_dir is not None and self.seed_dir.exists() else set()
-        return sorted(local_codes | seed_codes)
+        attempt_codes = {
+            normalize_etf_code(path.stem)
+            for path in (self.root_dir / "_attempts").glob("*.json")
+            if normalize_etf_code(path.stem)
+        } if (self.root_dir / "_attempts").exists() else set()
+        return sorted(local_codes | seed_codes | attempt_codes)
+
+    def record_import_attempt(self, code: str, payload: dict[str, Any]) -> None:
+        normalized = normalize_etf_code(code)
+        if not normalized:
+            return
+        path = self.attempt_path_for(normalized)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        body = {
+            "code": normalized,
+            "sourceContract": "twse_multi_etf_price_history_import_attempt",
+            **payload,
+        }
+        temp_path = path.with_suffix(path.suffix + ".tmp")
+        temp_path.write_text(
+            json.dumps(body, ensure_ascii=False, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+        temp_path.replace(path)
+
+    def import_attempt(self, code: str) -> dict[str, Any] | None:
+        normalized = normalize_etf_code(code)
+        if not normalized:
+            return None
+        path = self.attempt_path_for(normalized)
+        if not path.exists() or not path.is_file():
+            return None
+        try:
+            decoded = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            return None
+        return decoded if isinstance(decoded, dict) else None
 
     def save_points(self, code: str, points: list[dict[str, Any]]) -> int:
         normalized = normalize_etf_code(code)
@@ -198,15 +240,17 @@ class EtfPriceHistoryStore:
         records = self.all(normalized)
         source_info = self._source_info(normalized)
         if not records:
+            attempt = self.import_attempt(normalized)
             validation = validate_etf_price_records(normalized, records)
+            source_status = "error" if _attempt_has_source_error(attempt) else "unavailable"
             return {
                 "code": normalized,
-                "sourceStatus": "unavailable",
+                "sourceStatus": source_status,
                 "sourceContract": "twse_multi_etf_price_history_status",
-                "sourceUrl": source_info["sourceUrl"],
+                "sourceUrl": str((attempt or {}).get("sourceUrl") or source_info["sourceUrl"]),
                 "fetchedAt": fetched_at,
-                "sourceUpdatedAt": None,
-                "dataTime": None,
+                "sourceUpdatedAt": (attempt or {}).get("attemptedAt"),
+                "dataTime": (attempt or {}).get("attemptedAt"),
                 "coverageStart": None,
                 "coverageEnd": None,
                 "coverageTier": "unavailable",
@@ -219,8 +263,9 @@ class EtfPriceHistoryStore:
                 "validationStatus": validation["overallStatus"],
                 "validationFailureCount": validation["failureCount"],
                 "validationWarningCount": validation["warningCount"],
-                "gapReason": "not_saved",
-                "errorMessage": "No local ETF price history is saved for this code.",
+                "lastImportAttempt": attempt,
+                "gapReason": _gap_reason_for_empty_attempt(attempt),
+                "errorMessage": _empty_status_error_message(attempt),
             }
         coverage_start = str(records[0].get("date"))
         coverage_end = str(records[-1].get("date"))
@@ -493,6 +538,7 @@ def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
 
 def _gap_reason_counts(items: list[dict[str, Any]]) -> dict[str, int]:
     counts = {
+        "official_empty": 0,
         "not_saved": 0,
         "insufficient_rows": 0,
         "validation_error": 0,
@@ -528,6 +574,41 @@ def _gap_reason(
     if row_count < 2:
         return "insufficient_rows"
     return "not_ready"
+
+
+def _gap_reason_for_empty_attempt(attempt: dict[str, Any] | None) -> str:
+    if not attempt:
+        return "not_saved"
+    if _attempt_has_source_error(attempt):
+        return "source_error"
+    if _attempt_has_official_empty_result(attempt):
+        return "official_empty"
+    return "not_saved"
+
+
+def _attempt_has_source_error(attempt: dict[str, Any] | None) -> bool:
+    if not attempt:
+        return False
+    error = str(attempt.get("errorMessage") or "").strip()
+    return bool(error) or str(attempt.get("sourceStatus") or "").lower() == "error" and not _attempt_has_official_empty_result(attempt)
+
+
+def _attempt_has_official_empty_result(attempt: dict[str, Any] | None) -> bool:
+    if not attempt:
+        return False
+    row_count = int(attempt.get("rowCount") or 0)
+    requested_months = int(attempt.get("requestedMonths") or 0)
+    warnings = [str(item) for item in attempt.get("warnings") or []]
+    has_empty_month_warning = any("emptyMonths=" in item or "has no data list" in item for item in warnings)
+    return row_count == 0 and requested_months > 0 and has_empty_month_warning and not str(attempt.get("errorMessage") or "").strip()
+
+
+def _empty_status_error_message(attempt: dict[str, Any] | None) -> str:
+    if _attempt_has_official_empty_result(attempt):
+        return "Last TWSE STOCK_DAY import attempt returned no rows for the requested months."
+    if attempt and str(attempt.get("errorMessage") or "").strip():
+        return str(attempt.get("errorMessage"))
+    return "No local ETF price history is saved for this code."
 
 
 def fetch_etf_price_history(

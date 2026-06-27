@@ -458,6 +458,7 @@ def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
 
 def _gap_reason_counts(items: list[dict[str, Any]]) -> dict[str, int]:
     counts = {
+        "official_empty": 0,
         "not_saved": 0,
         "insufficient_rows": 0,
         "validation_error": 0,

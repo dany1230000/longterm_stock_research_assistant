@@ -182,6 +182,21 @@ def main() -> int:
                 end_date=end,
                 timeout_seconds=settings.request_timeout_seconds,
             )
+            store.record_import_attempt(
+                code,
+                {
+                    "attemptedAt": now,
+                    "sourceStatus": fetched.get("sourceStatus"),
+                    "sourceUrl": fetched.get("sourceUrl"),
+                    "requestedMonths": fetched.get("requestedMonths"),
+                    "rowCount": fetched.get("rowCount"),
+                    "warnings": fetched.get("warnings", []),
+                    "errorMessage": fetched.get("errorMessage"),
+                    "updateMode": update_mode,
+                    "startDate": start.isoformat(),
+                    "endDate": end.isoformat(),
+                },
+            )
             saved = store.save_points(code, fetched["points"])
             normalized_rows = store.normalize_saved_records(code)
             status = store.status(code, fetched_at=now)
@@ -217,6 +232,21 @@ def main() -> int:
                 }
             )
         except Exception as error:  # noqa: BLE001 - CLI should keep importing others.
+            store.record_import_attempt(
+                code,
+                {
+                    "attemptedAt": now,
+                    "sourceStatus": "error",
+                    "sourceUrl": settings.twse_price_history_url_template,
+                    "requestedMonths": 0,
+                    "rowCount": 0,
+                    "warnings": [],
+                    "errorMessage": str(error),
+                    "updateMode": "custom" if explicit_start is not None else "full" if args.full_refresh else "incremental",
+                    "startDate": start.isoformat() if "start" in locals() else None,
+                    "endDate": end.isoformat(),
+                },
+            )
             fetch_failures.append(f"{code}: {error}")
             items.append(
                 {
@@ -437,6 +467,7 @@ def _coverage_tier_counts(items: list[dict[str, object]]) -> dict[str, int]:
 
 def _gap_reason_counts(items: list[dict[str, object]]) -> dict[str, int]:
     counts = {
+        "official_empty": 0,
         "not_saved": 0,
         "insufficient_rows": 0,
         "validation_error": 0,

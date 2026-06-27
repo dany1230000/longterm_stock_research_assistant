@@ -1613,6 +1613,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
   int? historyRowCount,
   int missingCount = 0,
   Map<String, int> gapReasonCounts = const {
+    'official_empty': 0,
     'not_saved': 0,
     'insufficient_rows': 0,
     'validation_error': 0,
