@@ -38,3 +38,14 @@
 - Added release-check validation that ready static ETF history must expose usable coverage tier summary metadata.
 - Started v4.31 legacy static count reconcile work.
 - Made static status derive legacy ETF row/ready counts together with tier counts for consistent maintenance output.
+
+## 2026-06-27
+
+- Resumed after v5.95 (`87f1967`, `00631l-lab-v5.95-public-gap-summary`).
+- Current next slice is v5.96: add a missing ETF reason probe and attempted-count metadata so public/static status can show how many missing ETFs have actual import-attempt evidence.
+- Error: mistakenly ran `dart format` over Python files. Dart formatter failed parsing Python as expected; rerun formatting only for Dart files.
+- Discovery: `scripts\00631l_probe_missing_etf_reasons.cmd --status-only` runs, but the current importer status path only counted saved store codes, so catalog-only missing symbols did not appear in `gapReasonCounts`. v5.96 will fix the status path to include catalog codes when `--from-catalog` is supplied.
+- Implemented v5.96 attempted-count plumbing across backend index/static export/public checker/operations status and Flutter model/repositories/UI.
+- Added `scripts\00631l_probe_missing_etf_reasons.cmd` and `docs\00631l_v5_96_missing_etf_reason_probe.md`.
+- Fixed importer status-only catalog mode; probe status now reports `rowCount=347`, `readyCount=231`, `not_saved=116`, `attemptedCount=0`.
+- Validation before commit: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (258 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.

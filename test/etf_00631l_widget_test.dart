@@ -1612,6 +1612,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
   int? catalogRowCount,
   int? historyRowCount,
   int missingCount = 0,
+  int attemptedCount = 0,
   Map<String, int> gapReasonCounts = const {
     'official_empty': 0,
     'not_saved': 0,
@@ -1664,6 +1665,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     etfPriceHistoryRowCount: historyRowCount ?? rowCount,
     etfPriceHistoryReadyCount: readyCount,
     etfPriceHistoryMissingCount: missingCount,
+    etfPriceHistoryAttemptedCount: attemptedCount,
     etfPriceHistoryCoverageTierCounts: tierCounts,
     etfPriceHistoryGapReasonCounts: gapReasonCounts,
     etfPriceHistoryDataTime: now,

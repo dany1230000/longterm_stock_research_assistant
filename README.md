@@ -1569,6 +1569,11 @@ daily Pages verification can show whether remaining ETF history gaps are
 not-saved, official-empty, validation-related, or source-related. Summary:
 `docs\00631l_v5_95_public_gap_summary.md`.
 
+v5.96 adds `scripts\00631l_probe_missing_etf_reasons.cmd` and attempted-count
+metadata for ETF price-history gaps. Missing ETF histories can now be probed in
+small batches, with evidence surfaced through backend/static/public status.
+Summary: `docs\00631l_v5_96_missing_etf_reason_probe.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

@@ -95,6 +95,7 @@ def export_static_00631l_data(
         "etfCatalogRowCount": catalog_row_count,
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
+        "etfPriceHistoryAttemptedCount": etf_history_payload.get("attemptedCount", 0),
         "etfPriceHistoryGapReasonCounts": etf_history_payload.get(
             "gapReasonCounts",
             {},
@@ -141,6 +142,7 @@ def export_static_00631l_data(
         "etfPriceHistoryRowCount": etf_history_payload["rowCount"],
         "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
+        "etfPriceHistoryAttemptedCount": etf_history_payload.get("attemptedCount", 0),
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
         "etfPriceHistoryCoverageTierCounts": etf_history_payload.get(
             "coverageTierCounts",
@@ -182,6 +184,7 @@ def export_static_00631l_data(
         "etfPriceHistoryRowCount": etf_history_payload["rowCount"],
         "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
+        "etfPriceHistoryAttemptedCount": etf_history_payload.get("attemptedCount", 0),
         "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
         "etfPriceHistoryCoverageTierCounts": etf_history_payload.get(
             "coverageTierCounts",
@@ -216,6 +219,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             "coverageEnd": None,
             "etfCatalogRowCount": 0,
             "etfCatalogDataTime": None,
+            "etfPriceHistoryAttemptedCount": 0,
             "minimumCatalogRowCount": 0,
             "overallStatus": "WARN",
             "warnings": ["Static public data export does not exist yet."],
@@ -239,6 +243,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             "coverageEnd": None,
             "etfCatalogRowCount": 0,
             "etfCatalogDataTime": None,
+            "etfPriceHistoryAttemptedCount": 0,
             "minimumCatalogRowCount": 0,
             "overallStatus": "FAIL",
             "warnings": [],
@@ -290,6 +295,12 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         "etfPriceHistoryRowCount": etf_history_row_count,
         "etfPriceHistoryReadyCount": etf_history_ready_count,
         "etfPriceHistoryMissingCount": etf_history_missing_count,
+        "etfPriceHistoryAttemptedCount": int(
+            manifest.get("etfPriceHistoryAttemptedCount")
+            or etf_history_index.get("attemptedCount")
+            or legacy_etf_summary.get("attemptedCount")
+            or 0,
+        ),
         "etfPriceHistoryDataTime": manifest.get("etfPriceHistoryDataTime")
         or etf_history_index.get("dataTime")
         or legacy_etf_summary.get("dataTime"),
@@ -374,6 +385,7 @@ def _export_static_etf_price_history(
             "rowCount": 0,
             "readyCount": 0,
             "missingCount": len(codes),
+            "attemptedCount": 0,
             "gapReasonCounts": {"store_not_configured": len(codes)},
             "items": [],
             "errorMessage": "ETF price history store is not configured.",
@@ -422,6 +434,7 @@ def _export_static_etf_price_history(
         "rowCount": len(items),
         "readyCount": ready_count,
         "missingCount": len(missing_codes),
+        "attemptedCount": sum(1 for item in items if item.get("lastImportAttempt")),
         "missingSample": missing_codes[:10],
         "coverageTierCounts": tier_counts,
         "gapReasonCounts": gap_reason_counts,
@@ -524,6 +537,7 @@ def _derive_static_etf_summary(output_dir: Path) -> dict[str, Any]:
     return {
         "rowCount": len(items),
         "readyCount": sum(1 for item in items if int(item.get("rowCount") or 0) >= 2),
+        "attemptedCount": 0,
         "dataTime": latest,
         "coverageTierCounts": _coverage_tier_counts(items),
         "gapReasonCounts": _gap_reason_counts(items),

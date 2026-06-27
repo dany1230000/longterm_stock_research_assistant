@@ -53,6 +53,25 @@ Status: in_progress
 - v4.19 clarified the comparison basket UI and added a widget test for toggling comparison chips.
 - Keep 00631L-specific official holdings separate from generic ETF price history.
 
+## Phase 8 - v5.96 Missing ETF Reason Probe
+
+Status: complete
+
+Objective: turn remaining ETF price-history gaps from an opaque `not_saved` bucket into maintainable evidence.
+
+- Add a safe missing-ETF probe command that attempts a small batch of missing catalog ETF histories without touching unrelated repos.
+- Preserve import-attempt evidence so missing ETFs can move from `not_saved` to `official_empty`, `source_error`, `validation_error`, or ready history.
+- Expose attempted-count metadata through backend status, static export, public check output, and Flutter operations status.
+- Keep generated attempts and history data local/ignored; only code, tests, docs, and scripts are committed.
+- Keep live/static/mock source labels truthful and keep user-visible text free of trading instructions.
+
+Completed in v5.96:
+
+- Added attempted-count metadata to backend ETF history index, static export, operations status, public checker, and Flutter operations model.
+- Added `scripts\00631l_probe_missing_etf_reasons.cmd`.
+- Fixed importer `--status-only --from-catalog` so catalog-only missing ETFs are counted as `not_saved` gaps.
+- Verified status now reports catalog 347, ready 231, missing/not_saved 116, attempted 0 before any missing probe run.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

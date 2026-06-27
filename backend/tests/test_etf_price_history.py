@@ -463,6 +463,44 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(status["lastImportAttempt"]["requestedMonths"], 1)
         self.assertEqual(index["gapReasonCounts"]["official_empty"], 1)
         self.assertEqual(index["missingCount"], 1)
+        self.assertEqual(index["attemptedCount"], 1)
+
+    def test_index_response_can_include_catalog_only_missing_codes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = EtfPriceHistoryStore(Path(temp_dir))
+            store.save_points(
+                "0050",
+                [
+                    {
+                        "code": "0050",
+                        "date": "2026-06-01",
+                        "open": 10,
+                        "high": 11,
+                        "low": 9,
+                        "close": 10,
+                        "volume": 100,
+                    },
+                    {
+                        "code": "0050",
+                        "date": "2026-06-02",
+                        "open": 11,
+                        "high": 12,
+                        "low": 10,
+                        "close": 11,
+                        "volume": 100,
+                    },
+                ],
+            )
+
+            index = store.index_response(
+                fetched_at="2026-06-21T00:00:00+00:00",
+                codes=["0050", "00999"],
+            )
+
+        self.assertEqual(index["rowCount"], 2)
+        self.assertEqual(index["readyCount"], 1)
+        self.assertEqual(index["missingCount"], 1)
+        self.assertEqual(index["gapReasonCounts"]["not_saved"], 1)
 
     def test_status_summary_omits_full_item_dump(self) -> None:
         payload = {

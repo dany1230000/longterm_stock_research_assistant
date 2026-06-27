@@ -43,6 +43,7 @@ def main() -> int:
         f"coverage={payload.get('coverageStart') or 'unavailable'}.."
         f"{payload.get('coverageEnd') or 'unavailable'} "
         f"etfReady={payload.get('etfPriceHistoryReadyCount') or 0} "
+        f"etfAttempted={payload.get('etfPriceHistoryAttemptedCount') or 0} "
         f"etfCatalogRows={payload.get('etfCatalogRowCount') or 0} "
         f"gap={_gap_reason_summary(payload.get('etfPriceHistoryGapReasonCounts'))} "
         f"releaseMatchesExpected={payload.get('releaseMatchesExpected')} "
@@ -84,6 +85,10 @@ def run_public_static_data_check(
     catalog_rows = _int(manifest.get("etfCatalogRowCount"))
     etf_ready = _int(manifest.get("etfPriceHistoryReadyCount"))
     etf_missing = _int(manifest.get("etfPriceHistoryMissingCount"))
+    etf_attempted = _int(
+        manifest.get("etfPriceHistoryAttemptedCount")
+        or status.get("etfPriceHistoryAttemptedCount"),
+    )
     gap_reason_counts = (
         manifest.get("etfPriceHistoryGapReasonCounts")
         or status.get("etfPriceHistoryGapReasonCounts")
@@ -144,6 +149,7 @@ def run_public_static_data_check(
         "etfCatalogRowCount": catalog_rows,
         "etfPriceHistoryReadyCount": etf_ready,
         "etfPriceHistoryMissingCount": etf_missing,
+        "etfPriceHistoryAttemptedCount": etf_attempted,
         "etfPriceHistoryCoverageTierCounts": manifest.get(
             "etfPriceHistoryCoverageTierCounts",
         )

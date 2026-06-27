@@ -978,6 +978,7 @@ class Etf00631LService:
                 "rowCount": etf_price_history.get("rowCount", 0),
                 "readyCount": etf_price_history.get("readyCount", 0),
                 "missingCount": etf_price_history.get("missingCount", 0),
+                "attemptedCount": etf_price_history.get("attemptedCount", 0),
                 "coverageTierCounts": etf_price_history.get("coverageTierCounts", {}),
                 "gapReasonCounts": etf_price_history.get("gapReasonCounts", {}),
                 "sourceUpdatedAt": etf_price_history.get("sourceUpdatedAt"),

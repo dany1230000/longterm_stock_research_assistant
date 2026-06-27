@@ -207,6 +207,10 @@ class Static00631LRepository extends Mock00631LRepository {
       etfHistoryPayload?['missingCount'] ??
           statusPayload?['etfPriceHistoryMissingCount'],
     );
+    final etfHistoryAttemptedCount = _int(
+      etfHistoryPayload?['attemptedCount'] ??
+          statusPayload?['etfPriceHistoryAttemptedCount'],
+    );
     final etfHistoryCoverageTierCounts =
         _intMap(etfHistoryPayload?['coverageTierCounts']);
     final etfHistoryGapReasonCounts = _intMap(
@@ -230,6 +234,7 @@ class Static00631LRepository extends Mock00631LRepository {
         etfPriceHistoryRowCount: etfHistoryRowCount,
         etfPriceHistoryReadyCount: etfHistoryReadyCount,
         etfPriceHistoryMissingCount: etfHistoryMissingCount,
+        etfPriceHistoryAttemptedCount: etfHistoryAttemptedCount,
         etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
         etfPriceHistoryGapReasonCounts: etfHistoryGapReasonCounts,
         etfPriceHistoryDataTime: etfHistoryDataTime,
@@ -258,6 +263,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryRowCount: etfHistoryRowCount,
       etfPriceHistoryReadyCount: etfHistoryReadyCount,
       etfPriceHistoryMissingCount: etfHistoryMissingCount,
+      etfPriceHistoryAttemptedCount: etfHistoryAttemptedCount,
       etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
       etfPriceHistoryGapReasonCounts: etfHistoryGapReasonCounts,
       etfPriceHistoryDataTime: etfHistoryDataTime,
@@ -287,6 +293,7 @@ class Static00631LRepository extends Mock00631LRepository {
     int etfPriceHistoryRowCount = 0,
     int etfPriceHistoryReadyCount = 0,
     int etfPriceHistoryMissingCount = 0,
+    int etfPriceHistoryAttemptedCount = 0,
     Map<String, int> etfPriceHistoryCoverageTierCounts = const {},
     Map<String, int> etfPriceHistoryGapReasonCounts = const {},
     DateTime? etfPriceHistoryDataTime,
@@ -341,6 +348,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryRowCount: etfPriceHistoryRowCount,
       etfPriceHistoryReadyCount: etfPriceHistoryReadyCount,
       etfPriceHistoryMissingCount: etfPriceHistoryMissingCount,
+      etfPriceHistoryAttemptedCount: etfPriceHistoryAttemptedCount,
       etfPriceHistoryCoverageTierCounts: etfPriceHistoryCoverageTierCounts,
       etfPriceHistoryGapReasonCounts: etfPriceHistoryGapReasonCounts,
       etfPriceHistoryDataTime: etfPriceHistoryDataTime,

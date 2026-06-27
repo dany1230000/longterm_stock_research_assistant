@@ -85,8 +85,10 @@ def main() -> int:
 
     store = EtfPriceHistoryStore(args.output_dir, seed_dir=args.seed_dir)
     if args.status_only:
-        index_payload = store.index_response(fetched_at=utc_now_iso())
-        catalog_payload = load_etf_catalog(args.catalog_path, fetched_at=utc_now_iso())
+        fetched_at = utc_now_iso()
+        catalog_payload = load_etf_catalog(args.catalog_path, fetched_at=fetched_at)
+        status_codes = catalog_codes(catalog_payload, limit=None) if args.from_catalog else None
+        index_payload = store.index_response(fetched_at=fetched_at, codes=status_codes)
         catalog_row_count = int(catalog_payload.get("rowCount") or 0)
         ready_count = int(index_payload.get("readyCount") or 0)
         history_row_count = int(index_payload.get("rowCount") or 0)
@@ -107,8 +109,9 @@ def main() -> int:
             f"overallStatus={'FAIL' if validation_failures else 'PASS' if index_payload.get('readyCount', 0) else 'WARN'} "
             f"symbols={index_payload.get('rowCount', 0)} "
             f"ready={index_payload.get('readyCount', 0)} "
-            f"catalogSymbols={catalog_row_count} "
-            f"gap={completion_gap} "
+        f"catalogSymbols={catalog_row_count} "
+        f"attempted={index_payload.get('attemptedCount', 0)} "
+        f"gap={completion_gap} "
             f"validationFailures={validation_failures}"
         )
         return 1 if validation_failures else 0
@@ -442,6 +445,7 @@ def build_status_summary_response(
         "dataTime": payload.get("dataTime"),
         "rowCount": payload.get("rowCount", 0),
         "readyCount": payload.get("readyCount", 0),
+        "attemptedCount": payload.get("attemptedCount", 0),
         "catalogRowCount": catalog_row_count,
         "completionTotal": completion_total,
         "completionGap": max(0, completion_total - ready_count),

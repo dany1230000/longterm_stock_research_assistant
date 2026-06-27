@@ -353,6 +353,7 @@ class Proxy00631LRepository extends Official00631LRepository {
       etfPriceHistoryRowCount: _int(etfPriceHistory['rowCount']),
       etfPriceHistoryReadyCount: _int(etfPriceHistory['readyCount']),
       etfPriceHistoryMissingCount: _int(etfPriceHistory['missingCount']),
+      etfPriceHistoryAttemptedCount: _int(etfPriceHistory['attemptedCount']),
       etfPriceHistoryCoverageTierCounts: _intMap(
         etfPriceHistory['coverageTierCounts'],
       ),

@@ -311,10 +311,20 @@ class EtfPriceHistoryStore:
             else None,
         }
 
-    def index_response(self, *, fetched_at: str) -> dict[str, Any]:
+    def index_response(
+        self,
+        *,
+        fetched_at: str,
+        codes: list[str] | tuple[str, ...] | None = None,
+    ) -> dict[str, Any]:
+        selected_codes = (
+            _unique_codes(codes)
+            if codes is not None
+            else self.codes()
+        )
         items = [
             self.status(code, fetched_at=fetched_at)
-            for code in self.codes()
+            for code in selected_codes
         ]
         ready_items = [
             item
@@ -339,6 +349,7 @@ class EtfPriceHistoryStore:
         ]
         tier_counts = _coverage_tier_counts(items)
         gap_reason_counts = _gap_reason_counts(items)
+        attempted_count = sum(1 for item in items if item.get("lastImportAttempt"))
         has_local = any(self._has_local_records(str(item.get("code") or "")) for item in items)
         source_status = "error" if validation_failure_count else (
             "cached" if has_local and ready_items else "static_official" if ready_items else "unavailable"
@@ -363,6 +374,7 @@ class EtfPriceHistoryStore:
             "rowCount": len(items),
             "readyCount": len(ready_items),
             "missingCount": max(0, len(items) - len(ready_items)),
+            "attemptedCount": attempted_count,
             "coverageTierCounts": tier_counts,
             "gapReasonCounts": gap_reason_counts,
             "validationFailureCount": validation_failure_count,
@@ -478,6 +490,17 @@ def parse_code_list(value: str) -> list[str]:
     codes: list[str] = []
     for raw in re.split(r"[,;\s]+", value.strip()):
         code = normalize_etf_code(raw)
+        if code and code not in seen:
+            seen.add(code)
+            codes.append(code)
+    return codes
+
+
+def _unique_codes(values: list[str] | tuple[str, ...]) -> list[str]:
+    seen: set[str] = set()
+    codes: list[str] = []
+    for value in values:
+        code = normalize_etf_code(str(value or ""))
         if code and code not in seen:
             seen.add(code)
             codes.append(code)

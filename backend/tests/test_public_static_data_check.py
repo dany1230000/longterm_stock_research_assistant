@@ -20,6 +20,7 @@ class PublicStaticDataCheckTests(unittest.TestCase):
                     "etfCatalogRowCount": 347,
                     "etfPriceHistoryReadyCount": 230,
                     "etfPriceHistoryMissingCount": 117,
+                    "etfPriceHistoryAttemptedCount": 4,
                     "etfPriceHistoryCoverageTierCounts": {
                         "long_term": 8,
                         "recent": 222,
@@ -48,6 +49,7 @@ class PublicStaticDataCheckTests(unittest.TestCase):
         self.assertEqual(payload["etfCatalogRowCount"], 347)
         self.assertEqual(payload["etfPriceHistoryReadyCount"], 230)
         self.assertEqual(payload["etfPriceHistoryMissingCount"], 117)
+        self.assertEqual(payload["etfPriceHistoryAttemptedCount"], 4)
         self.assertEqual(payload["etfPriceHistoryGapReasonCounts"]["official_empty"], 4)
         self.assertEqual(payload["etfPriceHistoryGapReasonCounts"]["not_saved"], 113)
         self.assertEqual(payload["releaseTag"], "00631l-lab-v5.83-pages-missing-batch")
