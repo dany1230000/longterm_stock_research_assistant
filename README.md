@@ -1606,6 +1606,10 @@ making the remaining unprobed ETF history gap visible without reading the full
 gap-reason map. Summary:
 `docs\00631l_v6_2_public_unclassified_gap.md`.
 
+v6.3 adds `--max-unclassified-gap` to the public static-data check, so daily
+verification can warn when any ETF history gap remains unclassified. Summary:
+`docs\00631l_v6_3_public_unclassified_threshold.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

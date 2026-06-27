@@ -119,6 +119,40 @@ class PublicStaticDataCheckTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "PASS")
         self.assertEqual(payload["etfPriceHistoryUnclassifiedGapCount"], 0)
 
+    def test_warns_when_unclassified_gap_exceeds_target(self) -> None:
+        def fetch_json(url: str) -> dict[str, object]:
+            if url.endswith("status.json"):
+                return {"sourceStatus": "static_official", "rowCount": 2837}
+            if url.endswith("manifest.json"):
+                return {
+                    "etfCatalogRowCount": 347,
+                    "etfPriceHistoryRowCount": 347,
+                    "etfPriceHistoryReadyCount": 231,
+                    "etfPriceHistoryMissingCount": 116,
+                    "etfPriceHistoryAttemptedCount": 114,
+                    "etfPriceHistoryGapReasonCounts": {
+                        "official_empty": 94,
+                        "source_error": 20,
+                        "not_saved": 2,
+                    },
+                }
+            if url.endswith("release.json"):
+                return {
+                    "releaseTag": "00631l-lab-v6.2-public-unclassified-gap",
+                    "gitSha": "abc123",
+                }
+            raise AssertionError(url)
+
+        payload = run_public_static_data_check(
+            "https://example.test/static",
+            fetch_json=fetch_json,
+            max_unclassified_gap=0,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["expectedMaxUnclassifiedGap"], 0)
+        self.assertTrue(any("unclassified gap" in item for item in payload["warnings"]))
+
     def test_expected_release_mismatch_is_warning_by_default(self) -> None:
         def fetch_json(url: str) -> dict[str, object]:
             if url.endswith("status.json"):

@@ -26,6 +26,16 @@ def main() -> int:
         action="store_true",
         help="Treat expected release tag/SHA mismatch as FAIL instead of WARN.",
     )
+    parser.add_argument(
+        "--max-unclassified-gap",
+        type=int,
+        default=-1,
+        help=(
+            "Warn when etfPriceHistoryUnclassifiedGapCount is above this "
+            "value. Use 0 after public missing-ETF probes have classified all "
+            "catalog gaps."
+        ),
+    )
     args = parser.parse_args()
 
     payload = run_public_static_data_check(
@@ -33,6 +43,7 @@ def main() -> int:
         expected_release_tag=args.expected_release_tag,
         expected_sha=args.expected_sha,
         strict_release=args.strict_release,
+        max_unclassified_gap=args.max_unclassified_gap,
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
     print(
@@ -62,6 +73,7 @@ def run_public_static_data_check(
     expected_release_tag: str = "",
     expected_sha: str = "",
     strict_release: bool = False,
+    max_unclassified_gap: int = -1,
 ) -> dict[str, Any]:
     normalized_base = base_url.rstrip("/") + "/"
     fetch = fetch_json or _fetch_json
@@ -126,6 +138,11 @@ def run_public_static_data_check(
                 "ETF history index has more symbols than the catalog snapshot: "
                 f"history={etf_history_rows}, catalog={catalog_rows}",
             )
+        if max_unclassified_gap >= 0 and etf_unclassified_gap > max_unclassified_gap:
+            warnings.append(
+                "ETF unclassified gap above target: "
+                f"current={etf_unclassified_gap}, target={max_unclassified_gap}",
+            )
         if not release_tag:
             warnings.append("release marker is missing releaseTag")
         if source_status != "static_official":
@@ -170,6 +187,9 @@ def run_public_static_data_check(
         "etfPriceHistoryCompletionGap": etf_completion_gap,
         "etfPriceHistoryAttemptedCount": etf_attempted,
         "etfPriceHistoryUnclassifiedGapCount": etf_unclassified_gap,
+        "expectedMaxUnclassifiedGap": max_unclassified_gap
+        if max_unclassified_gap >= 0
+        else None,
         "etfPriceHistoryCoverageTierCounts": manifest.get(
             "etfPriceHistoryCoverageTierCounts",
         )

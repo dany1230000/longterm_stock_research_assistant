@@ -195,6 +195,24 @@ Completed in v6.2:
 
 - Public static checker now reports unclassified ETF gaps directly.
 - Targeted and full validation passed with accepted WARN states only.
+- Public Pages marker and static check passed on v6.2. Public unclassified gap
+  dropped to 2.
+
+## Phase 15 - v6.3 Public Unclassified Gap Threshold
+
+Status: complete
+
+Objective: add an explicit maintenance threshold for the unclassified ETF gap.
+
+- Add `--max-unclassified-gap` to the public static checker.
+- Return WARN with failures empty when the current unclassified gap is above the
+  target.
+- Add tests and docs.
+
+Completed in v6.3:
+
+- Public static checker supports `--max-unclassified-gap`.
+- Targeted and full validation passed with accepted WARN states only.
 
 ## Phase 5 - Backtest and Position UX
 

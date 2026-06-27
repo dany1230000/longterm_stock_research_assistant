@@ -89,3 +89,9 @@
 - Updated public static checker, tests, README, docs index, release-check artifact list, and v6.2 summary.
 - Targeted v6.2 validation PASS: `py -m unittest backend.tests.test_public_static_data_check backend.tests.test_release_check`.
 - Full v6.2 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (264 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.
+- v6.2 committed/pushed as `66a8b62`, tag `00631l-lab-v6.2-public-unclassified-gap`.
+- Public Pages marker updated to v6.2 and public static check PASS. Attempted count increased to 114; unclassified `not_saved` gap dropped to 2.
+- Started v6.3 to add `--max-unclassified-gap` to the public static-data checker.
+- Updated checker, tests, README, docs index, release-check artifact list, and v6.3 summary.
+- Targeted v6.3 validation PASS: `py -m unittest backend.tests.test_public_static_data_check backend.tests.test_release_check`.
+- Full v6.3 validation PASS/WARN accepted: `flutter analyze` PASS; `flutter test` PASS (95 tests); `flutter build web` PASS; backend tests PASS (265 tests); `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check` PASS.
