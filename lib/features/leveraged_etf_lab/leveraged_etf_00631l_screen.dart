@@ -1756,8 +1756,11 @@ class _CompactQuoteHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final quotePremiumDiscountPct = selectedEtf.is00631L
+        ? data.intradayNav?.estimatedPremiumDiscountPct
+        : selectedEtf.premiumDiscountPct;
     final premiumAssessment = PremiumDiscountAssessment.evaluate(
-      premiumDiscountPct: selectedEtf.premiumDiscountPct,
+      premiumDiscountPct: quotePremiumDiscountPct,
       sourceStatus: selectedEtf.is00631L
           ? data.intradayNav?.status ?? EtfDataStatus.error
           : data.etfCatalog.status,
@@ -1865,9 +1868,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 _CompactPremiumBox(
-                  value: formatSignedNullablePercent(
-                    selectedEtf.premiumDiscountPct,
-                  ),
+                  value: formatSignedNullablePercent(quotePremiumDiscountPct),
                   label: _premiumLabel(premiumAssessment),
                   color: premiumColor,
                 ),
@@ -1963,6 +1964,7 @@ class _CompactPremiumBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
+      key: const ValueKey('00631l-quote-premium-box'),
       constraints: const BoxConstraints(minWidth: 96, maxWidth: 116),
       child: DecoratedBox(
         decoration: BoxDecoration(

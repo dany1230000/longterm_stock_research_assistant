@@ -1332,6 +1332,28 @@ Completed in v6.59:
 - Widget coverage verifies the quiet fast-start state.
 - Full validation passed with accepted WARN states only.
 
+## Phase 72 - v6.60 Quote Premium Source Guard
+
+Status: complete
+
+Objective: keep the 00631L quote-card premium/discount display tied to live
+intraday NAV instead of mixing catalog/static reference values with unavailable
+live labels.
+
+- Use intraday NAV premium/discount only for the 00631L quote-card premium box.
+- Show unavailable when intraday NAV is unavailable.
+- Keep non-00631L selected ETF catalog premium/discount behavior unchanged.
+- Add widget coverage for the intraday-only guard.
+- Do not change parsers, source data, history, backtest, position, or AI logic.
+
+Completed in v6.60:
+
+- 00631L quote-card premium/discount now uses intraday NAV only.
+- When intraday NAV is unavailable, the quote premium box shows unavailable.
+- Non-00631L selected ETF catalog behavior is unchanged.
+- Widget coverage verifies the intraday-only source guard.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

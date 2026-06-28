@@ -147,6 +147,8 @@ v6.58 shortens the 00631L quote card title to `00631L 元大台灣50正2` so the
 
 v6.59 hides the background-refresh banner when the first screen already has a usable quote plus history or official holdings context. Error/fallback states still appear, but normal background refresh no longer takes first-screen space.
 
+v6.60 makes the 00631L quote-card premium/discount value depend on intraday NAV only. If intraday NAV is unavailable, the card shows unavailable instead of mixing catalog/static reference values with live labels.
+
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.

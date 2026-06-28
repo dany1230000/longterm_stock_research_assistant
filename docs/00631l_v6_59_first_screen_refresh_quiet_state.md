@@ -27,4 +27,3 @@ This is a layout and status-display change only. It does not change:
 - backtest formulas,
 - local position data,
 - AI summary logic.
-

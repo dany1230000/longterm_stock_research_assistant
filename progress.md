@@ -848,3 +848,16 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.59 committed/pushed as `bbd3207`, tag
+  `00631l-lab-v6.59-first-screen-refresh-quiet-state`; public marker and strict
+  static data checks passed.
+- Playwright mobile screenshot verified the background-refresh banner is gone,
+  and identified a remaining source-label issue: the 00631L quote premium box
+  can show a catalog/static reference value while intraday NAV is unavailable.
+- Started v6.60 to make the 00631L quote premium box use intraday NAV only.
+- Targeted widget test passed for the no-intraday NAV quote premium guard.
+- v6.60 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (105 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

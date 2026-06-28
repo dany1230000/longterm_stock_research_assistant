@@ -111,6 +111,22 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('00631L quote premium uses intraday NAV only', (tester) async {
+    await _pumpLab(tester, _StaticHistoryOnlyRepository());
+
+    final premiumBox = find.byKey(const ValueKey('00631l-quote-premium-box'));
+    expect(premiumBox, findsOneWidget);
+    expect(
+      find.descendant(of: premiumBox, matching: find.text('unavailable')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: premiumBox, matching: find.text('+0.28%')),
+      findsNothing,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('top symbol pill opens ETF and stock search sheet',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());

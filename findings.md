@@ -29,3 +29,7 @@
 - v6.58 public mobile inspection confirmed the short quote title fits, but the
   background-refresh banner still consumes first-screen space even when quote,
   chart, and official holdings context are already visible.
+- v6.59 public mobile inspection confirmed the banner is gone, but the quote
+  premium/discount box can still show a catalog/static reference value while
+  the same card says intraday data is unavailable. The 00631L quote card should
+  use intraday NAV premium/discount only.
