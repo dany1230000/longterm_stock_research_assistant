@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.70 localizes the position account unavailable percentage state so the
+  phone account summary no longer shows raw English fallback text.
 - v6.69 makes the position account summary fit phone width with a 2x2 metric
   layout instead of a clipped horizontal strip.
 - v6.68 further shortens the history/backtest first screen: charts now appear

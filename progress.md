@@ -996,3 +996,19 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.69 committed/pushed as `15d1c8f`, tag
+  `00631l-lab-v6.69-position-metric-fit`; public marker and strict static-data
+  checks passed.
+- Public position-page screenshot after v6.69 showed the metric layout fits,
+  but the unrealized result still contained raw `unavailable` text for a
+  missing percentage.
+- Started v6.70 to localize the position unavailable percentage wording without
+  changing local-only storage or position calculations.
+- Targeted v6.70 validation PASS: `dart format` on touched Dart files,
+  `flutter test test\etf_00631l_widget_test.dart --name "position account summary fits"`,
+  and `flutter analyze`.
+- v6.70 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (109 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -8083,6 +8083,9 @@ class _PositionAccountStrip extends StatelessWidget {
     final dataTime = summary.dataTime == null
         ? 'unavailable'
         : formatTaiwanDateTimeSeconds(summary.dataTime!);
+    final unrealizedPctText = summary.unrealizedPnlPct == null
+        ? '尚無比例'
+        : formatSignedNullablePercent(summary.unrealizedPnlPct);
     final items = [
       _RangeContextItem(
         label: '目前標的',
@@ -8096,8 +8099,7 @@ class _PositionAccountStrip extends StatelessWidget {
       ),
       _RangeContextItem(
         label: '未實現損益',
-        value:
-            '${formatNtdAmount(summary.unrealizedPnl)} / ${formatSignedNullablePercent(summary.unrealizedPnlPct)}',
+        value: '${formatNtdAmount(summary.unrealizedPnl)} / $unrealizedPctText',
         separator: ' ',
       ),
       _RangeContextItem(

@@ -1551,6 +1551,26 @@ Completed in v6.69:
 - Position account metrics now wrap into a 2x2 layout on phone width.
 - Widget coverage verifies the account summary labels stay within the strip.
 
+## Phase 82 - v6.70 Position Unavailable Wording
+
+Status: complete
+
+Objective: remove raw English fallback text from the local position account
+summary on phone screens.
+
+- Show a localized unavailable percentage label when unrealized percentage
+  cannot be calculated.
+- Keep local-only storage, position calculations, export, clear actions, and
+  quote source labels unchanged.
+- Add widget coverage for the localized unavailable state.
+
+Completed in v6.70:
+
+- The unrealized result percentage now shows `尚無比例` when the percentage is
+  unavailable.
+- Widget coverage verifies the phone account summary renders the localized
+  state.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

@@ -952,6 +952,7 @@ void main() {
       expect(tileRect.left, greaterThanOrEqualTo(stripRect.left));
       expect(tileRect.right, lessThanOrEqualTo(stripRect.right));
     }
+    expect(find.textContaining('尚無比例'), findsWidgets);
     _expectNoTradingActionText();
   });
 
