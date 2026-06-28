@@ -162,6 +162,12 @@
   later date could show the prior trading day's 13:31 TWSE NAV snapshot with a
   generic pre-open label. The session model needs to distinguish previous-day
   data from same-day pre-open waiting.
+## v7.0 Loading Skeleton Labels
+
+- Slow first loads still exposed internal abbreviations in the skeleton grid.
+  Replacing them makes the loading state consistent with the cleaned overview
+  screen and reduces the debug-tool feeling during startup.
+
 ## v6.99 Overview Chart Header
 
 - After v6.97 and v6.98, the one-year chart header was the remaining first-screen

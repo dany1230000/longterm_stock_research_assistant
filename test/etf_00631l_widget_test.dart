@@ -499,6 +499,20 @@ void main() {
       find.byKey(const ValueKey('00631l-loading-metric-grid')),
       findsOneWidget,
     );
+    final loadingMetricGrid =
+        find.byKey(const ValueKey('00631l-loading-metric-grid'));
+    for (final label in const ['盤中', '內容物', '歷史', '分析']) {
+      expect(
+        find.descendant(of: loadingMetricGrid, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
+    for (final label in const ['LIVE', 'DAY', 'HIS', 'AI']) {
+      expect(
+        find.descendant(of: loadingMetricGrid, matching: find.text(label)),
+        findsNothing,
+      );
+    }
     expect(
       find.byKey(const ValueKey('00631l-loading-section-card')),
       findsOneWidget,

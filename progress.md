@@ -1319,6 +1319,14 @@
   display Friday 13:31 TWSE NAV data as generic pre-open waiting. Added
   previous-trading-day intraday labeling for pre-open screens while preserving
   weekend closed-market status.
+## v7.0 Loading Skeleton Labels
+
+- Replaced loading skeleton metric labels with user-facing Chinese labels.
+- Scoped widget coverage to the loading metric grid so the bottom `AI` tab can
+  remain unchanged.
+- This completes the current first-impression cleanup pass across summary,
+  holdings digest, chart header, and loading state.
+
 ## v6.99 Overview Chart Header
 
 - Removed the `HIS` badge from the first-screen one-year chart title.

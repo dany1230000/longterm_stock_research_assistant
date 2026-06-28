@@ -812,10 +812,10 @@ class _LoadingMetricGrid extends StatelessWidget {
           mainAxisSpacing: 8,
           childAspectRatio: columns == 4 ? 2.05 : 2.0,
           children: const [
-            _LoadingMiniMetricCard(label: 'LIVE'),
-            _LoadingMiniMetricCard(label: 'DAY'),
-            _LoadingMiniMetricCard(label: 'HIS'),
-            _LoadingMiniMetricCard(label: 'AI'),
+            _LoadingMiniMetricCard(label: '盤中'),
+            _LoadingMiniMetricCard(label: '內容物'),
+            _LoadingMiniMetricCard(label: '歷史'),
+            _LoadingMiniMetricCard(label: '分析'),
           ],
         );
       },

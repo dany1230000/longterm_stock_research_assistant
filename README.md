@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v7.0 cleans up the loading skeleton labels. Slow first loads now show
+  `盤中`, `內容物`, `歷史`, and `分析` instead of `LIVE / DAY / HIS / AI`.
 - v6.99 removes the `HIS` badge from the overview chart header so the first
   chart starts directly with `近一年走勢`.
 - v6.98 removes code-like badges from the overview holdings digest. The
