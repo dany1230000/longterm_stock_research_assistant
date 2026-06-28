@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History/backtest top density v6.68: `docs\00631l_v6_68_history_top_density.md`
 - History/backtest chart-first mobile layout v6.67: `docs\00631l_v6_67_history_chart_first.md`
 - Mobile exposure strip cleanup v6.66: `docs\00631l_v6_66_mobile_exposure_strip_cleanup.md`
 - Summary pending labels v6.65: `docs\00631l_v6_65_summary_pending_labels.md`

@@ -57,3 +57,6 @@
 - v6.66 public mobile inspection confirmed the exposure strip is gone. The
   next largest mobile issue is the history/backtest first screen: date controls
   and duplicated `00631L` badges appear before the user reaches the chart.
+- v6.67 public mobile inspection confirmed chart-first ordering, but the
+  history/backtest page still spends too much height on top summary tiles and
+  data-quality details before the chart is fully visible.

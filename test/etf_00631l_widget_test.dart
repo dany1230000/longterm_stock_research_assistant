@@ -630,6 +630,10 @@ void main() {
     );
     expect(find.textContaining('coverage'), findsWidgets);
     expect(find.text('價格歷史'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('價格歷史')).dy,
+      lessThan(tester.getTopLeft(find.text('資料品質')).dy),
+    );
     expect(find.text('市價'), findsNothing);
     expect(find.text('歷史資料完整度'), findsWidgets);
     expect(find.text('區間報酬'), findsWidgets);

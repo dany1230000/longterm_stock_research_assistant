@@ -5322,17 +5322,6 @@ class _HistorySection extends StatelessWidget {
           completeness: completeness,
         ),
         const SizedBox(height: 8),
-        _CompactExpansionPanel(
-          key: const ValueKey('00631l-history-quality-expansion'),
-          title: '資料品質',
-          subtitle: 'coverage、分割調整與來源狀態。',
-          child: _SelectedHistoryQualityCard(
-            code: selectedEtfCode,
-            name: selectedName,
-            priceHistory: priceHistory,
-          ),
-        ),
-        const SizedBox(height: 12),
         _SectionBlock(
           title: '價格歷史',
           subtitle: priceHistory.hasData
@@ -5345,6 +5334,17 @@ class _HistorySection extends StatelessWidget {
                   message:
                       '價格歷史需要 official/cache/static data；不會用 mock 當成 official。',
                 ),
+        ),
+        const SizedBox(height: 8),
+        _CompactExpansionPanel(
+          key: const ValueKey('00631l-history-quality-expansion'),
+          title: '資料品質',
+          subtitle: 'coverage、分割調整與來源狀態。',
+          child: _SelectedHistoryQualityCard(
+            code: selectedEtfCode,
+            name: selectedName,
+            priceHistory: priceHistory,
+          ),
         ),
         const SizedBox(height: 12),
         if (show00631LHoldingsHistory)
@@ -5590,25 +5590,6 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
     final theme = Theme.of(context);
     final coverage =
         '${_dateOrDash(completeness.coverageStart)} - ${_dateOrDash(completeness.coverageEnd)}';
-    final metrics = [
-      _SectionHeaderMetric(
-        label: '最新收盤',
-        value: _price(completeness.latest?.close),
-      ),
-      const _SectionHeaderMetric(
-        label: '預設區間',
-        value: '最近 1 年',
-      ),
-      _SectionHeaderMetric(
-        label: '資料筆數',
-        value: formatInteger(completeness.rowCount),
-        caption: 'rows',
-      ),
-      _SectionHeaderMetric(
-        label: '日期調整',
-        value: priceHistory.hasData ? '可用' : '缺資料',
-      ),
-    ];
 
     return Card(
       key: const ValueKey('00631l-history-backtest-top-strip'),
@@ -5658,26 +5639,6 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
             const SizedBox(height: 8),
             _StatusWrap(
               labels: _dedupeStatusLabels(['HIS', code, name, coverage]),
-            ),
-            const SizedBox(height: 8),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final compact = constraints.maxWidth < 520;
-                final itemWidth = compact
-                    ? (constraints.maxWidth - 8) / 2
-                    : (constraints.maxWidth - 24) / 4;
-                return Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final metric in metrics)
-                      SizedBox(
-                        width: itemWidth,
-                        child: _SectionHeaderMetricChip(metric: metric),
-                      ),
-                  ],
-                );
-              },
             ),
           ],
         ),

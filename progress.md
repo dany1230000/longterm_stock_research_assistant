@@ -966,3 +966,19 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.67 committed/pushed as `ed730fa`, tag
+  `00631l-lab-v6.67-history-chart-first`; public marker and strict static-data
+  checks passed.
+- Public history-page screenshot confirmed chart-first ordering, but the chart
+  still only began near the bottom of the first screen because the top history
+  card repeated four summary tiles and `資料品質` appeared before the price
+  chart block.
+- Started v6.68 to reduce history/backtest top density.
+- v6.68 removed the top summary tile grid and moved `資料品質` below the
+  price-history chart block.
+- Targeted history/backtest widget tests passed.
+- v6.68 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (108 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.68 further shortens the history/backtest first screen: charts now appear
+  before data-quality details, and the top history card no longer repeats four
+  summary tiles.
 - v6.67 moves the history/backtest phone page toward chart-first scanning:
   range chips and the price chart appear before detailed date controls, and
   duplicate history badges are removed.

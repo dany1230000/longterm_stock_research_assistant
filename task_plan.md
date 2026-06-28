@@ -1515,6 +1515,25 @@ Completed in v6.67:
 - Widget tests verify the chart appears before date settings and that date
   controls remain reachable.
 
+## Phase 80 - v6.68 History Top Density
+
+Status: complete
+
+Objective: reduce the top height of the history/backtest page so the chart
+appears sooner on phone screens.
+
+- Remove duplicated summary tiles from the top history card.
+- Move data-quality details below the price-history chart block.
+- Keep range chips, current range summary, and chart as the primary content.
+- Preserve price-history data, split adjustment, backtest formulas, position,
+  and AI behavior.
+
+Completed in v6.68:
+
+- The history top card no longer repeats four summary tiles.
+- `資料品質` now appears below the price-history block.
+- Widget tests verify `價格歷史` appears before `資料品質`.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
