@@ -1514,6 +1514,10 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-exposure-summary-strip')),
+      findsOneWidget,
+    );
     expect(find.text('TX'), findsWidgets);
     expect(find.text('2330'), findsOneWidget);
     expect(find.text('MIX'), findsOneWidget);
@@ -1577,6 +1581,10 @@ void main() {
         const ValueKey('00631l-overview-holdings-digest-unavailable'),
       ),
       findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-exposure-summary-strip')),
+      findsNothing,
     );
     _expectNoTradingActionText();
   });

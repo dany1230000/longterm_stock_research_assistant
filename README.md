@@ -151,6 +151,8 @@ v6.60 makes the 00631L quote-card premium/discount value depend on intraday NAV 
 
 v6.61 makes the DAY / LIVE / HIS summary row show available dates and times during background refresh. It only shows syncing/checking when that specific data is still missing.
 
+v6.62 hides the overview exposure strip when official holdings are not usable, so the app does not show 0% stock/futures/cash values as if they were valid official data.
+
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.

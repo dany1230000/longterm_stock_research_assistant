@@ -875,3 +875,16 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.61 committed/pushed as `dc56515`, tag
+  `00631l-lab-v6.61-summary-available-values`; public marker and strict static
+  data checks passed.
+- Playwright mobile screenshot found the overview exposure strip could still
+  show 0% stock/futures/cash values when the holdings snapshot was invalid.
+- Started v6.62 to hide the overview exposure strip unless holdings are usable.
+- Targeted holdings widget tests passed for valid and unavailable exposure strip
+  states.
+- v6.62 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (105 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -4269,6 +4269,7 @@ class _OverviewSignalPanel extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final wide = constraints.maxWidth >= 680;
+            final hasUsableExposure = _hasUsableHoldingsSnapshot(data.snapshot);
             final priceBlock = _OverviewSparklineBlock(
               points: data.priceHistory.points,
             );
@@ -4276,6 +4277,9 @@ class _OverviewSignalPanel extends StatelessWidget {
               snapshot: data.snapshot,
             );
             if (wide) {
+              if (!hasUsableExposure) {
+                return priceBlock;
+              }
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -4288,8 +4292,10 @@ class _OverviewSignalPanel extends StatelessWidget {
             return Column(
               children: [
                 priceBlock,
-                const SizedBox(height: 8),
-                _OverviewExposureSummaryStrip(snapshot: data.snapshot),
+                if (hasUsableExposure) ...[
+                  const SizedBox(height: 8),
+                  _OverviewExposureSummaryStrip(snapshot: data.snapshot),
+                ],
               ],
             );
           },
@@ -4557,51 +4563,54 @@ class _OverviewExposureSummaryStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelAltColor(context),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
-          child: Row(
-            children: [
-              const _MiniStatusBadge(label: 'DAY'),
-              const SizedBox(width: 8),
-              Text(
-                '官方曝險 ${formatTaiwanDate(snapshot.tradeDate)}',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                    ),
-              ),
-              const SizedBox(width: 10),
-              _InlineExposureText(
-                label: '股票',
-                value: formatNullablePercent(
-                  snapshot.assetWeightPct(EtfAssetClass.stock),
+    return KeyedSubtree(
+      key: const ValueKey('00631l-overview-exposure-summary-strip'),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketPanelAltColor(context),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: _marketBorderColor(context)),
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+            child: Row(
+              children: [
+                const _MiniStatusBadge(label: 'DAY'),
+                const SizedBox(width: 8),
+                Text(
+                  '官方曝險 ${formatTaiwanDate(snapshot.tradeDate)}',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w900,
+                      ),
                 ),
-                color: _marketGreen,
-              ),
-              const SizedBox(width: 10),
-              _InlineExposureText(
-                label: '期貨',
-                value: formatNullablePercent(
-                  snapshot.assetWeightPct(EtfAssetClass.futures),
+                const SizedBox(width: 10),
+                _InlineExposureText(
+                  label: '股票',
+                  value: formatNullablePercent(
+                    snapshot.assetWeightPct(EtfAssetClass.stock),
+                  ),
+                  color: _marketGreen,
                 ),
-                color: _marketRed,
-              ),
-              const SizedBox(width: 10),
-              _InlineExposureText(
-                label: '現金/保證金',
-                value: formatNullablePercent(snapshot.cashAndMarginWeightPct),
-                color: _marketBlue,
-              ),
-            ],
+                const SizedBox(width: 10),
+                _InlineExposureText(
+                  label: '期貨',
+                  value: formatNullablePercent(
+                    snapshot.assetWeightPct(EtfAssetClass.futures),
+                  ),
+                  color: _marketRed,
+                ),
+                const SizedBox(width: 10),
+                _InlineExposureText(
+                  label: '現金/保證金',
+                  value: formatNullablePercent(snapshot.cashAndMarginWeightPct),
+                  color: _marketBlue,
+                ),
+              ],
+            ),
           ),
         ),
       ),

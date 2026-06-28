@@ -36,3 +36,6 @@
 - v6.60 public mobile inspection confirmed the premium source guard, and showed
   the DAY/LIVE/HIS row still uses generic syncing/checking text even when date
   and time values are already available.
+- v6.61 public mobile inspection confirmed summary labels improved when values
+  are available, but invalid holdings snapshots can still render a 0% official
+  exposure strip beside the price chart.

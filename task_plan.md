@@ -1376,6 +1376,28 @@ Completed in v6.61:
 - Syncing/checking labels are reserved for missing data only.
 - Full validation passed with accepted WARN states only.
 
+## Phase 74 - v6.62 Exposure Unavailable Guard
+
+Status: complete
+
+Objective: prevent invalid official-holdings snapshots from rendering as
+zero-value exposure data on the overview chart panel.
+
+- Render the overview exposure strip only when holdings snapshot data is usable.
+- Keep the price chart visible when holdings are unavailable.
+- Let the existing holdings-status card explain unavailable holdings.
+- Add widget coverage for valid and unavailable holdings snapshots.
+- Do not change holdings parsing, price history, intraday NAV, backtest,
+  position, selected ETF, or AI logic.
+
+Completed in v6.62:
+
+- The overview exposure strip now renders only when the holdings snapshot is
+  usable.
+- The price chart remains visible when holdings are unavailable.
+- Widget coverage verifies both valid and unavailable exposure-strip states.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
