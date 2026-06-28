@@ -139,6 +139,8 @@ v6.54 shortens the fast-first-screen refresh banner to `背景更新中，已先
 
 v6.55 cleans up the quote header title so 00631L shows `元大台灣50正2` instead of `00631L 00631L` when history data only contains the code.
 
+v6.56 keeps the public first screen chart usable during live-proxy background refresh by overlaying static public price history when the live fast payload still reports price history as deferred or unavailable.
+
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.

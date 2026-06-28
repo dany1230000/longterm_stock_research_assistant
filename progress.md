@@ -779,3 +779,20 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.55 committed/pushed as `be1cb26`, tag
+  `00631l-lab-v6.55-quote-title-name`; public marker and strict public static
+  data checks passed.
+- Started v6.56 after the public mobile screenshot showed the overview trend
+  card still displayed `unavailable` during live-proxy background refresh even
+  though static public price history was already available.
+- Implemented fast-start data merging in `Cached00631LRepository` so static
+  public price history overlays live fast data when live price history is still
+  deferred or unavailable.
+- Added a repository regression test for the fast static-history overlay path.
+- Targeted repository test passed: `flutter test
+  test\etf_00631l_proxy_repository_test.dart`.
+- v6.56 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (103 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -15,3 +15,7 @@
 - v6.25 Playwright inspection found the first visible oversized loading card is
   the pre-Flutter `web/index.html` shell. Improving the public perceived load
   requires changing that HTML shell, not only Flutter loading widgets.
+- v6.55 public mobile inspection found that live-proxy fast startup could show
+  the overview trend card as `unavailable` even while GitHub Pages static
+  history was ready. The fix belongs in repository-level fast-data merging so
+  widgets keep truthful source labels without duplicating fallback logic.

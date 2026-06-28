@@ -1241,6 +1241,30 @@ Completed in v6.55:
 - Widget coverage verifies `00631L 00631L` is not rendered.
 - Targeted and full validation passed with accepted WARN states only.
 
+## Phase 68 - v6.56 Fast Static History Overlay
+
+Status: complete
+
+Objective: keep the public first-screen chart usable while live-proxy full
+details are still loading.
+
+- Merge static public price history into the fast startup payload when live
+  fast data reports price history as deferred or unavailable.
+- Keep live intraday NAV, official holdings, and static history labels
+  distinct.
+- Add repository regression coverage so this first-screen fallback cannot
+  regress.
+- Verify the public page after release.
+
+Completed in v6.56:
+
+- Fast startup now overlays static public price history when live fast data
+  still has deferred/unavailable price history.
+- Operations price-history metadata also merges from static fallback when the
+  live fast payload lacks usable rows.
+- Repository coverage verifies the fast static-history overlay path.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

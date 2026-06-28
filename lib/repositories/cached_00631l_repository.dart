@@ -32,12 +32,21 @@ class Cached00631LRepository extends Official00631LRepository {
   @override
   Future<Etf00631LLabData> fetchFastLabData() async {
     try {
-      final data =
+      final primaryData =
           await _primary.fetchFastLabData().timeout(fastPrimaryTimeout);
+      final data = await _mergeFastFallbackData(primaryData);
       _profileCache = data.profile;
       _snapshotCache = data.snapshot;
       _intradayNavCache = data.intradayNav;
       _futuresQuoteCache = data.futuresQuote;
+      if (_isPriceHistoryUsable(data.priceHistory)) {
+        _priceHistoryCache = data.priceHistory;
+      }
+      _operationsStatusCache = data.operationsStatus;
+      _aiAnalysisCache = data.aiAnalysis;
+      if (data.etfCatalog.items.isNotEmpty) {
+        _etfCatalogCache = data.etfCatalog;
+      }
       return data;
     } catch (_) {
       return _fallback.fetchFastLabData();
@@ -307,6 +316,55 @@ class Cached00631LRepository extends Official00631LRepository {
       // Keep the live operations status if the fallback status is unavailable.
     }
     return primaryStatus;
+  }
+
+  Future<Etf00631LLabData> _mergeFastFallbackData(
+    Etf00631LLabData primaryData,
+  ) async {
+    final needsHistory = !_isPriceHistoryUsable(primaryData.priceHistory);
+    final needsOperations =
+        _needsPriceHistoryFallback(primaryData.operationsStatus);
+    final needsCatalog = primaryData.etfCatalog.items.isEmpty;
+    if (!needsHistory && !needsOperations && !needsCatalog) {
+      return primaryData;
+    }
+
+    try {
+      final fallbackData = await _fallback.fetchFastLabData().timeout(
+            fastPrimaryTimeout,
+          );
+      final fallbackHistoryUsable =
+          _isPriceHistoryUsable(fallbackData.priceHistory);
+      final fallbackOperationsUsable =
+          _operationsHasPriceHistory(fallbackData.operationsStatus);
+      return Etf00631LLabData(
+        profile: primaryData.profile,
+        snapshot: primaryData.snapshot,
+        intradayNav: primaryData.intradayNav,
+        futuresQuote: primaryData.futuresQuote,
+        holdingsHistory: primaryData.holdingsHistory,
+        intradayNavHistory: primaryData.intradayNavHistory,
+        priceHistory: needsHistory && fallbackHistoryUsable
+            ? fallbackData.priceHistory
+            : primaryData.priceHistory,
+        operationsStatus: needsOperations && fallbackOperationsUsable
+            ? _mergeOperationsPriceHistory(
+                primaryData.operationsStatus,
+                fallbackData.operationsStatus,
+              )
+            : primaryData.operationsStatus,
+        analysis: primaryData.analysis,
+        aiAnalysis: fallbackHistoryUsable
+            ? fallbackData.aiAnalysis
+            : primaryData.aiAnalysis,
+        etfCatalog: needsCatalog && fallbackData.etfCatalog.items.isNotEmpty
+            ? fallbackData.etfCatalog
+            : primaryData.etfCatalog,
+        lastFetchedAt: primaryData.lastFetchedAt,
+      );
+    } catch (_) {
+      return primaryData;
+    }
   }
 }
 

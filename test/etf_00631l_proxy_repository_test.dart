@@ -510,6 +510,36 @@ void main() {
     expect(status.errorMessage, contains('static public price history'));
   });
 
+  test('cached fast startup overlays static public price history', () async {
+    final repository = Cached00631LRepository(
+      primary: _FastDeferredLiveRepository(),
+      fallback: Static00631LRepository(
+        client: _FakeProxyHttpClient({
+          '00631l-static-data/price_history.json':
+              jsonEncode(_staticPriceHistoryPayload()),
+          '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
+          '00631l-static-data/release.json':
+              jsonEncode(_staticReleasePayload()),
+          '00631l-static-data/etf_catalog.json':
+              jsonEncode(_staticEtfCatalogPayload()),
+          '00631l-static-data/etf_price_history_index.json':
+              jsonEncode(_staticEtfPriceHistoryIndexPayload()),
+        }),
+      ),
+      fastPrimaryTimeout: const Duration(milliseconds: 50),
+    );
+
+    final data = await repository.fetchFastLabData();
+
+    expect(data.priceHistory.sourceStatusLabel, 'static_official');
+    expect(data.priceHistory.points, hasLength(3));
+    expect(data.operationsStatus.priceHistoryStatus, 'static_official');
+    expect(data.operationsStatus.priceHistoryRows, 3);
+    expect(data.operationsStatus.backtestAvailable, isTrue);
+    expect(data.aiAnalysis.sourceStatusLabel, 'static_official');
+    expect(data.etfCatalog.sourceStatusLabel, 'static_official');
+  });
+
   test('cached fast startup falls back when primary is slow', () async {
     final repository = Cached00631LRepository(
       primary: _NeverCompletingFastRepository(),
@@ -582,6 +612,8 @@ class _NeverCompletingFastRepository extends Mock00631LRepository {
     return _completer.future;
   }
 }
+
+class _FastDeferredLiveRepository extends Mock00631LRepository {}
 
 class _NeverCompletingRepository extends Mock00631LRepository {
   Future<T> _never<T>() => Completer<T>().future;
