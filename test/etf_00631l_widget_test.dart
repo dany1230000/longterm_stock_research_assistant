@@ -295,6 +295,14 @@ void main() {
     expect(find.text('2026/06/01'), findsWidgets);
     expect(find.text('2026/06/03'), findsWidgets);
     expect(
+      find.byKey(const ValueKey('00631l-overview-sparkline-date-start')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-sparkline-date-end')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
       findsOneWidget,
     );

@@ -4122,6 +4122,8 @@ class _SparklineChartState extends State<_SparklineChart> {
     final hasManualSelection = _touchedIndex != null;
     final touchedPoint = spotPoints[safeTouchedIndex];
     final touchedValue = spots[safeTouchedIndex].y;
+    final lastX = (spots.length - 1).toDouble();
+    final edgePaddingX = (lastX * 0.08).clamp(2.0, 24.0).toDouble();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -4130,8 +4132,8 @@ class _SparklineChartState extends State<_SparklineChart> {
           height: 112,
           child: LineChart(
             LineChartData(
-              minX: 0,
-              maxX: (spots.length - 1).toDouble(),
+              minX: -edgePaddingX,
+              maxX: lastX + edgePaddingX,
               minY: chartMinY - padding,
               maxY: chartMaxY + padding,
               borderData: FlBorderData(show: false),
@@ -4159,14 +4161,25 @@ class _SparklineChartState extends State<_SparklineChart> {
                       }
                       return Padding(
                         padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          _shortChartDate(spotPoints[index].date),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: _marketMutedTextColor(context),
-                            fontSize: 10,
-                            height: 1.05,
-                            fontWeight: FontWeight.w700,
+                        child: SizedBox(
+                          width: 74,
+                          child: Align(
+                            alignment: _bottomDateTickAlignment(
+                                index, spotPoints.length),
+                            child: Text(
+                              _shortChartDate(spotPoints[index].date),
+                              key: ValueKey(
+                                '00631l-overview-sparkline-date-${_bottomDateTickSlot(index, spotPoints.length)}',
+                              ),
+                              textAlign: _bottomDateTickTextAlign(
+                                  index, spotPoints.length),
+                              style: TextStyle(
+                                color: _marketMutedTextColor(context),
+                                fontSize: 10,
+                                height: 1.05,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ),
                       );
@@ -11617,6 +11630,36 @@ bool _isBottomDateTick(int index, int length) {
   }
   final mid = (length - 1) ~/ 2;
   return index == 0 || index == mid || index == length - 1;
+}
+
+String _bottomDateTickSlot(int index, int length) {
+  if (index == 0) {
+    return 'start';
+  }
+  if (index == length - 1) {
+    return 'end';
+  }
+  return 'mid';
+}
+
+Alignment _bottomDateTickAlignment(int index, int length) {
+  if (index == 0) {
+    return Alignment.centerLeft;
+  }
+  if (index == length - 1) {
+    return Alignment.centerRight;
+  }
+  return Alignment.center;
+}
+
+TextAlign _bottomDateTickTextAlign(int index, int length) {
+  if (index == 0) {
+    return TextAlign.left;
+  }
+  if (index == length - 1) {
+    return TextAlign.right;
+  }
+  return TextAlign.center;
 }
 
 class _CurveChartPanel extends StatelessWidget {

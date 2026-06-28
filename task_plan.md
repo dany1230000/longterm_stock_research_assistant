@@ -620,6 +620,28 @@ Completed in v6.25:
   page; screenshot artifacts were removed before staging.
 - Full validation passed with accepted WARN states only.
 
+## Phase 38 - v6.26 Overview Date Axis Fit
+
+Status: complete
+
+Objective: make the overview one-year sparkline date axis readable on phone
+screens.
+
+- Add horizontal chart edge padding so the first and last date ticks are not
+  pinned to the container edge.
+- Align start, middle, and end date labels to their natural positions.
+- Add widget coverage for the start and end date tick keys.
+- Do not change historical price calculations.
+
+Completed in v6.26:
+
+- Overview sparkline now uses x-axis edge padding so start and end dates stay
+  inside the chart area on phone screens.
+- Start/end date labels have stable widget keys.
+- Playwright mobile screenshot verified the right-side date is visible; generated
+  screenshots were removed before staging.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

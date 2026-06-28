@@ -429,6 +429,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Compact comparison controls: `docs\00631l_v6_23_compact_comparison_controls.md`
 - Compact comparison guidance: `docs\00631l_v6_24_compact_comparison_guidance.md`
 - Compact loading shell: `docs\00631l_v6_25_compact_loading_shell.md`
+- Overview date axis fit: `docs\00631l_v6_26_overview_date_axis_fit.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

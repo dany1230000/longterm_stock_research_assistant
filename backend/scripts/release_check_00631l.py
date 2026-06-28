@@ -515,6 +515,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v6_23_compact_comparison_controls.md",
         "docs/00631l_v6_24_compact_comparison_guidance.md",
         "docs/00631l_v6_25_compact_loading_shell.md",
+        "docs/00631l_v6_26_overview_date_axis_fit.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

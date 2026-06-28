@@ -406,3 +406,13 @@
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS. Playwright mobile screenshots verified compact loading and loaded root
   states; generated screenshots were removed.
+- Started v6.26 after the v6.25 loaded mobile screenshot showed the overview
+  sparkline end-date label was still too close to the right edge.
+- Added overview chart x-axis edge padding plus start/mid/end date alignment
+  helpers and widget keys for start/end date ticks.
+- v6.26 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS. Playwright mobile screenshot verified the end-date label is no longer
+  clipped; generated screenshots were removed.
