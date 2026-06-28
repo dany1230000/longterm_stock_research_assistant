@@ -1837,3 +1837,6 @@ status appear sooner on mobile.
 
 v6.37 cleans up the overview daily summary header by moving frontend mode into a
 small badge and keeping AI as a short status chip instead of a truncated line.
+
+v6.38 keeps the overview daily summary strip in a neutral loading state during
+fast startup, so temporary full-data loading does not appear as a source error.

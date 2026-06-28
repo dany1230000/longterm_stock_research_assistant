@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -442,6 +442,26 @@ void main() {
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
+    final dailySummary = find.byKey(
+      const ValueKey('00631l-overview-daily-summary-strip'),
+    );
+    expect(dailySummary, findsOneWidget);
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('loading')),
+      findsWidgets,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('pending')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('error')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('unavailable')),
+      findsNothing,
+    );
     _expectNoTradingActionText();
 
     await repository.complete();

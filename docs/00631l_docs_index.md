@@ -441,6 +441,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Overview daily summary strip: `docs\00631l_v6_35_overview_daily_summary_strip.md`
 - Compact quote header: `docs\00631l_v6_36_compact_quote_header.md`
 - Overview summary mode badge: `docs\00631l_v6_37_overview_summary_mode_badge.md`
+- Fast summary loading state: `docs\00631l_v6_38_fast_summary_loading_state.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

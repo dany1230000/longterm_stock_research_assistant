@@ -369,7 +369,11 @@ class _LabContent extends StatelessWidget {
   ) {
     switch (selectedSection) {
       case _LabSection.overview:
-        return _OverviewSection(data: data, selectedEtf: selectedEtf);
+        return _OverviewSection(
+          data: data,
+          selectedEtf: selectedEtf,
+          detailsLoading: detailsLoading,
+        );
       case _LabSection.historyBacktest:
         return _HistoryBacktestSection(
           data: data,
@@ -2768,10 +2772,12 @@ class _OverviewSection extends StatelessWidget {
   const _OverviewSection({
     required this.data,
     required this.selectedEtf,
+    required this.detailsLoading,
   });
 
   final Etf00631LLabData data;
   final _SelectedEtfViewData selectedEtf;
+  final bool detailsLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -2783,7 +2789,10 @@ class _OverviewSection extends StatelessWidget {
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
         if (selectedEtf.is00631L) ...[
-          _OverviewDailySummaryStrip(data: data),
+          _OverviewDailySummaryStrip(
+            data: data,
+            detailsLoading: detailsLoading,
+          ),
           const SizedBox(height: 8),
         ],
         if (selectedEtf.is00631L)
@@ -2828,9 +2837,13 @@ class _OverviewSection extends StatelessWidget {
 }
 
 class _OverviewDailySummaryStrip extends StatelessWidget {
-  const _OverviewDailySummaryStrip({required this.data});
+  const _OverviewDailySummaryStrip({
+    required this.data,
+    required this.detailsLoading,
+  });
 
   final Etf00631LLabData data;
+  final bool detailsLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -2838,23 +2851,34 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
     final nav = data.intradayNav;
     final premiumAssessment = nav?.premiumDiscountAssessment;
     final priceSummary = data.priceHistory.completenessSummary();
-    final navTime =
-        nav?.dataTime == null ? 'unavailable' : _sourceTimeText(nav!.dataTime!);
-    final premiumValue =
-        formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct);
-    final premiumCaption = premiumAssessment == null
-        ? 'unavailable'
-        : _premiumLabel(premiumAssessment);
+    final navTime = detailsLoading
+        ? 'loading'
+        : nav?.dataTime == null
+            ? 'unavailable'
+            : _sourceTimeText(nav!.dataTime!);
+    final premiumValue = detailsLoading
+        ? 'pending'
+        : formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct);
+    final premiumCaption = detailsLoading
+        ? 'full data'
+        : premiumAssessment == null
+            ? 'unavailable'
+            : _premiumLabel(premiumAssessment);
+    final historyIsAvailable = priceSummary.rowCount >= 2;
     final items = [
       _OverviewDailySummaryItem(
         badge: 'DAY',
-        value: formatTaiwanDate(data.snapshot.tradeDate),
-        caption: data.snapshot.status.label,
+        value: detailsLoading
+            ? 'loading'
+            : formatTaiwanDate(data.snapshot.tradeDate),
+        caption: detailsLoading ? 'official daily' : data.snapshot.status.label,
       ),
       _OverviewDailySummaryItem(
         badge: 'LIVE',
         value: navTime,
-        caption: nav?.sourceContract ?? nav?.status.label ?? 'backend required',
+        caption: detailsLoading
+            ? 'backend / static'
+            : nav?.sourceContract ?? nav?.status.label ?? 'backend required',
       ),
       _OverviewDailySummaryItem(
         badge: 'P/D',
@@ -2863,14 +2887,17 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
       ),
       _OverviewDailySummaryItem(
         badge: 'HIS',
-        value: '${formatInteger(priceSummary.rowCount)} rows',
-        caption:
-            '${_dateOrDash(priceSummary.coverageStart)} - ${_dateOrDash(priceSummary.coverageEnd)}',
+        value: detailsLoading && !historyIsAvailable
+            ? 'loading'
+            : '${formatInteger(priceSummary.rowCount)} rows',
+        caption: detailsLoading && !historyIsAvailable
+            ? 'static history'
+            : '${_dateOrDash(priceSummary.coverageStart)} - ${_dateOrDash(priceSummary.coverageEnd)}',
       ),
       _OverviewDailySummaryItem(
         badge: 'AI',
-        value: data.aiAnalysis.readinessLabel,
-        caption: data.aiAnalysis.source,
+        value: detailsLoading ? 'loading' : data.aiAnalysis.readinessLabel,
+        caption: detailsLoading ? 'rule based' : data.aiAnalysis.source,
       ),
     ];
 

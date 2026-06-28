@@ -868,6 +868,28 @@ Completed in v6.37:
 - Kept AI as a compact summary chip.
 - Full validation passed with accepted WARN states only.
 
+## Phase 50 - v6.38 Fast Summary Loading State
+
+Status: complete
+
+Objective: keep the overview daily summary strip from showing temporary
+error/unavailable labels while the fast startup shell is still waiting for full
+details.
+
+- Pass the full-data loading state into the overview daily summary strip.
+- Show loading/pending labels during transient startup.
+- Preserve real source-status labels after full data finishes loading.
+- Add widget coverage for the fast-start summary state.
+
+Completed in v6.38:
+
+- Overview daily summary strip shows `loading` / `pending` during fast startup
+  instead of transient source errors.
+- True source labels remain after full data completes.
+- Widget coverage verifies fast-start summary labels avoid temporary
+  `error` / `unavailable` text.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
