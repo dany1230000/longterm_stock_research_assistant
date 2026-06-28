@@ -1319,6 +1319,14 @@
   display Friday 13:31 TWSE NAV data as generic pre-open waiting. Added
   previous-trading-day intraday labeling for pre-open screens while preserving
   weekend closed-market status.
+## v6.99 Overview Chart Header
+
+- Removed the `HIS` badge from the first-screen one-year chart title.
+- Kept chart data, date labels, touch details, and return calculation
+  unchanged.
+- Added widget coverage that the initial overview first screen no longer shows
+  the chart `HIS` badge.
+
 ## v6.98 Overview Holdings Digest Badges
 
 - Removed the first-screen holdings digest badges that made `DAY / TX / 2330 /

@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.99 removes the `HIS` badge from the overview chart header so the first
+  chart starts directly with `近一年走勢`.
 - v6.98 removes code-like badges from the overview holdings digest. The
   first-screen holdings cards now lead with `期貨`, `台積電`, and `曝險結構`
   instead of `TX / 2330 / MIX`.

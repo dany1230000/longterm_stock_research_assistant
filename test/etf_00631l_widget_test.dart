@@ -67,6 +67,7 @@ void main() {
     expect(find.text('ETF歷史'), findsNothing);
     expect(find.text('歷史資料'), findsOneWidget);
     expect(find.text('近一年走勢'), findsOneWidget);
+    expect(find.text('HIS'), findsNothing);
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
     final summaryTop = tester.getTopLeft(find.text('今日摘要')).dy;
     expect(summaryTop, lessThan(chartTitleTop));

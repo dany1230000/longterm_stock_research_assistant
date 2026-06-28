@@ -4510,8 +4510,6 @@ class _OverviewSparklineBlock extends StatelessWidget {
       children: [
         Row(
           children: [
-            const _MiniStatusBadge(label: 'HIS'),
-            const SizedBox(width: 8),
             Expanded(
               child: Text(
                 '近一年走勢',
