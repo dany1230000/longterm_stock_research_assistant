@@ -19,3 +19,7 @@
   the overview trend card as `unavailable` even while GitHub Pages static
   history was ready. The fix belongs in repository-level fast-data merging so
   widgets keep truthful source labels without duplicating fallback logic.
+- v6.56 public mobile inspection confirmed the chart is visible from static
+  history, but also revealed an invalid holdings snapshot could still render
+  a digest with zero/unavailable values. Holdings digest needs its own usable
+  snapshot guard.

@@ -796,3 +796,25 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.56 committed/pushed as `0f0e7a0`, tag
+  `00631l-lab-v6.56-fast-static-history-overlay`; public marker and strict
+  static data checks passed.
+- Playwright mobile screenshot verified the overview chart now displays static
+  history instead of `unavailable` during background refresh.
+- Started v6.57 after the same screenshot showed the holdings digest rendering
+  zero/unavailable values from an unusable snapshot.
+- Added a holdings snapshot usability guard and compact unavailable state.
+- Added widget coverage that the overview hides holdings digest tiles when the
+  snapshot is unavailable.
+- Targeted widget test passed: `flutter test
+  test\etf_00631l_widget_test.dart --name "overview hides holdings digest when
+  snapshot is unavailable"`.
+- Error: first full v6.57 validation failed because the existing holdings
+  digest widget test still expected the previous holdings subtitle text.
+  Resolution: updated the test to assert the new unavailable-state key is absent
+  when valid holdings digest data is present, then reran the targeted tests.
+- v6.57 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (104 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -1265,6 +1265,29 @@ Completed in v6.56:
 - Repository coverage verifies the fast static-history overlay path.
 - Full validation passed with accepted WARN states only.
 
+## Phase 69 - v6.57 Holdings Unavailable State
+
+Status: complete
+
+Objective: prevent zero-value placeholder holdings snapshots from looking like
+official digest data on the public overview screen.
+
+- Detect holdings snapshots that have error status, zero fund net asset value,
+  zero outstanding units, or no holding lines.
+- Render a compact unavailable state instead of TX/TSMC/mix tiles when the
+  snapshot is not usable.
+- Keep valid official holdings digest behavior unchanged.
+- Add widget coverage for the unavailable state.
+
+Completed in v6.57:
+
+- Overview holdings digest now checks snapshot usability before rendering
+  TX/TSMC/mix tiles.
+- Error/zero-value placeholder snapshots render a compact unavailable state
+  instead of 0-value digest tiles.
+- Widget coverage verifies both valid digest and unavailable digest states.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

@@ -3862,6 +3862,11 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
     final snapshot = data.snapshot;
     final txLine = _primaryFuturesLine(snapshot);
     final tsmcLine = _stockHoldingByCode(snapshot, '2330');
+    final hasUsableHoldings = _hasUsableHoldingsSnapshot(snapshot);
+    final titleText = hasUsableHoldings ? '官方內容物重點' : '內容物狀態';
+    final subtitleText = hasUsableHoldings
+        ? '官方每日快照，不是盤中即時內容物；盤中請看 NAV 更新。'
+        : 'live backend 尚未回傳有效 official holdings；不顯示 0 值內容物。';
     final theme = Theme.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -3880,7 +3885,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '官方內容物重點',
+                    titleText,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
@@ -3896,7 +3901,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '每日官方快照，不是盤中即時內容物；盤中狀態看 NAV 與折溢價。',
+              subtitleText,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: _marketMutedTextColor(context),
                 fontWeight: FontWeight.w700,
@@ -3904,38 +3909,81 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            _HoldingDigestStrip(
-              items: [
-                _HoldingDigestItem(
-                  badge: 'TX',
-                  title: '期貨',
-                  value: txLine == null
-                      ? 'unavailable'
-                      : formatNullablePercent(txLine.weightPct),
-                  caption: txLine == null
-                      ? '官方快照未列 TX'
-                      : '${txLine.code} / ${txLine.contractMonth}',
+            hasUsableHoldings
+                ? _HoldingDigestStrip(
+                    items: [
+                      _HoldingDigestItem(
+                        badge: 'TX',
+                        title: '期貨',
+                        value: txLine == null
+                            ? 'unavailable'
+                            : formatNullablePercent(txLine.weightPct),
+                        caption: txLine == null
+                            ? '官方快照未列 TX'
+                            : '${txLine.code} / ${txLine.contractMonth}',
+                      ),
+                      _HoldingDigestItem(
+                        badge: '2330',
+                        title: '台積電',
+                        value: tsmcLine == null
+                            ? 'unavailable'
+                            : formatNullablePercent(tsmcLine.weightPct),
+                        caption: tsmcLine == null
+                            ? '官方快照未列 2330'
+                            : '${formatInteger(tsmcLine.quantity)} 股',
+                      ),
+                      _HoldingDigestItem(
+                        badge: 'MIX',
+                        title: '股期現金',
+                        value:
+                            '${formatNullablePercent(snapshot.stockExposureWeightPct)} / ${formatNullablePercent(snapshot.futuresExposureWeightPct)}',
+                        caption:
+                            '現金 ${formatNullablePercent(snapshot.cashAndMarginWeightPct)}',
+                      ),
+                    ],
+                  )
+                : _HoldingDigestUnavailable(snapshot: snapshot),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HoldingDigestUnavailable extends StatelessWidget {
+  const _HoldingDigestUnavailable({required this.snapshot});
+
+  final EtfDailyHoldingSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-overview-holdings-digest-unavailable'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          children: [
+            const _MiniStatusBadge(label: 'DAY'),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '內容物需 live backend；未顯示 0 值快照。',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w800,
+                  height: 1.25,
                 ),
-                _HoldingDigestItem(
-                  badge: '2330',
-                  title: '台積電',
-                  value: tsmcLine == null
-                      ? 'unavailable'
-                      : formatNullablePercent(tsmcLine.weightPct),
-                  caption: tsmcLine == null
-                      ? '官方快照未列 2330'
-                      : '${formatInteger(tsmcLine.quantity)} 股',
-                ),
-                _HoldingDigestItem(
-                  badge: 'MIX',
-                  title: '股期現金',
-                  value:
-                      '${formatNullablePercent(snapshot.stockExposureWeightPct)} / ${formatNullablePercent(snapshot.futuresExposureWeightPct)}',
-                  caption:
-                      '現金 ${formatNullablePercent(snapshot.cashAndMarginWeightPct)}',
-                ),
-              ],
+              ),
             ),
+            _CompactTextBadge(label: snapshot.status.label),
           ],
         ),
       ),
@@ -3974,6 +4022,17 @@ class _HoldingDigestStrip extends StatelessWidget {
       ],
     );
   }
+}
+
+bool _hasUsableHoldingsSnapshot(EtfDailyHoldingSnapshot snapshot) {
+  if (snapshot.status == EtfDataStatus.error ||
+      snapshot.fundNetAssetValue <= 0 ||
+      snapshot.outstandingUnits <= 0) {
+    return false;
+  }
+  return snapshot.stockHoldings.isNotEmpty ||
+      snapshot.futuresHoldings.isNotEmpty ||
+      snapshot.cashHoldings.isNotEmpty;
 }
 
 class _HoldingDigestTile extends StatelessWidget {

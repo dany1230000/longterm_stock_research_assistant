@@ -1484,8 +1484,12 @@ void main() {
       findsNothing,
     );
     expect(find.text('更新時間'), findsNothing);
-    expect(find.text('官方內容物重點'), findsOneWidget);
-    expect(find.textContaining('每日官方快照'), findsOneWidget);
+    expect(
+      find.byKey(
+        const ValueKey('00631l-overview-holdings-digest-unavailable'),
+      ),
+      findsNothing,
+    );
     expect(find.text('期貨'), findsWidgets);
     expect(find.text('台積電'), findsWidgets);
     expect(find.text('股期現金'), findsOneWidget);
@@ -1533,6 +1537,30 @@ void main() {
     ]) {
       expect(find.byKey(ValueKey('00631l-section-$section')), findsOneWidget);
     }
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('overview hides holdings digest when snapshot is unavailable',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _NoUsableHoldingsRepository());
+
+    expect(
+      find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-overview-holdings-digest-unavailable'),
+      ),
+      findsOneWidget,
+    );
     _expectNoTradingActionText();
   });
 
@@ -2023,6 +2051,33 @@ class _StaticHistoryOnlyRepository extends _PriceHistoryRepository {
   @override
   Future<EtfIntradayNav?> fetchIntradayNav() async {
     return null;
+  }
+}
+
+class _NoUsableHoldingsRepository extends _PriceHistoryRepository {
+  @override
+  Future<EtfDailyHoldingSnapshot> fetchDailySnapshot() async {
+    final now = DateTime(2026, 6, 28);
+    return EtfDailyHoldingSnapshot(
+      tradeDate: now,
+      fundNetAssetValue: 0,
+      navPerUnit: 0,
+      outstandingUnits: 0,
+      assetSummary: const EtfAssetSummary(
+        stock: 0,
+        etf: 0,
+        bond: 0,
+        futures: 0,
+      ),
+      cashHoldings: const [],
+      stockHoldings: const [],
+      futuresHoldings: const [],
+      status: EtfDataStatus.error,
+      lastFetchedAt: now,
+      sourceUpdatedAt: now,
+      sourceHash: 'fixture-unavailable-holdings',
+      errorMessage: 'fixture unavailable holdings',
+    );
   }
 }
 
