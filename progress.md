@@ -327,3 +327,11 @@
   (98 tests), `flutter build web` PASS, backend tests PASS (272 tests),
   `scripts\00631l_release_check.cmd` WARN with failures=0, and
   `git diff --check` PASS.
+- Public Pages marker updated to v6.18 and strict public static-data check
+  passed with release tag `00631l-lab-v6.18-pages-release-tag-polling`.
+- Started v6.19 to align the Pages deploy status checker with the v6.18
+  main-branch tag polling release flow.
+- Added a regression test for stale/cancelled workflow noise when the public
+  release marker already matches the expected HEAD.
+- Updated the deploy status checker to pass expected SHA into public Pages
+  smoke checks and summarize public release marker metadata.

@@ -484,6 +484,19 @@ deployment that GitHub Pages may reject.
   `flutter test`, `flutter build web`, backend tests, release check WARN with
   failures=0, and `git diff --check`.
 
+## Phase 31 - v6.19 Pages Deploy Status Alignment
+
+Status: in_progress
+
+Objective: keep the local Pages deployment checker aligned with the v6.18
+main-branch tag polling flow.
+
+- Pass the expected git SHA into the public Pages smoke check.
+- Include public release marker metadata in the deploy status summary.
+- Downgrade stale workflow-run warnings only when the public release marker
+  already matches expected HEAD.
+- Keep mismatched public release metadata as a warning.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

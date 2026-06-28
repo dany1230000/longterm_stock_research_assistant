@@ -1769,3 +1769,7 @@ v5.74 refreshes the next-direction roadmap around the current v5.73 baseline.
 The next checkpoints are selected ETF context, manual comparison baskets,
 history/backtest interaction, daily AI context, broader validated ETF coverage,
 and mobile packaging preflight.
+
+v6.19 aligns the Pages deploy status checker with the current main-branch tag
+polling flow. When public `release.json` already matches the expected commit,
+stale workflow-run noise no longer blocks local release validation.

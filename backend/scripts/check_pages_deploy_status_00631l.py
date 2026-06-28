@@ -110,9 +110,15 @@ def run_pages_deploy_status_check(
         root_url=root_url,
         static_base_url=static_base_url,
         timeout=timeout,
+        expected_sha=resolved_expected_sha,
     )
     checks.append(_public_pages_check(pages_payload))
     _downgrade_pages_settings_warning_when_public_smoke_passes(checks)
+    _downgrade_workflow_warning_when_public_release_matches(
+        checks,
+        pages_payload,
+        resolved_expected_sha,
+    )
     return _payload(
         checked_at=checked_at,
         repo=repo,
@@ -263,6 +269,28 @@ def _downgrade_pages_settings_warning_when_public_smoke_passes(checks: list[dict
         pages["message"] = "GitHub Pages settings API returned 404, but workflow and public smoke passed."
 
 
+def _downgrade_workflow_warning_when_public_release_matches(
+    checks: list[dict[str, Any]],
+    public_pages_payload: dict[str, Any],
+    expected_sha: str,
+) -> None:
+    if not expected_sha:
+        return
+    workflow = _find_check(checks, "workflow_runs")
+    public_pages = _find_check(checks, "public_pages_smoke")
+    if workflow.get("status") != "WARN" or public_pages.get("status") != "PASS":
+        return
+    release_sha = str(public_pages_payload.get("releaseGitSha") or "")
+    if not release_sha or not release_sha.startswith(expected_sha[:12]):
+        return
+    workflow["status"] = "PASS"
+    workflow["message"] = (
+        "Latest workflow run is not the deciding signal because the public release marker "
+        "matches expected HEAD."
+    )
+    workflow["publicReleaseGitSha"] = release_sha
+
+
 def _fetch_json(url: str, timeout: float) -> dict[str, Any]:
     headers = {
         "Accept": "application/vnd.github+json",
@@ -334,6 +362,8 @@ def _summary(
         "coverageStart": public_pages_payload.get("coverageStart"),
         "coverageEnd": public_pages_payload.get("coverageEnd"),
         "rootUrl": public_pages_payload.get("rootUrl"),
+        "publicReleaseGitSha": public_pages_payload.get("releaseGitSha"),
+        "publicReleaseTag": public_pages_payload.get("releaseTag"),
     }
 
 

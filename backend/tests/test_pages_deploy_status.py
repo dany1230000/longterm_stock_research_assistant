@@ -32,6 +32,26 @@ class PagesDeployStatusTests(unittest.TestCase):
         self.assertEqual(payload["failureCount"], 0)
         self.assertGreater(payload["warningCount"], 0)
 
+    def test_pages_deploy_status_passes_when_public_release_matches_expected_sha(self) -> None:
+        payload = run_pages_deploy_status_check(
+            expected_sha="abc123",
+            fetch_json=_fetch_cancelled_workflow,
+            public_pages_payload=_public_pages_payload(
+                "PASS",
+                release_git_sha="abc123ff",
+                release_tag="00631l-lab-v6.19-pages-deploy-status-alignment",
+            ),
+        )
+
+        self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertEqual(payload["failureCount"], 0)
+        self.assertEqual(payload["warningCount"], 0)
+        self.assertEqual(payload["summary"]["publicReleaseGitSha"], "abc123ff")
+        workflow = next(
+            check for check in payload["checks"] if check["name"] == "workflow_runs"
+        )
+        self.assertIn("public release marker matches expected HEAD", workflow["message"])
+
     def test_pages_deploy_status_fails_for_workflow_failure_when_strict(self) -> None:
         payload = run_pages_deploy_status_check(
             expected_sha="abc123",
@@ -117,13 +137,36 @@ def _fetch_failed_workflow(url: str, timeout: float) -> dict:
     }
 
 
-def _public_pages_payload(status: str) -> dict:
+def _fetch_cancelled_workflow(url: str, timeout: float) -> dict:
+    del timeout
+    if url.endswith("/pages"):
+        return {"html_url": "https://dany1230000.github.io/longterm_stock_research_assistant/", "status": "built"}
+    return {
+        "workflow_runs": [
+            {
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "old456ff",
+                "html_url": "https://github.com/example/actions/runs/4",
+            }
+        ]
+    }
+
+
+def _public_pages_payload(
+    status: str,
+    *,
+    release_git_sha: str = "",
+    release_tag: str = "",
+) -> dict:
     return {
         "overallStatus": status,
         "rowCount": 2835,
         "coverageStart": "2014-10-31",
         "coverageEnd": "2026-06-24",
         "rootUrl": "https://dany1230000.github.io/longterm_stock_research_assistant/",
+        "releaseGitSha": release_git_sha,
+        "releaseTag": release_tag,
         "warnings": [] if status == "PASS" else ["temporary"],
         "failures": [],
     }
