@@ -300,13 +300,15 @@ class Cached00631LRepository extends Official00631LRepository {
   Future<EtfOperationsStatus> _operationsWithFallbackPriceHistory(
     EtfOperationsStatus primaryStatus,
   ) async {
-    if (!_needsPriceHistoryFallback(primaryStatus)) {
+    if (!_needsPriceHistoryFallback(primaryStatus) &&
+        !_needsEtfHistoryFallback(primaryStatus)) {
       return primaryStatus;
     }
     try {
       final fallbackStatus =
           await _fallback.fetchOperationsStatus().timeout(primaryTimeout);
-      if (_operationsHasPriceHistory(fallbackStatus)) {
+      if (_operationsHasPriceHistory(fallbackStatus) ||
+          _operationsHasEtfHistory(fallbackStatus)) {
         return _mergeOperationsPriceHistory(
           primaryStatus,
           fallbackStatus,
@@ -323,7 +325,8 @@ class Cached00631LRepository extends Official00631LRepository {
   ) async {
     final needsHistory = !_isPriceHistoryUsable(primaryData.priceHistory);
     final needsOperations =
-        _needsPriceHistoryFallback(primaryData.operationsStatus);
+        _needsPriceHistoryFallback(primaryData.operationsStatus) ||
+            _needsEtfHistoryFallback(primaryData.operationsStatus);
     final needsCatalog = primaryData.etfCatalog.items.isEmpty;
     if (!needsHistory && !needsOperations && !needsCatalog) {
       return primaryData;
@@ -336,7 +339,8 @@ class Cached00631LRepository extends Official00631LRepository {
       final fallbackHistoryUsable =
           _isPriceHistoryUsable(fallbackData.priceHistory);
       final fallbackOperationsUsable =
-          _operationsHasPriceHistory(fallbackData.operationsStatus);
+          _operationsHasPriceHistory(fallbackData.operationsStatus) ||
+              _operationsHasEtfHistory(fallbackData.operationsStatus);
       return Etf00631LLabData(
         profile: primaryData.profile,
         snapshot: primaryData.snapshot,
@@ -743,6 +747,55 @@ bool _operationsHasPriceHistory(EtfOperationsStatus status) {
       !_isUnavailableLabel(status.priceHistoryStatus);
 }
 
+bool _shouldUseFallbackPriceHistory(
+  EtfOperationsStatus primary,
+  EtfOperationsStatus fallback,
+) {
+  if (!_operationsHasPriceHistory(fallback)) {
+    return false;
+  }
+  if (_needsPriceHistoryFallback(primary)) {
+    return true;
+  }
+  return fallback.priceHistoryRows > primary.priceHistoryRows;
+}
+
+bool _needsEtfHistoryFallback(EtfOperationsStatus status) {
+  return !_operationsHasEtfHistory(status);
+}
+
+bool _operationsHasEtfHistory(EtfOperationsStatus status) {
+  return status.etfCatalogRowCount > 0 ||
+      status.etfPriceHistoryRowCount > 0 ||
+      status.etfPriceHistoryReadyCount > 0 ||
+      status.etfPriceHistoryMissingCount > 0 ||
+      status.etfPriceHistoryCoverageTierCounts.isNotEmpty ||
+      status.etfPriceHistoryGapReasonCounts.isNotEmpty ||
+      status.etfPriceHistoryGapReasonSamples.isNotEmpty;
+}
+
+bool _shouldUseFallbackEtfHistory(
+  EtfOperationsStatus primary,
+  EtfOperationsStatus fallback,
+) {
+  if (!_operationsHasEtfHistory(fallback)) {
+    return false;
+  }
+  if (!_operationsHasEtfHistory(primary)) {
+    return true;
+  }
+  if (fallback.etfPriceHistoryReadyCount > primary.etfPriceHistoryReadyCount) {
+    return true;
+  }
+  if (fallback.etfPriceHistoryRowCount > primary.etfPriceHistoryRowCount) {
+    return true;
+  }
+  if (fallback.etfCatalogRowCount > primary.etfCatalogRowCount) {
+    return true;
+  }
+  return false;
+}
+
 bool _isUnavailableLabel(String label) {
   final normalized = label.trim().toLowerCase();
   return normalized == 'error' ||
@@ -754,10 +807,21 @@ EtfOperationsStatus _mergeOperationsPriceHistory(
   EtfOperationsStatus primary,
   EtfOperationsStatus fallback,
 ) {
-  const note =
-      'Backend price history unavailable; using static public price history.';
-  final errorMessage =
-      primary.errorMessage == null || primary.errorMessage!.trim().isEmpty
+  final useFallbackPriceHistory =
+      _shouldUseFallbackPriceHistory(primary, fallback);
+  final useFallbackEtfHistory = _shouldUseFallbackEtfHistory(primary, fallback);
+  final useFallbackEtfCatalog = useFallbackEtfHistory &&
+      fallback.etfCatalogRowCount > primary.etfCatalogRowCount;
+  final notes = [
+    if (useFallbackPriceHistory)
+      'Backend price history unavailable; using static public price history.',
+    if (useFallbackEtfHistory)
+      'Backend ETF readiness unavailable; using static public ETF readiness.',
+  ];
+  final note = notes.join(' ');
+  final errorMessage = note.isEmpty
+      ? primary.errorMessage
+      : primary.errorMessage == null || primary.errorMessage!.trim().isEmpty
           ? note
           : '$note ${primary.errorMessage}';
   return EtfOperationsStatus(
@@ -793,28 +857,69 @@ EtfOperationsStatus _mergeOperationsPriceHistory(
     intradaySampleCount: primary.intradaySampleCount,
     latestIntradayDataTime: primary.latestIntradayDataTime,
     intradayHistoryDate: primary.intradayHistoryDate,
-    priceHistoryStatus: fallback.priceHistoryStatus,
-    priceHistoryRows: fallback.priceHistoryRows,
-    priceHistoryCoverageStart: fallback.priceHistoryCoverageStart,
-    priceHistoryCoverageEnd: fallback.priceHistoryCoverageEnd,
-    priceHistoryCompleteFromListing: fallback.priceHistoryCompleteFromListing,
-    etfCatalogStatus: primary.etfCatalogStatus,
-    etfCatalogRowCount: primary.etfCatalogRowCount,
-    etfCatalogDataTime: primary.etfCatalogDataTime,
-    etfPriceHistoryStatus: primary.etfPriceHistoryStatus,
-    etfPriceHistoryRowCount: primary.etfPriceHistoryRowCount,
-    etfPriceHistoryReadyCount: primary.etfPriceHistoryReadyCount,
-    etfPriceHistoryMissingCount: primary.etfPriceHistoryMissingCount,
-    etfPriceHistoryGapDetailCount: primary.etfPriceHistoryGapDetailCount,
-    etfPriceHistoryAttemptedCount: primary.etfPriceHistoryAttemptedCount,
-    etfPriceHistoryOutOfCatalogCount: primary.etfPriceHistoryOutOfCatalogCount,
-    etfPriceHistoryCoverageTierCounts:
-        primary.etfPriceHistoryCoverageTierCounts,
-    etfPriceHistoryGapReasonCounts: primary.etfPriceHistoryGapReasonCounts,
-    etfPriceHistoryGapReasonSamples: primary.etfPriceHistoryGapReasonSamples,
-    etfPriceHistoryDataTime: primary.etfPriceHistoryDataTime,
-    backtestStatus: fallback.backtestStatus,
-    backtestAvailable: fallback.backtestAvailable,
+    priceHistoryStatus: useFallbackPriceHistory
+        ? fallback.priceHistoryStatus
+        : primary.priceHistoryStatus,
+    priceHistoryRows: useFallbackPriceHistory
+        ? fallback.priceHistoryRows
+        : primary.priceHistoryRows,
+    priceHistoryCoverageStart: useFallbackPriceHistory
+        ? fallback.priceHistoryCoverageStart
+        : primary.priceHistoryCoverageStart,
+    priceHistoryCoverageEnd: useFallbackPriceHistory
+        ? fallback.priceHistoryCoverageEnd
+        : primary.priceHistoryCoverageEnd,
+    priceHistoryCompleteFromListing: useFallbackPriceHistory
+        ? fallback.priceHistoryCompleteFromListing
+        : primary.priceHistoryCompleteFromListing,
+    etfCatalogStatus: useFallbackEtfCatalog
+        ? fallback.etfCatalogStatus
+        : primary.etfCatalogStatus,
+    etfCatalogRowCount: useFallbackEtfCatalog
+        ? fallback.etfCatalogRowCount
+        : primary.etfCatalogRowCount,
+    etfCatalogDataTime: useFallbackEtfCatalog
+        ? fallback.etfCatalogDataTime
+        : primary.etfCatalogDataTime,
+    etfPriceHistoryStatus: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryStatus
+        : primary.etfPriceHistoryStatus,
+    etfPriceHistoryRowCount: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryRowCount
+        : primary.etfPriceHistoryRowCount,
+    etfPriceHistoryReadyCount: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryReadyCount
+        : primary.etfPriceHistoryReadyCount,
+    etfPriceHistoryMissingCount: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryMissingCount
+        : primary.etfPriceHistoryMissingCount,
+    etfPriceHistoryGapDetailCount: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryGapDetailCount
+        : primary.etfPriceHistoryGapDetailCount,
+    etfPriceHistoryAttemptedCount: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryAttemptedCount
+        : primary.etfPriceHistoryAttemptedCount,
+    etfPriceHistoryOutOfCatalogCount: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryOutOfCatalogCount
+        : primary.etfPriceHistoryOutOfCatalogCount,
+    etfPriceHistoryCoverageTierCounts: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryCoverageTierCounts
+        : primary.etfPriceHistoryCoverageTierCounts,
+    etfPriceHistoryGapReasonCounts: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryGapReasonCounts
+        : primary.etfPriceHistoryGapReasonCounts,
+    etfPriceHistoryGapReasonSamples: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryGapReasonSamples
+        : primary.etfPriceHistoryGapReasonSamples,
+    etfPriceHistoryDataTime: useFallbackEtfHistory
+        ? fallback.etfPriceHistoryDataTime
+        : primary.etfPriceHistoryDataTime,
+    backtestStatus: useFallbackPriceHistory
+        ? fallback.backtestStatus
+        : primary.backtestStatus,
+    backtestAvailable: useFallbackPriceHistory
+        ? fallback.backtestAvailable
+        : primary.backtestAvailable,
     positionStatus: primary.positionStatus,
     collectorOneShotCommand: primary.collectorOneShotCommand,
     collectorIntradayCommand: primary.collectorIntradayCommand,

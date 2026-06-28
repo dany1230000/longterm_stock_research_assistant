@@ -1143,3 +1143,12 @@
   account state, selected ETF, frontend mode, release version, and daily status
   as short badges.
 - Added widget coverage for the compact settings summary key.
+- Started v6.80 after public search-sheet inspection showed the ETF database
+  readiness summary could still use catalog-only fallback counts during fast
+  startup.
+- v6.80 merges static-public ETF library readiness metadata into cached fast
+  startup operations data when live backend ETF-wide readiness is missing.
+- Targeted v6.80 validation PASS: `flutter test
+  test\etf_00631l_proxy_repository_test.dart --plain-name "cached fast startup
+  overlays static public price history"` now verifies ETF ready/missing/gap
+  counts from static fallback.

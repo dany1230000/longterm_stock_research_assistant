@@ -1739,6 +1739,26 @@ Completed in v6.79:
 - Widget coverage verifies the compact settings summary remains on the first
   screen while advanced diagnostics stay hidden.
 
+## Phase 92 - v6.80 Search Static ETF Readiness
+
+Status: complete
+
+Objective: make the left-top ETF search sheet use the static-public ETF library
+readiness metadata during fast startup.
+
+- Merge static-public ETF library readiness counts into cached fast startup
+  operations data when the live backend has not returned ETF-wide readiness yet.
+- Prefer live backend readiness when it is more complete than static fallback.
+- Keep the fix in the repository layer so widgets do not duplicate fallback
+  logic.
+
+Completed in v6.80:
+
+- `Cached00631LRepository` now merges ETF-wide static readiness metadata in the
+  same fast-startup path that already merges static 00631L price history.
+- Repository coverage verifies ready/missing/gap reason counts are preserved in
+  fast startup.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

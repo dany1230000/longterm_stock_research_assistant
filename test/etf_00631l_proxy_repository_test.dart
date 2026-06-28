@@ -536,6 +536,10 @@ void main() {
     expect(data.operationsStatus.priceHistoryStatus, 'static_official');
     expect(data.operationsStatus.priceHistoryRows, 3);
     expect(data.operationsStatus.backtestAvailable, isTrue);
+    expect(data.operationsStatus.etfPriceHistoryReadyCount, 1);
+    expect(data.operationsStatus.etfPriceHistoryMissingCount, 2);
+    expect(
+        data.operationsStatus.etfPriceHistoryGapReasonCounts['not_saved'], 2);
     expect(data.aiAnalysis.sourceStatusLabel, 'static_official');
     expect(data.etfCatalog.sourceStatusLabel, 'static_official');
   });

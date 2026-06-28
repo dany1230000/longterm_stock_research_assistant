@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v6.80 fixes the left-top ETF search sheet readiness summary: fast startup now
+  merges static-public ETF library readiness metadata, so the database
+  completion count matches the static index instead of catalog-only fallback
+  flags.
 - v6.79 compacts the settings/account first screen: the old overview grid is
   now a short summary card with account state, selected ETF, data mode, release
   version, and daily status badges.

@@ -97,3 +97,8 @@
 - v6.78 settings review showed the app already had the correct gap counts but needed a plain-language summary before the detailed maintenance metrics.
 
 - v6.79 public settings inspection showed the account/settings first screen was still too tall because the overview grid consumed most of the phone viewport. A compact badge summary is a better first-screen shape; detailed diagnostics should stay below.
+- v6.80 search-sheet inspection found the ETF database summary could show low
+  catalog-only readiness counts during fast startup even though the
+  static-public ETF price-history index was available. Repository-level merging
+  is the correct fix because the search sheet, settings panel, and fast startup
+  all need the same source-truth metadata.
