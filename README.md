@@ -1687,6 +1687,11 @@ history gap evidence as GitHub Pages. Use
 offline local builds. Summary:
 `docs\00631l_v6_84_local_static_attempt_restore.md`.
 
+v6.85 changes user-facing ETF gap reason labels from internal keys to readable
+status text such as `官方無資料`, `來源錯誤`, and `尚未匯入`. The raw API/model
+keys remain unchanged. Summary:
+`docs\00631l_v6_85_etf_gap_reason_labels.md`.
+
 v6.1 runs three bounded missing-ETF probe batches per Pages deployment after
 restoring public attempt evidence, so remaining ETF history gaps can be
 classified faster while keeping static export resilient. Summary:

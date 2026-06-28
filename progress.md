@@ -1190,3 +1190,14 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- Started v6.85 after settings gap-detail review showed internal reason keys
+  still visible in the public UI.
+- v6.85 adds display helpers for ETF gap reasons and coverage tiers, keeping
+  raw keys in models/API while showing readable labels in settings summaries,
+  filter chips, row badges, and sample-code details.
+- v6.85 targeted widget validation PASS for gap detail rows, gap reason filter,
+  and ETF data completion denominator tests.
+- v6.85 full validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

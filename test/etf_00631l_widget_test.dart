@@ -285,10 +285,7 @@ void main() {
     expect(find.text('116'), findsWidgets);
     expect(find.text('資料整理'), findsOneWidget);
     expect(find.textContaining('缺口已分類'), findsWidgets);
-    expect(
-      find.textContaining('sample codes not_saved: 00999, 00998'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('樣本代號 尚未匯入: 00999, 00998'), findsOneWidget);
     expect(find.textContaining('scheduled static export'), findsOneWidget);
     _expectNoTradingActionText();
   });
@@ -2146,13 +2143,15 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-gap-detail-panel')),
       findsOneWidget,
     );
-    expect(find.text('ETF gap details'), findsOneWidget);
+    expect(find.text('ETF 缺口明細'), findsOneWidget);
     expect(find.text('00999'), findsOneWidget);
     expect(find.text('00749B'), findsOneWidget);
-    expect(find.text('official_empty'), findsWidgets);
-    expect(find.text('source_error'), findsWidgets);
+    expect(find.text('官方無資料'), findsWidgets);
+    expect(find.text('來源錯誤'), findsWidgets);
+    expect(find.text('official_empty'), findsNothing);
+    expect(find.text('source_error'), findsNothing);
     expect(find.textContaining('source timeout'), findsOneWidget);
-    expect(find.textContaining('maintenance status only'), findsOneWidget);
+    expect(find.textContaining('缺口明細只用來檢查資料狀態'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
@@ -2182,7 +2181,7 @@ void main() {
 
     expect(find.text('00999'), findsNothing);
     expect(find.text('00749B'), findsOneWidget);
-    expect(find.text('filtered 1 / 2'), findsOneWidget);
+    expect(find.text('篩選 1 / 2'), findsOneWidget);
     _expectNoTradingActionText();
   });
 

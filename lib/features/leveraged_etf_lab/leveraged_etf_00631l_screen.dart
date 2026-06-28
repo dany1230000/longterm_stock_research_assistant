@@ -10655,7 +10655,7 @@ class _EtfGapDetailPanelState extends State<_EtfGapDetailPanel> {
                 children: [
                   Expanded(
                     child: Text(
-                      'ETF gap details',
+                      'ETF 缺口明細',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
@@ -10666,7 +10666,7 @@ class _EtfGapDetailPanelState extends State<_EtfGapDetailPanel> {
               ),
               const SizedBox(height: 6),
               Text(
-                'Data gap details are maintenance status only; unavailable rows are not used as history, backtest, or comparison data.',
+                '缺口明細只用來檢查資料狀態；不可用資料不會拿來做歷史、回測或比較。',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: _marketMutedTextColor(context),
                 ),
@@ -10679,7 +10679,7 @@ class _EtfGapDetailPanelState extends State<_EtfGapDetailPanel> {
                   children: [
                     FilterChip(
                       key: const ValueKey('00631l-etf-gap-filter-all'),
-                      label: Text('all ${formatInteger(allRows.length)}'),
+                      label: Text('全部 ${formatInteger(allRows.length)}'),
                       selected: selectedReason == null,
                       onSelected: (_) {
                         setState(() {
@@ -10692,8 +10692,9 @@ class _EtfGapDetailPanelState extends State<_EtfGapDetailPanel> {
                         key: ValueKey(
                           '00631l-etf-gap-filter-${entry.key}',
                         ),
-                        label:
-                            Text('${entry.key} ${formatInteger(entry.value)}'),
+                        label: Text(
+                          '${_etfGapReasonLabel(entry.key)} ${formatInteger(entry.value)}',
+                        ),
                         selected: selectedReason == entry.key,
                         onSelected: (_) {
                           setState(() {
@@ -10708,11 +10709,12 @@ class _EtfGapDetailPanelState extends State<_EtfGapDetailPanel> {
               const SizedBox(height: 8),
               _StatusWrap(
                 labels: [
-                  'details ${formatInteger(current?.gapDetailCount ?? widget.status.etfPriceHistoryGapDetailCount)}',
-                  'returned ${formatInteger(current?.returnedCount ?? rows.length)}',
+                  '明細 ${formatInteger(current?.gapDetailCount ?? widget.status.etfPriceHistoryGapDetailCount)}',
+                  '回傳 ${formatInteger(current?.returnedCount ?? rows.length)}',
                   if (selectedReason != null)
-                    'filtered ${formatInteger(filteredRows.length)} / ${formatInteger(allRows.length)}',
-                  if (current?.reason != null) 'reason ${current!.reason}',
+                    '篩選 ${formatInteger(filteredRows.length)} / ${formatInteger(allRows.length)}',
+                  if (current?.reason != null)
+                    '原因 ${_etfGapReasonLabel(current!.reason!)}',
                   if (current?.dataTime != null)
                     'dataTime ${_dateTimeOrDash(current!.dataTime)}',
                 ],
@@ -10729,16 +10731,14 @@ class _EtfGapDetailPanelState extends State<_EtfGapDetailPanel> {
               ] else if (allRows.isEmpty) ...[
                 const SizedBox(height: 8),
                 const _EmptyPanel(
-                  title: 'No gap detail rows',
-                  message:
-                      'The current ETF price-history status has no symbol-level maintenance rows.',
+                  title: '目前沒有缺口明細',
+                  message: '目前 ETF 歷史資料狀態沒有個別代號的維護明細。',
                 ),
               ] else if (rows.isEmpty) ...[
                 const SizedBox(height: 8),
                 const _EmptyPanel(
-                  title: 'No rows for selected reason',
-                  message:
-                      'Choose another reason to inspect ETF price-history maintenance rows.',
+                  title: '此分類沒有資料',
+                  message: '請切換其他缺口分類檢查 ETF 歷史資料維護明細。',
                 ),
               ] else ...[
                 const SizedBox(height: 10),
@@ -10813,7 +10813,7 @@ class _EtfGapDetailRow extends StatelessWidget {
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-                _StatusPill(label: row.gapReason),
+                _StatusPill(label: _etfGapReasonLabel(row.gapReason)),
                 _StatusPill(label: row.sourceStatus),
               ],
             ),
@@ -10827,14 +10827,14 @@ class _EtfGapDetailRow extends StatelessWidget {
             const SizedBox(height: 6),
             _StatusWrap(
               labels: [
-                'tier ${row.coverageTier}',
-                'rows ${formatInteger(row.rowCount)}',
+                '類型 ${_etfCoverageTierLabel(row.coverageTier)}',
+                '筆數 ${formatInteger(row.rowCount)}',
                 if (row.validationFailureCount > 0)
-                  'validation ${formatInteger(row.validationFailureCount)}',
+                  '驗證 ${formatInteger(row.validationFailureCount)}',
                 if (row.requestedMonths > 0)
-                  'months ${formatInteger(row.requestedMonths)}',
+                  '月份 ${formatInteger(row.requestedMonths)}',
                 if (row.lastAttemptAt != null)
-                  'attempt ${_dateTimeOrDash(row.lastAttemptAt)}',
+                  '嘗試 ${_dateTimeOrDash(row.lastAttemptAt)}',
               ],
             ),
             if (error != null && error.isNotEmpty) ...[
@@ -14101,40 +14101,40 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
 String _etfCoverageTierDetail(EtfOperationsStatus status) {
   final counts = status.etfPriceHistoryCoverageTierCounts;
   if (counts.isEmpty) {
-    return 'coverage tier unavailable';
+    return '資料期間分類 unavailable';
   }
-  return 'long-term ${formatInteger(counts['long_term'] ?? 0)}, recent ${formatInteger(counts['recent'] ?? 0)}, unavailable ${formatInteger(counts['unavailable'] ?? 0)}, error ${formatInteger(counts['error'] ?? 0)}';
+  return '${_etfCoverageTierLabel('long_term')} ${formatInteger(counts['long_term'] ?? 0)}, ${_etfCoverageTierLabel('recent')} ${formatInteger(counts['recent'] ?? 0)}, ${_etfCoverageTierLabel('unavailable')} ${formatInteger(counts['unavailable'] ?? 0)}, ${_etfCoverageTierLabel('error')} ${formatInteger(counts['error'] ?? 0)}';
 }
 
 String _etfGapReasonDetail(EtfOperationsStatus status) {
   final counts = status.etfPriceHistoryGapReasonCounts;
   if (counts.isEmpty) {
-    return 'gap reason unavailable';
+    return '缺口原因 unavailable';
   }
   final parts = <String>[
     if ((counts['official_empty'] ?? 0) > 0)
-      'official empty ${formatInteger(counts['official_empty'] ?? 0)}',
+      '${_etfGapReasonLabel('official_empty')} ${formatInteger(counts['official_empty'] ?? 0)}',
     if ((counts['not_saved'] ?? 0) > 0)
-      'not saved ${formatInteger(counts['not_saved'] ?? 0)}',
+      '${_etfGapReasonLabel('not_saved')} ${formatInteger(counts['not_saved'] ?? 0)}',
     if ((counts['insufficient_rows'] ?? 0) > 0)
-      'few rows ${formatInteger(counts['insufficient_rows'] ?? 0)}',
+      '${_etfGapReasonLabel('insufficient_rows')} ${formatInteger(counts['insufficient_rows'] ?? 0)}',
     if ((counts['validation_error'] ?? 0) > 0)
-      'validation ${formatInteger(counts['validation_error'] ?? 0)}',
+      '${_etfGapReasonLabel('validation_error')} ${formatInteger(counts['validation_error'] ?? 0)}',
     if ((counts['source_error'] ?? 0) > 0)
-      'source error ${formatInteger(counts['source_error'] ?? 0)}',
+      '${_etfGapReasonLabel('source_error')} ${formatInteger(counts['source_error'] ?? 0)}',
     if ((counts['not_ready'] ?? 0) > 0)
-      'not ready ${formatInteger(counts['not_ready'] ?? 0)}',
+      '${_etfGapReasonLabel('not_ready')} ${formatInteger(counts['not_ready'] ?? 0)}',
   ];
   if (parts.isEmpty) {
-    return 'gap reason clear';
+    return '缺口原因 clear';
   }
-  return 'gap: ${parts.join(', ')}';
+  return '缺口: ${parts.join(', ')}';
 }
 
 String _etfGapReasonSampleDetail(EtfOperationsStatus status) {
   final samples = status.etfPriceHistoryGapReasonSamples;
   if (samples.isEmpty) {
-    return 'sample codes unavailable';
+    return '樣本代號 unavailable';
   }
   final parts = <String>[];
   for (final entry in samples.entries) {
@@ -14142,12 +14142,46 @@ String _etfGapReasonSampleDetail(EtfOperationsStatus status) {
     if (codes.isEmpty) {
       continue;
     }
-    parts.add('${entry.key}: ${codes.join(', ')}');
+    parts.add('${_etfGapReasonLabel(entry.key)}: ${codes.join(', ')}');
   }
   if (parts.isEmpty) {
-    return 'sample codes unavailable';
+    return '樣本代號 unavailable';
   }
-  return 'sample codes ${parts.join(' / ')}';
+  return '樣本代號 ${parts.join(' / ')}';
+}
+
+String _etfGapReasonLabel(String reason) {
+  switch (reason) {
+    case 'official_empty':
+      return '官方無資料';
+    case 'not_saved':
+      return '尚未匯入';
+    case 'insufficient_rows':
+      return '資料不足';
+    case 'validation_error':
+      return '驗證異常';
+    case 'source_error':
+      return '來源錯誤';
+    case 'not_ready':
+      return '尚未就緒';
+    default:
+      return reason;
+  }
+}
+
+String _etfCoverageTierLabel(String tier) {
+  switch (tier) {
+    case 'long_term':
+      return '長期資料';
+    case 'recent':
+      return '近期資料';
+    case 'unavailable':
+      return '未匯入';
+    case 'error':
+      return '異常';
+    default:
+      return tier;
+  }
 }
 
 _StatusItem _etfHistoryGapReasonItem(EtfOperationsStatus status) {

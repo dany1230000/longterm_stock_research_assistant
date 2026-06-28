@@ -1834,6 +1834,24 @@ Completed in v6.84:
 - Local ETF status after restore matches public gap classification:
   231 ready / 347 catalog rows, 116 classified gaps, `not_saved=0`.
 
+## Phase 97 - v6.85 ETF Gap Reason Labels
+
+Status: complete
+
+Objective: keep internal ETF gap reason keys in data contracts while replacing
+user-facing labels with readable app wording.
+
+- Add display helpers for ETF gap reasons and coverage tiers.
+- Update settings gap-detail panel chips, rows, and summaries.
+- Keep raw `gapReason` keys in models, repositories, filters, and API payloads.
+
+Completed in v6.85:
+
+- Settings ETF gap detail UI now shows readable reason labels such as
+  `官方無資料`, `來源錯誤`, and `尚未匯入`.
+- Coverage tier labels in user-facing status text are localized.
+- Raw gap reason keys remain unchanged for API/repository filtering.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

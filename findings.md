@@ -116,3 +116,7 @@
   unclassified gaps. The stale local ignored static folder still reflected
   older v5.96 evidence because local Pages builds skipped public attempt
   restore by default, while GitHub Actions already restored it.
+- v6.85 UI review found the settings gap-detail panel still exposed internal
+  reason keys (`official_empty`, `source_error`, `not_saved`) directly to users.
+  The raw keys are useful for data contracts, but public UI should show readable
+  status labels.
