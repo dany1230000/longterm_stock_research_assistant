@@ -60,3 +60,5 @@
 - v6.67 public mobile inspection confirmed chart-first ordering, but the
   history/backtest page still spends too much height on top summary tiles and
   data-quality details before the chart is fully visible.
+- Position-page mobile inspection shows the account summary's horizontal fixed
+  metric strip clips the `未實現損益` tile on phone width.

@@ -922,6 +922,39 @@ void main() {
     expect(find.textContaining('local-only'), findsWidgets);
   });
 
+  testWidgets('position account summary fits on phone width', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _tapSection(tester, 'position');
+    await tester.pumpAndSettle();
+
+    final strip = find.byKey(
+      const ValueKey('00631l-position-account-metric-strip'),
+    );
+    expect(strip, findsOneWidget);
+    final stripRect = tester.getRect(strip);
+    for (final label in const [
+      '目前標的',
+      '市值',
+      '未實現損益',
+      '資料',
+    ]) {
+      final tileText = find.textContaining(label);
+      expect(tileText, findsWidgets);
+      final tileRect = tester.getRect(tileText.first);
+      expect(tileRect.left, greaterThanOrEqualTo(stripRect.left));
+      expect(tileRect.right, lessThanOrEqualTo(stripRect.right));
+    }
+    _expectNoTradingActionText();
+  });
+
   testWidgets('top symbol search renders catalog result list', (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 

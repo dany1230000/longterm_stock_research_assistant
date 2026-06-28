@@ -982,3 +982,17 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.68 committed/pushed as `a54b6c5`, tag
+  `00631l-lab-v6.68-history-top-density`; public marker and strict static-data
+  checks passed.
+- Public position-page inspection showed the account metric strip clipped the
+  `未實現損益` tile on phone width.
+- Started v6.69 to make the position account summary fit compact screens.
+- v6.69 changed the position account metric strip to a 2x2 layout on compact
+  widths while preserving the wider horizontal layout.
+- Targeted position widget tests and `flutter analyze` passed.
+- v6.69 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (109 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -1534,6 +1534,23 @@ Completed in v6.68:
 - `資料品質` now appears below the price-history block.
 - Widget tests verify `價格歷史` appears before `資料品質`.
 
+## Phase 81 - v6.69 Position Metric Fit
+
+Status: complete
+
+Objective: make the local position account summary fit phone width without
+clipping.
+
+- Replace the compact-phone horizontal metric strip with a 2x2 grid.
+- Preserve the wider horizontal layout on larger screens.
+- Keep local-only storage, position calculations, export, clear actions, and
+  quote source labels unchanged.
+
+Completed in v6.69:
+
+- Position account metrics now wrap into a 2x2 layout on phone width.
+- Widget coverage verifies the account summary labels stay within the strip.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

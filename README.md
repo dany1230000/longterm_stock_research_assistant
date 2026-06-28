@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.69 makes the position account summary fit phone width with a 2x2 metric
+  layout instead of a clipped horizontal strip.
 - v6.68 further shortens the history/backtest first screen: charts now appear
   before data-quality details, and the top history card no longer repeats four
   summary tiles.

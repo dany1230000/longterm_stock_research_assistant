@@ -8172,21 +8172,40 @@ class _PositionAccountMetricStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return LayoutBuilder(
       key: const ValueKey('00631l-position-account-metric-strip'),
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: [
-          for (var index = 0; index < items.length; index += 1) ...[
-            if (index > 0) const SizedBox(width: 8),
-            SizedBox(
-              width: 132,
-              child: _RangeContextTile(item: items[index]),
-            ),
-          ],
-        ],
-      ),
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 460;
+        if (isCompact) {
+          final tileWidth = (constraints.maxWidth - 8) / 2;
+          return Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final item in items)
+                SizedBox(
+                  width: tileWidth,
+                  child: _RangeContextTile(item: item),
+                ),
+            ],
+          );
+        }
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: [
+              for (var index = 0; index < items.length; index += 1) ...[
+                if (index > 0) const SizedBox(width: 8),
+                SizedBox(
+                  width: 132,
+                  child: _RangeContextTile(item: items[index]),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 }
