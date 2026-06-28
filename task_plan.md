@@ -1467,6 +1467,32 @@ Completed in v6.65:
   startup fixture.
 - Full validation passed with accepted WARN states only.
 
+## Phase 78 - v6.66 Mobile Exposure Strip Cleanup
+
+Status: complete
+
+Objective: remove duplicated and clipped official-exposure text from the phone
+overview chart panel.
+
+- Hide the narrow official-exposure summary strip on phone width.
+- Keep the price chart visible.
+- Keep official holdings visible in the dedicated digest card below the chart.
+- Preserve the wider desktop side-by-side exposure panel.
+- Add/update widget coverage so the phone overview has holdings digest without
+  the clipped exposure strip.
+- Do not change holdings calculations, source data, price history, backtest,
+  position, or AI logic.
+
+Completed in v6.66:
+
+- Removed the narrow phone-width official-exposure strip below the overview
+  chart.
+- Removed the now-unused inline exposure strip widgets.
+- Kept the wider desktop side-by-side `官方曝險` panel unchanged.
+- Updated phone-width widget coverage to require the holdings digest while the
+  narrow exposure strip is absent.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

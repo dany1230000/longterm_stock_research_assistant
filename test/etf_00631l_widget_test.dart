@@ -43,7 +43,6 @@ void main() {
     expect(find.text('ETF歷史'), findsNothing);
     expect(find.textContaining('歷史資料'), findsNothing);
     expect(find.text('近一年走勢'), findsOneWidget);
-    expect(find.textContaining('官方曝險'), findsOneWidget);
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
     final summaryTop = tester.getTopLeft(find.text('今日摘要')).dy;
     expect(summaryTop, lessThan(chartTitleTop));
@@ -314,7 +313,7 @@ void main() {
     expect(find.text('資料正確性'), findsNothing);
     expect(find.text('目前檔案'), findsNothing);
     expect(find.text('近一年走勢'), findsOneWidget);
-    expect(find.textContaining('官方曝險'), findsOneWidget);
+    expect(find.textContaining('官方曝險'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-core-metric-strip')),
       findsNothing,
@@ -1567,7 +1566,7 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-exposure-summary-strip')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(find.text('TX'), findsWidgets);
     expect(find.text('2330'), findsOneWidget);

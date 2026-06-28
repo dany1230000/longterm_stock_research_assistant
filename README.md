@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.66 removes the duplicated phone-width exposure strip under the overview
+  chart; official holdings remain in the dedicated digest card below.
 - v6.65 localizes background-pending labels in the summary row, replacing
   `syncing` / `checking` with short Chinese labels.
 - v6.64 replaces technical holdings-unavailable wording with concise

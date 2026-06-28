@@ -50,3 +50,7 @@
 - v6.64 public mobile inspection confirmed holdings-unavailable wording is now
   product-facing. Remaining first-screen polish: pending summary values still
   used English loading words that read like debug state.
+- v6.65 public mobile inspection confirmed live data can populate the first
+  screen cleanly. The chart panel still showed a long official-exposure strip
+  under the chart on phone width, duplicating the holdings digest and clipping
+  the right-side cash text.

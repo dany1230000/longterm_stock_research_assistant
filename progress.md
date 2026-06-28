@@ -932,3 +932,21 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.65 committed/pushed as `d3ce7b2`, tag
+  `00631l-lab-v6.65-summary-pending-labels`; public marker and strict
+  static-data checks passed.
+- Playwright mobile screenshot confirmed pending labels are localized and live
+  data can populate the quote, summary, and holdings panels. Started v6.66
+  because the phone chart still showed a long exposure strip that duplicated
+  the holdings digest and clipped the right edge.
+- Targeted v6.66 holdings-digest widget test passed after hiding the phone
+  exposure strip.
+- Error: the first full v6.66 validation failed because a default-width widget
+  test expected `官方曝險` to be absent even though the desktop side-by-side
+  exposure panel still legitimately renders it. Resolution: keep the no
+  `官方曝險` assertion scoped to the phone-width readability test.
+- v6.66 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (108 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
