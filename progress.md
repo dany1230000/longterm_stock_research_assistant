@@ -396,3 +396,13 @@
   PASS (100 tests); `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Started v6.25 after Playwright inspection showed the first public screen was
+  still dominated by the pre-Flutter `web/index.html` loading card.
+- Replaced the public web loading card with a compact app-like shell and added
+  Flutter loading skeleton keys for status, quote, metrics, and section content.
+- v6.25 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS. Playwright mobile screenshots verified compact loading and loaded root
+  states; generated screenshots were removed.

@@ -596,6 +596,30 @@ Completed in v6.24:
 - Widget coverage now verifies the short hint.
 - Full validation passed with accepted WARN states only.
 
+## Phase 37 - v6.25 Compact Loading Shell
+
+Status: complete
+
+Objective: make the public web and Flutter pending-data loading states feel like
+the ETF research room app instead of a large centered splash card.
+
+- Replace the centered public `index.html` loading card with a compact app
+  shell containing symbol, quote placeholder, data placeholders, and nav labels.
+- Add compact Flutter loading skeleton keys for status, quote, metrics, and
+  section content.
+- Keep the loading state descriptive only; do not change live/static/mock data
+  rules.
+
+Completed in v6.25:
+
+- Public `index.html` loading now uses a compact app shell instead of a large
+  centered card.
+- Flutter pending-data loading now includes status, quote, metric, and section
+  skeleton keys.
+- Playwright mobile screenshots verified both the loading shell and loaded root
+  page; screenshot artifacts were removed before staging.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

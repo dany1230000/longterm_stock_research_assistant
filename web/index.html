@@ -45,49 +45,123 @@
     #app-loading {
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 24px;
+      padding: 10px 12px 16px;
       box-sizing: border-box;
     }
 
-    .loading-card {
-      width: min(420px, 100%);
-      border: 1px solid rgba(148, 163, 184, 0.28);
-      border-radius: 18px;
-      background: rgba(15, 23, 42, 0.92);
-      box-shadow: 0 24px 80px rgba(15, 23, 42, 0.45);
-      padding: 22px;
+    .loading-shell {
+      width: min(520px, 100%);
+    }
+
+    .loading-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 46px;
+    }
+
+    .loading-symbol {
+      border-radius: 999px;
+      background: rgba(20, 184, 166, 0.16);
+      border: 1px solid rgba(94, 234, 212, 0.38);
+      color: #99f6e4;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 7px 12px;
+    }
+
+    .loading-brand {
+      flex: 1;
+      min-width: 0;
     }
 
     .loading-kicker {
-      color: #5eead4;
-      font-size: 12px;
+      color: #94a3b8;
+      font-size: 11px;
       font-weight: 800;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
     }
 
     .loading-title {
-      margin: 8px 0 8px;
-      font-size: 28px;
+      margin-top: 1px;
+      color: #f8fafc;
+      font-size: 18px;
       font-weight: 900;
-      line-height: 1.12;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .loading-card {
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.92);
+      box-shadow: 0 14px 44px rgba(15, 23, 42, 0.32);
+      padding: 14px;
+    }
+
+    .loading-quote-line {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .loading-price {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .loading-status {
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 800;
+      padding-bottom: 5px;
     }
 
     .loading-copy {
-      margin: 0;
+      margin: 0 0 12px;
       color: #cbd5e1;
-      font-size: 14px;
-      line-height: 1.55;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .loading-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .loading-metric {
+      border-radius: 12px;
+      background: rgba(30, 41, 59, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      padding: 10px;
+    }
+
+    .loading-metric-label {
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 900;
+      margin-bottom: 8px;
     }
 
     .loading-bar {
-      height: 3px;
-      margin-top: 18px;
+      height: 10px;
       overflow: hidden;
       border-radius: 999px;
       background: rgba(148, 163, 184, 0.22);
+    }
+
+    .loading-bar.short {
+      width: 64%;
+      margin-top: 7px;
+      height: 8px;
     }
 
     .loading-bar::before {
@@ -104,17 +178,76 @@
       0% { transform: translateX(-110%); }
       100% { transform: translateX(260%); }
     }
+
+    .loading-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-around;
+      gap: 4px;
+      padding: 9px 8px calc(9px + env(safe-area-inset-bottom));
+      border-top: 1px solid rgba(148, 163, 184, 0.24);
+      background: rgba(15, 23, 42, 0.96);
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .loading-nav span:first-child {
+      color: #67e8f9;
+    }
   </style>
 </head>
 <body>
   <div id="app-loading" aria-live="polite">
-    <div class="loading-card">
-      <div class="loading-kicker">ETF Research Room</div>
-      <div class="loading-title">ETF 研究室 · 00631L</div>
-      <p class="loading-copy">
-        正在載入公開資料。歷史與回測可使用 static public data；盤中 NAV 與官方最新內容物需要 backend 連線。
-      </p>
-      <div class="loading-bar" aria-hidden="true"></div>
+    <div class="loading-shell">
+      <div class="loading-top">
+        <div class="loading-symbol">00631L</div>
+        <div class="loading-brand">
+          <div class="loading-kicker">ETF Research Room</div>
+          <div class="loading-title">00631L 正二研究室</div>
+        </div>
+      </div>
+      <div class="loading-card">
+        <div class="loading-quote-line">
+          <div class="loading-price">--.--</div>
+          <div class="loading-status">loading data</div>
+        </div>
+        <p class="loading-copy">
+          正在載入公開資料。歷史與回測可使用 static public data；盤中 NAV 與官方最新內容物需要 backend 連線。
+        </p>
+        <div class="loading-grid" aria-hidden="true">
+          <div class="loading-metric">
+            <div class="loading-metric-label">LIVE</div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar short"></div>
+          </div>
+          <div class="loading-metric">
+            <div class="loading-metric-label">DAY</div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar short"></div>
+          </div>
+          <div class="loading-metric">
+            <div class="loading-metric-label">HIS</div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar short"></div>
+          </div>
+          <div class="loading-metric">
+            <div class="loading-metric-label">AI</div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar short"></div>
+          </div>
+        </div>
+      </div>
+      <div class="loading-nav" aria-hidden="true">
+        <span>總覽</span>
+        <span>歷史回測</span>
+        <span>持倉</span>
+        <span>AI</span>
+        <span>我的</span>
+      </div>
     </div>
   </div>
   <script>

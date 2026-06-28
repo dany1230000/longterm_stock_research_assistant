@@ -12,3 +12,6 @@
   rows must stay out of history, backtest, comparison, and AI performance data.
 - v6.13 reason filters do not change the underlying ETF history eligibility.
   They only narrow the visible maintenance rows in the settings panel.
+- v6.25 Playwright inspection found the first visible oversized loading card is
+  the pre-Flutter `web/index.html` shell. Improving the public perceived load
+  requires changing that HTML shell, not only Flutter loading widgets.

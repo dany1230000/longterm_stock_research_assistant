@@ -660,12 +660,13 @@ class _LabLoadingShell extends StatelessWidget {
     return Theme(
       data: _marketTheme(context),
       child: DecoratedBox(
+        key: const ValueKey('00631l-loading-app-shell'),
         decoration: BoxDecoration(color: _marketBackground(context)),
         child: Column(
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 88),
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 14),
                 children: [
                   Align(
                     alignment: Alignment.topCenter,
@@ -676,7 +677,11 @@ class _LabLoadingShell extends StatelessWidget {
                         children: [
                           _MarketTopBar(onRefresh: onRefresh),
                           const SizedBox(height: 8),
+                          const _LoadingStatusStrip(),
+                          const SizedBox(height: 8),
                           const _LoadingQuoteCard(),
+                          const SizedBox(height: 8),
+                          const _LoadingMetricGrid(),
                           const SizedBox(height: 8),
                           const _LoadingSectionCard(title: '今日狀態'),
                         ],
@@ -697,12 +702,50 @@ class _LabLoadingShell extends StatelessWidget {
   }
 }
 
+class _LoadingStatusStrip extends StatelessWidget {
+  const _LoadingStatusStrip();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-loading-status-strip'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        child: Row(
+          children: [
+            const _StatusPill(label: 'static / live check'),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '正在載入首頁資料',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _LoadingQuoteCard extends StatelessWidget {
   const _LoadingQuoteCard();
 
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
+      key: const ValueKey('00631l-loading-quote-card'),
       decoration: BoxDecoration(
         color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(14),
@@ -733,6 +776,73 @@ class _LoadingQuoteCard extends StatelessWidget {
   }
 }
 
+class _LoadingMetricGrid extends StatelessWidget {
+  const _LoadingMetricGrid();
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 620 ? 4 : 2;
+        return GridView.count(
+          key: const ValueKey('00631l-loading-metric-grid'),
+          crossAxisCount: columns,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          childAspectRatio: columns == 4 ? 2.05 : 2.0,
+          children: const [
+            _LoadingMiniMetricCard(label: 'LIVE'),
+            _LoadingMiniMetricCard(label: 'DAY'),
+            _LoadingMiniMetricCard(label: 'HIS'),
+            _LoadingMiniMetricCard(label: 'AI'),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _LoadingMiniMetricCard extends StatelessWidget {
+  const _LoadingMiniMetricCard({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 6),
+            const _LoadingBar(width: double.infinity, height: 10),
+            const SizedBox(height: 5),
+            const _LoadingBar(width: 62, height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _LoadingSectionCard extends StatelessWidget {
   const _LoadingSectionCard({required this.title});
 
@@ -741,6 +851,7 @@ class _LoadingSectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
+      key: const ValueKey('00631l-loading-section-card'),
       decoration: BoxDecoration(
         color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),

@@ -1792,3 +1792,6 @@ behavior.
 
 v6.24 shortens ETF comparison guidance so readiness counts, skipped details, and
 the chart appear sooner on phone screens.
+
+v6.25 compacts the public web and Flutter loading shells so the first visible
+screen looks like the 00631L app instead of a large centered splash card.

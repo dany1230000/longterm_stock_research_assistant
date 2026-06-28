@@ -18,6 +18,9 @@ void main() {
 
     expect(index, contains('<title>ETF 研究室 · 00631L 正二研究室</title>'));
     expect(index, contains('id="app-loading"'));
+    expect(index, contains('class="loading-shell"'));
+    expect(index, contains('class="loading-nav"'));
+    expect(index, contains('00631L 正二研究室'));
     expect(index, contains('flutter-first-frame'));
     expect(index, contains('static public data'));
     expect(index,

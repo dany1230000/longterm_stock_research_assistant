@@ -373,6 +373,42 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('loading shell includes compact app skeleton keys',
+      (tester) async {
+    final repository = _PendingLabRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          official00631LRepositoryProvider.overrideWithValue(repository),
+        ],
+        child: const MaterialApp(
+          home: Scaffold(body: LeveragedEtf00631LScreen()),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+        find.byKey(const ValueKey('00631l-loading-app-shell')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-loading-status-strip')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-loading-quote-card')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-loading-metric-grid')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-loading-section-card')),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('fast startup renders first screen while details load',
       (tester) async {
     final repository = _FastStartupRepository();
