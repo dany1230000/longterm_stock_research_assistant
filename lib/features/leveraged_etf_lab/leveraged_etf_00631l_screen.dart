@@ -3905,7 +3905,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
               items: [
                 _HoldingDigestItem(
                   badge: 'TX',
-                  title: 'TX 期貨',
+                  title: '期貨',
                   value: txLine == null
                       ? 'unavailable'
                       : formatNullablePercent(txLine.weightPct),
@@ -3915,7 +3915,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                 ),
                 _HoldingDigestItem(
                   badge: '2330',
-                  title: '台積電現股',
+                  title: '台積電',
                   value: tsmcLine == null
                       ? 'unavailable'
                       : formatNullablePercent(tsmcLine.weightPct),
@@ -3925,7 +3925,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                 ),
                 _HoldingDigestItem(
                   badge: 'MIX',
-                  title: '股 / 期 / 現金',
+                  title: '股期現金',
                   value:
                       '${formatNullablePercent(snapshot.stockExposureWeightPct)} / ${formatNullablePercent(snapshot.futuresExposureWeightPct)}',
                   caption:

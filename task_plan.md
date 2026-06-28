@@ -1025,6 +1025,24 @@ Completed in v6.44:
   row.
 - Full validation passed with accepted WARN states only.
 
+## Phase 57 - v6.45 Holdings Digest Label Polish
+
+Status: complete
+
+Objective: remove remaining ellipsis from the overview official holdings
+digest titles on phone width.
+
+- Shorten the three digest labels to `期貨`, `台積電`, and `股期現金`.
+- Keep badges as TX, 2330, and MIX.
+- Preserve the official daily snapshot wording and values.
+- Add/update widget coverage for the new compact labels.
+
+Completed in v6.45:
+
+- Holdings digest labels are now `期貨`, `台積電`, and `股期現金`.
+- TX / 2330 / MIX badges remain unchanged.
+- Targeted and full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

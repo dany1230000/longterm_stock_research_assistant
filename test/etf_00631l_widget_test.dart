@@ -1386,9 +1386,9 @@ void main() {
     expect(find.text('更新時間'), findsNothing);
     expect(find.text('官方內容物重點'), findsOneWidget);
     expect(find.textContaining('每日官方快照'), findsOneWidget);
-    expect(find.text('TX 期貨'), findsWidgets);
-    expect(find.text('台積電現股'), findsOneWidget);
-    expect(find.text('股 / 期 / 現金'), findsOneWidget);
+    expect(find.text('期貨'), findsWidgets);
+    expect(find.text('台積電'), findsWidgets);
+    expect(find.text('股期現金'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
       findsOneWidget,

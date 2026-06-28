@@ -1862,3 +1862,6 @@ coverage years, while source labels remain truthful.
 v6.44 makes the overview official holdings digest fit phone width. TX futures,
 TSMC stock, and stock/futures/cash mix now stay in a fixed three-cell row with
 long percentages scaled inside each tile.
+
+v6.45 polishes the same official holdings digest by shortening tile titles to
+`期貨`, `台積電`, and `股期現金`, so the phone overview avoids leftover ellipsis.

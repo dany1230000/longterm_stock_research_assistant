@@ -639,3 +639,13 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Started v6.45 after the v6.44 mobile screenshot showed the holdings digest
+  no longer clipped but the TSMC and MIX titles still used ellipsis.
+- Shortened holdings digest titles to `期貨`, `台積電`, and `股期現金` while
+  keeping TX / 2330 / MIX badges.
+- Targeted holdings digest widget test passed.
+- v6.45 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
