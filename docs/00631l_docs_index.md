@@ -436,6 +436,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Chart touch detail key: `docs\00631l_v6_30_chart_touch_detail_key.md`
 - History chart date labels: `docs\00631l_v6_31_history_chart_date_labels.md`
 - Compact date range controls: `docs\00631l_v6_32_compact_date_range_controls.md`
+- Position quick actions: `docs\00631l_v6_33_position_quick_actions.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

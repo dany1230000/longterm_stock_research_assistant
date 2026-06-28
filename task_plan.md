@@ -766,6 +766,25 @@ Completed in v6.32:
 - Widget coverage verifies the shared range-summary key.
 - Full validation passed with accepted WARN states only.
 
+## Phase 45 - v6.33 Position Quick Actions
+
+Status: complete
+
+Objective: shorten the position page action area on phone screens while keeping
+position data local-only.
+
+- Replace the wrapped action bar with a horizontal quick-action strip.
+- Keep save, JSON export, and clear behavior unchanged.
+- Add stable keys for each action tile.
+- Keep position calculations, local storage, and export JSON unchanged.
+
+Completed in v6.33:
+
+- Position actions now use a horizontal quick-action strip.
+- Save, JSON export, and clear retain the same local-only behavior.
+- Widget coverage verifies the three quick-action tile keys.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

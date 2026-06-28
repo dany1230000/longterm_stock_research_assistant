@@ -662,9 +662,18 @@ void main() {
     expect(find.textContaining('不需登入'), findsOneWidget);
     expect(find.textContaining('不會上傳'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
-    expect(find.text('保存本機資料'), findsOneWidget);
-    expect(find.text('匯出 JSON'), findsOneWidget);
-    expect(find.text('清除本機資料'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-position-action-save')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-action-export')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-action-clear')),
+      findsOneWidget,
+    );
     expect(find.textContaining('local-only'), findsWidgets);
   });
 

@@ -480,3 +480,15 @@
   PASS (101 tests); `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.32 committed/pushed as `a2dd000`, tag
+  `00631l-lab-v6.32-compact-date-range-controls`.
+- Public Pages marker and strict public static-data checks passed on v6.32.
+- Started v6.33 to compact the local-only position action area.
+- Replaced the wrapped save/export/clear action bar with a horizontal quick
+  action strip and stable per-action keys.
+- Targeted position widget test passed.
+- v6.33 full validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS; `flutter analyze` PASS; `flutter test`
+  PASS (101 tests); `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

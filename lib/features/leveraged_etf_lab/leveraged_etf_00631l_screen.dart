@@ -7628,36 +7628,113 @@ class _PositionActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
+    return SingleChildScrollView(
       key: const ValueKey('00631l-position-primary-actions'),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          _PositionQuickAction(
+            key: const ValueKey('00631l-position-action-save'),
+            icon: Icons.save_outlined,
+            label: hasPosition ? '更新' : '保存',
+            caption: '本機資料',
+            isPrimary: true,
+            onTap: onSave,
+          ),
+          const SizedBox(width: 8),
+          _PositionQuickAction(
+            key: const ValueKey('00631l-position-action-export'),
+            icon: Icons.ios_share_outlined,
+            label: 'JSON',
+            caption: '匯出',
+            onTap: onExport,
+          ),
+          const SizedBox(width: 8),
+          _PositionQuickAction(
+            key: const ValueKey('00631l-position-action-clear'),
+            icon: Icons.delete_outline,
+            label: '清除',
+            caption: '本機資料',
+            onTap: onClear,
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            FilledButton.icon(
-              onPressed: onSave,
-              icon: const Icon(Icons.save_outlined, size: 16),
-              label: Text(hasPosition ? '更新本機資料' : '保存本機資料'),
+    );
+  }
+}
+
+class _PositionQuickAction extends StatelessWidget {
+  const _PositionQuickAction({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.caption,
+    required this.onTap,
+    this.isPrimary = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final String caption;
+  final VoidCallback onTap;
+  final bool isPrimary;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final background = isPrimary
+        ? theme.colorScheme.primaryContainer.withValues(alpha: 0.68)
+        : theme.colorScheme.surfaceContainerHighest;
+    final foreground = isPrimary
+        ? theme.colorScheme.onPrimaryContainer
+        : theme.colorScheme.onSurface;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: theme.colorScheme.outlineVariant),
+        ),
+        child: SizedBox(
+          width: 96,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
+            child: Row(
+              children: [
+                Icon(icon, size: 16, color: foreground),
+                const SizedBox(width: 7),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: foreground,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      Text(
+                        caption,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: foreground.withValues(alpha: 0.76),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            OutlinedButton.icon(
-              onPressed: onExport,
-              icon: const Icon(Icons.ios_share_outlined, size: 16),
-              label: const Text('匯出 JSON'),
-            ),
-            TextButton.icon(
-              onPressed: onClear,
-              icon: const Icon(Icons.delete_outline, size: 16),
-              label: const Text('清除本機資料'),
-            ),
-          ],
+          ),
         ),
       ),
     );
