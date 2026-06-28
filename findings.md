@@ -158,3 +158,7 @@
   while the public backend release metadata remains older. This is not the same
   as data failure: the app needs a concise deploy-sync label so users can tell
   whether live backend behavior is running the same release as the public PWA.
+- v6.96 public homepage audit found a date/phase wording issue: pre-open on a
+  later date could show the prior trading day's 13:31 TWSE NAV snapshot with a
+  generic pre-open label. The session model needs to distinguish previous-day
+  data from same-day pre-open waiting.

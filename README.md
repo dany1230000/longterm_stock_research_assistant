@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.96 fixes pre-open intraday labeling: when the app is showing a previous
+  trading day's TWSE NAV snapshot before the next session opens, the quote card
+  labels it as previous-trading-day data instead of generic pre-open waiting.
 - v6.94 clarifies public live-backend warmup on the first screen: when GitHub
   Pages is waiting for the Render backend, the DAY chip shows backend warmup
   instead of a confirmed data error.

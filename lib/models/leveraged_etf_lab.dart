@@ -79,7 +79,7 @@ class IntradayMarketSession {
 
     return IntradayMarketSession(
       phase: phase,
-      phaseLabel: _marketPhaseLabel(phase),
+      phaseLabel: _marketPhaseLabel(phase, freshness),
       dataFreshness: freshness,
       dataFreshnessLabel: _marketFreshnessLabel(freshness),
       isTradingDay: taipeiNow.weekday <= DateTime.friday,
@@ -89,6 +89,7 @@ class IntradayMarketSession {
         'fresh',
         'after_hours_last',
         'market_closed_last',
+        'previous_trading_day_last',
       }.contains(freshness),
       expectedRefreshSeconds: expected,
       nextRefreshSeconds: expected,
@@ -3087,6 +3088,9 @@ String _marketFreshness({
   if (dataTime == null) {
     return 'unavailable';
   }
+  if (!_sameTaipeiDate(now, dataTime) && phase == IntradayMarketPhase.preOpen) {
+    return 'previous_trading_day_last';
+  }
   if (phase == IntradayMarketPhase.regular) {
     if (dataAgeSeconds == null || maxFreshAgeSeconds == null) {
       return 'unavailable';
@@ -3106,7 +3110,10 @@ bool _sameTaipeiDate(DateTime a, DateTime b) {
   return a.year == b.year && a.month == b.month && a.day == b.day;
 }
 
-String _marketPhaseLabel(IntradayMarketPhase phase) {
+String _marketPhaseLabel(IntradayMarketPhase phase, String freshness) {
+  if (freshness == 'previous_trading_day_last') {
+    return '前一交易日';
+  }
   switch (phase) {
     case IntradayMarketPhase.preOpen:
       return '盤前等待';
@@ -3129,6 +3136,8 @@ String _marketFreshnessLabel(String freshness) {
       return '盤後最後資料';
     case 'market_closed_last':
       return '休市最後資料';
+    case 'previous_trading_day_last':
+      return '前一交易日資料';
     case 'stale':
       return '資料可能過期';
     case 'unavailable':

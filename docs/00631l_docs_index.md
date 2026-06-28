@@ -500,6 +500,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Static catalog history-index reconcile: `docs\00631l_v6_93_static_catalog_history_index_reconcile.md`
 - Public live warmup status: `docs\00631l_v6_94_public_live_warmup_status.md`
 - Public deploy sync status: `docs\00631l_v6_95_public_deploy_sync_status.md`
+- Intraday previous-day label: `docs\00631l_v6_96_intraday_previous_day_label.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

@@ -1313,3 +1313,9 @@
 - Started v6.95 public deploy sync status. Added model helpers for frontend
   Pages vs backend release metadata, surfaced a short Settings/My badge, and
   added targeted model/widget tests.
+- Completed v6.95 validation, commit, tag, push, public release-marker wait,
+  and strict public static data check.
+- Started v6.96 after public homepage inspection showed the quote card could
+  display Friday 13:31 TWSE NAV data as generic pre-open waiting. Added
+  previous-trading-day intraday labeling for pre-open screens while preserving
+  weekend closed-market status.

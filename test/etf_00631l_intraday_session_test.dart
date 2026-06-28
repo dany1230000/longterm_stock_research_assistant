@@ -58,6 +58,21 @@ void main() {
       expect(session.isDisplayUsable, isTrue);
     });
 
+    test('pre open labels previous trading day data explicitly', () {
+      final session = IntradayMarketSession.evaluate(
+        now: DateTime.utc(2026, 6, 28, 22, 0),
+        dataTime: DateTime(2026, 6, 26, 13, 31),
+        userDelayMs: 15000,
+      );
+
+      expect(session.phase, IntradayMarketPhase.preOpen);
+      expect(session.phaseLabel, '前一交易日');
+      expect(session.dataFreshness, 'previous_trading_day_last');
+      expect(session.dataFreshnessLabel, '前一交易日資料');
+      expect(session.isDisplayUsable, isTrue);
+      expect(session.isIntradayFresh, isFalse);
+    });
+
     test('EtfIntradayNav exposes market session from data time', () {
       final nav = EtfIntradayNav(
         symbol: '00631L',
