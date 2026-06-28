@@ -1296,3 +1296,10 @@
   `flutter test` PASS; `flutter build web` PASS; backend tests PASS
   (275 tests); `scripts\00631l_release_check.cmd` WARN with failures=0;
   `git diff --check` PASS.
+- Started v6.94 after public v6.93 mobile inspection showed the warmed backend
+  view was usable, but the cold-start first screen could show DAY as
+  unavailable/error while the full live proxy request was still loading.
+- v6.94 changes live-proxy cold start display to `喚醒中 / 後端` for the DAY
+  chip while keeping non-live and completed error states unchanged.
+- Targeted v6.94 widget validation PASS: live backend warmup display helper and
+  the full `test\etf_00631l_widget_test.dart` suite.

@@ -150,3 +150,7 @@
   seed were behind the price-history index, public Pages could publish 347
   history rows but only 343 catalog rows. The static exporter needs to reconcile
   catalog metadata from the history index itself before writing public files.
+- v6.94 public mobile inspection found the first 5 seconds of the Pages app can
+  show static fallback holdings as unavailable/error while the Render backend
+  wakes up. After about 20 seconds the same page shows live/cached data. The
+  first screen should describe that transient state as backend warmup.

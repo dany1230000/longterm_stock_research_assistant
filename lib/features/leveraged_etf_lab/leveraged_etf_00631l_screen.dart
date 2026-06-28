@@ -2947,22 +2947,32 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
     final hasNavTime = nav?.dataTime != null;
     final navKnownUnavailable =
         _summaryStatusIsKnownUnavailable(nav?.status.label);
+    final liveBackendWarmup = shouldShow00631LLiveBackendWarmup(
+      detailsLoading: detailsLoading,
+      liveProxyEnabled: _use00631LLiveProxy,
+    );
     final dayValue = hasUsableSnapshot
         ? formatTaiwanDate(data.snapshot.tradeDate)
         : snapshotKnownUnavailable
-            ? '不可用'
+            ? liveBackendWarmup
+                ? '喚醒中'
+                : '不可用'
             : detailsLoading
                 ? '同步中'
                 : '不可用';
     final dayCaption = hasUsableSnapshot || snapshotKnownUnavailable
-        ? _sourceStatusBadgeLabel(data.snapshot.status.label)
+        ? liveBackendWarmup && !hasUsableSnapshot
+            ? '後端'
+            : _sourceStatusBadgeLabel(data.snapshot.status.label)
         : detailsLoading
             ? '每日'
             : _sourceStatusBadgeLabel(data.snapshot.status.label);
     final navTime = hasNavTime
         ? formatTimeSeconds(nav!.dataTime!)
         : navKnownUnavailable
-            ? '不可用'
+            ? liveBackendWarmup
+                ? '連線中'
+                : '不可用'
             : detailsLoading
                 ? '連線中'
                 : '不可用';
@@ -3046,6 +3056,13 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
 bool _summaryStatusIsKnownUnavailable(String? label) {
   final normalized = label?.trim().toLowerCase();
   return normalized == 'error' || normalized == 'unavailable';
+}
+
+bool shouldShow00631LLiveBackendWarmup({
+  required bool detailsLoading,
+  required bool liveProxyEnabled,
+}) {
+  return detailsLoading && liveProxyEnabled;
 }
 
 String _summaryCoverageCompactYears(

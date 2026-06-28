@@ -12,6 +12,30 @@ import 'package:longterm_stock_research_assistant/repositories/repository_provid
 import 'package:longterm_stock_research_assistant/services/app_theme_controller.dart';
 
 void main() {
+  test('live backend warmup display only applies while live details load', () {
+    expect(
+      shouldShow00631LLiveBackendWarmup(
+        detailsLoading: true,
+        liveProxyEnabled: true,
+      ),
+      isTrue,
+    );
+    expect(
+      shouldShow00631LLiveBackendWarmup(
+        detailsLoading: false,
+        liveProxyEnabled: true,
+      ),
+      isFalse,
+    );
+    expect(
+      shouldShow00631LLiveBackendWarmup(
+        detailsLoading: true,
+        liveProxyEnabled: false,
+      ),
+      isFalse,
+    );
+  });
+
   testWidgets('00631L lab renders stock-app style quote header',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
