@@ -380,7 +380,7 @@ JSON manually.
 
 ## Phase 24 - v6.12 Gap Detail UI
 
-Status: in_progress
+Status: complete
 
 Objective: make symbol-level ETF price-history gap details inspectable inside
 the app instead of requiring manual JSON/API checks.
@@ -389,6 +389,21 @@ the app instead of requiring manual JSON/API checks.
 - Add repository support for live proxy, static public, cached, and mock modes.
 - Add a settings-page `ETF gap details` panel with code, reason, source status,
   row count, attempt time, and short error text.
+- Keep gap details as maintenance status only; unavailable rows are not used by
+  history, backtest, comparison, or AI performance data.
+- Validation passed with Flutter analyze/test/build, backend tests, release
+  check WARN with failures=0, and git diff check.
+
+## Phase 25 - v6.13 Gap Detail Filters
+
+Status: complete
+
+Objective: make the symbol-level ETF price-history gap detail panel faster to
+inspect by reason without changing any history/backtest eligibility.
+
+- Add reason filter chips to the settings `ETF gap details` panel.
+- Show a filtered row count when a reason is selected.
+- Keep the full list available through an `all` chip.
 - Keep gap details as maintenance status only; unavailable rows are not used by
   history, backtest, comparison, or AI performance data.
 - Validation passed with Flutter analyze/test/build, backend tests, release

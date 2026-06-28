@@ -1303,6 +1303,36 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('settings filters ETF price history gap details by reason',
+      (tester) async {
+    await _pumpLab(tester, _EtfGapDetailsRepository());
+
+    await _tapSection(tester, 'settings');
+    await tester.pumpAndSettle();
+
+    final dataLibraryPanel =
+        find.byKey(const ValueKey('00631l-etf-data-library-panel'));
+    await tester.ensureVisible(dataLibraryPanel);
+    await tester.pumpAndSettle();
+    await tester.tap(dataLibraryPanel);
+    await tester.pumpAndSettle();
+
+    expect(find.text('00999'), findsOneWidget);
+    expect(find.text('00749B'), findsOneWidget);
+
+    final sourceErrorFilter =
+        find.byKey(const ValueKey('00631l-etf-gap-filter-source_error'));
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -2200));
+    await tester.pumpAndSettle();
+    await tester.tap(sourceErrorFilter);
+    await tester.pumpAndSettle();
+
+    expect(find.text('00999'), findsNothing);
+    expect(find.text('00749B'), findsOneWidget);
+    expect(find.text('filtered 1 / 2'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('live proxy failure keeps fallback visible', (tester) async {
     await _pumpLab(
       tester,

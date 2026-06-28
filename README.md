@@ -1651,6 +1651,12 @@ proxy reads `/api/etf/history/gaps`; static public mode reads
 not used as history, backtest, comparison, or AI performance data. Summary:
 `docs\00631l_v6_12_gap_detail_ui.md`.
 
+v6.13 adds reason filters to the app settings `ETF gap details` panel. The
+filter helps inspect `official_empty`, `source_error`, and other maintenance
+buckets without changing which ETF histories are eligible for history,
+backtest, comparison, or AI context. Summary:
+`docs\00631l_v6_13_gap_detail_filters.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

@@ -233,3 +233,18 @@
   `flutter test` PASS (97 tests), `flutter build web` PASS, backend tests PASS
   (271 tests), `scripts\00631l_release_check.cmd` WARN with failures=0, and
   `git diff --check` PASS.
+- Started v6.13 to make ETF gap details filterable by reason inside the app
+  settings page.
+- Added a red widget test for selecting the `source_error` reason. The first
+  compile attempt exposed a copied-string test setup error; after fixing the
+  setup, the test failed on the missing filter key as expected.
+- Implemented local reason filter chips in the `ETF gap details` panel and kept
+  filtering client-side only.
+- Targeted v6.13 validation PASS: `flutter test
+  test\etf_00631l_proxy_repository_test.dart test\etf_00631l_widget_test.dart`
+  passed.
+- Full v6.13 validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS, `flutter analyze` PASS, `flutter test` PASS
+  (98 tests), `flutter build web` PASS, backend tests PASS (271 tests),
+  `scripts\00631l_release_check.cmd` WARN with failures=0, and
+  `git diff --check` PASS.

@@ -10,3 +10,5 @@
 - ETF price-history gap details are maintenance/status evidence only. The app
   should show them in settings for data-quality inspection, but unavailable gap
   rows must stay out of history, backtest, comparison, and AI performance data.
+- v6.13 reason filters do not change the underlying ETF history eligibility.
+  They only narrow the visible maintenance rows in the settings panel.
