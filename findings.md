@@ -54,3 +54,6 @@
   screen cleanly. The chart panel still showed a long official-exposure strip
   under the chart on phone width, duplicating the holdings digest and clipping
   the right-side cash text.
+- v6.66 public mobile inspection confirmed the exposure strip is gone. The
+  next largest mobile issue is the history/backtest first screen: date controls
+  and duplicated `00631L` badges appear before the user reaches the chart.

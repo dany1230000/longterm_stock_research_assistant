@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.67 moves the history/backtest phone page toward chart-first scanning:
+  range chips and the price chart appear before detailed date controls, and
+  duplicate history badges are removed.
 - v6.66 removes the duplicated phone-width exposure strip under the overview
   chart; official holdings remain in the dedicated digest card below.
 - v6.65 localizes background-pending labels in the summary row, replacing

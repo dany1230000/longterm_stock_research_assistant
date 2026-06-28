@@ -1493,6 +1493,28 @@ Completed in v6.66:
   narrow exposure strip is absent.
 - Full validation passed with accepted WARN states only.
 
+## Phase 79 - v6.67 History Chart-First Mobile Layout
+
+Status: complete
+
+Objective: make the history/backtest page show the key chart before detailed
+date controls on phone screens.
+
+- Move range chips, current range summary, and price charts before detailed
+  start/end date controls.
+- Group start/end date controls under a `日期設定` expansion panel.
+- Remove duplicate history top badges when code and name are identical.
+- Keep split-adjusted price history, backtest formulas, selected ETF behavior,
+  position tracking, and AI logic unchanged.
+
+Completed in v6.67:
+
+- The history page now starts with scan-first range controls and charts.
+- Detailed date controls live under `日期設定`.
+- The history top badge row deduplicates repeated labels.
+- Widget tests verify the chart appears before date settings and that date
+  controls remain reachable.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

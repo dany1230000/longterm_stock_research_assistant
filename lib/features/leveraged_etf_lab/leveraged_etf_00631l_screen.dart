@@ -5656,7 +5656,9 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            _StatusWrap(labels: ['HIS', code, name, coverage]),
+            _StatusWrap(
+              labels: _dedupeStatusLabels(['HIS', code, name, coverage]),
+            ),
             const SizedBox(height: 8),
             LayoutBuilder(
               builder: (context, constraints) {
@@ -5738,15 +5740,6 @@ class _FilterablePriceHistoryBlockState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _BacktestDateRangeControls(
-          startDate: _startDate,
-          endDate: _endDate,
-          firstDate: firstDate,
-          lastDate: lastDate,
-          onStartTap: _selectStartDate,
-          onEndTap: _selectEndDate,
-        ),
-        const SizedBox(height: 10),
         KeyedSubtree(
           key: const ValueKey('00631l-history-range-chips'),
           child: Wrap(
@@ -5774,11 +5767,11 @@ class _FilterablePriceHistoryBlockState
             ],
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         _RangeContextStrip(
           key: const ValueKey('00631l-history-range-context'),
-          title: '價格圖表區間',
-          subtitle: '預設最近 1 年；可點開始或結束日期調整。',
+          title: '目前圖表區間',
+          subtitle: '預設最近 1 年；日期設定可展開調整。',
           items: [
             _RangeContextItem(
               label: '目前區間',
@@ -5801,14 +5794,43 @@ class _FilterablePriceHistoryBlockState
             ),
           ],
         ),
-        const SizedBox(height: 6),
-        Text(
-          '圖表區間 ${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}；橫軸顯示起點 / 中點 / 終點；點擊圖表可查看完整日期與數值。',
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w800,
-                height: 1.35,
+        const SizedBox(height: 8),
+        _PriceTrendCharts(priceHistory: filteredHistory),
+        const SizedBox(height: 8),
+        const _StatusWrap(
+          labels: [
+            '回測不代表未來表現',
+            'split-adjusted close',
+          ],
+        ),
+        const SizedBox(height: 8),
+        _CompactExpansionPanel(
+          key: const ValueKey('00631l-history-date-settings-expansion'),
+          title: '日期設定',
+          subtitle:
+              '${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}；點擊圖表可查看完整日期與數值。',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _BacktestDateRangeControls(
+                startDate: _startDate,
+                endDate: _endDate,
+                firstDate: firstDate,
+                lastDate: lastDate,
+                onStartTap: _selectStartDate,
+                onEndTap: _selectEndDate,
               ),
+              const SizedBox(height: 8),
+              Text(
+                '圖表區間 ${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}；橫軸顯示起點 / 中點 / 終點。',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w800,
+                      height: 1.35,
+                    ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
         _ResponsiveMetricGrid(
@@ -5845,15 +5867,6 @@ class _FilterablePriceHistoryBlockState
               caption: '收盤價日報酬',
               icon: Icons.multiline_chart_outlined,
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _PriceTrendCharts(priceHistory: filteredHistory),
-        const SizedBox(height: 8),
-        const _StatusWrap(
-          labels: [
-            '回測不代表未來表現',
-            '價格歷史使用 split-adjusted close',
           ],
         ),
         const SizedBox(height: 12),
@@ -11473,6 +11486,20 @@ class _StatusRow extends StatelessWidget {
       ),
     );
   }
+}
+
+List<String> _dedupeStatusLabels(Iterable<String> labels) {
+  final seen = <String>{};
+  final result = <String>[];
+  for (final label in labels) {
+    final trimmed = label.trim();
+    if (trimmed.isEmpty || seen.contains(trimmed)) {
+      continue;
+    }
+    seen.add(trimmed);
+    result.add(trimmed);
+  }
+  return result;
 }
 
 class _StatusWrap extends StatelessWidget {

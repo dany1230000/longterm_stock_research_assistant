@@ -950,3 +950,19 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.66 committed/pushed as `9375f85`, tag
+  `00631l-lab-v6.66-mobile-exposure-strip-cleanup`; public marker and strict
+  static-data checks passed.
+- Public mobile screenshot confirmed the duplicated phone exposure strip is
+  gone. Multi-tab inspection found the history/backtest phone page still spent
+  its first screen on date controls before the chart, and the history badge row
+  showed duplicate 00631L labels.
+- Started v6.67 to make history/backtest chart-first on phones.
+- v6.67 moved price charts before the detailed date controls, grouped the
+  start/end controls under `日期設定`, and deduplicated the history badge row.
+- Targeted history/backtest widget tests passed.
+- v6.67 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (108 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
