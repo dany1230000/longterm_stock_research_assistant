@@ -131,6 +131,8 @@ Next direction is tracked in `docs\00631l_next_direction.md`: data trust, public
 
 v6.51 keeps the position page shorter on phones by showing only share count and average cost first. Optional total assets, fee, and note fields are still available in an advanced panel.
 
+v6.52 makes the first-screen DAY / LIVE / HIS row show `syncing`, `checking`, and ready history counts instead of generic loading text while background refresh continues.
+
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.

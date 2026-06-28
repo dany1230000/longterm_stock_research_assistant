@@ -478,8 +478,20 @@ void main() {
     );
     expect(dailySummary, findsOneWidget);
     expect(
+      find.descendant(of: dailySummary, matching: find.text('syncing')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('checking')),
+      findsOneWidget,
+    );
+    expect(
       find.descendant(of: dailySummary, matching: find.text('loading')),
-      findsWidgets,
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('backend check')),
+      findsOneWidget,
     );
     expect(
       find.descendant(of: dailySummary, matching: find.text('pending')),

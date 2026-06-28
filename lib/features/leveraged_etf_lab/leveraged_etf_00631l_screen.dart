@@ -2844,31 +2844,28 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
     final theme = Theme.of(context);
     final nav = data.intradayNav;
     final priceSummary = data.priceHistory.completenessSummary();
-    final navTime = detailsLoading
-        ? 'loading'
-        : nav?.dataTime == null
-            ? 'unavailable'
-            : formatTimeSeconds(nav!.dataTime!);
+    final navTime = nav?.dataTime == null
+        ? (detailsLoading ? 'checking' : 'unavailable')
+        : formatTimeSeconds(nav!.dataTime!);
     final historyIsAvailable = priceSummary.rowCount >= 2;
     final items = [
       _OverviewDailySummaryItem(
         badge: 'DAY',
         value: detailsLoading
-            ? 'loading'
+            ? 'syncing'
             : formatTaiwanDate(data.snapshot.tradeDate),
-        caption: detailsLoading ? 'official daily' : data.snapshot.status.label,
+        caption: detailsLoading ? 'daily snapshot' : data.snapshot.status.label,
       ),
       _OverviewDailySummaryItem(
         badge: 'LIVE',
         value: navTime,
-        caption: detailsLoading
-            ? 'backend / static'
-            : _intradaySummarySourceLabel(nav),
+        caption:
+            detailsLoading ? 'backend check' : _intradaySummarySourceLabel(nav),
       ),
       _OverviewDailySummaryItem(
         badge: 'HIS',
         value: detailsLoading && !historyIsAvailable
-            ? 'loading'
+            ? 'checking'
             : '${formatInteger(priceSummary.rowCount)}筆',
         caption: detailsLoading && !historyIsAvailable
             ? 'static history'

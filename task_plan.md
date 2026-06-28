@@ -1164,6 +1164,26 @@ Completed in v6.51:
 - Optional total assets, fee, and note moved into an advanced fields panel.
 - Targeted and full validation passed with accepted WARN states only.
 
+## Phase 64 - v6.52 Startup Summary States
+
+Status: complete
+
+Objective: make the first-screen overview feel ready during background refresh
+instead of showing generic loading text.
+
+- Replace generic `loading` labels in the DAY / LIVE / HIS overview row with
+  user-facing background states.
+- Keep static history row count visible when history is already available.
+- Keep live intraday NAV truthfully labeled as backend-dependent.
+- Add widget coverage for the fast first screen state.
+
+Completed in v6.52:
+
+- Fast-start overview summary now shows `syncing`, `checking`, and ready
+  static-history counts instead of generic loading text.
+- Targeted fast-start widget test and full validation passed with accepted
+  WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

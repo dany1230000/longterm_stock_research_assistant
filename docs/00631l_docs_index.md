@@ -86,6 +86,7 @@ This is the main entry point for 00631L lab documentation.
 - Compact position card v4.47: `docs\00631l_v4_47_compact_position_card.md`
 - Compact AI detail v4.48: `docs\00631l_v4_48_compact_ai_detail.md`
 - Position advanced fields v6.51: `docs\00631l_v6_51_position_advanced_fields.md`
+- Startup summary states v6.52: `docs\00631l_v6_52_startup_summary_states.md`
 - Chart range touch hint v4.49: `docs\00631l_v4_49_chart_range_touch_hint.md`
 - Selected search state v4.50: `docs\00631l_v4_50_selected_search_state.md`
 - Backend seed history fallback v4.51: `docs\00631l_v4_51_backend_seed_history_fallback.md`

@@ -731,3 +731,15 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Started v6.52 after the public phone screenshot showed the first-screen
+  DAY/LIVE/HIS row still displayed generic `loading` text while history was
+  already visible.
+- Replaced the fast-start summary labels with `syncing`, `checking`, and
+  visible static history counts so the first screen reads as background refresh
+  rather than a stuck load.
+- Targeted fast-start widget test passed.
+- v6.52 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (102 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
