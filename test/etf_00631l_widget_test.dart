@@ -530,6 +530,26 @@ void main() {
       find.byKey(const ValueKey('00631l-line-chart-touch-detail')),
       findsWidgets,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-chart-axis-start-label')),
+      findsWidgets,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-chart-axis-middle-label')),
+      findsWidgets,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-chart-axis-end-label')),
+      findsWidgets,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-line-chart-touch-primary')),
+      findsWidgets,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-line-chart-touch-secondary')),
+      findsWidgets,
+    );
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     _expectNoTradingActionText();
   });

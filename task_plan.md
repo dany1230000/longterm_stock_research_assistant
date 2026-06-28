@@ -722,6 +722,29 @@ Completed in v6.30:
 - Widget coverage verifies history/backtest chart touch-detail panels render.
 - Full validation passed with accepted WARN states only.
 
+## Phase 43 - v6.31 History Chart Date Labels
+
+Status: complete
+
+Objective: make history/backtest chart dates and selected-point detail easier
+to read on narrow phone screens.
+
+- Wrap start/middle/end axis labels in compact bordered chips.
+- Let date labels scale within their available width instead of clipping.
+- Convert chart touch detail from a crowded one-row layout into primary and
+  secondary lines.
+- Add widget coverage for axis-label and touch-detail line keys.
+- Keep price-history ingestion, split adjustment, and backtest formulas
+  unchanged.
+
+Completed in v6.31:
+
+- History/backtest chart axis labels now use compact bordered chips.
+- Axis date labels scale down within their available width on phone screens.
+- Chart touch detail now uses separate primary and secondary lines.
+- Widget coverage verifies the new chart-axis and touch-detail line keys.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

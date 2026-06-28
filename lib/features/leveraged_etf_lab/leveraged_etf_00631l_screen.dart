@@ -11817,15 +11817,40 @@ class _ChartAxisDateStrip extends StatelessWidget {
     TextAlign align,
   ) {
     final theme = Theme.of(context);
-    return Text(
-      '$label ${formatTaiwanDate(date)}',
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: align,
-      style: theme.textTheme.labelSmall?.copyWith(
-        color: _marketMutedTextColor(context),
-        fontWeight: FontWeight.w800,
-        fontSize: 10,
+    final key = align == TextAlign.left
+        ? const ValueKey('00631l-chart-axis-start-label')
+        : align == TextAlign.center
+            ? const ValueKey('00631l-chart-axis-middle-label')
+            : const ValueKey('00631l-chart-axis-end-label');
+    return DecoratedBox(
+      key: key,
+      decoration: BoxDecoration(
+        color:
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.34),
+        borderRadius: BorderRadius.circular(7),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: align == TextAlign.left
+              ? Alignment.centerLeft
+              : align == TextAlign.center
+                  ? Alignment.center
+                  : Alignment.centerRight,
+          child: Text(
+            '$label ${formatTaiwanDate(date)}',
+            maxLines: 1,
+            overflow: TextOverflow.visible,
+            textAlign: align,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: _marketMutedTextColor(context),
+              fontWeight: FontWeight.w800,
+              fontSize: 10,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -11865,30 +11890,28 @@ class _ChartTouchDetail extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Text(
-                primary,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.w900,
-                ),
+            Text(
+              primary,
+              key: const ValueKey('00631l-line-chart-touch-primary'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w900,
               ),
             ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                secondary,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.right,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: _marketMutedTextColor(context),
-                  fontWeight: FontWeight.w700,
-                ),
+            const SizedBox(height: 2),
+            Text(
+              secondary,
+              key: const ValueKey('00631l-line-chart-touch-secondary'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],

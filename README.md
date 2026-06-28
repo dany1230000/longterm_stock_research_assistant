@@ -1812,3 +1812,7 @@ a tall two-row grid on phone screens.
 
 v6.30 adds a stable chart touch-detail hook for the history/backtest view so
 date/value interaction can keep improving without fragile text matching.
+
+v6.31 improves the history/backtest chart date labels on phone screens. Axis
+dates now use compact bordered chips, and the touch-detail panel uses two lines
+so the date/value detail stays readable.

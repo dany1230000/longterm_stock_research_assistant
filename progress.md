@@ -451,3 +451,20 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Public v6.30 strict static-data check PASS for
+  `00631l-lab-v6.30-chart-touch-detail-key` with rowCount 2837, coverage
+  2014-10-31 to 2026-06-26, and unclassified ETF gap 0.
+- Started v6.31 to make history/backtest chart date labels and touch details
+  easier to read on narrow phone screens.
+- Added compact bordered axis-label chips with stable start/middle/end keys and
+  changed chart touch detail into primary/secondary lines.
+- Added widget coverage for the new chart-axis and touch-detail line keys.
+- Initial targeted test command used the wrong test-name filter and ran zero
+  tests; reran the correct `history section shows price history when available`
+  widget test and it passed.
+- v6.31 full validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS after formatting two Dart files;
+  `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
