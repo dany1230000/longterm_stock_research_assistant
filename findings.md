@@ -75,5 +75,9 @@
   in-chart x-axis dates plus the below-chart date strip. On phone width, the
   in-chart dates crowd the y-axis labels, so the below-chart strip should be
   the single range context.
+- v6.73 public history/backtest inspection confirmed the duplicate chart-axis
+  dates are gone, but the current-range context cards could still truncate on
+  phone width. Adding phone-width widget coverage also exposed compact mini
+  chart cards that were too short for the date strip and touch detail.
 - Position-page mobile inspection shows the account summary's horizontal fixed
   metric strip clips the `未實現損益` tile on phone width.

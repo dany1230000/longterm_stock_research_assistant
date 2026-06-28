@@ -745,6 +745,39 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('history range context wraps on phone width', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _PriceHistoryRepository());
+
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
+
+    final rangeContext =
+        find.byKey(const ValueKey('00631l-history-range-context'));
+    expect(rangeContext, findsOneWidget);
+    expect(
+      find.descendant(
+        of: rangeContext,
+        matching: find.byKey(const ValueKey('00631l-range-context-wrap')),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: rangeContext,
+        matching: find.byKey(const ValueKey('00631l-range-context-scroll')),
+      ),
+      findsNothing,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('history section shows empty state without official history',
       (tester) async {
     await _pumpLab(tester, _NoHistoryRepository());

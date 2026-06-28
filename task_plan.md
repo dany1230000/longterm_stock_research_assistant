@@ -1629,6 +1629,27 @@ Completed in v6.73:
 - Widget coverage for the history chart still verifies the date strip and touch
   detail are present.
 
+## Phase 86 - v6.74 History Range Context Fit
+
+Status: complete
+
+Objective: make the history/backtest range context and mini charts fit phone
+width without truncation or layout overflow.
+
+- Wrap the current chart range metric strip into two columns on compact
+  screens.
+- Keep the wider horizontal range strip for desktop and tablet widths.
+- Give compact mini chart cards enough height for their chart, date strip, and
+  touch detail.
+- Add widget coverage for the compact range-context layout.
+
+Completed in v6.74:
+
+- Phone-width history/backtest range metrics now use a 2-column wrap instead
+  of a clipped horizontal strip.
+- The compact mini chart grid no longer overflows when chart date strips and
+  touch detail are visible.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

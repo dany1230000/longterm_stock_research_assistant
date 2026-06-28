@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.74 makes the history/backtest range context fit phone width by wrapping
+  the range metrics into two columns and giving mini charts enough height for
+  their date strip and touch detail.
 - v6.73 cleans up history chart date labeling by removing overlapping in-chart
   x-axis dates and keeping the clearer date strip below the chart.
 - v6.72 softens the settings data-mode caption so backend errors stay in

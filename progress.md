@@ -1061,3 +1061,22 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.73 committed/pushed as `a73595b`, tag
+  `00631l-lab-v6.73-history-chart-axis-cleanup`; public marker and strict
+  static-data checks passed. Public history screenshot confirmed in-chart
+  x-axis date labels are gone.
+- Started v6.74 after the same public history/backtest screenshot showed the
+  current range context cards still clipping on phone width.
+- v6.74 changed the range-context metric strip to a compact 2-column wrap on
+  phone width while keeping the horizontal layout on wider screens.
+- Adding phone-width widget coverage exposed a mini chart overflow; v6.74 also
+  increased compact mini chart card height so the date strip and touch detail
+  fit.
+- Targeted v6.74 validation PASS: `dart format` on touched Dart files,
+  `flutter analyze`, and `flutter test test\etf_00631l_widget_test.dart
+  --plain-name "history range context wraps on phone width"`.
+- v6.74 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (112 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

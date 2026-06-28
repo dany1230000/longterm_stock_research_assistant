@@ -7598,21 +7598,41 @@ class _RangeContextMetricStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return LayoutBuilder(
       key: const ValueKey('00631l-range-context-metric-strip'),
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: [
-          for (var index = 0; index < items.length; index += 1) ...[
-            if (index > 0) const SizedBox(width: 8),
-            SizedBox(
-              width: 132,
-              child: _RangeContextTile(item: items[index]),
-            ),
-          ],
-        ],
-      ),
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 380) {
+          final tileWidth = (constraints.maxWidth - 8) / 2;
+          return Wrap(
+            key: const ValueKey('00631l-range-context-wrap'),
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final item in items)
+                SizedBox(
+                  width: tileWidth,
+                  child: _RangeContextTile(item: item),
+                ),
+            ],
+          );
+        }
+        return SingleChildScrollView(
+          key: const ValueKey('00631l-range-context-scroll'),
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: [
+              for (var index = 0; index < items.length; index += 1) ...[
+                if (index > 0) const SizedBox(width: 8),
+                SizedBox(
+                  width: 132,
+                  child: _RangeContextTile(item: items[index]),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -11337,7 +11357,7 @@ class _MiniChartGrid extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
-          childAspectRatio: isCompact ? 1.78 : 1.5,
+          childAspectRatio: isCompact ? 1.35 : 1.5,
           children: children,
         );
       },
