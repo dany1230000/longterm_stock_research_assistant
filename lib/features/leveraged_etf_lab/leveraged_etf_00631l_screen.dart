@@ -11857,6 +11857,7 @@ class _ChartTouchDetail extends StatelessWidget {
         : '$label ${formatTaiwanDate(point!.date)} · ${_compactChartValue(value!)}';
     final secondary = isManualSelection ? '再次點擊圖表可切換日期' : '點擊圖表可查看指定日期數值';
     return DecoratedBox(
+      key: const ValueKey('00631l-line-chart-touch-detail'),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),

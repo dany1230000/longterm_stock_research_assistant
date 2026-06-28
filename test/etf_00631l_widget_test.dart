@@ -526,6 +526,10 @@ void main() {
       ),
     );
     expect((startCenter.dy - endCenter.dy).abs(), lessThan(2));
+    expect(
+      find.byKey(const ValueKey('00631l-line-chart-touch-detail')),
+      findsWidgets,
+    );
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     _expectNoTradingActionText();
   });

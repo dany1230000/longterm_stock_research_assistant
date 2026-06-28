@@ -704,6 +704,24 @@ Completed in v6.29:
 - Widget coverage verifies the position account metric strip.
 - Full validation passed with accepted WARN states only.
 
+## Phase 42 - v6.30 Chart Touch Detail Key
+
+Status: complete
+
+Objective: make history/backtest chart touch-detail UI easier to test and
+polish safely.
+
+- Add a stable key to `_ChartTouchDetail`.
+- Verify the history page renders chart touch-detail panels.
+- Keep price, history, backtest, and comparison calculations unchanged.
+
+Completed in v6.30:
+
+- `_ChartTouchDetail` now has the stable key
+  `00631l-line-chart-touch-detail`.
+- Widget coverage verifies history/backtest chart touch-detail panels render.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

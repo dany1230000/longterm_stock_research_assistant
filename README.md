@@ -1809,3 +1809,6 @@ action before showing detailed status panels.
 v6.29 makes the local-only position account summary a horizontal metric strip,
 so the position page shows market value, P/L, symbol, and storage status without
 a tall two-row grid on phone screens.
+
+v6.30 adds a stable chart touch-detail hook for the history/backtest view so
+date/value interaction can keep improving without fragile text matching.

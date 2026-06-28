@@ -433,6 +433,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Overview core strip: `docs\00631l_v6_27_overview_core_strip.md`
 - AI daily briefing hero: `docs\00631l_v6_28_ai_daily_briefing_hero.md`
 - Position account strip: `docs\00631l_v6_29_position_account_strip.md`
+- Chart touch detail key: `docs\00631l_v6_30_chart_touch_detail_key.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
