@@ -16,8 +16,6 @@ on:
   push:
     branches:
       - main
-    tags:
-      - "00631l-lab-v*"
 
 permissions:
   contents: read
@@ -40,12 +38,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set release metadata from tag
+      - name: Resolve release metadata
         shell: bash
         run: |
+          set -euo pipefail
+          release_tag=""
           if [[ "${GITHUB_REF}" == refs/tags/00631l-lab-v* ]]; then
-            echo "00631L_BACKEND_RELEASE_TAG=${GITHUB_REF_NAME}" >> "${GITHUB_ENV}"
-            echo "00631L_BACKEND_APP_VERSION=${GITHUB_REF_NAME#00631l-lab-v}" >> "${GITHUB_ENV}"
+            release_tag="${GITHUB_REF_NAME}"
+          else
+            for attempt in {1..12}; do
+              git fetch --tags --force --quiet
+              release_tag="$(git tag --points-at HEAD --list "00631l-lab-v*" | sort -V | tail -n 1)"
+              if [[ -n "${release_tag}" ]]; then
+                break
+              fi
+              echo "Release tag for ${GITHUB_SHA} not visible yet (attempt ${attempt}/12)."
+              sleep 10
+            done
+          fi
+          if [[ -n "${release_tag}" ]]; then
+            echo "00631L_BACKEND_RELEASE_TAG=${release_tag}" >> "${GITHUB_ENV}"
+            echo "00631L_BACKEND_APP_VERSION=${release_tag#00631l-lab-v}" >> "${GITHUB_ENV}"
+          else
+            echo "No release tag visible; static export will use untagged metadata."
           fi
 
       - name: Set up Flutter

@@ -1677,6 +1677,11 @@ v6.17 fixes public static release metadata. GitHub Pages now also deploys on
 public `release.json` does not fall back to a stale label. Summary:
 `docs\00631l_v6_17_pages_release_tag_trigger.md`.
 
+v6.18 keeps Pages deployment on the main branch and polls for the just-pushed
+release tag before static export. This avoids tag-ref deploy rejection while
+still keeping public `release.json` aligned with the release tag. Summary:
+`docs\00631l_v6_18_pages_release_tag_polling.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

@@ -421,6 +421,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Symbol search readiness mix: `docs\00631l_v6_15_symbol_search_readiness_mix.md`
 - Selected ETF capability badges: `docs\00631l_v6_16_selected_etf_capability_badges.md`
 - Pages release tag trigger: `docs\00631l_v6_17_pages_release_tag_trigger.md`
+- Pages release tag polling: `docs\00631l_v6_18_pages_release_tag_polling.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

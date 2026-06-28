@@ -50,11 +50,13 @@ class StaticPagesPipelineTests(unittest.TestCase):
         self.assertIn("Guard public static data regression", workflow)
         self.assertIn("guard_static_public_regression_00631l.py", workflow)
         self.assertIn("fetch-depth: 0", workflow)
-        self.assertIn("tags:", workflow)
         self.assertIn("00631l-lab-v*", workflow)
-        self.assertIn("Set release metadata from tag", workflow)
-        self.assertIn("00631L_BACKEND_RELEASE_TAG=${GITHUB_REF_NAME}", workflow)
-        self.assertIn("00631L_BACKEND_APP_VERSION=${GITHUB_REF_NAME#00631l-lab-v}", workflow)
+        self.assertIn("Resolve release metadata", workflow)
+        self.assertIn("git fetch --tags --force --quiet", workflow)
+        self.assertIn("sort -V", workflow)
+        self.assertIn("00631L_BACKEND_RELEASE_TAG=${release_tag}", workflow)
+        self.assertIn("00631L_BACKEND_APP_VERSION=${release_tag#00631l-lab-v}", workflow)
+        self.assertIn("No release tag visible; static export will use untagged metadata.", workflow)
 
     def test_local_pages_build_full_catalog_import_is_explicit(self) -> None:
         script = (ROOT / "scripts" / "00631l_build_pages_static.cmd").read_text(

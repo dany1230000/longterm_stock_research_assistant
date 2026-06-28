@@ -312,3 +312,18 @@
   (98 tests), `flutter build web` PASS, backend tests PASS (272 tests),
   `scripts\00631l_release_check.cmd` WARN with failures=0, and
   `git diff --check` PASS.
+- v6.17 committed/pushed as `f4abf0e`, tag
+  `00631l-lab-v6.17-pages-release-tag-trigger`.
+- Public Pages marker wait for v6.17 stayed on v6.16 and the tag-triggered run
+  failed in the deploy job. The build job passed, but the GitHub Pages
+  environment did not accept the tag-ref deployment path.
+- Started v6.18 to keep Pages deployment on `main` and poll for the release tag
+  before static export.
+- Replaced the tag-trigger workflow path with a `Resolve release metadata` step
+  that fetches tags, waits briefly for a matching `00631l-lab-v*` tag on HEAD,
+  and falls back to untagged metadata if no tag appears.
+- Full v6.18 validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS, `flutter analyze` PASS, `flutter test` PASS
+  (98 tests), `flutter build web` PASS, backend tests PASS (272 tests),
+  `scripts\00631l_release_check.cmd` WARN with failures=0, and
+  `git diff --check` PASS.

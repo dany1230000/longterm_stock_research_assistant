@@ -468,6 +468,22 @@ tag instead of falling back to stale default metadata.
   `flutter test`, `flutter build web`, backend tests, release check WARN with
   failures=0, and `git diff --check`.
 
+## Phase 30 - v6.18 Pages Release Tag Polling
+
+Status: complete
+
+Objective: publish correct static release metadata without relying on a tag ref
+deployment that GitHub Pages may reject.
+
+- Keep Pages deployment on `main`.
+- Poll remote tags during the Pages build so a just-pushed release tag can be
+  used before static export runs.
+- Keep untagged fallback metadata when no release tag is available.
+- Add workflow tests for the tag polling step.
+- Validation: `dart format --set-exit-if-changed .`, `flutter analyze`,
+  `flutter test`, `flutter build web`, backend tests, release check WARN with
+  failures=0, and `git diff --check`.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

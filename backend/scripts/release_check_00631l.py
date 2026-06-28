@@ -507,6 +507,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v6_15_symbol_search_readiness_mix.md",
         "docs/00631l_v6_16_selected_etf_capability_badges.md",
         "docs/00631l_v6_17_pages_release_tag_trigger.md",
+        "docs/00631l_v6_18_pages_release_tag_polling.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
