@@ -1881,3 +1881,7 @@ rule-based non-advice summary remains unchanged.
 v6.49 compacts the backtest result area. The quick result strip now includes
 annualized return and volatility, and the duplicated 2x2 result grid was removed
 so the chart and settings appear sooner on phone screens.
+
+v6.50 shortens the AI page first screen. Detailed snapshot and interpretation
+cards now live inside advanced AI detail, while the page opens with the daily
+briefing and concise rule-based summary.

@@ -453,6 +453,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Position empty hint compact: `docs\00631l_v6_47_position_empty_hint_compact.md`
 - AI fact row compact: `docs\00631l_v6_48_ai_fact_row_compact.md`
 - Backtest result compact: `docs\00631l_v6_49_backtest_result_compact.md`
+- AI detail progressive disclosure: `docs\00631l_v6_50_ai_detail_progressive.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

@@ -708,3 +708,15 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.49 committed/pushed as `b3d09e2`, tag
+  `00631l-lab-v6.49-backtest-result-compact`.
+- Public Pages marker and strict public static-data check passed on v6.49.
+- Started v6.50 to shorten the AI page first screen by moving detailed snapshot
+  and interpretation cards into the advanced AI detail panel.
+- Targeted AI widget test passed after verifying detail cards are hidden before
+  expansion and visible after expansion.
+- v6.50 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (102 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

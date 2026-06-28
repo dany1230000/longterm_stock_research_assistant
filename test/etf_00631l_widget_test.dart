@@ -1507,18 +1507,12 @@ void main() {
     expect(find.textContaining('台積電'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-ai-today-snapshot')),
-      findsOneWidget,
+      findsNothing,
     );
-    expect(find.text('今日 AI 資料解讀'), findsOneWidget);
-    expect(find.textContaining('official holdings'), findsWidgets);
-    expect(find.textContaining('盤中 NAV'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-ai-daily-interpretation-card')),
-      findsOneWidget,
+      findsNothing,
     );
-    expect(find.text('當日資料解讀'), findsOneWidget);
-    expect(find.textContaining('官方每日內容物顯示 TX 權重'), findsOneWidget);
-    expect(find.textContaining('盤中觀察以市價'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-ai-interpretation-matrix')),
       findsNothing,
@@ -1554,6 +1548,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       find.byKey(const ValueKey('00631l-ai-interpretation-matrix')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-today-snapshot')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-daily-interpretation-card')),
       findsOneWidget,
     );
     expect(find.text('今日判讀矩陣'), findsOneWidget);

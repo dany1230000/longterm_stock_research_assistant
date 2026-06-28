@@ -8247,10 +8247,6 @@ class _AiSection extends StatelessWidget {
       children: [
         _AiDailyBriefingHero(data: data, summary: summary),
         const SizedBox(height: 12),
-        _AiTodaySnapshotPanel(data: data, summary: summary),
-        const SizedBox(height: 12),
-        _AiDailyInterpretationCard(data: data, summary: summary),
-        const SizedBox(height: 12),
         _SectionBlock(
           title: '今日 AI 快覽',
           subtitle: 'rule_based 分析；聚焦今日資料時間、內容物、折溢價偏離與維護狀態。',
@@ -8310,6 +8306,10 @@ class _AiSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _AiTodaySnapshotPanel(data: data, summary: summary),
+                    const SizedBox(height: 12),
+                    _AiDailyInterpretationCard(data: data, summary: summary),
+                    const SizedBox(height: 12),
                     _AiTodayInterpretationMatrix(
                       data: data,
                       summary: summary,

@@ -1124,6 +1124,26 @@ Completed in v6.49:
 - Targeted widget test and full validation passed with accepted WARN states
   only.
 
+## Phase 62 - v6.50 AI Detail Progressive Disclosure
+
+Status: complete
+
+Objective: make the AI page first screen focus on the daily briefing and
+concise summary instead of repeated detailed cards.
+
+- Keep the daily AI briefing at the top.
+- Move detailed snapshot and daily interpretation cards into advanced AI detail.
+- Keep rule-based provider behavior and non-instructional wording unchanged.
+- Add widget coverage for hidden-before-expansion and visible-after-expansion
+  behavior.
+
+Completed in v6.50:
+
+- Detailed AI snapshot and interpretation cards now live inside advanced AI
+  detail.
+- AI page first screen opens with the daily briefing and concise summary.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
