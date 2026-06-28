@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.98 removes code-like badges from the overview holdings digest. The
+  first-screen holdings cards now lead with `期貨`, `台積電`, and `曝險結構`
+  instead of `TX / 2330 / MIX`.
 - v6.97 clarifies the first-screen daily summary chips: `DAY / LIVE / HIS`
   no longer occupy the primary overview row; the row now uses `官方內容物`,
   `盤中 NAV`, and `歷史資料` with compact values for phone width.

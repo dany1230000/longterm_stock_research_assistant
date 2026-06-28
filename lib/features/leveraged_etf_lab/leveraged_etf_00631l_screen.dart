@@ -4041,8 +4041,6 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
           children: [
             Row(
               children: [
-                const _MiniStatusBadge(label: 'DAY'),
-                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     titleText,
@@ -4075,7 +4073,6 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                 ? _HoldingDigestStrip(
                     items: [
                       _HoldingDigestItem(
-                        badge: 'TX',
                         title: '期貨',
                         value: txLine == null
                             ? 'unavailable'
@@ -4085,7 +4082,6 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                             : '${txLine.code} / ${txLine.contractMonth}',
                       ),
                       _HoldingDigestItem(
-                        badge: '2330',
                         title: '台積電',
                         value: tsmcLine == null
                             ? 'unavailable'
@@ -4095,7 +4091,6 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                             : '${formatInteger(tsmcLine.quantity)} 股',
                       ),
                       _HoldingDigestItem(
-                        badge: 'MIX',
                         title: '曝險結構',
                         value: '三項比例',
                         caption: '股票 / 期貨 / 現金',
@@ -4173,14 +4168,12 @@ class _HoldingDigestUnavailable extends StatelessWidget {
 
 class _HoldingDigestItem {
   const _HoldingDigestItem({
-    required this.badge,
     required this.title,
     required this.value,
     required this.caption,
     this.metrics = const [],
   });
 
-  final String badge;
   final String title;
   final String value;
   final String caption;
@@ -4249,8 +4242,6 @@ class _HoldingDigestTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                _MiniStatusBadge(label: item.badge),
-                const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     item.title,

@@ -1319,6 +1319,14 @@
   display Friday 13:31 TWSE NAV data as generic pre-open waiting. Added
   previous-trading-day intraday labeling for pre-open screens while preserving
   weekend closed-market status.
+## v6.98 Overview Holdings Digest Badges
+
+- Removed the first-screen holdings digest badges that made `DAY / TX / 2330 /
+  MIX` compete with the actual numbers.
+- Kept official holdings data and exposure values unchanged.
+- Added widget coverage for phone-width digest labels and absence of the old
+  code-like badges inside the digest strip.
+
 ## v6.97 Overview Summary Chips
 
 - Replaced first-screen `DAY / LIVE / HIS` daily-summary badges with

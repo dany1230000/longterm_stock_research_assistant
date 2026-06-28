@@ -1684,14 +1684,11 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-exposure-summary-strip')),
       findsNothing,
     );
-    expect(find.text('TX'), findsWidgets);
-    expect(find.text('2330'), findsOneWidget);
-    expect(find.text('MIX'), findsOneWidget);
     final holdingsDigest = find.byKey(
       const ValueKey('00631l-overview-holdings-digest-strip'),
     );
     final digestRect = tester.getRect(holdingsDigest);
-    for (final label in const ['TX', '2330', 'MIX']) {
+    for (final label in const ['期貨', '台積電', '曝險結構']) {
       final labelFinder = find.descendant(
         of: holdingsDigest,
         matching: find.text(label),
@@ -1700,6 +1697,12 @@ void main() {
       expect(
         tester.getRect(labelFinder.first).right,
         lessThanOrEqualTo(digestRect.right),
+      );
+    }
+    for (final label in const ['TX', '2330', 'MIX']) {
+      expect(
+        find.descendant(of: holdingsDigest, matching: find.text(label)),
+        findsNothing,
       );
     }
     expect(find.byType(DataTable), findsNothing);

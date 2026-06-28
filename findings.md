@@ -162,6 +162,15 @@
   later date could show the prior trading day's 13:31 TWSE NAV snapshot with a
   generic pre-open label. The session model needs to distinguish previous-day
   data from same-day pre-open waiting.
+## v6.98 Overview Holdings Digest Badges
+
+- The first-screen holdings digest still had code-like badges after the daily
+  summary strip was cleaned up. Those badges were technically meaningful, but
+  they pulled attention away from the section labels and values.
+- The digest now treats Chinese labels as the primary hierarchy. Technical
+  badges remain available in expanded details where dense status context is
+  expected.
+
 ## v6.97 Overview Summary Chips
 
 - The public first screen still had technical `DAY / LIVE / HIS` chips in the
