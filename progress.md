@@ -671,3 +671,14 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.46 committed/pushed as `7b72f1b`, tag
+  `00631l-lab-v6.46-history-backtest-top-compact`.
+- Public Pages marker and strict public static-data check passed on v6.46.
+- Started v6.47 to compact the local position page empty state.
+- Replaced the large no-position empty panel with a compact hint strip and
+  added widget coverage.
+- v6.47 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -750,6 +750,10 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('尚未輸入持倉'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('00631l-position-empty-hint-strip')),
+      findsOneWidget,
+    );
     expect(find.text('輸入持倉資料'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-position-compact-input-card')),

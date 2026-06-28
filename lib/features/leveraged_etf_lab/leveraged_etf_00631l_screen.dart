@@ -7776,11 +7776,8 @@ class _PositionSectionState extends State<_PositionSection> {
         ),
         const SizedBox(height: 8),
         if (!input.hasPosition) ...[
-          const _EmptyPanel(
-            title: '尚未輸入持倉',
-            message: '填入持有股數與平均成本後，這裡會顯示目前市值、未實現損益與部位比例。',
-          ),
-          const SizedBox(height: 12),
+          const _PositionEmptyHintStrip(),
+          const SizedBox(height: 8),
         ],
         _InputGrid(
           children: [
@@ -7962,6 +7959,47 @@ class _PositionActionBar extends StatelessWidget {
             onTap: onClear,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PositionEmptyHintStrip extends StatelessWidget {
+  const _PositionEmptyHintStrip();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-position-empty-hint-strip'),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.edit_note_outlined,
+              size: 18,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '輸入股數與平均成本後，即可顯示市值、損益與部位比例；資料只保存在本機。',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w800,
+                  height: 1.3,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

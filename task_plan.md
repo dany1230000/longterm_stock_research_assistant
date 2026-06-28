@@ -1068,6 +1068,25 @@ Completed in v6.46:
   before checking split-adjustment details.
 - Full validation passed with accepted WARN states only.
 
+## Phase 59 - v6.47 Position Empty Hint Compact
+
+Status: complete
+
+Objective: shorten the local position page empty state so account summary,
+local-only actions, and input fields fit better on phones.
+
+- Replace the large no-position empty panel with a compact hint strip.
+- Keep local-only storage, JSON export, clear action, and position calculations
+  unchanged.
+- Add widget coverage for the compact hint.
+
+Completed in v6.47:
+
+- Position empty state now uses a compact hint strip.
+- Local-only inputs, JSON export, clear action, and estimate details remain
+  unchanged.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

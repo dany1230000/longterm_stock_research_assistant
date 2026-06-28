@@ -1869,3 +1869,7 @@ v6.45 polishes the same official holdings digest by shortening tile titles to
 v6.46 compacts the history/backtest page top area. The page now opens with a
 short top strip for ETF, source, coverage, latest close, row count, and default
 range, while detailed data-quality notes move into an expandable panel.
+
+v6.47 shortens the local position page empty state. The large no-position panel
+is now a compact hint strip so input fields and local-only actions appear sooner
+on phone screens.
