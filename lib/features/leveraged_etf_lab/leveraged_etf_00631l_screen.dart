@@ -2847,11 +2847,6 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
         : _premiumLabel(premiumAssessment);
     final items = [
       _OverviewDailySummaryItem(
-        badge: 'MODE',
-        value: _frontendDataModeLabel,
-        caption: data.operationsStatus.backendConnectionLabel,
-      ),
-      _OverviewDailySummaryItem(
         badge: 'DAY',
         value: formatTaiwanDate(data.snapshot.tradeDate),
         caption: data.snapshot.status.label,
@@ -2871,6 +2866,11 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
         value: '${formatInteger(priceSummary.rowCount)} rows',
         caption:
             '${_dateOrDash(priceSummary.coverageStart)} - ${_dateOrDash(priceSummary.coverageEnd)}',
+      ),
+      _OverviewDailySummaryItem(
+        badge: 'AI',
+        value: data.aiAnalysis.readinessLabel,
+        caption: data.aiAnalysis.source,
       ),
     ];
 
@@ -2897,18 +2897,9 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
                       letterSpacing: 0,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      _overviewAiBrief(data),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _marketMutedTextColor(context),
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0,
-                      ),
-                    ),
+                  const Spacer(),
+                  _CompactTextBadge(
+                    label: _frontendDataModeLabel,
                   ),
                 ],
               ),

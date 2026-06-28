@@ -528,3 +528,16 @@
   PASS (101 tests); `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.36 committed/pushed as `7937e77`, tag
+  `00631l-lab-v6.36-compact-quote-header`.
+- Public Pages marker and strict public static-data checks passed on v6.36.
+- Playwright mobile screenshot confirmed the chart reaches the first screen, but
+  the `今日摘要` header still used a long truncated mode/AI sentence.
+- Started v6.37 to move frontend mode into a compact badge and keep AI as a
+  short summary chip.
+- v6.37 target widget tests passed.
+- v6.37 full validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS; `flutter analyze` PASS; `flutter test`
+  PASS (101 tests); `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

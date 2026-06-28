@@ -1834,3 +1834,6 @@ premium/discount status, history coverage, and the first AI brief together.
 v6.36 removes the duplicate 00631L quote meta strip from the overview header.
 The same context remains in the daily summary strip, so the chart and core
 status appear sooner on mobile.
+
+v6.37 cleans up the overview daily summary header by moving frontend mode into a
+small badge and keeping AI as a short status chip instead of a truncated line.

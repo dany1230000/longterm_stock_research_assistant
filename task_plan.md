@@ -849,6 +849,25 @@ Completed in v6.36:
   strip.
 - Full validation passed with accepted WARN states only.
 
+## Phase 49 - v6.37 Overview Summary Mode Badge
+
+Status: complete
+
+Objective: make the overview daily summary header cleaner after mobile
+inspection showed the long mode/AI text was truncated.
+
+- Move frontend mode into a compact header badge.
+- Remove the duplicate MODE chip.
+- Keep AI as a short chip in the summary row.
+- Keep data sources, formulas, and AI provider unchanged.
+
+Completed in v6.37:
+
+- Moved frontend mode into the `今日摘要` header badge.
+- Removed the duplicate MODE chip.
+- Kept AI as a compact summary chip.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
