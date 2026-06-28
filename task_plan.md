@@ -954,6 +954,30 @@ Completed in v6.41:
   technical labels.
 - Full validation passed with accepted WARN states only.
 
+## Phase 54 - v6.42 History Range Selection State
+
+Status: complete
+
+Objective: make history/backtest date ranges visibly selectable on phone
+screens.
+
+- Keep the latest one-year default.
+- Keep manual start/end date controls.
+- Show selected state for 1Y, 3Y, and all-data range chips.
+- Label short-history edge cases truthfully as all data when the selected range
+  spans the full verified coverage.
+- Do not change historical price data, split-adjustment logic, or backtest
+  formulas.
+
+Completed in v6.42:
+
+- History and backtest quick range chips now show selected state.
+- The default latest-one-year range remains selected on load.
+- The all-data range is labeled truthfully when it spans the full verified
+  coverage.
+- Widget coverage verifies selected chip states for history and backtest.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

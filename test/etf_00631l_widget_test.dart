@@ -526,6 +526,17 @@ void main() {
       findsOneWidget,
     );
     expect(
+      tester
+          .widget<ChoiceChip>(
+            find.descendant(
+              of: find.byKey(const ValueKey('00631l-history-range-1y')),
+              matching: find.byType(ChoiceChip),
+            ),
+          )
+          .selected,
+      isTrue,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-history-range-3y')),
       findsOneWidget,
     );
@@ -645,6 +656,17 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(backtestAllRange);
     await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<ChoiceChip>(
+            find.descendant(
+              of: backtestAllRange,
+              matching: find.byType(ChoiceChip),
+            ),
+          )
+          .selected,
+      isTrue,
+    );
     expect(
       find.textContaining('回測區間 2024/06/03 - 2026/06/03'),
       findsOneWidget,

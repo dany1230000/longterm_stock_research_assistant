@@ -5611,6 +5611,14 @@ class _FilterablePriceHistoryBlockState
     final performance = filteredHistory.performance;
     final selectedSummary = filteredHistory.completenessSummary();
     final fullSummary = fullHistory.completenessSummary();
+    final firstDate = _historyFirstDate(fullHistory);
+    final lastDate = _historyLastDate(fullHistory);
+    final activePreset = _activeDateRangePreset(
+      startDate: _startDate,
+      endDate: _endDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -5618,8 +5626,8 @@ class _FilterablePriceHistoryBlockState
         _BacktestDateRangeControls(
           startDate: _startDate,
           endDate: _endDate,
-          firstDate: _historyFirstDate(fullHistory),
-          lastDate: _historyLastDate(fullHistory),
+          firstDate: firstDate,
+          lastDate: lastDate,
           onStartTap: _selectStartDate,
           onEndTap: _selectEndDate,
         ),
@@ -5633,16 +5641,19 @@ class _FilterablePriceHistoryBlockState
               _RangeActionChip(
                 key: const ValueKey('00631l-history-range-1y'),
                 label: '最近 1 年',
+                selected: activePreset == _DateRangePreset.oneYear,
                 onTap: () => _setTrailingYears(1),
               ),
               _RangeActionChip(
                 key: const ValueKey('00631l-history-range-3y'),
                 label: '最近 3 年',
+                selected: activePreset == _DateRangePreset.threeYears,
                 onTap: () => _setTrailingYears(3),
               ),
               _RangeActionChip(
                 key: const ValueKey('00631l-history-range-all'),
                 label: '全部資料',
+                selected: activePreset == _DateRangePreset.all,
                 onTap: _setAllRange,
               ),
             ],
@@ -5860,19 +5871,25 @@ class _RangeActionChip extends StatelessWidget {
   const _RangeActionChip({
     super.key,
     required this.label,
+    required this.selected,
     required this.onTap,
   });
 
   final String label;
+  final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return ActionChip(
+    return ChoiceChip(
       label: Text(label),
-      avatar: const Icon(Icons.date_range_outlined, size: 16),
+      selected: selected,
+      avatar: Icon(
+        selected ? Icons.check_circle_outline : Icons.date_range_outlined,
+        size: 16,
+      ),
       visualDensity: VisualDensity.compact,
-      onPressed: onTap,
+      onSelected: (_) => onTap(),
     );
   }
 }
@@ -6966,6 +6983,14 @@ class _BacktestSectionState extends State<_BacktestSection> {
   @override
   Widget build(BuildContext context) {
     final history = widget.priceHistory;
+    final firstDate = _historyFirstDate(history);
+    final lastDate = _historyLastDate(history);
+    final activePreset = _activeDateRangePreset(
+      startDate: _startDate,
+      endDate: _endDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
     final result = const EtfBacktestEngine().run(
       request: EtfBacktestRequest(
         strategy: _strategy,
@@ -7023,8 +7048,8 @@ class _BacktestSectionState extends State<_BacktestSection> {
                     _BacktestDateRangeControls(
                       startDate: _startDate,
                       endDate: _endDate,
-                      firstDate: history.coverageStart,
-                      lastDate: history.coverageEnd,
+                      firstDate: firstDate,
+                      lastDate: lastDate,
                       onStartTap: _selectStartDate,
                       onEndTap: _selectEndDate,
                     ),
@@ -7038,16 +7063,20 @@ class _BacktestSectionState extends State<_BacktestSection> {
                           _RangeActionChip(
                             key: const ValueKey('00631l-backtest-range-1y'),
                             label: '最近 1 年',
+                            selected: activePreset == _DateRangePreset.oneYear,
                             onTap: () => _setTrailingYears(1),
                           ),
                           _RangeActionChip(
                             key: const ValueKey('00631l-backtest-range-3y'),
                             label: '最近 3 年',
+                            selected:
+                                activePreset == _DateRangePreset.threeYears,
                             onTap: () => _setTrailingYears(3),
                           ),
                           _RangeActionChip(
                             key: const ValueKey('00631l-backtest-range-all'),
                             label: '全部資料',
+                            selected: activePreset == _DateRangePreset.all,
                             onTap: _setAllRange,
                           ),
                         ],
@@ -7247,20 +7276,19 @@ class _BacktestDateRangeControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final oneYearStart = endDate == null
-        ? null
-        : _defaultTrailingStart(first: firstDate, end: endDate!, years: 1);
-    final isOneYearDefault = startDate != null &&
-        endDate != null &&
-        oneYearStart != null &&
-        _isSameDate(startDate!, oneYearStart);
+    final preset = _activeDateRangePreset(
+      startDate: startDate,
+      endDate: endDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _BacktestDateRangeSummary(
           startDate: startDate,
           endDate: endDate,
-          isOneYearDefault: isOneYearDefault,
+          rangeLabel: preset.label,
         ),
         const SizedBox(height: 8),
         LayoutBuilder(
@@ -7300,12 +7328,12 @@ class _BacktestDateRangeSummary extends StatelessWidget {
   const _BacktestDateRangeSummary({
     required this.startDate,
     required this.endDate,
-    required this.isOneYearDefault,
+    required this.rangeLabel,
   });
 
   final DateTime? startDate;
   final DateTime? endDate;
-  final bool isOneYearDefault;
+  final String rangeLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -7329,7 +7357,7 @@ class _BacktestDateRangeSummary extends StatelessWidget {
             const SizedBox(width: 6),
             Expanded(
               child: Text(
-                '${isOneYearDefault ? '近 1 年' : '自訂區間'} · ${_dateOrDash(startDate)} - ${_dateOrDash(endDate)}',
+                '$rangeLabel · ${_dateOrDash(startDate)} - ${_dateOrDash(endDate)}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.labelMedium?.copyWith(
@@ -13392,6 +13420,50 @@ DateTime _defaultTrailingStart({
     return first;
   }
   return candidate;
+}
+
+enum _DateRangePreset {
+  oneYear('近 1 年'),
+  threeYears('近 3 年'),
+  all('全部資料'),
+  custom('自訂區間');
+
+  const _DateRangePreset(this.label);
+
+  final String label;
+}
+
+_DateRangePreset _activeDateRangePreset({
+  required DateTime? startDate,
+  required DateTime? endDate,
+  required DateTime? firstDate,
+  required DateTime? lastDate,
+}) {
+  if (startDate == null || endDate == null || lastDate == null) {
+    return _DateRangePreset.custom;
+  }
+  if (_isSameDate(endDate, lastDate)) {
+    final oneYearStart = _defaultTrailingStart(
+      first: firstDate,
+      end: lastDate,
+      years: 1,
+    );
+    if (_isSameDate(startDate, oneYearStart)) {
+      return _DateRangePreset.oneYear;
+    }
+    if (firstDate != null && _isSameDate(startDate, firstDate)) {
+      return _DateRangePreset.all;
+    }
+    final threeYearStart = _defaultTrailingStart(
+      first: firstDate,
+      end: lastDate,
+      years: 3,
+    );
+    if (_isSameDate(startDate, threeYearStart)) {
+      return _DateRangePreset.threeYears;
+    }
+  }
+  return _DateRangePreset.custom;
 }
 
 bool _isSameDate(DateTime left, DateTime right) {

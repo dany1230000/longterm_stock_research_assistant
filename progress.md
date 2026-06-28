@@ -596,3 +596,20 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Started v6.42 after confirming history/backtest quick range controls existed
+  but did not show selected state.
+- Added selected-state date-range chips for history and backtest while keeping
+  the latest one-year default and manual start/end date controls.
+- Error: the first targeted widget assertion cast the wrapper
+  `_RangeActionChip` to `ChoiceChip`. Resolution: assert the descendant
+  `ChoiceChip` inside the keyed wrapper.
+- Error: short fixture history made a 3-year clamped range look identical to
+  all data. Resolution: classify one-year first, full coverage second, and
+  three-year third so the explicit all-data range is labeled truthfully.
+- Targeted v6.42 widget tests passed for history price history and backtest
+  inputs.
+- v6.42 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

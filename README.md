@@ -1849,3 +1849,8 @@ TX, TSMC, and stock/futures/cash mix remain visible without a tall card stack.
 
 v6.41 simplifies the overview daily summary to DAY / LIVE / HIS and replaces
 raw intraday source-contract text with user-facing source labels.
+
+v6.42 makes the history/backtest quick range chips visibly selected. The default
+remains latest one year, manual start/end dates still work, and short verified
+history ranges are labeled as all data when they span the full available
+coverage.
