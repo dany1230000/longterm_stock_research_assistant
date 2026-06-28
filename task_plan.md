@@ -1202,6 +1202,25 @@ Completed in v6.53:
 - Removed the old unused full-year helper after analyze caught it.
 - Targeted and full validation passed with accepted WARN states only.
 
+## Phase 66 - v6.54 Background Refresh Banner
+
+Status: complete
+
+Objective: make the fast-first-screen refresh banner read like app status
+instead of a long loading message.
+
+- Shorten the loading-state banner to a compact background-refresh sentence.
+- Keep the fallback/error state truthful but shorter.
+- Keep quote, chart, summary row, source labels, and data behavior unchanged.
+- Update widget coverage for the new wording.
+
+Completed in v6.54:
+
+- Fast-first-screen loading banner now uses a compact background-refresh
+  sentence.
+- Fallback banner remains explicit and shorter.
+- Targeted and full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

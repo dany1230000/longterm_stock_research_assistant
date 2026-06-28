@@ -634,9 +634,7 @@ class _DetailsLoadStateStrip extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                hasError
-                    ? '完整資料暫時不可用，已保留首屏資料與 fallback。'
-                    : '先顯示首屏資料，正在載入歷史、AI 與維護狀態。',
+                hasError ? '完整資料暫不可用，已保留 fallback。' : '背景更新中，已先顯示可用資料。',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(

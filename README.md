@@ -135,6 +135,8 @@ v6.52 makes the first-screen DAY / LIVE / HIS row show `syncing`, `checking`, an
 
 v6.53 shortens those DAY / LIVE / HIS captions so the phone first screen avoids clipped `daily...` and `backend...` labels.
 
+v6.54 shortens the fast-first-screen refresh banner to `背景更新中，已先顯示可用資料。` so the quote and chart remain the visual focus.
+
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.
