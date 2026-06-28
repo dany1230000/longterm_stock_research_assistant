@@ -511,6 +511,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v6_19_pages_deploy_status_alignment.md",
         "docs/00631l_v6_20_symbol_search_ranking.md",
         "docs/00631l_v6_21_comparison_readiness.md",
+        "docs/00631l_v6_22_comparison_skipped_details.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

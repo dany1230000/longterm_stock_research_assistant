@@ -425,6 +425,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Pages deploy status alignment: `docs\00631l_v6_19_pages_deploy_status_alignment.md`
 - Symbol search ranking: `docs\00631l_v6_20_symbol_search_ranking.md`
 - Comparison readiness: `docs\00631l_v6_21_comparison_readiness.md`
+- Comparison skipped details: `docs\00631l_v6_22_comparison_skipped_details.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

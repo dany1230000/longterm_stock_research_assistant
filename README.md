@@ -1781,3 +1781,7 @@ matches.
 v6.21 clarifies ETF comparison readiness. The comparison panel now separates
 candidate, comparison-ready, and skipped rows so catalog-only or insufficient
 history symbols are not silently mixed into comparison charts.
+
+v6.22 adds skipped-row detail chips to the comparison panel. Skipped ETFs now
+show code, active-range row count, and source status while remaining excluded
+from chart and table calculations.

@@ -361,3 +361,15 @@
   PASS (100 tests); `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.21 committed/pushed as `1fe7c57`, tag
+  `00631l-lab-v6.21-comparison-readiness`. Public Pages marker and strict
+  public static-data checks passed on v6.21.
+- Started v6.22 to show compact skipped-row reason details in the ETF
+  comparison panel.
+- Added skipped-row detail chips showing code, active-range rows, and source
+  status.
+- v6.22 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS after formatting two Dart files; `flutter analyze` PASS; `flutter test`
+  PASS (100 tests); `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

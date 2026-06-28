@@ -542,6 +542,25 @@ Completed in v6.21:
 - Widget coverage verifies a catalog-only selected ETF appears as skipped.
 - Full validation passed with accepted WARN states only.
 
+## Phase 34 - v6.22 Comparison Skipped Details
+
+Status: complete
+
+Objective: make skipped ETF comparison rows explain why they were excluded
+without changing source data or comparison eligibility.
+
+- Show compact skipped-row detail with code, active-range row count, and source
+  status.
+- Keep skipped rows outside chart/table calculations.
+- Keep the comparison page concise and data-status focused.
+
+Completed in v6.22:
+
+- Skipped comparison rows now show code, active-range row count, and source
+  status as compact detail chips.
+- Widget coverage verifies catalog-only skipped detail appears.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

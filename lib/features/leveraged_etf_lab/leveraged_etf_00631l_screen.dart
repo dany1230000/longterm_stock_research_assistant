@@ -6064,6 +6064,35 @@ class _ComparisonDataReadinessStrip extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
           ),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final metric in skippedMetrics.take(4))
+                Container(
+                  key: ValueKey(
+                    '00631l-etf-comparison-skipped-detail-${metric.code}',
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _marketPanelColor(context),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: _marketBorderColor(context)),
+                  ),
+                  child: Text(
+                    '${metric.code}: rows ${formatInteger(metric.rowCount)} / ${metric.sourceStatusLabel}',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                ),
+            ],
+          ),
         ],
       ],
     );

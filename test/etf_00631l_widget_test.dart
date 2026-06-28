@@ -801,6 +801,12 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-comparison-skipped-00400A')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-etf-comparison-skipped-detail-00400A'),
+      ),
+      findsOneWidget,
+    );
     _expectNoTradingActionText();
   });
 
