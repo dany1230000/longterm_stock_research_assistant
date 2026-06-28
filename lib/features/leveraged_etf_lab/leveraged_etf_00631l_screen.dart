@@ -2848,7 +2848,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
         ? 'loading'
         : nav?.dataTime == null
             ? 'unavailable'
-            : _sourceTimeText(nav!.dataTime!);
+            : formatTimeSeconds(nav!.dataTime!);
     final historyIsAvailable = priceSummary.rowCount >= 2;
     final items = [
       _OverviewDailySummaryItem(
@@ -2869,10 +2869,10 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
         badge: 'HIS',
         value: detailsLoading && !historyIsAvailable
             ? 'loading'
-            : '${formatInteger(priceSummary.rowCount)} rows',
+            : '${formatInteger(priceSummary.rowCount)}筆',
         caption: detailsLoading && !historyIsAvailable
             ? 'static history'
-            : '${_dateOrDash(priceSummary.coverageStart)} - ${_dateOrDash(priceSummary.coverageEnd)}',
+            : _summaryCoverageYears(priceSummary),
       ),
     ];
 
@@ -2906,17 +2906,16 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 7),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-                    for (var index = 0; index < items.length; index++) ...[
-                      _OverviewDailySummaryChip(item: items[index]),
-                      if (index != items.length - 1) const SizedBox(width: 6),
-                    ],
+              Row(
+                key: const ValueKey('00631l-overview-daily-summary-grid'),
+                children: [
+                  for (var index = 0; index < items.length; index++) ...[
+                    Expanded(
+                      child: _OverviewDailySummaryChip(item: items[index]),
+                    ),
+                    if (index != items.length - 1) const SizedBox(width: 6),
                   ],
-                ),
+                ],
               ),
             ],
           ),
@@ -2924,6 +2923,18 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
       ),
     );
   }
+}
+
+String _summaryCoverageYears(EtfPriceHistoryCompletenessSummary summary) {
+  final start = summary.coverageStart;
+  final end = summary.coverageEnd;
+  if (start == null || end == null) {
+    return 'coverage';
+  }
+  if (start.year == end.year) {
+    return '${start.year}';
+  }
+  return '${start.year}-${end.year}';
 }
 
 String _intradaySummarySourceLabel(EtfIntradayNav? nav) {
@@ -2969,24 +2980,25 @@ class _OverviewDailySummaryChip extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
             _MiniStatusBadge(label: item.badge),
             const SizedBox(width: 7),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 142),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    item.value,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      item.value,
+                      maxLines: 1,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 1),

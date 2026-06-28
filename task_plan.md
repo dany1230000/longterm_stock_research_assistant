@@ -978,6 +978,30 @@ Completed in v6.42:
 - Widget coverage verifies selected chip states for history and backtest.
 - Full validation passed with accepted WARN states only.
 
+## Phase 55 - v6.43 Overview Summary Grid Fit
+
+Status: complete
+
+Objective: make the overview daily summary fully visible on phone width without
+horizontal clipping.
+
+- Replace the horizontally scrolling DAY/LIVE/HIS summary row with a fixed
+  three-column grid.
+- Shorten LIVE to time-only and HIS to row-count plus coverage years.
+- Keep source labels truthful and keep static history separate from live
+  intraday data.
+- Add phone-width widget coverage that DAY, LIVE, and HIS all stay inside the
+  summary card.
+
+Completed in v6.43:
+
+- Overview daily summary now uses a fixed three-column DAY/LIVE/HIS grid.
+- LIVE shows time-only and HIS shows row count plus coverage years to fit phone
+  width.
+- Phone-width widget coverage verifies all three badges stay inside the summary
+  card.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

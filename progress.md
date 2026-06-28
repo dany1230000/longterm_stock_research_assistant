@@ -613,3 +613,16 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Started v6.43 after public mobile screenshot inspection showed the overview
+  `HIS` summary chip was clipped off the right edge at 390px width.
+- Changed overview daily summary from a horizontal scroll strip to a fixed
+  three-column DAY/LIVE/HIS grid.
+- Shortened the LIVE value to time-only and HIS to row-count plus coverage
+  years so the first screen remains readable.
+- Targeted phone-width widget test passed and verifies DAY/LIVE/HIS remain
+  inside the summary card.
+- v6.43 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

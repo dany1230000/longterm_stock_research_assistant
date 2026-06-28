@@ -1854,3 +1854,7 @@ v6.42 makes the history/backtest quick range chips visibly selected. The default
 remains latest one year, manual start/end dates still work, and short verified
 history ranges are labeled as all data when they span the full available
 coverage.
+
+v6.43 makes the overview DAY / LIVE / HIS summary fit phone width as a fixed
+three-column grid. LIVE now shows time-only and HIS shows row count plus
+coverage years, while source labels remain truthful.

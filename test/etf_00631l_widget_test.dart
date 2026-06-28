@@ -292,6 +292,25 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-daily-summary-grid')),
+      findsOneWidget,
+    );
+    final dailySummary = find.byKey(
+      const ValueKey('00631l-overview-daily-summary-strip'),
+    );
+    final dailySummaryRect = tester.getRect(dailySummary);
+    for (final label in const ['DAY', 'LIVE', 'HIS']) {
+      final labelFinder = find.descendant(
+        of: dailySummary,
+        matching: find.text(label),
+      );
+      expect(labelFinder, findsOneWidget);
+      expect(
+        tester.getRect(labelFinder).right,
+        lessThanOrEqualTo(dailySummaryRect.right),
+      );
+    }
     expect(find.text('00631L'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);
