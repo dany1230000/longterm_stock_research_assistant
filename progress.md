@@ -468,3 +468,15 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.31 committed/pushed as `e39bc94`, tag
+  `00631l-lab-v6.31-history-chart-date-labels`.
+- Public Pages marker and strict public static-data checks passed on v6.31.
+- Started v6.32 to make the history/backtest date controls clearer on mobile.
+- Added a compact active-range summary above start/end date buttons and shared
+  it across history and backtest.
+- Targeted widget tests for history price history and backtest inputs passed.
+- v6.32 full validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS; `flutter analyze` PASS; `flutter test`
+  PASS (101 tests); `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

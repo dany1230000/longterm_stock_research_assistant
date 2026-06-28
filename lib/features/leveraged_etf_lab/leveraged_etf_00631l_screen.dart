@@ -7072,32 +7072,100 @@ class _BacktestDateRangeControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final children = [
-          _BacktestDateButton(
-            key: const ValueKey('00631l-start-date-button'),
-            label: '開始日期',
-            value: _dateOrDash(startDate),
-            caption: firstDate == null ? 'history start unavailable' : '點擊調整',
-            onTap: onStartTap,
-          ),
-          _BacktestDateButton(
-            key: const ValueKey('00631l-end-date-button'),
-            label: '結束日期',
-            value: _dateOrDash(endDate),
-            caption: lastDate == null ? 'history end unavailable' : '點擊調整',
-            onTap: onEndTap,
-          ),
-        ];
-        return Row(
+    final oneYearStart = endDate == null
+        ? null
+        : _defaultTrailingStart(first: firstDate, end: endDate!, years: 1);
+    final isOneYearDefault = startDate != null &&
+        endDate != null &&
+        oneYearStart != null &&
+        _isSameDate(startDate!, oneYearStart);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _BacktestDateRangeSummary(
+          startDate: startDate,
+          endDate: endDate,
+          isOneYearDefault: isOneYearDefault,
+        ),
+        const SizedBox(height: 8),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final children = [
+              _BacktestDateButton(
+                key: const ValueKey('00631l-start-date-button'),
+                label: '開始日期',
+                value: _dateOrDash(startDate),
+                caption:
+                    firstDate == null ? 'history start unavailable' : '點擊調整',
+                onTap: onStartTap,
+              ),
+              _BacktestDateButton(
+                key: const ValueKey('00631l-end-date-button'),
+                label: '結束日期',
+                value: _dateOrDash(endDate),
+                caption: lastDate == null ? 'history end unavailable' : '點擊調整',
+                onTap: onEndTap,
+              ),
+            ];
+            return Row(
+              children: [
+                Expanded(child: children[0]),
+                const SizedBox(width: 8),
+                Expanded(child: children[1]),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _BacktestDateRangeSummary extends StatelessWidget {
+  const _BacktestDateRangeSummary({
+    required this.startDate,
+    required this.endDate,
+    required this.isOneYearDefault,
+  });
+
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final bool isOneYearDefault;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-date-range-summary'),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.22),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: Row(
           children: [
-            Expanded(child: children[0]),
-            const SizedBox(width: 8),
-            Expanded(child: children[1]),
+            Icon(
+              Icons.date_range_outlined,
+              size: 15,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                '${isOneYearDefault ? '近 1 年' : '自訂區間'} · ${_dateOrDash(startDate)} - ${_dateOrDash(endDate)}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }
@@ -13039,6 +13107,12 @@ DateTime _defaultTrailingStart({
     return first;
   }
   return candidate;
+}
+
+bool _isSameDate(DateTime left, DateTime right) {
+  return left.year == right.year &&
+      left.month == right.month &&
+      left.day == right.day;
 }
 
 EtfPriceHistory _filteredPriceHistory(

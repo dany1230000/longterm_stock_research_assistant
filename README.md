@@ -1816,3 +1816,7 @@ date/value interaction can keep improving without fragile text matching.
 v6.31 improves the history/backtest chart date labels on phone screens. Axis
 dates now use compact bordered chips, and the touch-detail panel uses two lines
 so the date/value detail stays readable.
+
+v6.32 adds a compact active-range summary above the history/backtest date
+buttons, making the default one-year range and custom date range clearer without
+changing historical data or backtest formulas.

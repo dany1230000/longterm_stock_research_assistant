@@ -745,6 +745,27 @@ Completed in v6.31:
 - Widget coverage verifies the new chart-axis and touch-detail line keys.
 - Full validation passed with accepted WARN states only.
 
+## Phase 44 - v6.32 Compact Date Range Controls
+
+Status: complete
+
+Objective: make history/backtest date controls clearer and shorter on mobile
+without changing data or formulas.
+
+- Add an active date-range summary above start/end date buttons.
+- Mark the range as latest one-year default or custom range.
+- Reuse the same treatment in history and backtest.
+- Add widget coverage for the range summary.
+- Keep historical performance, split adjustment, and backtest calculations
+  unchanged.
+
+Completed in v6.32:
+
+- History/backtest date controls now show a compact active-range summary.
+- The summary labels default latest one-year and custom ranges.
+- Widget coverage verifies the shared range-summary key.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
