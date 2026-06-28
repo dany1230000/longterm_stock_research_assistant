@@ -1319,3 +1319,11 @@
   display Friday 13:31 TWSE NAV data as generic pre-open waiting. Added
   previous-trading-day intraday labeling for pre-open screens while preserving
   weekend closed-market status.
+## v6.97 Overview Summary Chips
+
+- Replaced first-screen `DAY / LIVE / HIS` daily-summary badges with
+  user-facing labels: `官方內容物`, `盤中 NAV`, and `歷史資料`.
+- Kept compact phone-width values while preserving backend warmup, source, and
+  static/cached status captions.
+- Added widget coverage so the first-screen strip no longer depends on
+  technical abbreviations.

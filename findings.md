@@ -162,3 +162,11 @@
   later date could show the prior trading day's 13:31 TWSE NAV snapshot with a
   generic pre-open label. The session model needs to distinguish previous-day
   data from same-day pre-open waiting.
+## v6.97 Overview Summary Chips
+
+- The public first screen still had technical `DAY / LIVE / HIS` chips in the
+  primary summary row. They were useful internally but made the app feel closer
+  to diagnostics than a stock app.
+- The fix keeps the same data density but moves the primary row to readable
+  labels and shorter values. Technical badges remain in the expanded detail
+  panel where they are less distracting.

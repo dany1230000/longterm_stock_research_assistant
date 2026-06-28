@@ -501,6 +501,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Public live warmup status: `docs\00631l_v6_94_public_live_warmup_status.md`
 - Public deploy sync status: `docs\00631l_v6_95_public_deploy_sync_status.md`
 - Intraday previous-day label: `docs\00631l_v6_96_intraday_previous_day_label.md`
+- Overview summary chips: `docs\00631l_v6_97_overview_summary_chips.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

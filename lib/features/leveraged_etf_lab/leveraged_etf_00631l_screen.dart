@@ -2952,7 +2952,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
       liveProxyEnabled: _use00631LLiveProxy,
     );
     final dayValue = hasUsableSnapshot
-        ? formatTaiwanDate(data.snapshot.tradeDate)
+        ? _summaryMonthDay(data.snapshot.tradeDate)
         : snapshotKnownUnavailable
             ? liveBackendWarmup
                 ? '喚醒中'
@@ -2968,7 +2968,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
             ? '每日'
             : _sourceStatusBadgeLabel(data.snapshot.status.label);
     final navTime = hasNavTime
-        ? formatTimeSeconds(nav!.dataTime!)
+        ? _summaryTimeMinute(nav!.dataTime!)
         : navKnownUnavailable
             ? liveBackendWarmup
                 ? '連線中'
@@ -2984,17 +2984,17 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
     final historyIsAvailable = priceSummary.rowCount >= 2;
     final items = [
       _OverviewDailySummaryItem(
-        badge: 'DAY',
+        title: '官方內容物',
         value: dayValue,
         caption: dayCaption,
       ),
       _OverviewDailySummaryItem(
-        badge: 'LIVE',
+        title: '盤中 NAV',
         value: navTime,
         caption: navCaption,
       ),
       _OverviewDailySummaryItem(
-        badge: 'HIS',
+        title: '歷史資料',
         value: detailsLoading && !historyIsAvailable
             ? '檢查中'
             : '${formatInteger(priceSummary.rowCount)}筆',
@@ -3080,6 +3080,18 @@ String _summaryCoverageCompactYears(
   return '${start.year}-$endYear';
 }
 
+String _summaryMonthDay(DateTime date) {
+  final month = date.month.toString().padLeft(2, '0');
+  final day = date.day.toString().padLeft(2, '0');
+  return '$month/$day';
+}
+
+String _summaryTimeMinute(DateTime dateTime) {
+  final hour = dateTime.hour.toString().padLeft(2, '0');
+  final minute = dateTime.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+}
+
 String _intradaySummarySourceLabel(EtfIntradayNav? nav) {
   final contract = nav?.sourceContract?.trim().toLowerCase();
   if (contract == null || contract.isEmpty) {
@@ -3096,12 +3108,12 @@ String _intradaySummarySourceLabel(EtfIntradayNav? nav) {
 
 class _OverviewDailySummaryItem {
   const _OverviewDailySummaryItem({
-    required this.badge,
+    required this.title,
     required this.value,
     required this.caption,
   });
 
-  final String badge;
+  final String title;
   final String value;
   final String caption;
 }
@@ -3121,41 +3133,44 @@ class _OverviewDailySummaryChip extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
-        child: Row(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            _MiniStatusBadge(label: item.badge),
-            const SizedBox(width: 7),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      item.value,
-                      maxLines: 1,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: _marketTextColor(context),
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 1),
-                  Text(
-                    item.caption,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: _marketMutedTextColor(context),
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                ],
+            Text(
+              item.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 3),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                item.value,
+                maxLines: 1,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0,
+                ),
+              ),
+            ),
+            const SizedBox(height: 1),
+            Text(
+              item.caption,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0,
               ),
             ),
           ],

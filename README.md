@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.97 clarifies the first-screen daily summary chips: `DAY / LIVE / HIS`
+  no longer occupy the primary overview row; the row now uses `官方內容物`,
+  `盤中 NAV`, and `歷史資料` with compact values for phone width.
 - v6.96 fixes pre-open intraday labeling: when the app is showing a previous
   trading day's TWSE NAV snapshot before the next session opens, the quote card
   labels it as previous-trading-day data instead of generic pre-open waiting.

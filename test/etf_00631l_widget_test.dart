@@ -65,7 +65,7 @@ void main() {
     expect(find.text('分割調整'), findsNothing);
     expect(find.text('覆蓋型態'), findsNothing);
     expect(find.text('ETF歷史'), findsNothing);
-    expect(find.textContaining('歷史資料'), findsNothing);
+    expect(find.text('歷史資料'), findsOneWidget);
     expect(find.text('近一年走勢'), findsOneWidget);
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
     final summaryTop = tester.getTopLeft(find.text('今日摘要')).dy;
@@ -351,7 +351,7 @@ void main() {
       const ValueKey('00631l-overview-daily-summary-strip'),
     );
     final dailySummaryRect = tester.getRect(dailySummary);
-    for (final label in const ['DAY', 'LIVE', 'HIS']) {
+    for (final label in const ['官方內容物', '盤中 NAV', '歷史資料']) {
       final labelFinder = find.descendant(
         of: dailySummary,
         matching: find.text(label),
@@ -360,6 +360,12 @@ void main() {
       expect(
         tester.getRect(labelFinder).right,
         lessThanOrEqualTo(dailySummaryRect.right),
+      );
+    }
+    for (final label in const ['DAY', 'LIVE', 'HIS']) {
+      expect(
+        find.descendant(of: dailySummary, matching: find.text(label)),
+        findsNothing,
       );
     }
     expect(find.text('00631L'), findsWidgets);
