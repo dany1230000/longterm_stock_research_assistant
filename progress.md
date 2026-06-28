@@ -1031,3 +1031,18 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.71 committed/pushed as `e203f0c`, tag
+  `00631l-lab-v6.71-settings-first-screen`; public marker and strict
+  static-data checks passed. Public settings screenshot confirmed the first
+  screen now shows account/local/ETF context instead of persistence warnings.
+- Started v6.72 because the same settings screenshot still showed the data-mode
+  tile caption as a backend error. The first screen should explain static data
+  remains usable and leave backend error detail in advanced diagnostics.
+- Targeted v6.72 validation PASS: `dart format` on touched Dart files,
+  `flutter analyze`, and `flutter test test\etf_00631l_widget_test.dart
+  --plain-name "settings data mode softens backend errors on first screen"`.
+- v6.72 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (111 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

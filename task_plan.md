@@ -1593,6 +1593,24 @@ Completed in v6.71:
   showing a scary maintenance state on the first screen.
 - Widget coverage verifies technical diagnostics stay out of the first screen.
 
+## Phase 84 - v6.72 Settings Data Mode Caption
+
+Status: complete
+
+Objective: keep the account/settings first screen from surfacing raw backend
+error captions in the data-mode card.
+
+- Map backend error or unavailable states to a user-facing static-data fallback
+  caption on the settings first screen.
+- Keep detailed backend status available in advanced diagnostics.
+- Add widget coverage for backend-error settings mode.
+
+Completed in v6.72:
+
+- The settings data-mode card now says static data remains available when the
+  backend is unavailable or in error.
+- Backend status calculations and deeper diagnostics are unchanged.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

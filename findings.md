@@ -67,5 +67,9 @@
   backend persistence warnings and readiness labels on the first screen. The
   diagnostics are useful, but they should live below the account/preferences
   summary unless the user opens advanced status.
+- v6.71 public settings-page inspection confirmed the first-screen diagnostics
+  moved down, but the data-mode tile still used the backend error label as a
+  caption. That caption should describe static-data availability on the first
+  screen and leave backend error details in advanced diagnostics.
 - Position-page mobile inspection shows the account summary's horizontal fixed
   metric strip clips the `未實現損益` tile on phone width.

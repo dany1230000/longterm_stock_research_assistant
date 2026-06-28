@@ -10141,7 +10141,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
           _MetricCard(
             label: '資料模式',
             value: _frontendDataModeLabel,
-            caption: status.backendConnectionLabel,
+            caption: _settingsDataModeCaption(status),
             icon: Icons.cloud_sync_outlined,
           ),
           if (status.sourceStatusLabel == 'static_public_data' ||
@@ -10164,6 +10164,24 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
       ),
     );
   }
+}
+
+String _settingsDataModeCaption(EtfOperationsStatus status) {
+  if (status.sourceStatusLabel == 'static_public_data') {
+    return '公開靜態資料可用';
+  }
+  if (status.backendDisconnected ||
+      status.sourceStatusLabel == 'error' ||
+      status.sourceStatusLabel == 'unavailable') {
+    return '靜態資料可用，詳情在下方';
+  }
+  if (status.sourceStatusLabel == 'mock') {
+    return '預設示範資料';
+  }
+  if (_frontendDataModeLabel == 'live proxy') {
+    return '後端連線狀態詳情在下方';
+  }
+  return status.backendConnectionLabel;
 }
 
 class _EtfResearchRoomReadinessPanel extends StatelessWidget {

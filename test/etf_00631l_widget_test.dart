@@ -1880,6 +1880,26 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('settings data mode softens backend errors on first screen',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _SettingsBackendErrorRepository());
+
+    await _tapSection(tester, 'settings');
+    await tester.pumpAndSettle();
+
+    expect(find.text('靜態資料可用，詳情在下方'), findsWidgets);
+    expect(find.text('後端錯誤'), findsNothing);
+    expect(find.text('data path not writable'), findsNothing);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('AI daily facts fit in a compact phone row', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -2400,6 +2420,22 @@ class _EtfGapDetailsRepository extends _EtfCatalogGapOperationsRepository {
         'official_empty': ['00999'],
         'source_error': ['00749B'],
       },
+    );
+  }
+}
+
+class _SettingsBackendErrorRepository extends Mock00631LRepository {
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() {
+    return fetchLabData();
+  }
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    return EtfOperationsStatus.empty(
+      status: EtfDataStatus.error,
+      sourceStatusLabel: 'error',
+      errorMessage: 'backend unavailable',
     );
   }
 }

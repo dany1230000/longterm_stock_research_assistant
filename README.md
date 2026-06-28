@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.72 softens the settings data-mode caption so backend errors stay in
+  advanced diagnostics while static data availability remains clear.
 - v6.71 makes the account/settings first screen user-focused by keeping backend
   persistence diagnostics inside advanced status panels.
 - v6.70 localizes the position account unavailable percentage state so the
