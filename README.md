@@ -1840,3 +1840,6 @@ small badge and keeping AI as a short status chip instead of a truncated line.
 
 v6.38 keeps the overview daily summary strip in a neutral loading state during
 fast startup, so temporary full-data loading does not appear as a source error.
+
+v6.39 removes the duplicated 00631L overview core-data card so the first phone
+screen goes from quote and daily summary directly into the price/exposure chart.

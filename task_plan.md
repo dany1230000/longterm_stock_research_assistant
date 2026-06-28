@@ -890,6 +890,29 @@ Completed in v6.38:
   `error` / `unavailable` text.
 - Full validation passed with accepted WARN states only.
 
+## Phase 51 - v6.39 Overview Duplicate Core Cleanup
+
+Status: complete
+
+Objective: make the mobile overview first screen less repetitive by removing
+the 00631L-only `核心資料` card that duplicated the quote header, daily summary,
+and chart panel.
+
+- Keep quote header and daily summary as the first-screen data state.
+- Move directly into the price/exposure chart after the daily summary.
+- Keep non-00631L selected ETF core-data panels because they still provide
+  selected-symbol context.
+- Update widget coverage and docs.
+
+Completed in v6.39:
+
+- Removed the duplicated 00631L overview `核心資料` card.
+- The overview now flows from quote header to `今日摘要` into the
+  price/exposure chart.
+- Non-00631L selected ETF core panels remain available.
+- Removed obsolete strip/helper code and updated widget coverage.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

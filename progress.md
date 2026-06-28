@@ -554,3 +554,20 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.38 committed/pushed as `da2e69d`, tag
+  `00631l-lab-v6.38-fast-summary-loading-state`.
+- Public Pages marker and strict public static-data checks passed on v6.38.
+- Started v6.39 after mobile screenshot inspection showed the 00631L-only
+  `核心資料` card repeated quote/daily-summary/chart data and compressed the
+  first screen.
+- Removed the duplicated 00631L overview core-data card while keeping selected
+  non-00631L core-data panels.
+- Targeted v6.39 widget tests passed after switching assertions from the removed
+  card to the stable visible chart/title anchors.
+- Error: PowerShell rejected `&&` again while chaining format/test commands.
+  Resolution: ran the commands separately.
+- v6.39 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

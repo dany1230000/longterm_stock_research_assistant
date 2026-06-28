@@ -2450,10 +2450,6 @@ String _coreDataStatusLabel(Etf00631LLabData data) {
   return data.status.label;
 }
 
-String _coreDataStatusDisplay(Etf00631LLabData data) {
-  return _statusDisplay(_coreDataStatusLabel(data));
-}
-
 bool _isMockOrErrorStatus(String label) {
   final normalized = label.trim().toLowerCase();
   return normalized == 'mock' ||
@@ -2795,11 +2791,9 @@ class _OverviewSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
         ],
-        if (selectedEtf.is00631L)
-          _OverviewAtAGlancePanel(data: data)
-        else
+        if (!selectedEtf.is00631L)
           _SelectedEtfAtAGlancePanel(selectedEtf: selectedEtf),
-        const SizedBox(height: 8),
+        if (!selectedEtf.is00631L) const SizedBox(height: 8),
         _AlwaysExpandedPanel(
           title: selectedEtf.is00631L ? '價格與曝險' : '價格走勢',
           subtitle: selectedEtf.is00631L
@@ -3757,84 +3751,6 @@ class _OverviewMorePanel extends StatelessWidget {
   }
 }
 
-class _OverviewAtAGlancePanel extends StatelessWidget {
-  const _OverviewAtAGlancePanel({required this.data});
-
-  final Etf00631LLabData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final nav = data.intradayNav;
-    final performance = data.priceHistory.performance;
-    final latestHoldings = data.holdingsHistory.trendSummary().latest;
-    final exposureText = latestHoldings == null
-        ? 'history 尚未累積'
-        : 'TX ${formatNullablePercent(latestHoldings.txWeightPct)} / 台積電 ${formatNullablePercent(latestHoldings.tsmcWeightPct)}';
-    final metrics = [
-      _AtAGlanceMetricData(
-        label: '官方內容物',
-        value: formatTaiwanDate(data.snapshot.tradeDate),
-        caption: data.snapshot.status.label,
-      ),
-      _AtAGlanceMetricData(
-        label: '盤中 NAV',
-        value: _price(nav?.estimatedNav),
-        caption: nav?.dataTime == null
-            ? '盤中資料暫無'
-            : formatTimeSeconds(nav!.dataTime!),
-      ),
-      _AtAGlanceMetricData(
-        label: '內容物重點',
-        value: exposureText,
-        caption: '官方 history',
-      ),
-      _AtAGlanceMetricData(
-        label: '累積報酬',
-        value: formatSignedNullablePercent(
-          performance.totalReturnPct,
-        ),
-        caption:
-            '最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}',
-      ),
-    ];
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '核心資料',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-                _CompactTextBadge(label: _coreDataStatusDisplay(data)),
-              ],
-            ),
-            const SizedBox(height: 6),
-            _AtAGlanceMetricStrip(metrics: metrics),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _OverviewDataQualityPanel extends StatelessWidget {
   const _OverviewDataQualityPanel({required this.selectedEtf});
 
@@ -4731,34 +4647,6 @@ class _AtAGlanceMetricData {
   final String label;
   final String value;
   final String caption;
-}
-
-class _AtAGlanceMetricStrip extends StatelessWidget {
-  const _AtAGlanceMetricStrip({required this.metrics});
-
-  final List<_AtAGlanceMetricData> metrics;
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      key: const ValueKey('00631l-overview-core-metric-strip'),
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: [
-          for (var index = 0; index < metrics.length; index++) ...[
-            if (index > 0) const SizedBox(width: 6),
-            _AtAGlanceMetric(
-              width: 138,
-              label: metrics[index].label,
-              value: metrics[index].value,
-              caption: metrics[index].caption,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
 }
 
 class _AtAGlanceMetricGrid extends StatelessWidget {
