@@ -1571,6 +1571,28 @@ Completed in v6.70:
 - Widget coverage verifies the phone account summary renders the localized
   state.
 
+## Phase 83 - v6.71 Settings First Screen Cleanup
+
+Status: complete
+
+Objective: make the account/settings tab feel like a user page instead of a
+maintenance console on the first screen.
+
+- Keep account, local-only position data, selected ETF, and frontend mode first.
+- Move backend persistence and deeper data diagnostics into the existing
+  advanced panels.
+- Avoid raw technical labels such as `data path not writable` on the first
+  settings screen.
+- Keep all diagnostics available for maintenance users.
+
+Completed in v6.71:
+
+- The settings header now shows local-only context, selected ETF, and frontend
+  mode.
+- The daily status metric points users to advanced diagnostics instead of
+  showing a scary maintenance state on the first screen.
+- Widget coverage verifies technical diagnostics stay out of the first screen.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

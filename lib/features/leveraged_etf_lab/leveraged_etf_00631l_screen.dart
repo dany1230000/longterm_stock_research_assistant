@@ -9640,9 +9640,7 @@ class _SettingsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SettingsHeaderStrip(
-          readinessLabel: readiness.label,
-          backendLabel: status.backendConnectionLabel,
-          persistenceLabel: status.dataPersistenceLabel,
+          selectedEtfCode: selectedEtf.code,
         ),
         const SizedBox(height: 10),
         _SettingsQuickSummaryGrid(
@@ -10046,14 +10044,10 @@ class _EtfCatalogItemTile extends StatelessWidget {
 
 class _SettingsHeaderStrip extends StatelessWidget {
   const _SettingsHeaderStrip({
-    required this.readinessLabel,
-    required this.backendLabel,
-    required this.persistenceLabel,
+    required this.selectedEtfCode,
   });
 
-  final String readinessLabel;
-  final String backendLabel;
-  final String persistenceLabel;
+  final String selectedEtfCode;
 
   @override
   Widget build(BuildContext context) {
@@ -10084,7 +10078,7 @@ class _SettingsHeaderStrip extends StatelessWidget {
                     ),
                   ),
                 ),
-                _CompactTextBadge(label: readinessLabel),
+                const _CompactTextBadge(label: 'local-only'),
               ],
             ),
             const SizedBox(height: 7),
@@ -10101,9 +10095,9 @@ class _SettingsHeaderStrip extends StatelessWidget {
             const SizedBox(height: 8),
             _StatusWrap(
               labels: [
+                '本機保存',
+                '目前 $selectedEtfCode',
                 _frontendDataModeLabel,
-                backendLabel,
-                persistenceLabel,
               ],
             ),
           ],
@@ -10162,8 +10156,8 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
             ),
           _MetricCard(
             label: '日常狀態',
-            value: readinessLabel,
-            caption: status.reportOverallStatus,
+            value: readinessLabel == '正常' ? '正常' : '進階檢查',
+            caption: '詳細資料狀態在下方',
             icon: Icons.fact_check_outlined,
           ),
         ],

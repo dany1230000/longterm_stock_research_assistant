@@ -63,5 +63,9 @@
 - v6.69 public position-page inspection confirmed the account metric layout now
   fits, but the unrealized result still displayed raw `unavailable` text for a
   missing percentage.
+- v6.70 settings-page public inspection showed the account tab still surfaced
+  backend persistence warnings and readiness labels on the first screen. The
+  diagnostics are useful, but they should live below the account/preferences
+  summary unless the user opens advanced status.
 - Position-page mobile inspection shows the account summary's horizontal fixed
   metric strip clips the `未實現損益` tile on phone width.

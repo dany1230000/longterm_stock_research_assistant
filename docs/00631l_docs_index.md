@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings first-screen cleanup v6.71: `docs\00631l_v6_71_settings_first_screen_cleanup.md`
 - Position unavailable wording v6.70: `docs\00631l_v6_70_position_unavailable_wording.md`
 - Position account metric fit v6.69: `docs\00631l_v6_69_position_metric_fit.md`
 - History/backtest top density v6.68: `docs\00631l_v6_68_history_top_density.md`

@@ -1012,3 +1012,22 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.70 committed/pushed as `9473aa1`, tag
+  `00631l-lab-v6.70-position-unavailable-wording`; public marker and strict
+  static-data checks passed. Public static data row count is 2837 with coverage
+  2014-10-31 to 2026-06-26.
+- Public position-page screenshot confirmed the unrealized result now shows the
+  localized unavailable percentage label.
+- Started v6.71 after the public settings screenshot showed backend
+  persistence diagnostics on the first account/settings screen.
+- v6.71 keeps technical diagnostics available in advanced panels while making
+  the first settings screen focus on account, local-only data, selected ETF,
+  and frontend mode.
+- Targeted v6.71 validation PASS: `dart format` on touched Dart files,
+  `flutter analyze`, and `flutter test test\etf_00631l_widget_test.dart
+  --plain-name "settings first screen keeps technical diagnostics advanced"`.
+- v6.71 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (110 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

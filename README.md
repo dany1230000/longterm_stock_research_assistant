@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.71 makes the account/settings first screen user-focused by keeping backend
+  persistence diagnostics inside advanced status panels.
 - v6.70 localizes the position account unavailable percentage state so the
   phone account summary no longer shows raw English fallback text.
 - v6.69 makes the position account summary fit phone width with a 2x2 metric

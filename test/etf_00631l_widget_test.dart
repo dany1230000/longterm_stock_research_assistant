@@ -1855,6 +1855,31 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('settings first screen keeps technical diagnostics advanced',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _tapSection(tester, 'settings');
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-etf-room-readiness-panel')),
+      findsNothing,
+    );
+    expect(find.textContaining('目前 00631L'), findsWidgets);
+    expect(find.text('進階檢查'), findsWidgets);
+    expect(find.text('需要處理'), findsNothing);
+    expect(find.text('data path not writable'), findsNothing);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('AI daily facts fit in a compact phone row', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
