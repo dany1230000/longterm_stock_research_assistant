@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.93 reconciles public static ETF catalog rows against the ETF price-history
+  index, so a stale seed catalog cannot publish a smaller searchable universe
+  than the history/backtest data already exported to GitHub Pages.
 - v6.83 clarifies the expanded ETF search database counts: `目前清單` is the
   currently loaded list, while `統計母數` is the full readiness denominator.
 - v6.82 cleans up the expanded ETF search database detail panel by replacing

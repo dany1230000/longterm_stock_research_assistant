@@ -497,6 +497,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Static catalog completeness guard: `docs\00631l_v6_90_static_catalog_completeness_guard.md`
 - Public UI wording polish: `docs\00631l_v6_91_public_ui_wording_polish.md`
 - Public wording second pass: `docs\00631l_v6_92_public_wording_second_pass.md`
+- Static catalog history-index reconcile: `docs\00631l_v6_93_static_catalog_history_index_reconcile.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

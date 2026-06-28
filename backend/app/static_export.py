@@ -68,9 +68,18 @@ def export_static_00631l_data(
         failures=failures,
         strict=strict,
     )
+    catalog_payload = _reconcile_catalog_with_history_index(
+        catalog_payload=catalog_payload,
+        etf_history_payload=etf_history_payload,
+        generated_at=generated_at,
+        warnings=warnings,
+    )
     catalog_row_count = int(catalog_payload.get("rowCount") or 0)
     etf_history_row_count = int(etf_history_payload["rowCount"])
-    etf_out_of_catalog_count = max(0, etf_history_row_count - catalog_row_count)
+    etf_out_of_catalog_count = _out_of_catalog_code_count(
+        catalog_payload=catalog_payload,
+        etf_history_payload=etf_history_payload,
+    )
     catalog_min_rows = max(0, int(minimum_catalog_row_count))
     catalog_ready = catalog_min_rows == 0 or catalog_row_count >= catalog_min_rows
     if catalog_min_rows > 0 and not catalog_ready:
@@ -408,6 +417,104 @@ def _normalize_static_catalog_payload(
         else etf_catalog_payload.get("errorMessage")
         or "Static public ETF catalog has no rows.",
     }
+
+
+def _reconcile_catalog_with_history_index(
+    *,
+    catalog_payload: dict[str, Any],
+    etf_history_payload: dict[str, Any],
+    generated_at: str,
+    warnings: list[str],
+) -> dict[str, Any]:
+    catalog_items = [
+        dict(item) for item in catalog_payload.get("items") or [] if isinstance(item, dict)
+    ]
+    history_items = [
+        item for item in etf_history_payload.get("items") or [] if isinstance(item, dict)
+    ]
+    if not history_items:
+        return catalog_payload
+
+    seen_codes = {_normalized_code(item.get("code")) for item in catalog_items}
+    seen_codes.discard("")
+    additions: list[dict[str, Any]] = []
+    for item in history_items:
+        code = _normalized_code(item.get("code"))
+        if not code or code in seen_codes:
+            continue
+        seen_codes.add(code)
+        additions.append(_catalog_item_from_history_status(item, generated_at=generated_at))
+
+    if not additions:
+        return catalog_payload
+
+    merged_items = catalog_items + additions
+    warnings.append(f"historyIndexCatalogMerged={len(additions)}")
+    return {
+        **catalog_payload,
+        "items": merged_items,
+        "rowCount": len(merged_items),
+        "historyIndexMergedCount": int(catalog_payload.get("historyIndexMergedCount") or 0)
+        + len(additions),
+    }
+
+
+def _catalog_item_from_history_status(
+    item: dict[str, Any],
+    *,
+    generated_at: str,
+) -> dict[str, Any]:
+    code = _normalized_code(item.get("code"))
+    return {
+        "code": code,
+        "name": str(item.get("name") or code),
+        "outstandingUnits": None,
+        "outstandingUnitsDelta": None,
+        "marketPrice": None,
+        "estimatedNav": None,
+        "premiumDiscountPct": None,
+        "previousNav": None,
+        "dataDate": None,
+        "dataTime": item.get("dataTime") or item.get("coverageEnd"),
+        "targetType": "",
+        "sourceStatus": "static_history_index",
+        "sourceContract": item.get("sourceContract")
+        or "twse_multi_etf_static_price_history_index",
+        "sourceUrl": item.get("sourceUrl") or "static://etf-price-history-index",
+        "fetchedAt": generated_at,
+        "sourceUpdatedAt": item.get("sourceUpdatedAt")
+        or item.get("coverageEnd")
+        or item.get("dataTime"),
+        "coverageStart": item.get("coverageStart"),
+        "coverageEnd": item.get("coverageEnd"),
+        "coverageTier": item.get("coverageTier"),
+        "rowCount": int(item.get("rowCount") or 0),
+        "priceHistorySourceStatus": item.get("sourceStatus"),
+    }
+
+
+def _out_of_catalog_code_count(
+    *,
+    catalog_payload: dict[str, Any],
+    etf_history_payload: dict[str, Any],
+) -> int:
+    catalog_codes = {
+        _normalized_code(item.get("code"))
+        for item in catalog_payload.get("items") or []
+        if isinstance(item, dict)
+    }
+    catalog_codes.discard("")
+    history_codes = {
+        _normalized_code(item.get("code"))
+        for item in etf_history_payload.get("items") or []
+        if isinstance(item, dict)
+    }
+    history_codes.discard("")
+    return len(history_codes - catalog_codes)
+
+
+def _normalized_code(value: Any) -> str:
+    return str(value or "").strip().upper()
 
 
 def _export_static_etf_price_history(

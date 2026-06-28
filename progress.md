@@ -1280,3 +1280,19 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (274 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- Started v6.93 after public v6.92 static data check again showed a smaller
+  ETF catalog snapshot than the ETF price-history index (`etfCatalogRows=343`,
+  `etfRows=347`, `etfOutOfCatalog=4`). The previous seed merge was not enough
+  when the committed seed itself lagged behind the exported history universe.
+- v6.93 reconciles public static `etf_catalog.json` against
+  `etf_price_history_index.json`, appending missing code metadata as
+  `static_history_index` without fabricating market price, NAV, holdings, or
+  price-history rows.
+- Targeted v6.93 backend validation PASS: history-index catalog reconciliation,
+  seed merge, missing-history index, and selected ETF static history tests.
+- v6.93 local static export smoke PASS: `etfCatalogRows=347`, `etfRows=347`,
+  `etfOutOfCatalog=0`. Full validation PASS/WARN accepted:
+  `dart format --set-exit-if-changed .` PASS; `flutter analyze` PASS;
+  `flutter test` PASS; `flutter build web` PASS; backend tests PASS
+  (275 tests); `scripts\00631l_release_check.cmd` WARN with failures=0;
+  `git diff --check` PASS.

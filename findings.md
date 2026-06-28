@@ -145,3 +145,8 @@
   wording after v6.91: `official holdings` in the AI yellow summary, `完整 price
   history` under the history chart, `每日 holdings history`, and English ETF
   comparison guidance.
+- v6.93 public static verification found the catalog completeness guard still
+  depended on the committed seed catalog. When both TWSE catalog refresh and the
+  seed were behind the price-history index, public Pages could publish 347
+  history rows but only 343 catalog rows. The static exporter needs to reconcile
+  catalog metadata from the history index itself before writing public files.

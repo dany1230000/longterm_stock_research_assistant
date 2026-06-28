@@ -409,6 +409,47 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertEqual(gaps["items"][0]["code"], "00999")
         self.assertEqual(gaps["items"][0]["gapReason"], "not_saved")
 
+    def test_static_export_catalog_reconciles_history_index_codes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            store.save_points(rows)
+            etf_store = EtfPriceHistoryStore(root / "etf_history")
+            etf_store.save_points("0050", rows)
+            etf_store.save_points("00999A", rows)
+            catalog_payload = {
+                **_etf_catalog_payload(),
+                "rowCount": 1,
+                "items": [_etf_catalog_payload()["items"][1]],
+            }
+
+            result = export_static_00631l_data(
+                output_dir=root / "static",
+                price_history_store=store,
+                etf_price_history_store=etf_store,
+                etf_price_history_codes=["0050", "00999A"],
+                etf_catalog_payload=catalog_payload,
+                strict=True,
+                minimum_catalog_row_count=1,
+            )
+            catalog = json.loads(
+                (root / "static" / "etf_catalog.json").read_text(encoding="utf-8")
+            )
+            manifest = json.loads(
+                (root / "static" / "manifest.json").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(result["etfCatalogRowCount"], 2)
+        self.assertEqual(result["etfPriceHistoryOutOfCatalogCount"], 0)
+        self.assertEqual(manifest["etfCatalogRowCount"], 2)
+        self.assertEqual(manifest["etfPriceHistoryOutOfCatalogCount"], 0)
+        self.assertEqual([item["code"] for item in catalog["items"]], ["0050", "00999A"])
+        self.assertEqual(catalog["items"][1]["sourceStatus"], "static_history_index")
+        self.assertTrue(
+            any("historyIndexCatalogMerged=1" in item for item in result["warnings"])
+        )
+
     def test_static_export_all_catalog_resolves_catalog_codes(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             etf_store = EtfPriceHistoryStore(Path(temp_dir) / "etf_history")
