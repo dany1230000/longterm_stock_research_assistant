@@ -662,6 +662,28 @@ Completed in v6.27:
   section; generated screenshots were removed before staging.
 - Full validation passed with accepted WARN states only.
 
+## Phase 40 - v6.28 AI Daily Briefing Hero
+
+Status: complete
+
+Objective: make the AI page open with a compact daily interpretation instead of
+making users scan technical status blocks first.
+
+- Add a top `今日 AI 判讀` card on the AI page.
+- Group holdings date, intraday NAV time, source status, TX weight, TSMC weight,
+  premium-discount context, and the first program action.
+- Keep detailed AI/status panels below the new daily briefing.
+- Keep the summary rule-based and non-instructional.
+
+Completed in v6.28:
+
+- AI page now starts with a compact `今日 AI 判讀` card.
+- The card groups daily holdings, intraday NAV, source status, TX/TSMC weights,
+  premium-discount context, and the first program action.
+- Widget coverage verifies the AI daily briefing card and non-instructional
+  wording.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

@@ -426,3 +426,12 @@
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS. Playwright mobile screenshot verified a shorter core-data block; the
   screenshot artifact was removed.
+- Started v6.28 to make the AI page open with a compact daily interpretation.
+- Added a `今日 AI 判讀` hero card that groups holdings date, intraday NAV time,
+  source status, TX/TSMC weights, premium-discount context, and the first
+  program action while keeping detailed panels below it.
+- v6.28 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

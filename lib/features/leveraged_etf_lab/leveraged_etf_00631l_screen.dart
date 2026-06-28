@@ -7763,6 +7763,8 @@ class _AiSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _AiDailyBriefingHero(data: data, summary: summary),
+        const SizedBox(height: 12),
         _AiTodaySnapshotPanel(data: data, summary: summary),
         const SizedBox(height: 12),
         _AiDailyInterpretationCard(data: data, summary: summary),
@@ -7891,6 +7893,251 @@ class _AiSection extends StatelessWidget {
       ],
     );
   }
+}
+
+class _AiDailyBriefingHero extends StatelessWidget {
+  const _AiDailyBriefingHero({
+    required this.data,
+    required this.summary,
+  });
+
+  final Etf00631LLabData data;
+  final EtfAiAnalysisSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final nav = data.intradayNav;
+    final snapshot = data.snapshot;
+    final premium = nav?.premiumDiscountAssessment;
+    final txWeight = snapshot.futuresHoldings
+        .where((line) => line.code.toUpperCase().contains('TX'))
+        .fold<double>(0, (sum, line) => sum + line.weightPct);
+    final tsmcWeight = snapshot.stockHoldings
+        .where((line) => line.code == '2330')
+        .fold<double>(0, (sum, line) => sum + line.weightPct);
+    final primaryAction = summary.actionItems.isEmpty
+        ? '目前沒有必要的程式操作；請持續確認官方資料時間。'
+        : summary.actionItems.first;
+    final premiumText = premium == null
+        ? '盤中 NAV 暫時不可用，折溢價狀態無法判斷。'
+        : _premiumDescription(premium);
+    final statusColor = _aiStatusColor(context, summary, premium);
+
+    return DecoratedBox(
+      key: const ValueKey('00631l-ai-daily-briefing-hero'),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'AI'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '今日 AI 判讀',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ),
+                const _CompactTextBadge(label: 'rule_based'),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '依據官方每日內容物、盤中 NAV、歷史資料與維護狀態產生摘要。非買賣建議。',
+              key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            _StatusWrap(
+              labels: [
+                'holdings ${_dateOrDash(snapshot.tradeDate)}',
+                'NAV ${_intradayDataTimeText(nav)}',
+                'source ${summary.sourceStatusLabel}',
+              ],
+            ),
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: statusColor.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: statusColor.withValues(alpha: 0.45)),
+              ),
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                '資料狀態為 ${summary.readinessLabel}。$premiumText '
+                '官方 holdings 更新至 ${_dateOrDash(snapshot.tradeDate)}；'
+                'TX 權重 ${formatNullablePercent(txWeight)}，'
+                '台積電權重 ${formatNullablePercent(tsmcWeight)}。',
+                key: const ValueKey('00631l-ai-daily-briefing-summary'),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: _marketTextColor(context),
+                  height: 1.35,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final compact = constraints.maxWidth < 640;
+                final itemWidth = compact
+                    ? constraints.maxWidth
+                    : (constraints.maxWidth - 16) / 3;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    SizedBox(
+                      width: itemWidth,
+                      child: _AiDailyBriefingFact(
+                        label: '內容物',
+                        value: 'TX ${formatNullablePercent(txWeight)}',
+                        detail:
+                            '台積電 ${formatNullablePercent(tsmcWeight)}；官方每日快照',
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _AiDailyBriefingFact(
+                        label: '盤中 NAV',
+                        value: formatSignedNullablePercent(
+                          nav?.estimatedPremiumDiscountPct,
+                        ),
+                        detail: _intradayDataTimeText(nav),
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _AiDailyBriefingFact(
+                        label: '歷史資料',
+                        value:
+                            '${formatInteger(data.priceHistory.completenessSummary().rowCount)} rows',
+                        detail: data.priceHistory.sourceStatusLabel,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            Text(
+              '程式操作',
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 6),
+            _BulletLine(text: primaryAction, icon: Icons.task_alt_outlined),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiDailyBriefingFact extends StatelessWidget {
+  const _AiDailyBriefingFact({
+    required this.label,
+    required this.value,
+    required this.detail,
+  });
+
+  final String label;
+  final String value;
+  final String detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              detail,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w700,
+                height: 1.25,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Color _aiStatusColor(
+  BuildContext context,
+  EtfAiAnalysisSummary summary,
+  PremiumDiscountAssessment? premium,
+) {
+  final label =
+      '${summary.readinessLabel} ${summary.sourceStatusLabel} ${premium?.level.name ?? ''}'
+          .toLowerCase();
+  if (label.contains('error') ||
+      label.contains('unavailable') ||
+      label.contains('extreme') ||
+      label.contains('stale')) {
+    return _marketRed;
+  }
+  if (label.contains('watch') ||
+      label.contains('elevated') ||
+      label.contains('warn') ||
+      label.contains('觀察')) {
+    return const Color(0xFFFBBF24);
+  }
+  return _marketGreen;
 }
 
 class _AiTodayInterpretationMatrix extends StatelessWidget {

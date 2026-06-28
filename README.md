@@ -1801,3 +1801,7 @@ date labels stay inside the chart area.
 
 v6.27 turns the overview core data metrics into a compact horizontal strip so
 the quote card and chart stay closer together on phone screens.
+
+v6.28 adds a compact `今日 AI 判讀` card so the AI page opens with daily data
+context, key holdings exposure, intraday NAV status, and the first program
+action before showing detailed status panels.
