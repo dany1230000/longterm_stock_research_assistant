@@ -274,3 +274,24 @@
   PASS (98 tests), `flutter build web` PASS, backend tests PASS (271 tests),
   `scripts\00631l_release_check.cmd` WARN with failures=0, and
   `git diff --check` PASS.
+- v6.15 committed/pushed as `1b05413`, tag
+  `00631l-lab-v6.15-symbol-search-readiness-mix`.
+- Public Pages marker updated to v6.15. Strict public static-data check PASS
+  with rows 2837, coverage 2014-10-31 to 2026-06-26, ready 232 / rows 347,
+  and unclassified ETF gap 0.
+- Started v6.16 to show selected ETF capability badges after a symbol is
+  chosen.
+- Added red widget tests for catalog-only and history-ready selected ETF
+  capability badges. The targeted run failed on missing badge keys as expected.
+- Added selected ETF capability badges to the overview readiness banner and the
+  history/backtest readiness strip.
+- Targeted v6.16 validation PASS: `flutter test
+  test\etf_00631l_widget_test.dart --name "catalog-only ETF selection shows
+  missing history guidance|selecting ETF loads selected ETF history view"`
+  passed, then full `flutter test test\etf_00631l_widget_test.dart` passed
+  (31 tests).
+- Full v6.16 validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS, `flutter analyze` PASS, `flutter test` PASS
+  (98 tests), `flutter build web` PASS, backend tests PASS (271 tests),
+  `scripts\00631l_release_check.cmd` WARN with failures=0, and
+  `git diff --check` PASS.

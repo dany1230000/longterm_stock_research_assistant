@@ -522,6 +522,28 @@ class _SelectedEtfViewData {
     return '若要啟用歷史與回測，請先匯入該 ETF price history。';
   }
 
+  List<_SelectedEtfCapabilityBadge> get capabilityBadges {
+    final ready = hasImportedHistory;
+    return [
+      _SelectedEtfCapabilityBadge(
+        keySuffix: ready ? 'history-ready' : 'catalog-only',
+        label: ready ? 'history-ready' : 'catalog-only',
+      ),
+      _SelectedEtfCapabilityBadge(
+        keySuffix: ready ? 'backtest-ready' : 'backtest-paused',
+        label: ready ? 'backtest-ready' : 'backtest-paused',
+      ),
+      _SelectedEtfCapabilityBadge(
+        keySuffix: ready ? 'compare-ready' : 'compare-paused',
+        label: ready ? 'compare-ready' : 'compare-paused',
+      ),
+      _SelectedEtfCapabilityBadge(
+        keySuffix: ready ? 'ai-full-context' : 'ai-limited-context',
+        label: ready ? 'AI full-context' : 'AI limited-context',
+      ),
+    ];
+  }
+
   String get historyCoverageText {
     final summary = historySummary;
     return '${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}';
@@ -550,6 +572,16 @@ class _SelectedEtfViewData {
   String get liveNavScopeLabel {
     return is00631L ? '盤中 NAV backend' : '盤中 NAV 限 00631L';
   }
+}
+
+class _SelectedEtfCapabilityBadge {
+  const _SelectedEtfCapabilityBadge({
+    required this.keySuffix,
+    required this.label,
+  });
+
+  final String keySuffix;
+  final String label;
 }
 
 class _DetailsLoadStateStrip extends StatelessWidget {
@@ -3029,6 +3061,20 @@ class _SelectedEtfReadinessBanner extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 7),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final badge in selectedEtf.capabilityBadges)
+                  KeyedSubtree(
+                    key: ValueKey(
+                      '00631l-selected-etf-capability-${badge.keySuffix}',
+                    ),
+                    child: _StatusPill(label: badge.label),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 7),
             Text(
               selectedEtf.readinessDetail,
               key: const ValueKey('00631l-selected-etf-readiness-detail'),
@@ -3182,6 +3228,16 @@ class _SelectedEtfHistoryReadinessStrip extends StatelessWidget {
               Text(selectedEtf.backtestReadinessLabel),
               const SizedBox(width: 10),
               Text(selectedEtf.liveNavScopeLabel),
+              const SizedBox(width: 10),
+              for (final badge in selectedEtf.capabilityBadges) ...[
+                KeyedSubtree(
+                  key: ValueKey(
+                    '00631l-selected-etf-history-strip-capability-${badge.keySuffix}',
+                  ),
+                  child: _StatusPill(label: badge.label),
+                ),
+                const SizedBox(width: 8),
+              ],
             ],
           ),
         ),

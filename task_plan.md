@@ -425,7 +425,7 @@ current readiness filter for the active query.
 
 ## Phase 27 - v6.15 Symbol Search Readiness Mix
 
-Status: in_progress
+Status: complete
 
 Objective: show the ETF search query's data availability mix before the user
 switches filters or selects a symbol.
@@ -436,6 +436,22 @@ switches filters or selects a symbol.
 - Do not change history/backtest/comparison eligibility.
 - Validation: `flutter analyze`, `flutter test`, `flutter build web`,
   backend tests, release check WARN with failures=0, and `git diff --check`.
+
+## Phase 28 - v6.16 Selected ETF Capability Badges
+
+Status: complete
+
+Objective: make the currently selected ETF's usable functions visible after a
+symbol is selected.
+
+- Show compact capability badges for history, backtest, comparison, and AI
+  context.
+- Show ready and paused states without changing eligibility rules.
+- Add widget coverage for history-ready and catalog-only selected ETF states.
+- Keep labels descriptive and avoid any trading-instruction wording.
+- Validation: `dart format --set-exit-if-changed .`, `flutter analyze`,
+  `flutter test`, `flutter build web`, backend tests, release check WARN with
+  failures=0, and `git diff --check`.
 
 ## Phase 5 - Backtest and Position UX
 

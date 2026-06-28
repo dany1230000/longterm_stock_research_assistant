@@ -714,6 +714,30 @@ void main() {
       find.byKey(const ValueKey('00631l-selected-etf-readiness-banner')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-selected-etf-capability-catalog-only'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-selected-etf-capability-backtest-paused'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-selected-etf-capability-compare-paused'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-selected-etf-capability-ai-limited-context'),
+      ),
+      findsOneWidget,
+    );
     expect(find.textContaining('00400A 僅清單資料'), findsOneWidget);
     expect(find.textContaining('尚未匯入可驗證歷史價格'), findsWidgets);
 
@@ -784,6 +808,38 @@ void main() {
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-selected-etf-history-readiness-strip')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey(
+          '00631l-selected-etf-history-strip-capability-history-ready',
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey(
+          '00631l-selected-etf-history-strip-capability-backtest-ready',
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey(
+          '00631l-selected-etf-history-strip-capability-compare-ready',
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey(
+          '00631l-selected-etf-history-strip-capability-ai-full-context',
+        ),
+      ),
       findsOneWidget,
     );
     expect(

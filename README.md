@@ -1667,6 +1667,11 @@ v6.15 adds a query-level readiness mix to the same search sheet. It shows
 changes filters or switches symbols. Summary:
 `docs\00631l_v6_15_symbol_search_readiness_mix.md`.
 
+v6.16 adds selected ETF capability badges after a symbol is chosen. The current
+ETF now shows whether history, backtest, comparison, and AI context are ready or
+paused because the row is catalog-only. Summary:
+`docs\00631l_v6_16_selected_etf_capability_badges.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
