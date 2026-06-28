@@ -409,6 +409,20 @@ inspect by reason without changing any history/backtest eligibility.
 - Validation passed with Flutter analyze/test/build, backend tests, release
   check WARN with failures=0, and git diff check.
 
+## Phase 26 - v6.14 Symbol Search Filter Counts
+
+Status: complete
+
+Objective: make the ETF/stock search sheet show how many ETF rows match the
+current readiness filter for the active query.
+
+- Show a filtered ETF count against the current query candidate count.
+- Add stable widget coverage for `all`, `ready`, and `catalogOnly` filters.
+- Keep catalog-only rows clearly separate from history-ready rows.
+- Do not change history/backtest/comparison eligibility.
+- Validation passed with Flutter analyze/test/build, backend tests, release
+  check WARN with failures=0, and git diff check.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

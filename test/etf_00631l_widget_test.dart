@@ -643,6 +643,10 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.byKey(const ValueKey('00631l-symbol-filter-count-all-1-1')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-symbol-catalog-only-00400A')),
       findsOneWidget,
     );
@@ -674,12 +678,22 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),
       findsNothing,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-filter-count-ready-0-1')),
+      findsOneWidget,
+    );
 
     await tester
         .tap(find.byKey(const ValueKey('00631l-symbol-filter-catalogOnly')));
     await tester.pumpAndSettle();
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(
+        const ValueKey('00631l-symbol-filter-count-catalogOnly-1-1'),
+      ),
       findsOneWidget,
     );
 

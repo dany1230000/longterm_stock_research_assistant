@@ -1064,9 +1064,18 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
             _StatusWrap(
               labels: [
                 '篩選 ${_historyFilter.label}',
-                if (query.isEmpty) '熱門清單' else 'ETF ${visibleItems.length}',
+                if (query.isEmpty)
+                  '熱門清單'
+                else
+                  'ETF ${formatInteger(items.length)} / ${formatInteger(baseItems.length)}',
                 if (query.isNotEmpty) '個股 ${stockItems.length}',
               ],
+            ),
+            KeyedSubtree(
+              key: ValueKey(
+                '00631l-symbol-filter-count-${_historyFilter.name}-${items.length}-${baseItems.length}',
+              ),
+              child: const SizedBox.shrink(),
             ),
             const SizedBox(height: 10),
             SingleChildScrollView(

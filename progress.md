@@ -248,3 +248,16 @@
   (98 tests), `flutter build web` PASS, backend tests PASS (271 tests),
   `scripts\00631l_release_check.cmd` WARN with failures=0, and
   `git diff --check` PASS.
+- Started v6.14 to make the ETF/stock search sheet clearer when readiness
+  filters are used.
+- Added a red widget test for `all`, `ready`, and `catalogOnly` filter counts.
+  The test failed on the missing count key as expected.
+- Added a visible ETF filtered/candidate count in the search status strip and
+  a stable key for widget coverage.
+- Targeted v6.14 validation PASS: `flutter test
+  test\etf_00631l_widget_test.dart` passed.
+- Full v6.14 validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS, `flutter analyze` PASS, `flutter test` PASS
+  (98 tests), `flutter build web` PASS, backend tests PASS (271 tests),
+  `scripts\00631l_release_check.cmd` WARN with failures=0, and
+  `git diff --check` PASS.

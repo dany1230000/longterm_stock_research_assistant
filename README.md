@@ -1657,6 +1657,11 @@ buckets without changing which ETF histories are eligible for history,
 backtest, comparison, or AI context. Summary:
 `docs\00631l_v6_13_gap_detail_filters.md`.
 
+v6.14 adds ETF search filter result counts, so the top-left ETF/stock search
+sheet shows how many ETF rows match the selected `all`, `ready`, or
+`catalogOnly` filter for the current query. Summary:
+`docs\00631l_v6_14_symbol_search_filter_counts.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 
