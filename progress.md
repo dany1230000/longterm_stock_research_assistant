@@ -818,3 +818,18 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.57 committed/pushed as `bdc7359`, tag
+  `00631l-lab-v6.57-holdings-unavailable-state`; public marker and strict
+  static data checks passed.
+- Playwright mobile screenshot verified the holdings panel now shows a compact
+  unavailable state instead of 0-value digest tiles.
+- Started v6.58 after the public screenshot showed the quote card title still
+  using a long 00631L fund name that truncates on phone width.
+- Changed the 00631L quote card title to `00631L 元大台灣50正2` while leaving
+  non-00631L selected ETF titles data-driven.
+- Targeted quote-header widget test passed.
+- v6.58 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (104 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

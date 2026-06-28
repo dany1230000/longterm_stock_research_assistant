@@ -23,3 +23,6 @@
   history, but also revealed an invalid holdings snapshot could still render
   a digest with zero/unavailable values. Holdings digest needs its own usable
   snapshot guard.
+- v6.57 public mobile inspection showed the 00631L quote card title can still
+  truncate because it uses the long fund registration name. The quote card
+  should use the short product name while preserving the full name elsewhere.

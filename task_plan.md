@@ -1288,6 +1288,26 @@ Completed in v6.57:
 - Widget coverage verifies both valid digest and unavailable digest states.
 - Full validation passed with accepted WARN states only.
 
+## Phase 70 - v6.58 Compact Quote Short Name
+
+Status: complete
+
+Objective: keep the first quote card readable on phone width by avoiding the
+long 00631L fund registration name in the card title.
+
+- Show `00631L 元大台灣50正2` in the quote card for the 00631L context.
+- Keep selected non-00631L ETF titles driven by catalog/history data.
+- Do not change price, NAV, holdings, source labels, or calculations.
+- Add widget coverage for the compact quote title.
+
+Completed in v6.58:
+
+- The 00631L quote card title now renders as `00631L 元大台灣50正2`.
+- Non-00631L selected ETF titles remain driven by catalog/history data.
+- Widget coverage verifies the compact quote title and duplicate code title
+  guard.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

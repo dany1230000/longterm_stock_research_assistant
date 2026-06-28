@@ -19,6 +19,7 @@ void main() {
     expect(find.textContaining('ETF 研究室'), findsWidgets);
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.text('00631L 00631L'), findsNothing);
+    expect(find.textContaining('00631L 元大台灣50正2'), findsOneWidget);
     expect(find.textContaining('元大台灣50正2'), findsWidgets);
     expect(find.textContaining('市價'), findsWidgets);
     expect(find.textContaining('預估淨值'), findsNothing);

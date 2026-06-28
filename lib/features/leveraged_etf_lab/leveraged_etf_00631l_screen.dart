@@ -1762,6 +1762,7 @@ class _CompactQuoteHeader extends StatelessWidget {
     final latestHistoryPoint = history.latest;
     final quoteValue = selectedEtf.marketPrice ?? latestHistoryPoint?.close;
     final quoteStatus = selectedEtf.sourceStatusLabel;
+    final quoteName = selectedEtf.is00631L ? '元大台灣50正2' : selectedEtf.name;
     final usesLiveQuote =
         selectedEtf.is00631L && data.intradayNav?.marketPrice != null;
     final usesCatalogQuote =
@@ -1811,7 +1812,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              '${selectedEtf.code} ${selectedEtf.name}',
+                              '${selectedEtf.code} $quoteName',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.labelMedium?.copyWith(
