@@ -583,3 +583,16 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.40 committed/pushed as `b3e6520`, tag
+  `00631l-lab-v6.40-compact-holdings-digest`.
+- Public Pages marker and strict public static-data checks passed on v6.40.
+- Started v6.41 after mobile screenshot inspection showed `今日摘要` still had
+  duplicated P/D and AI chips plus raw `twse_a_k_json` text.
+- Simplified `今日摘要` to DAY / LIVE / HIS and mapped intraday source contracts
+  to user-facing labels.
+- Targeted fast-start widget test passed.
+- v6.41 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

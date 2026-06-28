@@ -444,6 +444,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Fast summary loading state: `docs\00631l_v6_38_fast_summary_loading_state.md`
 - Overview duplicate core cleanup: `docs\00631l_v6_39_overview_duplicate_core_cleanup.md`
 - Compact holdings digest: `docs\00631l_v6_40_compact_holdings_digest.md`
+- Daily summary simplification: `docs\00631l_v6_41_daily_summary_simplification.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

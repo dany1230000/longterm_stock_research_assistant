@@ -2843,21 +2843,12 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final nav = data.intradayNav;
-    final premiumAssessment = nav?.premiumDiscountAssessment;
     final priceSummary = data.priceHistory.completenessSummary();
     final navTime = detailsLoading
         ? 'loading'
         : nav?.dataTime == null
             ? 'unavailable'
             : _sourceTimeText(nav!.dataTime!);
-    final premiumValue = detailsLoading
-        ? 'pending'
-        : formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct);
-    final premiumCaption = detailsLoading
-        ? 'full data'
-        : premiumAssessment == null
-            ? 'unavailable'
-            : _premiumLabel(premiumAssessment);
     final historyIsAvailable = priceSummary.rowCount >= 2;
     final items = [
       _OverviewDailySummaryItem(
@@ -2872,12 +2863,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
         value: navTime,
         caption: detailsLoading
             ? 'backend / static'
-            : nav?.sourceContract ?? nav?.status.label ?? 'backend required',
-      ),
-      _OverviewDailySummaryItem(
-        badge: 'P/D',
-        value: premiumValue,
-        caption: premiumCaption,
+            : _intradaySummarySourceLabel(nav),
       ),
       _OverviewDailySummaryItem(
         badge: 'HIS',
@@ -2887,11 +2873,6 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
         caption: detailsLoading && !historyIsAvailable
             ? 'static history'
             : '${_dateOrDash(priceSummary.coverageStart)} - ${_dateOrDash(priceSummary.coverageEnd)}',
-      ),
-      _OverviewDailySummaryItem(
-        badge: 'AI',
-        value: detailsLoading ? 'loading' : data.aiAnalysis.readinessLabel,
-        caption: detailsLoading ? 'rule based' : data.aiAnalysis.source,
       ),
     ];
 
@@ -2943,6 +2924,20 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
       ),
     );
   }
+}
+
+String _intradaySummarySourceLabel(EtfIntradayNav? nav) {
+  final contract = nav?.sourceContract?.trim().toLowerCase();
+  if (contract == null || contract.isEmpty) {
+    return nav?.status.label ?? 'backend required';
+  }
+  if (contract.contains('twse')) {
+    return 'TWSE';
+  }
+  if (contract.contains('yuanta')) {
+    return 'Yuanta';
+  }
+  return nav?.status.label ?? contract;
 }
 
 class _OverviewDailySummaryItem {

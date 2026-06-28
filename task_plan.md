@@ -933,6 +933,27 @@ Completed in v6.40:
 - Widget coverage verifies the compact digest strip on phone width.
 - Full validation passed with accepted WARN states only.
 
+## Phase 53 - v6.41 Daily Summary Simplification
+
+Status: complete
+
+Objective: make the overview `今日摘要` strip fit phone screens better and avoid
+raw technical source-contract text.
+
+- Keep only DAY, LIVE, and HIS summary chips.
+- Remove duplicate P/D and AI chips from the overview summary.
+- Display intraday source as TWSE/Yuanta/status instead of raw contract IDs.
+- Add widget coverage and docs.
+
+Completed in v6.41:
+
+- Overview daily summary now keeps DAY, LIVE, and HIS only.
+- Removed duplicate P/D and AI summary chips.
+- Intraday source caption maps raw contract IDs to user-facing source labels.
+- Widget coverage verifies the fast-start summary does not show removed or raw
+  technical labels.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

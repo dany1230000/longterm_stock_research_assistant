@@ -452,7 +452,15 @@ void main() {
     );
     expect(
       find.descendant(of: dailySummary, matching: find.text('pending')),
-      findsOneWidget,
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('P/D')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('twse_a_k_json')),
+      findsNothing,
     );
     expect(
       find.descendant(of: dailySummary, matching: find.text('error')),

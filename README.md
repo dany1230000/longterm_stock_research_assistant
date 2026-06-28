@@ -1846,3 +1846,6 @@ screen goes from quote and daily summary directly into the price/exposure chart.
 
 v6.40 compresses the official holdings digest into a short horizontal strip so
 TX, TSMC, and stock/futures/cash mix remain visible without a tall card stack.
+
+v6.41 simplifies the overview daily summary to DAY / LIVE / HIS and replaces
+raw intraday source-contract text with user-facing source labels.
