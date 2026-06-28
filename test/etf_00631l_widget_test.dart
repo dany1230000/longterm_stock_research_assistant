@@ -490,7 +490,11 @@ void main() {
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('backend check')),
+      find.descendant(of: dailySummary, matching: find.text('daily')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('backend')),
       findsOneWidget,
     );
     expect(

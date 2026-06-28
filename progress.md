@@ -743,3 +743,15 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Started v6.53 after the public v6.52 phone screenshot still showed clipped
+  DAY/LIVE/HIS captions.
+- Shortened the fast-start DAY and LIVE captions and added a compact history
+  coverage year format for the overview summary row.
+- Error: initial v6.53 analyze found the old `_summaryCoverageYears` helper was
+  unused after the compact coverage helper took over. Resolution: removed the
+  unused helper and reran analyze successfully.
+- v6.53 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (102 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

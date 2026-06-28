@@ -2854,13 +2854,12 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
         value: detailsLoading
             ? 'syncing'
             : formatTaiwanDate(data.snapshot.tradeDate),
-        caption: detailsLoading ? 'daily snapshot' : data.snapshot.status.label,
+        caption: detailsLoading ? 'daily' : data.snapshot.status.label,
       ),
       _OverviewDailySummaryItem(
         badge: 'LIVE',
         value: navTime,
-        caption:
-            detailsLoading ? 'backend check' : _intradaySummarySourceLabel(nav),
+        caption: detailsLoading ? 'backend' : _intradaySummarySourceLabel(nav),
       ),
       _OverviewDailySummaryItem(
         badge: 'HIS',
@@ -2868,8 +2867,8 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
             ? 'checking'
             : '${formatInteger(priceSummary.rowCount)}筆',
         caption: detailsLoading && !historyIsAvailable
-            ? 'static history'
-            : _summaryCoverageYears(priceSummary),
+            ? 'static'
+            : _summaryCoverageCompactYears(priceSummary),
       ),
     ];
 
@@ -2922,7 +2921,9 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
   }
 }
 
-String _summaryCoverageYears(EtfPriceHistoryCompletenessSummary summary) {
+String _summaryCoverageCompactYears(
+  EtfPriceHistoryCompletenessSummary summary,
+) {
   final start = summary.coverageStart;
   final end = summary.coverageEnd;
   if (start == null || end == null) {
@@ -2931,7 +2932,8 @@ String _summaryCoverageYears(EtfPriceHistoryCompletenessSummary summary) {
   if (start.year == end.year) {
     return '${start.year}';
   }
-  return '${start.year}-${end.year}';
+  final endYear = (end.year % 100).toString().padLeft(2, '0');
+  return '${start.year}-$endYear';
 }
 
 String _intradaySummarySourceLabel(EtfIntradayNav? nav) {

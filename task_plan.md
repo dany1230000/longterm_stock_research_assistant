@@ -1184,6 +1184,24 @@ Completed in v6.52:
 - Targeted fast-start widget test and full validation passed with accepted
   WARN states only.
 
+## Phase 65 - v6.53 Summary Caption Fit
+
+Status: complete
+
+Objective: remove remaining caption ellipsis from the first-screen DAY / LIVE /
+HIS summary row on phone width.
+
+- Shorten the DAY caption to `daily`.
+- Shorten the LIVE caption to `backend`.
+- Use compact year-range captions for history coverage.
+- Keep source and calculation behavior unchanged.
+
+Completed in v6.53:
+
+- Overview summary captions are now short enough for phone cards.
+- Removed the old unused full-year helper after analyze caught it.
+- Targeted and full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
