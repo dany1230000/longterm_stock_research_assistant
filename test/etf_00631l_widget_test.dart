@@ -712,7 +712,17 @@ void main() {
     );
     expect(find.text('市價'), findsNothing);
     expect(find.text('一次投入'), findsOneWidget);
-    expect(find.text('定期定額'), findsWidgets);
+    final quickResultStrip =
+        find.byKey(const ValueKey('00631l-backtest-quick-result-strip'));
+    expect(quickResultStrip, findsOneWidget);
+    expect(
+      find.descendant(of: quickResultStrip, matching: find.text('年化')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: quickResultStrip, matching: find.text('波動')),
+      findsOneWidget,
+    );
     await tester.ensureVisible(find.text('金額與成本參數'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('金額與成本參數'));
@@ -721,7 +731,7 @@ void main() {
     expect(find.text('每月投入金額'), findsOneWidget);
     expect(find.text('每月日期'), findsOneWidget);
     expect(find.text('手續費率 %'), findsOneWidget);
-    expect(find.text('期末市值'), findsWidgets);
+    expect(quickResultStrip, findsOneWidget);
     expect(find.textContaining('回測不代表未來表現'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);
     _expectNoTradingActionText();

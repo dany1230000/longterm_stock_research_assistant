@@ -6963,11 +6963,20 @@ class _BacktestQuickResultStrip extends StatelessWidget {
         value: formatSignedNullablePercent(result.totalReturnPct),
       ),
       _InlineQualityPill(
+        label: '年化',
+        value: formatSignedNullablePercent(result.annualizedReturnPct),
+      ),
+      _InlineQualityPill(
         label: '回撤',
         value: formatSignedNullablePercent(result.maxDrawdownPct),
       ),
+      _InlineQualityPill(
+        label: '波動',
+        value: formatNullablePercent(result.volatilityPct),
+      ),
     ];
     return DecoratedBox(
+      key: const ValueKey('00631l-backtest-quick-result-strip'),
       decoration: BoxDecoration(
         color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
@@ -7242,39 +7251,6 @@ class _BacktestSectionState extends State<_BacktestSection> {
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    _ResponsiveMetricGrid(
-                      cards: [
-                        _MetricCard(
-                          label: '期末市值',
-                          value: formatNtdAmount(result.finalValue),
-                          caption: result.sourceStatusLabel,
-                          icon: Icons.account_balance_wallet_outlined,
-                        ),
-                        _MetricCard(
-                          label: '總投入',
-                          value: formatNtdAmount(result.totalInvested),
-                          caption: '歷史投入加總',
-                          icon: Icons.savings_outlined,
-                        ),
-                        _MetricCard(
-                          label: '累積報酬',
-                          value: formatSignedNullablePercent(
-                            result.totalReturnPct,
-                          ),
-                          caption: '歷史回測',
-                          icon: Icons.percent_outlined,
-                        ),
-                        _MetricCard(
-                          label: '最大回撤',
-                          value: formatSignedNullablePercent(
-                            result.maxDrawdownPct,
-                          ),
-                          caption: '歷史區間',
-                          icon: Icons.trending_down_outlined,
-                        ),
-                      ],
                     ),
                     if (result.equityCurve.isNotEmpty) ...[
                       const SizedBox(height: 12),

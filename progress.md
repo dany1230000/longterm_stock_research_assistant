@@ -693,3 +693,18 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.48 committed/pushed as `438f669`, tag
+  `00631l-lab-v6.48-ai-fact-row-compact`.
+- Public Pages marker and strict public static-data check passed on v6.48.
+- Started v6.49 to remove duplicated backtest result cards and keep the
+  backtest result summary in one compact strip.
+- Error: PowerShell blocked `npx.ps1` under the current execution policy while
+  taking a screenshot. Resolution: use `npx.cmd` for Playwright CLI commands.
+- Added annualized return and volatility to the backtest quick result strip,
+  added a stable key, removed the duplicated 2x2 result grid, and updated
+  widget coverage.
+- v6.49 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (102 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

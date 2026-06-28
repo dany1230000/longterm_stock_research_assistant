@@ -1104,6 +1104,26 @@ Completed in v6.48:
 - Wider layouts keep the existing multi-card fact layout.
 - Full validation passed with accepted WARN states only.
 
+## Phase 61 - v6.49 Backtest Result Compact
+
+Status: complete
+
+Objective: shorten the backtest result area on phone screens without removing
+key result data.
+
+- Keep the quick result strip as the primary backtest result summary.
+- Add annualized return and volatility to the quick result strip.
+- Remove the duplicated 2x2 result grid below the input panel.
+- Keep backtest formulas, date range controls, cost inputs, and charts
+  unchanged.
+
+Completed in v6.49:
+
+- Backtest quick result strip now includes annualized return and volatility.
+- Removed the duplicated result metric grid below the parameter panel.
+- Targeted widget test and full validation passed with accepted WARN states
+  only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

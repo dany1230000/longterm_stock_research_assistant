@@ -1877,3 +1877,7 @@ on phone screens.
 v6.48 compacts the AI daily briefing facts on phone width. Content, intraday
 NAV, and history facts now sit in one row instead of three tall cards, while the
 rule-based non-advice summary remains unchanged.
+
+v6.49 compacts the backtest result area. The quick result strip now includes
+annualized return and volatility, and the duplicated 2x2 result grid was removed
+so the chart and settings appear sooner on phone screens.
