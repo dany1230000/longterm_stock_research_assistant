@@ -616,6 +616,28 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('symbol search ranks code matches before name matches',
+      (tester) async {
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '50',
+    );
+    await tester.pumpAndSettle();
+
+    final codeMatch =
+        find.byKey(const ValueKey('00631l-symbol-search-result-0050'));
+    expect(codeMatch, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-rank-0-0050')),
+      findsOneWidget,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('catalog-only ETF selection shows missing history guidance',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());

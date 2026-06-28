@@ -335,3 +335,15 @@
   release marker already matches the expected HEAD.
 - Updated the deploy status checker to pass expected SHA into public Pages
   smoke checks and summarize public release marker metadata.
+- v6.19 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS, `flutter analyze` PASS, `flutter test` PASS (98 tests),
+  `flutter build web` PASS, backend tests PASS (273 tests),
+  `scripts\00631l_release_check.cmd` WARN with failures=0, and
+  `git diff --check` PASS.
+- v6.19 committed/pushed as `82947d3`, tag
+  `00631l-lab-v6.19-pages-deploy-status-alignment`.
+- Public Pages marker and strict public static-data checks passed on v6.19.
+- Started v6.20 to make the top-left ETF search rank exact code and
+  history-ready matches before looser catalog matches.
+- Added a widget test for code-match ranking and a visible rank contract through
+  hidden keys.

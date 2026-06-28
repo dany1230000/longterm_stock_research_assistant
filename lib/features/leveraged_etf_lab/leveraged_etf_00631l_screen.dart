@@ -1001,10 +1001,10 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
         : widget.data.operationsStatus.etfCatalogRowCount;
     final baseItems = query.isEmpty
         ? catalog.focusItems
-        : [
+        : _rankedSymbolSearchItems([
             for (final item in catalog.items)
               if (_catalogSearchText(item).contains(query)) item,
-          ];
+          ], query);
     final items = [
       for (final item in baseItems)
         if (_symbolSearchFilterIncludes(_historyFilter, item)) item,
@@ -1155,6 +1155,13 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               ),
               child: const SizedBox.shrink(),
             ),
+            for (final (index, item) in visibleItems.take(5).indexed)
+              KeyedSubtree(
+                key: ValueKey(
+                  '00631l-symbol-search-rank-$index-${item.code}',
+                ),
+                child: const SizedBox.shrink(),
+              ),
             Flexible(
               child: visibleItems.isEmpty && stockItems.isEmpty
                   ? _EmptyPanel(
@@ -11867,6 +11874,57 @@ DateTime? _historyFirstDate(EtfPriceHistory history) {
 
 String _catalogSearchText(EtfCatalogItem item) {
   return '${item.code} ${item.name} ${item.targetType}'.toLowerCase();
+}
+
+List<EtfCatalogItem> _rankedSymbolSearchItems(
+  List<EtfCatalogItem> items,
+  String query,
+) {
+  final normalizedQuery = query.trim().toLowerCase();
+  final indexed = items.indexed.toList(growable: false);
+  indexed.sort((left, right) {
+    final rankCompare = _symbolSearchRank(left.$2, normalizedQuery)
+        .compareTo(_symbolSearchRank(right.$2, normalizedQuery));
+    if (rankCompare != 0) {
+      return rankCompare;
+    }
+    final leftReady = _catalogItemHasImportedEtfHistory(left.$2);
+    final rightReady = _catalogItemHasImportedEtfHistory(right.$2);
+    if (leftReady != rightReady) {
+      return leftReady ? -1 : 1;
+    }
+    final codeCompare = left.$2.code.compareTo(right.$2.code);
+    if (codeCompare != 0) {
+      return codeCompare;
+    }
+    return left.$1.compareTo(right.$1);
+  });
+  return [for (final entry in indexed) entry.$2];
+}
+
+int _symbolSearchRank(EtfCatalogItem item, String query) {
+  if (query.isEmpty) {
+    return 0;
+  }
+  final code = item.code.trim().toLowerCase();
+  final name = item.name.trim().toLowerCase();
+  final targetType = item.targetType.trim().toLowerCase();
+  if (code == query) {
+    return 0;
+  }
+  if (code.startsWith(query)) {
+    return 1;
+  }
+  if (code.contains(query)) {
+    return 2;
+  }
+  if (name.contains(query)) {
+    return 3;
+  }
+  if (targetType.contains(query)) {
+    return 4;
+  }
+  return 5;
 }
 
 String _stockSearchText(Stock stock) {

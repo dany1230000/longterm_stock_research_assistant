@@ -486,7 +486,7 @@ deployment that GitHub Pages may reject.
 
 ## Phase 31 - v6.19 Pages Deploy Status Alignment
 
-Status: in_progress
+Status: complete
 
 Objective: keep the local Pages deployment checker aligned with the v6.18
 main-branch tag polling flow.
@@ -496,6 +496,26 @@ main-branch tag polling flow.
 - Downgrade stale workflow-run warnings only when the public release marker
   already matches expected HEAD.
 - Keep mismatched public release metadata as a warning.
+
+Completed in v6.19:
+
+- Pages deploy status now passes the expected SHA to public Pages smoke checks.
+- Public release marker metadata is included in the status summary.
+- Stale workflow WARN states are downgraded only when the public marker matches
+  expected HEAD.
+- Public Pages marker and strict static-data checks passed on v6.19.
+
+## Phase 32 - v6.20 Symbol Search Ranking
+
+Status: in_progress
+
+Objective: make the top-left ETF/stock search behave more like a production
+symbol picker.
+
+- Rank exact ETF code matches first.
+- Rank code-prefix and code-contains matches before name-only matches.
+- Prefer history-ready rows over catalog-only rows for equal match quality.
+- Keep readiness labels truthful and do not change eligibility rules.
 
 ## Phase 5 - Backtest and Position UX
 
