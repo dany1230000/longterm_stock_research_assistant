@@ -913,6 +913,26 @@ Completed in v6.39:
 - Removed obsolete strip/helper code and updated widget coverage.
 - Full validation passed with accepted WARN states only.
 
+## Phase 52 - v6.40 Compact Holdings Digest
+
+Status: complete
+
+Objective: keep official holdings visible in the overview while reducing the
+height of the holdings digest on phone screens.
+
+- Replace tall holdings info cards with compact horizontal digest tiles.
+- Keep TX futures, TSMC stock, and stock/futures/cash mix visible.
+- Preserve the daily-snapshot wording and source truth.
+- Add widget coverage and release docs.
+
+Completed in v6.40:
+
+- Replaced the overview holdings card grid with compact horizontal digest
+  tiles.
+- TX, TSMC, and stock/futures/cash mix remain visible in the overview.
+- Widget coverage verifies the compact digest strip on phone width.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

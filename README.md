@@ -1843,3 +1843,6 @@ fast startup, so temporary full-data loading does not appear as a source error.
 
 v6.39 removes the duplicated 00631L overview core-data card so the first phone
 screen goes from quote and daily summary directly into the price/exposure chart.
+
+v6.40 compresses the official holdings digest into a short horizontal strip so
+TX, TSMC, and stock/futures/cash mix remain visible without a tall card stack.

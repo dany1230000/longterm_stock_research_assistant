@@ -1340,6 +1340,10 @@ void main() {
     expect(find.text('TX 期貨'), findsWidgets);
     expect(find.text('台積電現股'), findsOneWidget);
     expect(find.text('股票 / 期貨 / 現金'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
+      findsOneWidget,
+    );
     expect(find.text('TX'), findsWidgets);
     expect(find.text('2330'), findsOneWidget);
     expect(find.text('MIX'), findsOneWidget);

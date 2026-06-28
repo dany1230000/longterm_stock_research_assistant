@@ -3894,51 +3894,143 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            _InfoCardGrid(
-              children: [
-                _HoldingInfoCard(
+            _HoldingDigestStrip(
+              items: [
+                _HoldingDigestItem(
                   badge: 'TX',
                   title: 'TX 期貨',
-                  primary: txLine == null
+                  value: txLine == null
                       ? 'unavailable'
                       : formatNullablePercent(txLine.weightPct),
-                  secondary: txLine == null
+                  caption: txLine == null
                       ? '官方快照未列 TX'
                       : '${txLine.code} / ${txLine.contractMonth}',
-                  caption: '官方每日期貨權重',
-                  progressValue: txLine == null
-                      ? null
-                      : (txLine.weightPct.abs() / 220).clamp(0, 1).toDouble(),
                 ),
-                _HoldingInfoCard(
+                _HoldingDigestItem(
                   badge: '2330',
                   title: '台積電現股',
-                  primary: tsmcLine == null
+                  value: tsmcLine == null
                       ? 'unavailable'
                       : formatNullablePercent(tsmcLine.weightPct),
-                  secondary: tsmcLine == null
+                  caption: tsmcLine == null
                       ? '官方快照未列 2330'
-                      : formatInteger(tsmcLine.quantity),
-                  caption: '官方每日股票權重',
-                  progressValue: tsmcLine == null
-                      ? null
-                      : (tsmcLine.weightPct.abs() / 100).clamp(0, 1).toDouble(),
+                      : '${formatInteger(tsmcLine.quantity)} 股',
                 ),
-                _HoldingInfoCard(
+                _HoldingDigestItem(
                   badge: 'MIX',
                   title: '股票 / 期貨 / 現金',
-                  primary:
+                  value:
                       '${formatNullablePercent(snapshot.stockExposureWeightPct)} / ${formatNullablePercent(snapshot.futuresExposureWeightPct)}',
-                  secondary:
+                  caption:
                       '現金 ${formatNullablePercent(snapshot.cashAndMarginWeightPct)}',
-                  caption: '官方資產結構',
-                  progressValue: (snapshot.futuresExposureWeightPct.abs() / 220)
-                      .clamp(0, 1)
-                      .toDouble(),
                 ),
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HoldingDigestItem {
+  const _HoldingDigestItem({
+    required this.badge,
+    required this.title,
+    required this.value,
+    required this.caption,
+  });
+
+  final String badge;
+  final String title;
+  final String value;
+  final String caption;
+}
+
+class _HoldingDigestStrip extends StatelessWidget {
+  const _HoldingDigestStrip({required this.items});
+
+  final List<_HoldingDigestItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      key: const ValueKey('00631l-overview-holdings-digest-strip'),
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          for (var index = 0; index < items.length; index++) ...[
+            if (index > 0) const SizedBox(width: 6),
+            _HoldingDigestTile(item: items[index]),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _HoldingDigestTile extends StatelessWidget {
+  const _HoldingDigestTile({required this.item});
+
+  final _HoldingDigestItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox(
+      width: 142,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketPanelAltColor(context),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: _marketBorderColor(context)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(9, 8, 9, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  _MiniStatusBadge(label: item.badge),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      item.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 7),
+              Text(
+                item.value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                item.caption,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

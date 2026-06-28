@@ -571,3 +571,15 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.39 committed/pushed as `c9964ca`, tag
+  `00631l-lab-v6.39-overview-duplicate-core-cleanup`.
+- Public Pages marker and strict public static-data checks passed on v6.39.
+- Started v6.40 after v6.39 mobile inspection showed the official holdings
+  digest still used tall cards; changed it to a compact horizontal strip for
+  TX, TSMC, and stock/futures/cash mix.
+- Targeted holdings-digest widget test passed.
+- v6.40 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
