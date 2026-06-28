@@ -1759,6 +1759,24 @@ Completed in v6.80:
 - Repository coverage verifies ready/missing/gap reason counts are preserved in
   fast startup.
 
+## Phase 93 - v6.81 Search Result Count Labels
+
+Status: complete
+
+Objective: make the ETF search sheet distinguish full database readiness from
+the current result-list counts.
+
+- Replace English internal chip labels with short Chinese result-context labels.
+- Keep the full ETF database readiness summary separate and unchanged.
+- Preserve existing search and ETF switching behavior.
+
+Completed in v6.81:
+
+- Current result-list chips now show `目前結果 歷史可用` and
+  `目前結果 未匯入歷史`.
+- Widget coverage verifies the catalog-only search case no longer renders the
+  old English chip text.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

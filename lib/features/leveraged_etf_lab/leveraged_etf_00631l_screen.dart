@@ -1244,8 +1244,8 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
             ),
             _StatusWrap(
               labels: [
-                'history-ready ${formatInteger(queryReadyCount)}',
-                'catalog-only ${formatInteger(queryCatalogOnlyCount)}',
+                '目前結果 歷史可用 ${formatInteger(queryReadyCount)}',
+                '目前結果 未匯入歷史 ${formatInteger(queryCatalogOnlyCount)}',
               ],
             ),
             KeyedSubtree(

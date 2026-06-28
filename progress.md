@@ -1152,3 +1152,11 @@
   test\etf_00631l_proxy_repository_test.dart --plain-name "cached fast startup
   overlays static public price history"` now verifies ETF ready/missing/gap
   counts from static fallback.
+- Started v6.81 after the public search sheet still showed English internal
+  result chips (`history-ready`, `catalog-only`) below the corrected database
+  readiness summary.
+- v6.81 changes those chips to Chinese current-result labels and keeps the
+  global database readiness summary above them.
+- Targeted v6.81 validation PASS: `flutter test
+  test\etf_00631l_widget_test.dart --plain-name "catalog-only ETF selection
+  shows missing history guidance"`.

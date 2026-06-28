@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.81 cleans up the left-top ETF search sheet result counters: local result
+  chips now say `目前結果 歷史可用` and `目前結果 未匯入歷史`, separate from the
+  full database readiness summary.
 - v6.80 fixes the left-top ETF search sheet readiness summary: fast startup now
   merges static-public ETF library readiness metadata, so the database
   completion count matches the static index instead of catalog-only fallback

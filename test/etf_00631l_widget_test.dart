@@ -1081,6 +1081,10 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-query-catalog-only-count-1')),
       findsOneWidget,
     );
+    expect(find.text('目前結果 歷史可用 0'), findsOneWidget);
+    expect(find.text('目前結果 未匯入歷史 1'), findsOneWidget);
+    expect(find.textContaining('history-ready'), findsNothing);
+    expect(find.textContaining('catalog-only'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-symbol-catalog-only-00400A')),
       findsOneWidget,

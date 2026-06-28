@@ -102,3 +102,6 @@
   static-public ETF price-history index was available. Repository-level merging
   is the correct fix because the search sheet, settings panel, and fast startup
   all need the same source-truth metadata.
+- v6.81 search-sheet review found the corrected global readiness summary was
+  followed by English internal result chips. Current-result chips need explicit
+  local context so users do not confuse them with full database coverage.
