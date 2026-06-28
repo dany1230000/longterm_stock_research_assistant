@@ -8536,6 +8536,43 @@ class _AiDailyBriefingHero extends StatelessWidget {
             LayoutBuilder(
               builder: (context, constraints) {
                 final compact = constraints.maxWidth < 640;
+                final factCards = [
+                  _AiDailyBriefingFact(
+                    label: '內容物',
+                    value: 'TX ${formatNullablePercent(txWeight)}',
+                    detail: '台積電 ${formatNullablePercent(tsmcWeight)}；官方每日快照',
+                  ),
+                  _AiDailyBriefingFact(
+                    label: '盤中 NAV',
+                    value: formatSignedNullablePercent(
+                      nav?.estimatedPremiumDiscountPct,
+                    ),
+                    detail: _intradayDataTimeText(nav),
+                  ),
+                  _AiDailyBriefingFact(
+                    label: '歷史資料',
+                    value:
+                        '${formatInteger(data.priceHistory.completenessSummary().rowCount)} rows',
+                    detail: data.priceHistory.sourceStatusLabel,
+                  ),
+                ];
+                if (compact) {
+                  return Row(
+                    key: const ValueKey('00631l-ai-daily-fact-row'),
+                    children: [
+                      for (var index = 0; index < factCards.length; index += 1)
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              left: index == 0 ? 0 : 4,
+                              right: index == factCards.length - 1 ? 0 : 4,
+                            ),
+                            child: factCards[index],
+                          ),
+                        ),
+                    ],
+                  );
+                }
                 final itemWidth = compact
                     ? constraints.maxWidth
                     : (constraints.maxWidth - 16) / 3;
@@ -8543,34 +8580,8 @@ class _AiDailyBriefingHero extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    SizedBox(
-                      width: itemWidth,
-                      child: _AiDailyBriefingFact(
-                        label: '內容物',
-                        value: 'TX ${formatNullablePercent(txWeight)}',
-                        detail:
-                            '台積電 ${formatNullablePercent(tsmcWeight)}；官方每日快照',
-                      ),
-                    ),
-                    SizedBox(
-                      width: itemWidth,
-                      child: _AiDailyBriefingFact(
-                        label: '盤中 NAV',
-                        value: formatSignedNullablePercent(
-                          nav?.estimatedPremiumDiscountPct,
-                        ),
-                        detail: _intradayDataTimeText(nav),
-                      ),
-                    ),
-                    SizedBox(
-                      width: itemWidth,
-                      child: _AiDailyBriefingFact(
-                        label: '歷史資料',
-                        value:
-                            '${formatInteger(data.priceHistory.completenessSummary().rowCount)} rows',
-                        detail: data.priceHistory.sourceStatusLabel,
-                      ),
-                    ),
+                    for (final card in factCards)
+                      SizedBox(width: itemWidth, child: card),
                   ],
                 );
               },

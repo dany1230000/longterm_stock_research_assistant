@@ -682,3 +682,14 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.47 committed/pushed as `d59245e`, tag
+  `00631l-lab-v6.47-position-empty-hint-compact`.
+- Public Pages marker and strict public static-data check passed on v6.47.
+- Started v6.48 to make AI daily briefing facts fit one phone-width row.
+- Changed the AI hero fact cards to render as a compact three-cell row on
+  phone width and added widget coverage.
+- v6.48 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (102 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

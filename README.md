@@ -1873,3 +1873,7 @@ range, while detailed data-quality notes move into an expandable panel.
 v6.47 shortens the local position page empty state. The large no-position panel
 is now a compact hint strip so input fields and local-only actions appear sooner
 on phone screens.
+
+v6.48 compacts the AI daily briefing facts on phone width. Content, intraday
+NAV, and history facts now sit in one row instead of three tall cards, while the
+rule-based non-advice summary remains unchanged.

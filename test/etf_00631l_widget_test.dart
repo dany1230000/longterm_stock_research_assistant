@@ -1627,6 +1627,34 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('AI daily facts fit in a compact phone row', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _tapSection(tester, 'ai');
+    await tester.pumpAndSettle();
+
+    final factRow = find.byKey(const ValueKey('00631l-ai-daily-fact-row'));
+    expect(factRow, findsOneWidget);
+    final rowRect = tester.getRect(factRow);
+    for (final label in const ['內容物', '盤中 NAV', '歷史資料']) {
+      final labelFinder = find.descendant(
+        of: factRow,
+        matching: find.text(label),
+      );
+      expect(labelFinder, findsOneWidget);
+      expect(
+          tester.getRect(labelFinder).right, lessThanOrEqualTo(rowRect.right));
+    }
+    _expectNoTradingActionText();
+  });
+
   testWidgets('settings shows ETF data library readiness', (tester) async {
     await _pumpLab(tester, _EtfReadinessOperationsRepository());
 

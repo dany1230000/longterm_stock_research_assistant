@@ -1087,6 +1087,23 @@ Completed in v6.47:
   unchanged.
 - Full validation passed with accepted WARN states only.
 
+## Phase 60 - v6.48 AI Fact Row Compact
+
+Status: complete
+
+Objective: make the AI daily briefing facts scan faster on phone width.
+
+- Keep the rule-based AI daily briefing and disclaimer unchanged.
+- Render content, intraday NAV, and history facts as one compact row on phones.
+- Preserve the wider multi-card layout.
+- Add phone-width widget coverage.
+
+Completed in v6.48:
+
+- AI daily briefing facts now fit in a compact three-cell row on phone width.
+- Wider layouts keep the existing multi-card fact layout.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
