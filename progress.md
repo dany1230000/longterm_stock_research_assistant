@@ -1257,3 +1257,15 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (274 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- Started v6.91 after public mobile screenshots showed remaining raw
+  implementation wording on history and AI first-screen surfaces.
+- v6.91 maps additional analysis phrases (`official holdings`,
+  `live intraday NAV`, `intraday NAV`, `price history`, and `readiness`) to
+  product-facing labels, applies source-label mapping to the history header, and
+  maps today-snapshot / selected-ETF AI bullets before rendering.
+- Targeted v6.91 widget validation PASS: `flutter test
+  test\etf_00631l_widget_test.dart`.
+- v6.91 full validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (274 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

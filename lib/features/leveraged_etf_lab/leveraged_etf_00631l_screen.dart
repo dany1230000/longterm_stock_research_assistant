@@ -2556,10 +2556,15 @@ String _sourceStatusBadgeLabel(String? rawStatus) {
 String _aiDisplayText(String text) {
   var value = text;
   const literalReplacements = {
+    'official holdings': '官方每日內容物',
+    'live intraday NAV': '盤中 NAV',
+    'intraday NAV': '盤中 NAV',
+    'price history': '價格歷史',
     'static public mode': '公開靜態模式',
     'GitHub Pages 靜態 JSON': '公開靜態資料',
     'public backend proxy': '公開後端',
     'sourceStatus': '來源狀態',
+    'readiness': '整體狀態',
     'rule_based': '規則分析',
     'static_official': '靜態官方',
     'static_public_data': '公開靜態資料',
@@ -5782,7 +5787,11 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                _CompactTextBadge(label: priceHistory.sourceStatusLabel),
+                _CompactTextBadge(
+                  label: _sourceStatusBadgeLabel(
+                    priceHistory.sourceStatusLabel,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -9237,10 +9246,12 @@ class _AiTodaySnapshotPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bullets = _aiTodaySnapshotBullets(data, summary);
+    final bullets = _aiTodaySnapshotBullets(data, summary)
+        .map(_aiDisplayText)
+        .toList(growable: false);
     final action = summary.actionItems.isEmpty
         ? '目前沒有程式操作項目；請保留資料時間檢查。'
-        : summary.actionItems.first;
+        : _aiDisplayText(summary.actionItems.first);
     return DecoratedBox(
       key: const ValueKey('00631l-ai-today-snapshot'),
       decoration: BoxDecoration(
@@ -9396,19 +9407,19 @@ class _AiBriefCards extends StatelessWidget {
       _AiBriefTile(
         key: const ValueKey('00631l-ai-daily-brief'),
         label: '當日重點',
-        value: dailyBrief,
+        value: _aiDisplayText(dailyBrief),
         icon: Icons.today_outlined,
       ),
       _AiBriefTile(
         key: const ValueKey('00631l-ai-intraday-brief'),
         label: '盤中偏離',
-        value: intradayBrief,
+        value: _aiDisplayText(intradayBrief),
         icon: Icons.price_change_outlined,
       ),
       _AiBriefTile(
         key: const ValueKey('00631l-ai-risk-brief'),
         label: '資料風險',
-        value: riskBrief,
+        value: _aiDisplayText(riskBrief),
         icon: Icons.health_and_safety_outlined,
       ),
     ];
@@ -9600,8 +9611,12 @@ class _SelectedEtfAiSection extends StatelessWidget {
         : history.hasAdjustedClose
             ? '調整價可用'
             : '未套用';
-    final bullets = _selectedEtfAnalysisBullets(selectedEtf);
-    final actions = _selectedEtfProgramActions(selectedEtf);
+    final bullets = _selectedEtfAnalysisBullets(selectedEtf)
+        .map(_aiDisplayText)
+        .toList(growable: false);
+    final actions = _selectedEtfProgramActions(selectedEtf)
+        .map(_aiDisplayText)
+        .toList(growable: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -626,6 +626,8 @@ void main() {
       findsOneWidget,
     );
     expect(find.textContaining('coverage'), findsWidgets);
+    expect(find.text('static_official'), findsNothing);
+    expect(find.textContaining('static_official'), findsNothing);
     expect(find.text('價格歷史'), findsOneWidget);
     expect(
       tester.getTopLeft(find.text('價格歷史')).dy,
@@ -1885,8 +1887,12 @@ void main() {
     expect(find.textContaining('static public mode'), findsNothing);
     expect(find.textContaining('GitHub Pages 靜態 JSON'), findsNothing);
     expect(find.textContaining('public backend proxy'), findsNothing);
+    expect(find.textContaining('live intraday NAV'), findsNothing);
+    expect(find.textContaining('price history'), findsNothing);
+    expect(find.textContaining('official holdings'), findsNothing);
     expect(find.textContaining('rows'), findsNothing);
     expect(find.textContaining('cached'), findsNothing);
+    expect(find.textContaining('static_official'), findsNothing);
 
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();

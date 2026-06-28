@@ -2003,3 +2003,8 @@ v6.90 strengthens static public ETF catalog completeness. Pages export now
 merges the committed ETF catalog seed into the runtime catalog snapshot by code,
 so a temporary TWSE catalog HTTP failure does not publish a smaller catalog than
 the ETF price-history index.
+
+v6.91 continues public UI wording cleanup. History and AI screens now map
+remaining raw source/status phrases such as `static_official`,
+`official holdings`, `live intraday NAV`, and `price history` into product-facing
+labels before display.

@@ -137,3 +137,7 @@
   status still covered 347 symbols. The manifest warning showed a transient
   TWSE catalog HTTP 502; catalog export should preserve the committed seed
   catalog instead of publishing a reduced catalog snapshot.
+- v6.91 public mobile screenshots found remaining raw implementation phrases on
+  first-screen surfaces: the history header displayed `static_official`, and AI
+  cards still showed phrases such as `official holdings`, `live intraday NAV`,
+  and `price history`.

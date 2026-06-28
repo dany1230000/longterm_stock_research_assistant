@@ -1951,6 +1951,24 @@ static ETF catalog completeness.
 - Full validation passed with acceptable WARN-only release check output and
   `failures=0`.
 
+## Phase 103 - v6.91 Public UI Wording Polish
+
+Status: complete
+
+Objective: remove remaining raw implementation phrases from public history and
+AI first-screen surfaces.
+
+- Map additional analysis phrases such as `official holdings`,
+  `live intraday NAV`, `intraday NAV`, `price history`, and `readiness` before
+  display.
+- Use source-status display labels in the history header instead of raw source
+  keys.
+- Keep raw repository/model contracts unchanged.
+- Add widget coverage so history and AI surfaces do not display these raw
+  phrases.
+- Full validation passed with acceptable WARN-only release check output and
+  `failures=0`.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
