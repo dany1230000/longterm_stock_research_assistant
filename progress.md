@@ -770,3 +770,12 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Started v6.55 after the public v6.54 phone screenshot showed the quote header
+  title as `00631L 00631L`.
+- Added a display fallback so 00631L uses the profile name when history only
+  supplies the code as the name.
+- v6.55 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (102 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -1221,6 +1221,26 @@ Completed in v6.54:
 - Fallback banner remains explicit and shorter.
 - Targeted and full validation passed with accepted WARN states only.
 
+## Phase 67 - v6.55 Quote Title Name
+
+Status: complete
+
+Objective: remove the duplicated `00631L 00631L` quote header label on the
+public first screen.
+
+- Use the 00631L profile name when price history only provides the code as the
+  name.
+- Keep selected non-00631L ETF names driven by history/catalog data.
+- Keep quote, NAV, holdings, and calculation behavior unchanged.
+- Add widget coverage that the duplicate quote title is gone.
+
+Completed in v6.55:
+
+- 00631L quote header now falls back to `元大台灣50正2` when history name is
+  only the code.
+- Widget coverage verifies `00631L 00631L` is not rendered.
+- Targeted and full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

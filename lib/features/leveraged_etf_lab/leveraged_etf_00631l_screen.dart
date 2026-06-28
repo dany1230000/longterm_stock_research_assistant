@@ -444,10 +444,16 @@ class _SelectedEtfViewData {
               ));
     final summary = history.completenessSummary();
     final nav = is00631L ? data.intradayNav : null;
-    final name = history.name.trim().isNotEmpty
-        ? history.name.trim()
-        : catalogItem?.displayName ??
-            (is00631L ? data.profile.fundName : normalized);
+    final historyName = history.name.trim();
+    final profileName = data.profile.fundName.trim();
+    final name = is00631L && (historyName.isEmpty || historyName == normalized)
+        ? (profileName.isEmpty || profileName == normalized
+            ? '元大台灣50正2'
+            : profileName)
+        : historyName.isNotEmpty
+            ? historyName
+            : catalogItem?.displayName ??
+                (is00631L ? data.profile.fundName : normalized);
     final marketPrice = is00631L
         ? nav?.marketPrice ?? summary.latest?.close ?? catalogItem?.marketPrice
         : catalogItem?.marketPrice ?? summary.latest?.close;
