@@ -1785,3 +1785,7 @@ history symbols are not silently mixed into comparison charts.
 v6.22 adds skipped-row detail chips to the comparison panel. Skipped ETFs now
 show code, active-range row count, and source status while remaining excluded
 from chart and table calculations.
+
+v6.23 compacts ETF comparison controls for phone screens. Comparison actions
+now stay in one horizontal strip while preserving the existing filter and basket
+behavior.

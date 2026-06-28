@@ -373,3 +373,14 @@
   PASS (100 tests); `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.22 committed/pushed as `f13fb19`, tag
+  `00631l-lab-v6.22-comparison-skipped-details`. Public Pages marker and strict
+  public static-data checks passed on v6.22.
+- Started v6.23 to compact comparison action controls for mobile.
+- Updated comparison actions to a horizontal scroll strip and added widget
+  coverage for the strip key.
+- v6.23 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS after formatting one test file; `flutter analyze` PASS; `flutter test`
+  PASS (100 tests); `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -561,6 +561,24 @@ Completed in v6.22:
 - Widget coverage verifies catalog-only skipped detail appears.
 - Full validation passed with accepted WARN states only.
 
+## Phase 35 - v6.23 Compact Comparison Controls
+
+Status: complete
+
+Objective: reduce vertical clutter in the ETF comparison section on mobile
+without changing comparison data, filters, or basket behavior.
+
+- Keep filter and action controls reachable.
+- Make comparison action buttons occupy one horizontal row.
+- Preserve existing stable button keys for widget tests and user flows.
+
+Completed in v6.23:
+
+- Comparison actions now render in a horizontal strip.
+- Existing filter, basket, and action behavior is unchanged.
+- Widget coverage verifies the compact action strip is present.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

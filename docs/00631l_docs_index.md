@@ -426,6 +426,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Symbol search ranking: `docs\00631l_v6_20_symbol_search_ranking.md`
 - Comparison readiness: `docs\00631l_v6_21_comparison_readiness.md`
 - Comparison skipped details: `docs\00631l_v6_22_comparison_skipped_details.md`
+- Compact comparison controls: `docs\00631l_v6_23_compact_comparison_controls.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
