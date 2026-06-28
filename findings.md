@@ -39,3 +39,7 @@
 - v6.61 public mobile inspection confirmed summary labels improved when values
   are available, but invalid holdings snapshots can still render a 0% official
   exposure strip beside the price chart.
+- v6.62 public mobile inspection confirmed the zero-value exposure strip is
+  gone. The next visible issue is that DAY/LIVE summary chips can still show
+  background-sync wording even when a specific source already reports
+  error/unavailable.

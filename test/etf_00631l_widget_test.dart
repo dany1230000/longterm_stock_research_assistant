@@ -544,6 +544,32 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('fast startup shows unavailable for known holdings errors',
+      (tester) async {
+    final repository = _FastStartupNoUsableHoldingsRepository();
+
+    await _pumpLab(tester, repository, settle: false);
+    await tester.pump();
+
+    final dailySummary = find.byKey(
+      const ValueKey('00631l-overview-daily-summary-strip'),
+    );
+    expect(dailySummary, findsOneWidget);
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('syncing')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('unavailable')),
+      findsWidgets,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('error')),
+      findsWidgets,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('full data failure keeps fast first screen visible',
       (tester) async {
     await _pumpLab(
@@ -2461,6 +2487,28 @@ class _FastStartupRepository extends Mock00631LRepository {
 
   Future<void> complete() async {
     _fullCompleter.complete(await Mock00631LRepository().fetchLabData());
+  }
+}
+
+class _FastStartupNoUsableHoldingsRepository extends _FastStartupRepository {
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() async {
+    final data = await Mock00631LRepository().fetchFastLabData();
+    final snapshot = await _NoUsableHoldingsRepository().fetchDailySnapshot();
+    return Etf00631LLabData(
+      profile: data.profile,
+      snapshot: snapshot,
+      intradayNav: data.intradayNav,
+      futuresQuote: data.futuresQuote,
+      holdingsHistory: data.holdingsHistory,
+      intradayNavHistory: data.intradayNavHistory,
+      priceHistory: data.priceHistory,
+      operationsStatus: data.operationsStatus,
+      analysis: data.analysis,
+      aiAnalysis: data.aiAnalysis,
+      etfCatalog: data.etfCatalog,
+      lastFetchedAt: data.lastFetchedAt,
+    );
   }
 }
 

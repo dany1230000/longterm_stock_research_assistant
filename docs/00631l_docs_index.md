@@ -4,6 +4,8 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Summary unavailable state v6.63: `docs\00631l_v6_63_summary_unavailable_state.md`
+- Exposure unavailable guard v6.62: `docs\00631l_v6_62_exposure_unavailable_guard.md`
 - Standalone PWA v3.2 summary: `docs\00631l_v3_2_standalone_pwa_summary.md`
 - Live-public ready v3.3 summary: `docs\00631l_v3_3_live_public_summary.md`
 - Live backend v3.4 summary: `docs\00631l_v3_4_live_backend_summary.md`

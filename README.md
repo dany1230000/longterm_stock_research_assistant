@@ -2,6 +2,14 @@
 
 ## 00631L lab status
 
+Latest mobile UI polish:
+
+- v6.63 makes the DAY/LIVE/HIS summary row prefer known unavailable/error
+  states over background-sync wording, so confirmed data issues do not look
+  like an endless load.
+- v6.62 hides invalid zero-value official exposure strips when holdings are not
+  usable.
+
 v4.0 is the App Store foundation release. The app is now framed as `ETF 研究室`, with `00631L 正二研究室` as the first complete research room. The public root URL opens the 00631L app directly, without first showing the old general research dashboard.
 
 Public root URL:

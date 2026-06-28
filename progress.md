@@ -888,3 +888,19 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.62 committed/pushed as `2fc7772`, tag
+  `00631l-lab-v6.62-exposure-unavailable-guard`; public marker and strict
+  static-data checks passed.
+- Playwright mobile screenshot confirmed the zero-value exposure strip is gone.
+  Started v6.63 after the same screenshot showed DAY/LIVE summary chips could
+  still use background-sync wording despite a known source error/unavailable
+  state.
+- v6.63 now prioritizes explicit error/unavailable summary states over
+  `syncing`/`checking` wording for known final source states.
+- Targeted v6.63 widget test passed for fast startup with a known holdings
+  error.
+- v6.63 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (106 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -2863,23 +2863,31 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
     final nav = data.intradayNav;
     final priceSummary = data.priceHistory.completenessSummary();
     final hasUsableSnapshot = _hasUsableHoldingsSnapshot(data.snapshot);
+    final snapshotKnownUnavailable =
+        _summaryStatusIsKnownUnavailable(data.snapshot.status.label);
     final hasNavTime = nav?.dataTime != null;
+    final navKnownUnavailable =
+        _summaryStatusIsKnownUnavailable(nav?.status.label);
     final dayValue = hasUsableSnapshot
         ? formatTaiwanDate(data.snapshot.tradeDate)
-        : detailsLoading
-            ? 'syncing'
-            : 'unavailable';
-    final dayCaption = hasUsableSnapshot
+        : snapshotKnownUnavailable
+            ? 'unavailable'
+            : detailsLoading
+                ? 'syncing'
+                : 'unavailable';
+    final dayCaption = hasUsableSnapshot || snapshotKnownUnavailable
         ? data.snapshot.status.label
         : detailsLoading
             ? 'daily'
             : data.snapshot.status.label;
     final navTime = hasNavTime
         ? formatTimeSeconds(nav!.dataTime!)
-        : detailsLoading
-            ? 'checking'
-            : 'unavailable';
-    final navCaption = hasNavTime
+        : navKnownUnavailable
+            ? 'unavailable'
+            : detailsLoading
+                ? 'checking'
+                : 'unavailable';
+    final navCaption = hasNavTime || navKnownUnavailable
         ? _intradaySummarySourceLabel(nav)
         : detailsLoading
             ? 'backend'
@@ -2954,6 +2962,11 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
       ),
     );
   }
+}
+
+bool _summaryStatusIsKnownUnavailable(String? label) {
+  final normalized = label?.trim().toLowerCase();
+  return normalized == 'error' || normalized == 'unavailable';
 }
 
 String _summaryCoverageCompactYears(

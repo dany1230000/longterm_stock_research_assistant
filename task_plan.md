@@ -1398,6 +1398,29 @@ Completed in v6.62:
 - Widget coverage verifies both valid and unavailable exposure-strip states.
 - Full validation passed with accepted WARN states only.
 
+## Phase 75 - v6.63 Summary Final Unavailable State
+
+Status: complete
+
+Objective: make the overview DAY/LIVE/HIS summary row distinguish known
+unavailable/error states from background loading.
+
+- Prefer `unavailable` plus the actual source status when a source explicitly
+  reports error/unavailable.
+- Keep `syncing` / `checking` only for sources that are still genuinely
+  waiting for detail data.
+- Add widget coverage for fast startup with a known holdings error.
+- Do not change source fetching, parsers, history, backtest, position, or AI
+  logic.
+
+Completed in v6.63:
+
+- Summary chips now show `unavailable` plus the actual source status when a
+  source explicitly reports error/unavailable.
+- Background-sync wording remains only for genuinely pending detail data.
+- Widget coverage verifies fast startup with a known holdings error.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
