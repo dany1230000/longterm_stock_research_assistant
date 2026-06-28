@@ -1128,3 +1128,12 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- Public v6.77 strict static-data check passed after release: public data now
+  reports ready 231 / catalog 347, missing 116, official_empty 96,
+  source_error 20, and unclassified 0.
+- Started v6.78 after confirming the app still exposed the ETF data-library
+  state as detailed maintenance metrics before a plain summary.
+- Added a readable settings summary for ETF data-library completeness while
+  keeping detailed diagnostics below it.
+- Added widget coverage for the classified public-style gap state: 231 / 347
+  usable ETF histories, official-empty 96, source-error 20, unclassified 0.

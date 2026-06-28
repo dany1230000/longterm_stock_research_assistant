@@ -10518,6 +10518,12 @@ class _EtfDataLibrarySummary extends StatelessWidget {
             cards: cards,
           ),
           const SizedBox(height: 10),
+          _EtfLibraryReadableSummary(
+            status: status,
+            historyTotal: historyTotal,
+            missingCount: notReady,
+          ),
+          const SizedBox(height: 10),
           _StatusRow(
             item: _etfHistoryNextActionItem(
               status: status,
@@ -10530,6 +10536,49 @@ class _EtfDataLibrarySummary extends StatelessWidget {
             item: _etfHistoryGapReasonItem(status),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _EtfLibraryReadableSummary extends StatelessWidget {
+  const _EtfLibraryReadableSummary({
+    required this.status,
+    required this.historyTotal,
+    required this.missingCount,
+  });
+
+  final EtfOperationsStatus status;
+  final int historyTotal;
+  final int missingCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final counts = status.etfPriceHistoryGapReasonCounts;
+    final unclassified = counts['not_saved'] ?? 0;
+    final officialEmpty = counts['official_empty'] ?? 0;
+    final sourceError = counts['source_error'] ?? 0;
+    final ready = status.etfPriceHistoryReadyCount;
+    final total = historyTotal > 0 ? historyTotal : ready + missingCount;
+    final allClassified = missingCount == 0 || unclassified == 0;
+    final statusText =
+        allClassified ? '缺口已分類' : '待分類 ${formatInteger(unclassified)}';
+    final detail = missingCount <= 0
+        ? '目前 ${formatInteger(ready)} 檔 ETF 歷史資料可用。'
+        : '目前 ${formatInteger(ready)} / ${formatInteger(total)} 檔 ETF 歷史資料可用；${formatInteger(missingCount)} 檔尚未可用。原因：官方空資料 ${formatInteger(officialEmpty)}、來源錯誤 ${formatInteger(sourceError)}、未分類 ${formatInteger(unclassified)}。';
+    final action = allClassified
+        ? '資料缺口已有原因分類；維持 static export 與 release check。'
+        : '請執行 scripts\\00631l_probe_missing_etf_reasons.cmd 後重新匯出 static data。';
+
+    return KeyedSubtree(
+      key: const ValueKey('00631l-etf-library-readable-summary'),
+      child: _StatusRow(
+        item: _StatusItem(
+          label: 'ETF 資料庫摘要',
+          status: statusText,
+          detail: detail,
+          action: action,
+        ),
       ),
     );
   }

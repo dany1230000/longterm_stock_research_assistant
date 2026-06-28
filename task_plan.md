@@ -1702,6 +1702,24 @@ Completed in v6.77:
 - Local ETF status now reports completionGap=116 with matching gap reasons:
   not_saved=96 and official_empty=20 in the current data state.
 
+## Phase 90 - v6.78 ETF Library Readable Summary
+
+Status: complete
+
+Objective: make ETF data-library completeness readable in the app before
+showing detailed maintenance metrics.
+
+- Add a concise ETF data-library summary to the settings ETF panel.
+- Show usable history count, missing history count, and classified gap reasons.
+- Keep detailed diagnostics available below the summary.
+- Keep data eligibility and source parsing unchanged.
+
+Completed in v6.78:
+
+- The settings ETF data-library panel now starts with a readable summary card.
+- Widget coverage verifies the classified-gap state with 231 / 347 usable ETF
+  histories, official-empty 96, source-error 20, and unclassified 0.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

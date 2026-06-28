@@ -92,3 +92,6 @@
   classified as `not_saved`, not left implicit.
 - Position-page mobile inspection shows the account summary's horizontal fixed
   metric strip clips the `未實現損益` tile on phone width.
+
+- v6.77 public static-data verification confirms every missing ETF history is now classified: public data has 231 usable histories out of 347 catalog rows, with 96 official-empty and 20 source-error gaps, and no unclassified gap.
+- v6.78 settings review showed the app already had the correct gap counts but needed a plain-language summary before the detailed maintenance metrics.

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.78 makes the ETF data-library panel easier to read: the app now shows a
+  concise summary of usable ETF histories, classified missing histories, and
+  remaining unclassified gaps before the detailed diagnostics.
 - v6.77 improves ETF data-completion transparency: catalog-only missing ETF
   histories now count as `not_saved`, so status gap reasons add up to the
   reported completion gap.

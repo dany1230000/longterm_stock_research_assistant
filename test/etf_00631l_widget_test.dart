@@ -284,7 +284,7 @@ void main() {
     expect(find.text('228 / 344'), findsWidgets);
     expect(find.text('116'), findsWidgets);
     expect(find.text('資料整理'), findsOneWidget);
-    expect(find.textContaining('缺口已分類'), findsOneWidget);
+    expect(find.textContaining('缺口已分類'), findsWidgets);
     expect(
       find.textContaining('sample codes not_saved: 00999, 00998'),
       findsOneWidget,
@@ -2062,6 +2062,64 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('settings summarizes classified ETF data gaps', (tester) async {
+    await _pumpLab(tester, _EtfClassifiedGapOperationsRepository());
+
+    await _tapSection(tester, 'settings');
+    await tester.pumpAndSettle();
+
+    final dataLibraryPanel =
+        find.byKey(const ValueKey('00631l-etf-data-library-panel'));
+    await tester.ensureVisible(dataLibraryPanel);
+    await tester.pumpAndSettle();
+    await tester.tap(dataLibraryPanel);
+    await tester.pumpAndSettle();
+
+    final readableSummary =
+        find.byKey(const ValueKey('00631l-etf-library-readable-summary'));
+    expect(readableSummary, findsOneWidget);
+    expect(
+      find.descendant(
+        of: readableSummary,
+        matching: find.text('ETF 資料庫摘要'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: readableSummary, matching: find.text('缺口已分類')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: readableSummary,
+        matching: find.textContaining('231 / 347'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: readableSummary,
+        matching: find.textContaining('官方空資料 96'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: readableSummary,
+        matching: find.textContaining('來源錯誤 20'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: readableSummary,
+        matching: find.textContaining('未分類 0'),
+      ),
+      findsOneWidget,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('settings shows ETF price history gap detail rows',
       (tester) async {
     await _pumpLab(tester, _EtfGapDetailsRepository());
@@ -2453,6 +2511,39 @@ class _EtfCatalogGapOperationsRepository extends Mock00631LRepository {
       },
       gapReasonSamples: const {
         'not_saved': ['00999', '00998'],
+      },
+    );
+  }
+}
+
+class _EtfClassifiedGapOperationsRepository
+    extends _EtfCatalogGapOperationsRepository {
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    return _operationsStatusWithEtfHistory(
+      readyCount: 231,
+      rowCount: 347,
+      catalogRowCount: 347,
+      historyRowCount: 347,
+      missingCount: 116,
+      attemptedCount: 116,
+      tierCounts: const {
+        'long_term': 8,
+        'recent': 223,
+        'unavailable': 116,
+        'error': 0,
+      },
+      gapReasonCounts: const {
+        'official_empty': 96,
+        'not_saved': 0,
+        'insufficient_rows': 0,
+        'validation_error': 0,
+        'source_error': 20,
+        'not_ready': 0,
+      },
+      gapReasonSamples: const {
+        'official_empty': ['006201', '00679B', '00687B'],
+        'source_error': ['00749B', '00750B', '00751B'],
       },
     );
   }
