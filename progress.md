@@ -861,3 +861,17 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.60 committed/pushed as `28683e1`, tag
+  `00631l-lab-v6.60-quote-premium-source-guard`; public marker and strict
+  static data checks passed.
+- Playwright mobile screenshot verified the quote premium box is source-guarded,
+  and identified that DAY/LIVE still used generic syncing/checking labels even
+  when usable date/time values were present.
+- Started v6.61 to show available DAY/LIVE/HIS values during background
+  refresh and reserve syncing/checking for missing items only.
+- Targeted fast-start widget test passed for the updated summary row behavior.
+- v6.61 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (105 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

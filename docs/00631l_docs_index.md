@@ -95,6 +95,7 @@ This is the main entry point for 00631L lab documentation.
 - Compact quote short name v6.58: `docs\00631l_v6_58_compact_quote_short_name.md`
 - First-screen refresh quiet state v6.59: `docs\00631l_v6_59_first_screen_refresh_quiet_state.md`
 - Quote premium source guard v6.60: `docs\00631l_v6_60_quote_premium_source_guard.md`
+- Summary available values v6.61: `docs\00631l_v6_61_summary_available_values.md`
 - Chart range touch hint v4.49: `docs\00631l_v4_49_chart_range_touch_hint.md`
 - Selected search state v4.50: `docs\00631l_v4_50_selected_search_state.md`
 - Backend seed history fallback v4.51: `docs\00631l_v4_51_backend_seed_history_fallback.md`

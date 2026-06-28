@@ -2862,22 +2862,39 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
     final theme = Theme.of(context);
     final nav = data.intradayNav;
     final priceSummary = data.priceHistory.completenessSummary();
-    final navTime = nav?.dataTime == null
-        ? (detailsLoading ? 'checking' : 'unavailable')
-        : formatTimeSeconds(nav!.dataTime!);
+    final hasUsableSnapshot = _hasUsableHoldingsSnapshot(data.snapshot);
+    final hasNavTime = nav?.dataTime != null;
+    final dayValue = hasUsableSnapshot
+        ? formatTaiwanDate(data.snapshot.tradeDate)
+        : detailsLoading
+            ? 'syncing'
+            : 'unavailable';
+    final dayCaption = hasUsableSnapshot
+        ? data.snapshot.status.label
+        : detailsLoading
+            ? 'daily'
+            : data.snapshot.status.label;
+    final navTime = hasNavTime
+        ? formatTimeSeconds(nav!.dataTime!)
+        : detailsLoading
+            ? 'checking'
+            : 'unavailable';
+    final navCaption = hasNavTime
+        ? _intradaySummarySourceLabel(nav)
+        : detailsLoading
+            ? 'backend'
+            : _intradaySummarySourceLabel(nav);
     final historyIsAvailable = priceSummary.rowCount >= 2;
     final items = [
       _OverviewDailySummaryItem(
         badge: 'DAY',
-        value: detailsLoading
-            ? 'syncing'
-            : formatTaiwanDate(data.snapshot.tradeDate),
-        caption: detailsLoading ? 'daily' : data.snapshot.status.label,
+        value: dayValue,
+        caption: dayCaption,
       ),
       _OverviewDailySummaryItem(
         badge: 'LIVE',
         value: navTime,
-        caption: detailsLoading ? 'backend' : _intradaySummarySourceLabel(nav),
+        caption: navCaption,
       ),
       _OverviewDailySummaryItem(
         badge: 'HIS',

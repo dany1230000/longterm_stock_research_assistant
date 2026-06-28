@@ -33,3 +33,6 @@
   premium/discount box can still show a catalog/static reference value while
   the same card says intraday data is unavailable. The 00631L quote card should
   use intraday NAV premium/discount only.
+- v6.60 public mobile inspection confirmed the premium source guard, and showed
+  the DAY/LIVE/HIS row still uses generic syncing/checking text even when date
+  and time values are already available.

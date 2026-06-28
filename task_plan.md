@@ -1354,6 +1354,28 @@ Completed in v6.60:
 - Widget coverage verifies the intraday-only source guard.
 - Full validation passed with accepted WARN states only.
 
+## Phase 73 - v6.61 Summary Available Values
+
+Status: complete
+
+Objective: make the first-screen DAY / LIVE / HIS summary row show real
+available values during background refresh instead of generic syncing/checking
+labels.
+
+- Show official holdings date when the snapshot is usable.
+- Show intraday NAV time when it is available.
+- Keep history row count and coverage when static/public history is available.
+- Use syncing/checking only for the specific missing data item.
+- Do not change data sources, calculations, selected ETF behavior, or AI logic.
+
+Completed in v6.61:
+
+- DAY shows the holdings date when the snapshot is usable.
+- LIVE shows the intraday NAV time when present.
+- HIS keeps row count/coverage when history is available.
+- Syncing/checking labels are reserved for missing data only.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
