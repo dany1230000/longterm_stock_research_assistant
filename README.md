@@ -1662,6 +1662,11 @@ sheet shows how many ETF rows match the selected `all`, `ready`, or
 `catalogOnly` filter for the current query. Summary:
 `docs\00631l_v6_14_symbol_search_filter_counts.md`.
 
+v6.15 adds a query-level readiness mix to the same search sheet. It shows
+`history-ready` and `catalog-only` counts for the current query before the user
+changes filters or switches symbols. Summary:
+`docs\00631l_v6_15_symbol_search_readiness_mix.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

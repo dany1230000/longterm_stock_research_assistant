@@ -45,7 +45,7 @@ Status: complete
 
 ## Phase 4 - ETF Selection and Comparison
 
-Status: in_progress
+Status: complete
 
 - Make the top-left ETF/search control the primary way to switch ETF context.
 - v4.18 improved ETF search result readiness labels so imported price-history ETFs and catalog-only ETFs are visually distinct.
@@ -422,6 +422,20 @@ current readiness filter for the active query.
 - Do not change history/backtest/comparison eligibility.
 - Validation passed with Flutter analyze/test/build, backend tests, release
   check WARN with failures=0, and git diff check.
+
+## Phase 27 - v6.15 Symbol Search Readiness Mix
+
+Status: in_progress
+
+Objective: show the ETF search query's data availability mix before the user
+switches filters or selects a symbol.
+
+- Show `history-ready` and `catalog-only` counts for the active query.
+- Add widget coverage for the query readiness count keys.
+- Keep catalog-only rows visible but separate from history-ready rows.
+- Do not change history/backtest/comparison eligibility.
+- Validation: `flutter analyze`, `flutter test`, `flutter build web`,
+  backend tests, release check WARN with failures=0, and `git diff --check`.
 
 ## Phase 5 - Backtest and Position UX
 

@@ -261,3 +261,16 @@
   (98 tests), `flutter build web` PASS, backend tests PASS (271 tests),
   `scripts\00631l_release_check.cmd` WARN with failures=0, and
   `git diff --check` PASS.
+- Started v6.15 to show a query-level ETF readiness mix in the top-left search
+  sheet.
+- Added a red widget test for `history-ready` and `catalog-only` query count
+  keys. It failed on the missing key as expected.
+- Added visible query-level `history-ready` and `catalog-only` counts without
+  changing filter behavior or ETF eligibility.
+- Targeted v6.15 validation PASS: `flutter test
+  test\etf_00631l_widget_test.dart` passed.
+- Full v6.15 validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS, `flutter analyze` PASS, `flutter test`
+  PASS (98 tests), `flutter build web` PASS, backend tests PASS (271 tests),
+  `scripts\00631l_release_check.cmd` WARN with failures=0, and
+  `git diff --check` PASS.

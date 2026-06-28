@@ -977,6 +977,9 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
       for (final item in baseItems)
         if (_symbolSearchFilterIncludes(_historyFilter, item)) item,
     ];
+    final queryReadyCount =
+        baseItems.where(_catalogItemHasImportedEtfHistory).length;
+    final queryCatalogOnlyCount = baseItems.length - queryReadyCount;
     final visibleItems = items.take(30).toList(growable: false);
     final stockItems = query.isEmpty
         ? const <Stock>[]
@@ -1074,6 +1077,24 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
             KeyedSubtree(
               key: ValueKey(
                 '00631l-symbol-filter-count-${_historyFilter.name}-${items.length}-${baseItems.length}',
+              ),
+              child: const SizedBox.shrink(),
+            ),
+            _StatusWrap(
+              labels: [
+                'history-ready ${formatInteger(queryReadyCount)}',
+                'catalog-only ${formatInteger(queryCatalogOnlyCount)}',
+              ],
+            ),
+            KeyedSubtree(
+              key: ValueKey(
+                '00631l-symbol-query-ready-count-$queryReadyCount',
+              ),
+              child: const SizedBox.shrink(),
+            ),
+            KeyedSubtree(
+              key: ValueKey(
+                '00631l-symbol-query-catalog-only-count-$queryCatalogOnlyCount',
               ),
               child: const SizedBox.shrink(),
             ),

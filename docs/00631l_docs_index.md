@@ -418,6 +418,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF gap detail UI: `docs\00631l_v6_12_gap_detail_ui.md`
 - ETF gap detail filters: `docs\00631l_v6_13_gap_detail_filters.md`
 - Symbol search filter counts: `docs\00631l_v6_14_symbol_search_filter_counts.md`
+- Symbol search readiness mix: `docs\00631l_v6_15_symbol_search_readiness_mix.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
