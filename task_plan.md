@@ -804,6 +804,29 @@ Completed in v6.34:
 - Widget coverage verifies the daily briefing bullet area.
 - Full validation passed with accepted WARN states only.
 
+## Phase 47 - v6.35 Overview Daily Summary Strip
+
+Status: complete
+
+Objective: make the first overview screen show the daily data state in one
+compact line before the user reaches the chart and detailed cards.
+
+- Add a compact daily summary strip below the quote header.
+- Group frontend mode, official holdings date, intraday NAV time,
+  premium/discount status, history coverage, and first AI brief.
+- Add widget coverage for the strip.
+- Keep data sources, price-history formulas, backtest formulas, and split
+  adjustment unchanged.
+
+Completed in v6.35:
+
+- Added a compact overview daily summary strip below the quote header.
+- The strip groups frontend mode, official daily holdings date, intraday NAV
+  time, premium/discount status, history coverage, and first rule-based AI
+  brief.
+- Widget coverage verifies the new strip in overview and phone-width tests.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

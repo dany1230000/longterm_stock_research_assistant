@@ -74,6 +74,10 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-button')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
+      findsOneWidget,
+    );
     await tester.ensureVisible(find.text('更多資料'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('更多資料'));
@@ -283,6 +287,10 @@ void main() {
     expect(find.textContaining('官方曝險'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-overview-core-metric-strip')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsOneWidget,
     );
     expect(find.text('00631L'), findsWidgets);

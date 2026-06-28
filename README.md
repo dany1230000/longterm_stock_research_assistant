@@ -1826,3 +1826,7 @@ now compact horizontal quick actions while keeping position data local-only.
 
 v6.34 makes the AI page more answer-first by showing the first rule-based daily
 interpretation bullets directly inside the top AI briefing card.
+
+v6.35 adds a compact overview daily summary strip below the quote header so the
+first mobile screen shows mode, daily holdings date, intraday NAV time,
+premium/discount status, history coverage, and the first AI brief together.

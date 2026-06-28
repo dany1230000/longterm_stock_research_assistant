@@ -2780,6 +2780,10 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
+        if (selectedEtf.is00631L) ...[
+          _OverviewDailySummaryStrip(data: data),
+          const SizedBox(height: 8),
+        ],
         if (selectedEtf.is00631L)
           _OverviewAtAGlancePanel(data: data)
         else
@@ -2817,6 +2821,182 @@ class _OverviewSection extends StatelessWidget {
               : _SelectedEtfMorePanel(selectedEtf: selectedEtf),
         ),
       ],
+    );
+  }
+}
+
+class _OverviewDailySummaryStrip extends StatelessWidget {
+  const _OverviewDailySummaryStrip({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final nav = data.intradayNav;
+    final premiumAssessment = nav?.premiumDiscountAssessment;
+    final priceSummary = data.priceHistory.completenessSummary();
+    final navTime =
+        nav?.dataTime == null ? 'unavailable' : _sourceTimeText(nav!.dataTime!);
+    final premiumValue =
+        formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct);
+    final premiumCaption = premiumAssessment == null
+        ? 'unavailable'
+        : _premiumLabel(premiumAssessment);
+    final items = [
+      _OverviewDailySummaryItem(
+        badge: 'MODE',
+        value: _frontendDataModeLabel,
+        caption: data.operationsStatus.backendConnectionLabel,
+      ),
+      _OverviewDailySummaryItem(
+        badge: 'DAY',
+        value: formatTaiwanDate(data.snapshot.tradeDate),
+        caption: data.snapshot.status.label,
+      ),
+      _OverviewDailySummaryItem(
+        badge: 'LIVE',
+        value: navTime,
+        caption: nav?.sourceContract ?? nav?.status.label ?? 'backend required',
+      ),
+      _OverviewDailySummaryItem(
+        badge: 'P/D',
+        value: premiumValue,
+        caption: premiumCaption,
+      ),
+      _OverviewDailySummaryItem(
+        badge: 'HIS',
+        value: '${formatInteger(priceSummary.rowCount)} rows',
+        caption:
+            '${_dateOrDash(priceSummary.coverageStart)} - ${_dateOrDash(priceSummary.coverageEnd)}',
+      ),
+    ];
+
+    return KeyedSubtree(
+      key: const ValueKey('00631l-overview-daily-summary-strip'),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketPanelColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: _marketBorderColor(context)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    '今日摘要',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _overviewAiBrief(data),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: _marketMutedTextColor(context),
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 7),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    for (var index = 0; index < items.length; index++) ...[
+                      _OverviewDailySummaryChip(item: items[index]),
+                      if (index != items.length - 1) const SizedBox(width: 6),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewDailySummaryItem {
+  const _OverviewDailySummaryItem({
+    required this.badge,
+    required this.value,
+    required this.caption,
+  });
+
+  final String badge;
+  final String value;
+  final String caption;
+}
+
+class _OverviewDailySummaryChip extends StatelessWidget {
+  const _OverviewDailySummaryChip({required this.item});
+
+  final _OverviewDailySummaryItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _MiniStatusBadge(label: item.badge),
+            const SizedBox(width: 7),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 142),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    item.value,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    item.caption,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

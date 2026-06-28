@@ -504,3 +504,14 @@
   PASS (101 tests); `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Started v6.35 to improve first-screen overview clarity.
+- Added a compact overview daily summary strip below the quote header. It groups
+  frontend mode, official daily holdings date, intraday NAV time,
+  premium/discount status, history coverage, and the first rule-based AI brief.
+- Targeted overview widget tests passed.
+- v6.35 full validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS after formatting two Dart files;
+  `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
