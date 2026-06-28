@@ -12288,33 +12288,10 @@ class _LineChartPanelState extends State<_LineChartPanel> {
                         ],
                       ),
                     ),
-                    titlesData: FlTitlesData(
-                      rightTitles: const AxisTitles(),
-                      topTitles: const AxisTitles(),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 34,
-                          interval: 1,
-                          getTitlesWidget: (value, meta) {
-                            final index = value.round();
-                            if (!_isBottomDateTick(index, spotPoints.length)) {
-                              return const SizedBox.shrink();
-                            }
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Text(
-                                _shortChartDate(spotPoints[index].date),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  height: 1.05,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                    titlesData: const FlTitlesData(
+                      rightTitles: AxisTitles(),
+                      topTitles: AxisTitles(),
+                      bottomTitles: AxisTitles(),
                     ),
                     lineBarsData: [
                       LineChartBarData(

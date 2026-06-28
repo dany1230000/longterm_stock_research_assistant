@@ -71,5 +71,9 @@
   moved down, but the data-mode tile still used the backend error label as a
   caption. That caption should describe static-data availability on the first
   screen and leave backend error details in advanced diagnostics.
+- v6.72 public history/backtest inspection showed the chart still had duplicate
+  in-chart x-axis dates plus the below-chart date strip. On phone width, the
+  in-chart dates crowd the y-axis labels, so the below-chart strip should be
+  the single range context.
 - Position-page mobile inspection shows the account summary's horizontal fixed
   metric strip clips the `未實現損益` tile on phone width.

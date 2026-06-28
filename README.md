@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.73 cleans up history chart date labeling by removing overlapping in-chart
+  x-axis dates and keeping the clearer date strip below the chart.
 - v6.72 softens the settings data-mode caption so backend errors stay in
   advanced diagnostics while static data availability remains clear.
 - v6.71 makes the account/settings first screen user-focused by keeping backend

@@ -1611,6 +1611,24 @@ Completed in v6.72:
   backend is unavailable or in error.
 - Backend status calculations and deeper diagnostics are unchanged.
 
+## Phase 85 - v6.73 History Chart Axis Cleanup
+
+Status: complete
+
+Objective: make history/backtest chart dates easier to read on mobile.
+
+- Remove duplicate in-chart x-axis date text from the reusable history chart.
+- Keep the clearer below-chart start/middle/end date strip and touch detail.
+- Preserve price-history data, calculations, selected ETF behavior, and
+  backtest formulas.
+
+Completed in v6.73:
+
+- History charts now rely on the dedicated date strip below the chart, avoiding
+  overlap between x-axis dates and y-axis labels on phone width.
+- Widget coverage for the history chart still verifies the date strip and touch
+  detail are present.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
