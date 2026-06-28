@@ -693,7 +693,7 @@ void main() {
     expect(find.textContaining('區間筆數 4'), findsOneWidget);
     expect(find.textContaining('完整筆數 5'), findsOneWidget);
     expect(find.text('目前區間價格表'), findsOneWidget);
-    expect(find.text('每日 holdings history'), findsOneWidget);
+    expect(find.text('每日內容物紀錄'), findsOneWidget);
     expect(find.text('回測快覽'), findsOneWidget);
     expect(find.text('回測工具'), findsNothing);
     expect(find.text('開始日期'), findsWidgets);
@@ -784,8 +784,8 @@ void main() {
     await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
 
-    expect(find.text('尚無 official price history'), findsWidgets);
-    expect(find.text('尚無 holdings history'), findsWidgets);
+    expect(find.text('尚無官方價格歷史'), findsWidgets);
+    expect(find.text('尚無內容物紀錄'), findsWidgets);
   });
 
   testWidgets('history backtest section renders inputs and disclaimer',
@@ -1472,8 +1472,7 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-comparison-action-strip')),
       findsOneWidget,
     );
-    expect(
-        find.textContaining('Rows need enough price history'), findsOneWidget);
+    expect(find.textContaining('資料筆數足夠才會進入圖表'), findsOneWidget);
     expect(find.textContaining('basket'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),

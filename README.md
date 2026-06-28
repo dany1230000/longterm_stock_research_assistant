@@ -2008,3 +2008,7 @@ v6.91 continues public UI wording cleanup. History and AI screens now map
 remaining raw source/status phrases such as `static_official`,
 `official holdings`, `live intraday NAV`, and `price history` into product-facing
 labels before display.
+
+v6.92 finishes that public wording pass by cleaning the remaining first-screen
+and history/backtest labels that mixed Chinese with raw phrases such as
+`holdings history`, `official price history`, and English comparison guidance.

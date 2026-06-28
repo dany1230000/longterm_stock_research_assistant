@@ -141,3 +141,7 @@
   first-screen surfaces: the history header displayed `static_official`, and AI
   cards still showed phrases such as `official holdings`, `live intraday NAV`,
   and `price history`.
+- v6.92 follow-up screenshots and source scan found a second layer of mixed
+  wording after v6.91: `official holdings` in the AI yellow summary, `完整 price
+  history` under the history chart, `每日 holdings history`, and English ETF
+  comparison guidance.

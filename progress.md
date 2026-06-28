@@ -1269,3 +1269,14 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (274 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- Started v6.92 after public v6.91 screenshots still showed `official holdings`
+  in the AI yellow summary and `完整 price history` under the history chart.
+- v6.92 localizes remaining display strings for content-history, official price
+  history, comparison guidance, and selected-ETF AI/status labels while keeping
+  `_aiDisplayText` mapping keys intact.
+- Targeted v6.92 widget validation PASS: `flutter test
+  test\etf_00631l_widget_test.dart`.
+- v6.92 full validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (274 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

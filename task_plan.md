@@ -1969,6 +1969,21 @@ AI first-screen surfaces.
 - Full validation passed with acceptable WARN-only release check output and
   `failures=0`.
 
+## Phase 104 - v6.92 Public Wording Second Pass
+
+Status: complete
+
+Objective: remove remaining mixed Chinese/English first-screen and history UI
+phrases after public v6.91 screenshot review.
+
+- Clean AI yellow summary and history chart captions.
+- Rename `holdings history` surfaces to content-history wording.
+- Replace English ETF-comparison guidance with product-facing Chinese text.
+- Keep `_aiDisplayText` raw keys as mapping inputs only.
+- Add/update widget assertions for the new labels.
+- Full validation passed with acceptable WARN-only release check output and
+  `failures=0`.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
