@@ -86,5 +86,9 @@
 - v6.75 position-page review showed the first card repeated local-only context
   already shown by the account summary and action bar. Removing that title card
   brings account status and input controls higher on phone screens.
+- v6.76 data status review showed local ETF price-history status could report
+  completionGap=116 while gapReasonCounts only explained 20 rows. The remaining
+  96 rows are catalog-only symbols without local history rows and should be
+  classified as `not_saved`, not left implicit.
 - Position-page mobile inspection shows the account summary's horizontal fixed
   metric strip clips the `未實現損益` tile on phone width.

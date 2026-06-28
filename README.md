@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.77 improves ETF data-completion transparency: catalog-only missing ETF
+  histories now count as `not_saved`, so status gap reasons add up to the
+  reported completion gap.
 - v6.76 shortens the position page first screen by hiding the redundant
   local-position header, so account summary, actions, and input fields appear
   sooner.

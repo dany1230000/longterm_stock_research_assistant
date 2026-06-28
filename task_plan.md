@@ -1686,6 +1686,22 @@ Completed in v6.76:
 - The position tab now starts directly with account summary, actions, and input
   controls.
 
+## Phase 89 - v6.77 ETF Gap Reason Alignment
+
+Status: complete
+
+Objective: make ETF data-completion status explain every missing catalog symbol.
+
+- Count catalog-only symbols without local history rows as `not_saved`.
+- Include those symbols in `coverageTierCounts.unavailable`.
+- Keep data provenance truthful; do not infer or synthesize missing history.
+- Add backend unit coverage for the aligned status summary.
+
+Completed in v6.77:
+
+- Local ETF status now reports completionGap=116 with matching gap reasons:
+  not_saved=96 and official_empty=20 in the current data state.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

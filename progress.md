@@ -1113,3 +1113,18 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- v6.76 committed/pushed as `5e5cd93`, tag
+  `00631l-lab-v6.76-position-first-screen-trim`; public marker and strict
+  static-data checks passed. Public position screenshot confirmed the page now
+  starts with account summary and input controls.
+- Started v6.77 after local ETF price-history status showed completionGap=116
+  while gapReasonCounts only explained 20 symbols.
+- v6.77 classifies catalog-only missing ETF histories as `not_saved` and adds
+  them to the unavailable coverage tier, without inventing price-history data.
+- Targeted v6.77 validation PASS: `py -m unittest
+  backend.tests.test_etf_price_history.EtfPriceHistoryTests.test_status_summary_omits_full_item_dump`
+  and `py backend\scripts\import_etf_price_history.py --status-only --summary-only`.
+- v6.77 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

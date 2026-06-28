@@ -459,12 +459,28 @@ def build_status_summary_response(
     tier_counts = payload.get("coverageTierCounts")
     if not isinstance(tier_counts, dict):
         tier_counts = _coverage_tier_counts(items)
+    else:
+        tier_counts = dict(tier_counts)
     gap_reason_counts = payload.get("gapReasonCounts")
     if not isinstance(gap_reason_counts, dict):
         gap_reason_counts = _gap_reason_counts(items)
+    else:
+        gap_reason_counts = dict(gap_reason_counts)
     ready_count = int(payload.get("readyCount") or 0)
     history_row_count = int(payload.get("rowCount") or 0)
     completion_total = max(catalog_row_count, history_row_count, ready_count)
+    completion_gap = max(0, completion_total - ready_count)
+    catalog_only_missing_count = max(0, catalog_row_count - history_row_count)
+    if catalog_only_missing_count:
+        tier_counts["unavailable"] = (
+            int(tier_counts.get("unavailable") or 0) + catalog_only_missing_count
+        )
+    classified_gap_count = sum(int(value or 0) for value in gap_reason_counts.values())
+    unclassified_gap_count = max(0, completion_gap - classified_gap_count)
+    if unclassified_gap_count:
+        gap_reason_counts["not_saved"] = (
+            int(gap_reason_counts.get("not_saved") or 0) + unclassified_gap_count
+        )
     return {
         "sourceStatus": payload.get("sourceStatus"),
         "sourceContract": payload.get("sourceContract"),
@@ -477,7 +493,7 @@ def build_status_summary_response(
         "attemptedCount": payload.get("attemptedCount", 0),
         "catalogRowCount": catalog_row_count,
         "completionTotal": completion_total,
-        "completionGap": max(0, completion_total - ready_count),
+        "completionGap": completion_gap,
         "coverageStart": min(starts) if starts else None,
         "coverageEnd": max(ends) if ends else None,
         "validationFailureCount": payload.get("validationFailureCount", 0),

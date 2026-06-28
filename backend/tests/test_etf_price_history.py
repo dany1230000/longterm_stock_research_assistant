@@ -606,6 +606,8 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(summary["sampleCodes"], ["0050", "0056"])
         self.assertEqual(summary["suppressedItemCount"], 1)
         self.assertEqual(summary["coverageTierCounts"]["long_term"], 1)
+        self.assertEqual(summary["coverageTierCounts"]["unavailable"], 3)
+        self.assertEqual(summary["gapReasonCounts"]["not_saved"], 3)
 
     def test_endpoints_update_and_read_multi_etf_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
