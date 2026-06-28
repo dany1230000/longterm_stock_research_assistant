@@ -642,6 +642,26 @@ Completed in v6.26:
   screenshots were removed before staging.
 - Full validation passed with accepted WARN states only.
 
+## Phase 39 - v6.27 Overview Core Strip
+
+Status: complete
+
+Objective: reduce first-screen vertical weight by making the overview core
+metrics a compact horizontal strip.
+
+- Keep the quote card and one-year chart visually closer together.
+- Limit the change to the overview core data block.
+- Preserve source labels and all data calculations.
+
+Completed in v6.27:
+
+- Overview core metrics now use a horizontally scrollable compact strip.
+- Widget coverage verifies the overview core metric strip is present on phone
+  width.
+- Playwright mobile screenshot verified the chart moves closer to the quote
+  section; generated screenshots were removed before staging.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

@@ -416,3 +416,13 @@
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS. Playwright mobile screenshot verified the end-date label is no longer
   clipped; generated screenshots were removed.
+- Started v6.27 to reduce first-screen vertical weight after reviewing the
+  overview screenshot.
+- Changed the overview core metrics from a 2x2 grid to a horizontal compact
+  strip and added widget coverage for the strip key.
+- v6.27 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS. Playwright mobile screenshot verified a shorter core-data block; the
+  screenshot artifact was removed.

@@ -1798,3 +1798,6 @@ screen looks like the 00631L app instead of a large centered splash card.
 
 v6.26 improves the overview sparkline date axis so phone-width start and end
 date labels stay inside the chart area.
+
+v6.27 turns the overview core data metrics into a compact horizontal strip so
+the quote card and chart stay closer together on phone screens.

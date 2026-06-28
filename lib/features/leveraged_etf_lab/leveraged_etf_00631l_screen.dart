@@ -3627,7 +3627,7 @@ class _OverviewAtAGlancePanel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
-            _AtAGlanceMetricGrid(metrics: metrics),
+            _AtAGlanceMetricStrip(metrics: metrics),
           ],
         ),
       ),
@@ -4531,6 +4531,34 @@ class _AtAGlanceMetricData {
   final String label;
   final String value;
   final String caption;
+}
+
+class _AtAGlanceMetricStrip extends StatelessWidget {
+  const _AtAGlanceMetricStrip({required this.metrics});
+
+  final List<_AtAGlanceMetricData> metrics;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      key: const ValueKey('00631l-overview-core-metric-strip'),
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          for (var index = 0; index < metrics.length; index++) ...[
+            if (index > 0) const SizedBox(width: 6),
+            _AtAGlanceMetric(
+              width: 138,
+              label: metrics[index].label,
+              value: metrics[index].value,
+              caption: metrics[index].caption,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }
 
 class _AtAGlanceMetricGrid extends StatelessWidget {

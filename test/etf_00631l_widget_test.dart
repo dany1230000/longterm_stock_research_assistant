@@ -281,6 +281,10 @@ void main() {
     expect(find.text('目前檔案'), findsNothing);
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.textContaining('官方曝險'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-overview-core-metric-strip')),
+      findsOneWidget,
+    );
     expect(find.text('00631L'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);
