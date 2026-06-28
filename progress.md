@@ -1232,3 +1232,13 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- Started v6.89 after public AI-page inspection showed raw implementation
+  wording such as `static public mode`, `rows`, `cached`, and
+  `public backend proxy` on the first screen.
+- v6.89 adds an AI-display text mapper for user-facing bullets/actions/fact
+  cards while preserving raw model and API keys.
+- Targeted v6.89 widget validation PASS: AI and settings clean status wording.
+- v6.89 full validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

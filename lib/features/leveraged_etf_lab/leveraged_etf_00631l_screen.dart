@@ -2553,6 +2553,42 @@ String _sourceStatusBadgeLabel(String? rawStatus) {
   return value;
 }
 
+String _aiDisplayText(String text) {
+  var value = text;
+  const literalReplacements = {
+    'static public mode': '公開靜態模式',
+    'GitHub Pages 靜態 JSON': '公開靜態資料',
+    'public backend proxy': '公開後端',
+    'sourceStatus': '來源狀態',
+    'rule_based': '規則分析',
+    'static_official': '靜態官方',
+    'static_public_data': '公開靜態資料',
+  };
+  for (final entry in literalReplacements.entries) {
+    value = value.replaceAll(entry.key, entry.value);
+  }
+  final wordReplacements = {
+    'holdings': '內容物',
+    'history': '歷史',
+    'coverage': '資料區間',
+    'rows': '筆',
+    'cached': '快取',
+    'backend': '後端',
+    'source': '來源',
+    'unavailable': '不可用',
+    'error': '錯誤',
+    'official': '官方',
+    'mock': '示範',
+  };
+  for (final entry in wordReplacements.entries) {
+    value = value.replaceAll(
+      RegExp('\\b${RegExp.escape(entry.key)}\\b', caseSensitive: false),
+      entry.value,
+    );
+  }
+  return value;
+}
+
 class _HeaderPill extends StatelessWidget {
   const _HeaderPill({
     required this.label,
@@ -8401,12 +8437,18 @@ class _AiSectionV2 extends StatelessWidget {
       return _SelectedEtfAiSection(selectedEtf: selectedEtf);
     }
     final summary = data.aiAnalysis;
-    final visibleBullets = summary.bullets.take(3).toList(growable: false);
+    final visibleBullets =
+        summary.bullets.take(3).map(_aiDisplayText).toList(growable: false);
     final visibleActions = summary.actionItems.isEmpty
         ? const ['目前沒有需要處理的程式操作；請維持 daily cycle 與資料檢查。']
-        : summary.actionItems.take(3).toList(growable: false);
-    final hiddenBullets = summary.bullets.skip(3).toList(growable: false);
-    final hiddenActions = summary.actionItems.skip(3).toList(growable: false);
+        : summary.actionItems
+            .take(3)
+            .map(_aiDisplayText)
+            .toList(growable: false);
+    final hiddenBullets =
+        summary.bullets.skip(3).map(_aiDisplayText).toList(growable: false);
+    final hiddenActions =
+        summary.actionItems.skip(3).map(_aiDisplayText).toList(growable: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -8518,7 +8560,7 @@ class _AiSectionV2 extends StatelessWidget {
                     const SizedBox(height: 8),
                     for (final bullet in _completeDataBriefing(data))
                       _BulletLine(
-                        text: bullet,
+                        text: _aiDisplayText(bullet),
                         icon: Icons.analytics_outlined,
                       ),
                     const SizedBox(height: 8),
@@ -8550,12 +8592,18 @@ class _AiSection extends StatelessWidget {
       return _SelectedEtfAiSection(selectedEtf: selectedEtf);
     }
     final summary = data.aiAnalysis;
-    final visibleBullets = summary.bullets.take(3).toList(growable: false);
+    final visibleBullets =
+        summary.bullets.take(3).map(_aiDisplayText).toList(growable: false);
     final visibleActions = summary.actionItems.isEmpty
         ? const ['目前沒有程式操作項目；請保留資料時間檢查。']
-        : summary.actionItems.take(3).toList(growable: false);
-    final hiddenBullets = summary.bullets.skip(3).toList(growable: false);
-    final hiddenActions = summary.actionItems.skip(3).toList(growable: false);
+        : summary.actionItems
+            .take(3)
+            .map(_aiDisplayText)
+            .toList(growable: false);
+    final hiddenBullets =
+        summary.bullets.skip(3).map(_aiDisplayText).toList(growable: false);
+    final hiddenActions =
+        summary.actionItems.skip(3).map(_aiDisplayText).toList(growable: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -8675,7 +8723,7 @@ class _AiSection extends StatelessWidget {
                     const SizedBox(height: 8),
                     for (final bullet in _completeDataBriefing(data))
                       _BulletLine(
-                        text: bullet,
+                        text: _aiDisplayText(bullet),
                         icon: Icons.analytics_outlined,
                       ),
                     const SizedBox(height: 8),
@@ -8714,12 +8762,13 @@ class _AiDailyBriefingHero extends StatelessWidget {
         .fold<double>(0, (sum, line) => sum + line.weightPct);
     final primaryAction = summary.actionItems.isEmpty
         ? '目前沒有必要的程式操作；請持續確認官方資料時間。'
-        : summary.actionItems.first;
+        : _aiDisplayText(summary.actionItems.first);
     final premiumText = premium == null
         ? '盤中 NAV 暫時不可用，折溢價狀態無法判斷。'
         : _premiumDescription(premium);
     final statusColor = _aiStatusColor(context, summary, premium);
-    final briefingBullets = summary.bullets.take(2).toList(growable: false);
+    final briefingBullets =
+        summary.bullets.take(2).map(_aiDisplayText).toList(growable: false);
 
     return DecoratedBox(
       key: const ValueKey('00631l-ai-daily-briefing-hero'),
@@ -8763,7 +8812,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
             const SizedBox(height: 10),
             _StatusWrap(
               labels: [
-                'holdings ${_dateOrDash(snapshot.tradeDate)}',
+                '內容物 ${_dateOrDash(snapshot.tradeDate)}',
                 'NAV ${_intradayDataTimeText(nav)}',
                 '來源 ${_sourceStatusBadgeLabel(summary.sourceStatusLabel)}',
               ],
@@ -8842,8 +8891,10 @@ class _AiDailyBriefingHero extends StatelessWidget {
                   _AiDailyBriefingFact(
                     label: '歷史資料',
                     value:
-                        '${formatInteger(data.priceHistory.completenessSummary().rowCount)} rows',
-                    detail: data.priceHistory.sourceStatusLabel,
+                        '${formatInteger(data.priceHistory.completenessSummary().rowCount)} 筆',
+                    detail: _sourceStatusBadgeLabel(
+                      data.priceHistory.sourceStatusLabel,
+                    ),
                   ),
                 ];
                 if (compact) {

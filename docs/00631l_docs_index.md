@@ -493,6 +493,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Settings status labels: `docs\00631l_v6_86_settings_status_labels.md`
 - Overview summary status labels: `docs\00631l_v6_87_overview_summary_status_labels.md`
 - Overview holdings mix clarity: `docs\00631l_v6_88_overview_holdings_mix_clarity.md`
+- AI public wording cleanup: `docs\00631l_v6_89_ai_public_wording_cleanup.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

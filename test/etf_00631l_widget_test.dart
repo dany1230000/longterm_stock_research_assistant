@@ -1882,6 +1882,11 @@ void main() {
     expect(find.textContaining('價格歷史共'), findsOneWidget);
     expect(find.textContaining('規則分析'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);
+    expect(find.textContaining('static public mode'), findsNothing);
+    expect(find.textContaining('GitHub Pages 靜態 JSON'), findsNothing);
+    expect(find.textContaining('public backend proxy'), findsNothing);
+    expect(find.textContaining('rows'), findsNothing);
+    expect(find.textContaining('cached'), findsNothing);
 
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();

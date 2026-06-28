@@ -1915,6 +1915,28 @@ Completed in v6.88:
 - Targeted phone widget coverage and full validation passed with release-check
   WARN states and zero failures.
 
+## Phase 101 - v6.89 AI Public Wording Cleanup
+
+Status: complete
+
+Objective: remove debug-style English mode/status text from the AI first-screen
+analysis.
+
+- Map common analysis text fragments such as `static public mode`, `rows`,
+  `cached`, and `public backend proxy` to product-facing Chinese wording.
+- Apply the mapping to visible AI bullets, action items, and compact fact cards.
+- Keep raw model/API keys unchanged.
+- Do not change analysis logic, holdings calculations, price history, or
+  backtest formulas.
+
+Completed in v6.89:
+
+- Added a display-only AI text mapper for common internal source/status words.
+- AI bullets, action items, and history fact cards now use product-facing
+  labels such as `公開靜態模式`, `筆`, `快取`, and `公開後端`.
+- Targeted AI wording test and full validation passed with release-check WARN
+  states and zero failures.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

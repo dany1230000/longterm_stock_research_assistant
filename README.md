@@ -1994,3 +1994,7 @@ summary, so the first screen no longer shows raw words such as `cached`,
 v6.88 makes the overview official-holdings digest clearer on phone screens:
 the exposure structure now separates stock, futures, and cash/margin
 percentages instead of compressing them into one combined `MIX` value.
+
+v6.89 cleans the AI analysis page wording so the public first screen no longer
+shows implementation phrases such as `static public mode`, `rows`, `cached`,
+or `public backend proxy` in primary bullets and action items.

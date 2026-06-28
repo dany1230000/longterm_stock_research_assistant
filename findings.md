@@ -130,3 +130,6 @@
 - v6.88 public mobile review showed the official holdings `MIX` tile was
   technically correct but not readable: stock, futures, and cash/margin needed
   separate visual rows instead of one combined value.
+- v6.89 public AI-page review showed visible implementation wording in the
+  primary analysis card. Analysis output should describe data state in product
+  language even when the underlying provider remains rule-based.
