@@ -1990,3 +1990,7 @@ labels.
 v6.87 applies the same status-label cleanup to the overview DAY/LIVE/HIS
 summary, so the first screen no longer shows raw words such as `cached`,
 `backend`, or `unavailable` in the primary summary chips.
+
+v6.88 makes the overview official-holdings digest clearer on phone screens:
+the exposure structure now separates stock, futures, and cash/margin
+percentages instead of compressing them into one combined `MIX` value.

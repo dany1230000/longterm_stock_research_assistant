@@ -4024,11 +4024,29 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                       ),
                       _HoldingDigestItem(
                         badge: 'MIX',
-                        title: '股期現金',
-                        value:
-                            '${formatNullablePercent(snapshot.stockExposureWeightPct)} / ${formatNullablePercent(snapshot.futuresExposureWeightPct)}',
-                        caption:
-                            '現金 ${formatNullablePercent(snapshot.cashAndMarginWeightPct)}',
+                        title: '曝險結構',
+                        value: '三項比例',
+                        caption: '股票 / 期貨 / 現金',
+                        metrics: [
+                          _HoldingDigestMetric(
+                            label: '股',
+                            value: formatNullablePercent(
+                              snapshot.stockExposureWeightPct,
+                            ),
+                          ),
+                          _HoldingDigestMetric(
+                            label: '期',
+                            value: formatNullablePercent(
+                              snapshot.futuresExposureWeightPct,
+                            ),
+                          ),
+                          _HoldingDigestMetric(
+                            label: '現',
+                            value: formatNullablePercent(
+                              snapshot.cashAndMarginWeightPct,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   )
@@ -4087,12 +4105,24 @@ class _HoldingDigestItem {
     required this.title,
     required this.value,
     required this.caption,
+    this.metrics = const [],
   });
 
   final String badge;
   final String title;
   final String value;
   final String caption;
+  final List<_HoldingDigestMetric> metrics;
+}
+
+class _HoldingDigestMetric {
+  const _HoldingDigestMetric({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
 }
 
 class _HoldingDigestStrip extends StatelessWidget {
@@ -4163,28 +4193,61 @@ class _HoldingDigestTile extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 7),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(
-                item.value,
-                maxLines: 1,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: _marketTextColor(context),
-                  fontWeight: FontWeight.w900,
+            if (item.metrics.isEmpty) ...[
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  item.value,
+                  maxLines: 1,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: _marketTextColor(context),
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              item.caption,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w800,
+              const SizedBox(height: 3),
+              Text(
+                item.caption,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
+            ] else ...[
+              for (final metric in item.metrics)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: Row(
+                    children: [
+                      Text(
+                        metric.label,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            metric.value,
+                            maxLines: 1,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: _marketTextColor(context),
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ],
         ),
       ),

@@ -1895,6 +1895,26 @@ Completed in v6.87:
 - Known unavailable holdings and intraday pending widget paths are covered.
 - Full validation passed with release-check WARN states and zero failures.
 
+## Phase 100 - v6.88 Overview Holdings Mix Clarity
+
+Status: complete
+
+Objective: make the overview official-holdings digest easier to read on phone
+screens.
+
+- Replace the generic `MIX` tile copy with a clear exposure-structure tile.
+- Show stock, futures, and cash/margin percentages as separate rows.
+- Keep TX and TSMC digest tiles unchanged.
+- Do not change holdings parsing, calculations, source selection, history, or
+  backtest formulas.
+
+Completed in v6.88:
+
+- The overview holdings digest third tile is now `曝險結構`.
+- Stock, futures, and cash/margin percentages render as separate compact rows.
+- Targeted phone widget coverage and full validation passed with release-check
+  WARN states and zero failures.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

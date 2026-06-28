@@ -1223,3 +1223,12 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- Started v6.88 after public mobile review showed the overview holdings `MIX`
+  tile compressed stock, futures, and cash/margin into one hard-to-read value.
+- v6.88 changes that tile to `曝險結構` with separate stock, futures, and
+  cash/margin percentage rows while keeping TX and TSMC tiles unchanged.
+- Targeted v6.88 widget validation PASS: overview holdings digest on phone.
+- v6.88 full validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

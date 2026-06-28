@@ -1644,7 +1644,7 @@ void main() {
     );
     expect(find.text('期貨'), findsWidgets);
     expect(find.text('台積電'), findsWidgets);
-    expect(find.text('股期現金'), findsOneWidget);
+    expect(find.text('曝險結構'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
       findsOneWidget,

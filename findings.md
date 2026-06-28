@@ -127,3 +127,6 @@
 - v6.87 public overview screenshot showed the first-screen DAY summary still
   displayed raw `cached`. The overview summary should use the same display-label
   mapping as settings and selected ETF surfaces.
+- v6.88 public mobile review showed the official holdings `MIX` tile was
+  technically correct but not readable: stock, futures, and cash/margin needed
+  separate visual rows instead of one combined value.
