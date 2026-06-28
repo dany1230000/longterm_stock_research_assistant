@@ -684,6 +684,26 @@ Completed in v6.28:
   wording.
 - Full validation passed with accepted WARN states only.
 
+## Phase 41 - v6.29 Position Account Strip
+
+Status: complete
+
+Objective: make the position page account summary shorter on phone screens while
+keeping local-only storage and calculations unchanged.
+
+- Convert the position account metric grid into a horizontal compact strip.
+- Keep market value, P/L, symbol, and local position state available.
+- Add widget coverage for the new strip.
+- Do not change position calculations, JSON export, or clear behavior.
+
+Completed in v6.29:
+
+- Position account metrics now use a horizontal compact strip.
+- Shared range context uses its own generic strip so backtest/history and
+  position keys do not collide.
+- Widget coverage verifies the position account metric strip.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

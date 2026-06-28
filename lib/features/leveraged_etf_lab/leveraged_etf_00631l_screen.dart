@@ -7245,27 +7245,37 @@ class _RangeContextStrip extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final compact = constraints.maxWidth < 520;
-                final itemWidth = compact
-                    ? (constraints.maxWidth - 8) / 2
-                    : (constraints.maxWidth - 24) / 4;
-                return Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final item in items)
-                      SizedBox(
-                        width: itemWidth.clamp(120, double.infinity),
-                        child: _RangeContextTile(item: item),
-                      ),
-                  ],
-                );
-              },
+            _RangeContextMetricStrip(
+              items: items,
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RangeContextMetricStrip extends StatelessWidget {
+  const _RangeContextMetricStrip({required this.items});
+
+  final List<_RangeContextItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      key: const ValueKey('00631l-range-context-metric-strip'),
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          for (var index = 0; index < items.length; index += 1) ...[
+            if (index > 0) const SizedBox(width: 8),
+            SizedBox(
+              width: 132,
+              child: _RangeContextTile(item: items[index]),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -7665,24 +7675,8 @@ class _PositionAccountStrip extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final compact = constraints.maxWidth < 520;
-                final itemWidth = compact
-                    ? (constraints.maxWidth - 8) / 2
-                    : (constraints.maxWidth - 24) / 4;
-                return Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final item in items)
-                      SizedBox(
-                        width: itemWidth.clamp(120, double.infinity),
-                        child: _RangeContextTile(item: item),
-                      ),
-                  ],
-                );
-              },
+            _PositionAccountMetricStrip(
+              items: items,
             ),
             const SizedBox(height: 8),
             Text(
@@ -7696,6 +7690,32 @@ class _PositionAccountStrip extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PositionAccountMetricStrip extends StatelessWidget {
+  const _PositionAccountMetricStrip({required this.items});
+
+  final List<_RangeContextItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      key: const ValueKey('00631l-position-account-metric-strip'),
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          for (var index = 0; index < items.length; index += 1) ...[
+            if (index > 0) const SizedBox(width: 8),
+            SizedBox(
+              width: 132,
+              child: _RangeContextTile(item: items[index]),
+            ),
+          ],
+        ],
       ),
     );
   }

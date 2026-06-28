@@ -613,6 +613,10 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.byKey(const ValueKey('00631l-position-account-metric-strip')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-position-primary-actions')),
       findsOneWidget,
     );

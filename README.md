@@ -1805,3 +1805,7 @@ the quote card and chart stay closer together on phone screens.
 v6.28 adds a compact `今日 AI 判讀` card so the AI page opens with daily data
 context, key holdings exposure, intraday NAV status, and the first program
 action before showing detailed status panels.
+
+v6.29 makes the local-only position account summary a horizontal metric strip,
+so the position page shows market value, P/L, symbol, and storage status without
+a tall two-row grid on phone screens.
