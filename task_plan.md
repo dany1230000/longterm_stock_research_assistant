@@ -1043,6 +1043,31 @@ Completed in v6.45:
 - TX / 2330 / MIX badges remain unchanged.
 - Targeted and full validation passed with accepted WARN states only.
 
+## Phase 58 - v6.46 History/Backtest Top Compact
+
+Status: complete
+
+Objective: shorten the top of the history/backtest page on phone screens so
+date controls, chart, and backtest content appear sooner.
+
+- Replace the large history/backtest header with a compact top strip.
+- Keep selected ETF, source status, coverage, latest close, row count, and
+  default one-year range visible.
+- Move detailed price-history quality and split-adjustment notes into an
+  expandable panel.
+- Keep price-history data, split adjustment, performance, and backtest formulas
+  unchanged.
+
+Completed in v6.46:
+
+- History/backtest now starts with a compact top strip instead of a large
+  header card.
+- Detailed price-history quality notes are still available in an expandable
+  `資料品質` panel.
+- Existing selected-ETF history tests were updated to expand the quality panel
+  before checking split-adjustment details.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

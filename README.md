@@ -1865,3 +1865,7 @@ long percentages scaled inside each tile.
 
 v6.45 polishes the same official holdings digest by shortening tile titles to
 `期貨`, `台積電`, and `股期現金`, so the phone overview avoids leftover ellipsis.
+
+v6.46 compacts the history/backtest page top area. The page now opens with a
+short top strip for ETF, source, coverage, latest close, row count, and default
+range, while detailed data-quality notes move into an expandable panel.

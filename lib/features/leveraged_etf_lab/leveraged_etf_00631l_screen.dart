@@ -5300,42 +5300,22 @@ class _HistorySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeaderCard(
-          title: '歷史回測',
-          subtitle: '預設顯示最近 1 年，可自行調整開始與結束日期。',
-          icon: Icons.show_chart_outlined,
-          badges: [
-            'HIS',
-            selectedEtfCode,
-            selectedName,
-            'source ${priceHistory.sourceStatusLabel}',
-            '${completeness.rowCount} rows',
-          ],
-          metrics: [
-            _SectionHeaderMetric(
-              label: '完整 coverage',
-              value:
-                  '${_dateOrDash(completeness.coverageStart)} - ${_dateOrDash(completeness.coverageEnd)}',
-            ),
-            _SectionHeaderMetric(
-              label: '最新收盤',
-              value: _price(completeness.latest?.close),
-            ),
-            const _SectionHeaderMetric(
-              label: '預設區間',
-              value: '最近 1 年',
-            ),
-            _SectionHeaderMetric(
-              label: '日期調整',
-              value: priceHistory.hasData ? '可用' : '缺資料',
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        _SelectedHistoryQualityCard(
+        _HistoryBacktestTopStrip(
           code: selectedEtfCode,
           name: selectedName,
           priceHistory: priceHistory,
+          completeness: completeness,
+        ),
+        const SizedBox(height: 8),
+        _CompactExpansionPanel(
+          key: const ValueKey('00631l-history-quality-expansion'),
+          title: '資料品質',
+          subtitle: 'coverage、分割調整與來源狀態。',
+          child: _SelectedHistoryQualityCard(
+            code: selectedEtfCode,
+            name: selectedName,
+            priceHistory: priceHistory,
+          ),
         ),
         const SizedBox(height: 12),
         _SectionBlock(
@@ -5569,6 +5549,118 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
                 height: 1.35,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HistoryBacktestTopStrip extends StatelessWidget {
+  const _HistoryBacktestTopStrip({
+    required this.code,
+    required this.name,
+    required this.priceHistory,
+    required this.completeness,
+  });
+
+  final String code;
+  final String name;
+  final EtfPriceHistory priceHistory;
+  final EtfPriceHistoryCompletenessSummary completeness;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final coverage =
+        '${_dateOrDash(completeness.coverageStart)} - ${_dateOrDash(completeness.coverageEnd)}';
+    final metrics = [
+      _SectionHeaderMetric(
+        label: '最新收盤',
+        value: _price(completeness.latest?.close),
+      ),
+      const _SectionHeaderMetric(
+        label: '預設區間',
+        value: '最近 1 年',
+      ),
+      _SectionHeaderMetric(
+        label: '資料筆數',
+        value: formatInteger(completeness.rowCount),
+        caption: 'rows',
+      ),
+      _SectionHeaderMetric(
+        label: '日期調整',
+        value: priceHistory.hasData ? '可用' : '缺資料',
+      ),
+    ];
+
+    return Card(
+      key: const ValueKey('00631l-history-backtest-top-strip'),
+      elevation: 0,
+      color: theme.colorScheme.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '歷史回測',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        '預設顯示最近 1 年，可自行調整開始與結束日期。',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _CompactTextBadge(label: priceHistory.sourceStatusLabel),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _StatusWrap(labels: ['HIS', code, name, coverage]),
+            const SizedBox(height: 8),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final compact = constraints.maxWidth < 520;
+                final itemWidth = compact
+                    ? (constraints.maxWidth - 8) / 2
+                    : (constraints.maxWidth - 24) / 4;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final metric in metrics)
+                      SizedBox(
+                        width: itemWidth,
+                        child: _SectionHeaderMetricChip(metric: metric),
+                      ),
+                  ],
+                );
+              },
             ),
           ],
         ),

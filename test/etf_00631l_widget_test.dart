@@ -112,7 +112,11 @@ void main() {
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 
-    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    final symbolSearchButton =
+        find.byKey(const ValueKey('00631l-symbol-search-button'));
+    await tester.ensureVisible(symbolSearchButton);
+    await tester.pumpAndSettle();
+    await tester.tap(symbolSearchButton);
     await tester.pumpAndSettle();
 
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
@@ -185,7 +189,11 @@ void main() {
       (tester) async {
     await _pumpLab(tester, _EtfReadinessOperationsRepository());
 
-    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    final selectedSearchButton =
+        find.byKey(const ValueKey('00631l-symbol-search-button'));
+    await tester.ensureVisible(selectedSearchButton);
+    await tester.pumpAndSettle();
+    await tester.tap(selectedSearchButton);
     await tester.pumpAndSettle();
 
     expect(
@@ -202,7 +210,11 @@ void main() {
   testWidgets('symbol search shows ETF data completion status', (tester) async {
     await _pumpLab(tester, _EtfReadinessOperationsRepository());
 
-    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    final selectedEtfSearchButton =
+        find.byKey(const ValueKey('00631l-symbol-search-button'));
+    await tester.ensureVisible(selectedEtfSearchButton);
+    await tester.pumpAndSettle();
+    await tester.tap(selectedEtfSearchButton);
     await tester.pumpAndSettle();
 
     expect(
@@ -523,6 +535,14 @@ void main() {
 
     expect(find.text('歷史回測'), findsWidgets);
     expect(find.textContaining('預設顯示最近 1 年'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-history-backtest-top-strip')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-quality-expansion')),
+      findsOneWidget,
+    );
     expect(find.textContaining('coverage'), findsWidgets);
     expect(find.text('價格歷史'), findsOneWidget);
     expect(find.text('市價'), findsNothing);
@@ -1076,6 +1096,12 @@ void main() {
       ),
       findsOneWidget,
     );
+    final qualityExpansion =
+        find.byKey(const ValueKey('00631l-history-quality-expansion'));
+    await tester.ensureVisible(qualityExpansion);
+    await tester.pumpAndSettle();
+    await tester.tap(qualityExpansion);
+    await tester.pumpAndSettle();
     expect(
       find.byKey(const ValueKey('00631l-selected-history-quality-card')),
       findsOneWidget,
@@ -1121,7 +1147,11 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
       findsOneWidget,
     );
-    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    final currentPageSearchButton =
+        find.byKey(const ValueKey('00631l-symbol-search-button'));
+    await tester.ensureVisible(currentPageSearchButton);
+    await tester.pumpAndSettle();
+    await tester.tap(currentPageSearchButton);
     await tester.pumpAndSettle();
     await tester.enterText(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
@@ -1188,6 +1218,12 @@ void main() {
     await tester.tap(
       find.byKey(const ValueKey('00631l-symbol-search-result-0056')),
     );
+    await tester.pumpAndSettle();
+    final qualityExpansion =
+        find.byKey(const ValueKey('00631l-history-quality-expansion'));
+    await tester.ensureVisible(qualityExpansion);
+    await tester.pumpAndSettle();
+    await tester.tap(qualityExpansion);
     await tester.pumpAndSettle();
 
     expect(

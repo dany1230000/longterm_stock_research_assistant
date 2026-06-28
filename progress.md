@@ -649,3 +649,25 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.45 public marker and strict public static-data checks passed. Public
+  release marker reports rowCount 2837 and coverage 2014-10-31 to 2026-06-26.
+- Playwright mobile screenshot confirmed the overview DAY/LIVE/HIS summary and
+  holdings digest labels fit after v6.45.
+- Started v6.46 after the next UX bottleneck was identified as history/backtest
+  first-screen density.
+- Error: attempted to run a one-off Node Playwright script with `require("playwright")`;
+  the repo does not install Playwright as a Node module. The same error repeated
+  through `npx -p playwright node`. Resolution: stop repeating that path and
+  rely on code/widget inspection plus CLI screenshots where available.
+- Implemented a compact history/backtest top strip and moved detailed
+  price-history quality notes into an expandable `資料品質` panel.
+- Targeted history widget test passed after the UI change.
+- Initial full Flutter test failed because selected-ETF tests still expected
+  split-adjustment details while the new quality panel was collapsed. Resolution:
+  tests now expand `資料品質` before checking those details, and the search button
+  is brought back into view before the same test opens search again.
+- v6.46 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -449,6 +449,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Overview summary grid fit: `docs\00631l_v6_43_overview_summary_grid_fit.md`
 - Holdings digest grid fit: `docs\00631l_v6_44_holdings_digest_grid_fit.md`
 - Holdings digest label polish: `docs\00631l_v6_45_holdings_digest_label_polish.md`
+- History/backtest top compact: `docs\00631l_v6_46_history_backtest_top_compact.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
