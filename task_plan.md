@@ -1421,6 +1421,29 @@ Completed in v6.63:
 - Widget coverage verifies fast startup with a known holdings error.
 - Full validation passed with accepted WARN states only.
 
+## Phase 76 - v6.64 Holdings Unavailable Wording
+
+Status: complete
+
+Objective: make the overview holdings-unavailable card read like a product
+status, not a technical backend debug message.
+
+- Replace technical `live backend` / `official holdings` copy with concise
+  user-facing data status text.
+- Avoid showing placeholder trade dates when holdings are unusable.
+- Keep the status badge truthful (`error`, `stale`, `mock`, etc.).
+- Add widget coverage for the unavailable wording.
+- Do not change holdings parsing, repository behavior, price history, intraday
+  NAV, backtest, position, or AI logic.
+
+Completed in v6.64:
+
+- Holdings-unavailable cards now use concise data-status wording.
+- Unusable snapshots show the source status badge instead of a placeholder
+  trade date.
+- Widget coverage verifies the unavailable wording and date suppression.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

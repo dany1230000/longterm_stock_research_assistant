@@ -3907,10 +3907,10 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
     final txLine = _primaryFuturesLine(snapshot);
     final tsmcLine = _stockHoldingByCode(snapshot, '2330');
     final hasUsableHoldings = _hasUsableHoldingsSnapshot(snapshot);
-    final titleText = hasUsableHoldings ? '官方內容物重點' : '內容物狀態';
+    final titleText = hasUsableHoldings ? '官方內容物重點' : '官方內容物暫不可用';
     final subtitleText = hasUsableHoldings
         ? '官方每日快照，不是盤中即時內容物；盤中請看 NAV 更新。'
-        : 'live backend 尚未回傳有效 official holdings；不顯示 0 值內容物。';
+        : '資料來源尚未回傳可用快照；已隱藏 0 值內容物。';
     final theme = Theme.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -3939,7 +3939,9 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                   ),
                 ),
                 _CompactTextBadge(
-                  label: formatTaiwanDate(snapshot.tradeDate),
+                  label: hasUsableHoldings
+                      ? formatTaiwanDate(snapshot.tradeDate)
+                      : snapshot.status.label,
                 ),
               ],
             ),
@@ -4017,7 +4019,7 @@ class _HoldingDigestUnavailable extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                '內容物需 live backend；未顯示 0 值快照。',
+                '資料來源尚未回傳可用快照；未顯示 0 值內容物。',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(

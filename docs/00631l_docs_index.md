@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Holdings unavailable wording v6.64: `docs\00631l_v6_64_holdings_unavailable_wording.md`
 - Summary unavailable state v6.63: `docs\00631l_v6_63_summary_unavailable_state.md`
 - Exposure unavailable guard v6.62: `docs\00631l_v6_62_exposure_unavailable_guard.md`
 - Standalone PWA v3.2 summary: `docs\00631l_v3_2_standalone_pwa_summary.md`

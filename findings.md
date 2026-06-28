@@ -43,3 +43,7 @@
   gone. The next visible issue is that DAY/LIVE summary chips can still show
   background-sync wording even when a specific source already reports
   error/unavailable.
+- v6.63 public mobile inspection confirmed the DAY chip now shows
+  unavailable/error. The holdings-status card still used technical
+  `live backend` / `official holdings` wording and showed a placeholder date
+  for an unusable snapshot.

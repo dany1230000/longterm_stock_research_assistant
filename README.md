@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.64 replaces technical holdings-unavailable wording with concise
+  user-facing data status text and avoids showing placeholder trade dates.
 - v6.63 makes the DAY/LIVE/HIS summary row prefer known unavailable/error
   states over background-sync wording, so confirmed data issues do not look
   like an endless load.

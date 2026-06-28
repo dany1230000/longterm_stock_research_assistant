@@ -1608,6 +1608,18 @@ void main() {
       ),
       findsOneWidget,
     );
+    expect(find.text('官方內容物暫不可用'), findsOneWidget);
+    expect(find.text('資料來源尚未回傳可用快照；已隱藏 0 值內容物。'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(
+          const ValueKey('00631l-overview-holdings-digest-unavailable'),
+        ),
+        matching: find.text('資料來源尚未回傳可用快照；未顯示 0 值內容物。'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('2026/06/28'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-exposure-summary-strip')),
       findsNothing,

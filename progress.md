@@ -904,3 +904,15 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.63 committed/pushed as `a59de71`, tag
+  `00631l-lab-v6.63-summary-unavailable-state`; public marker and strict
+  static-data checks passed.
+- Playwright mobile screenshot confirmed the DAY chip now shows
+  unavailable/error. Started v6.64 to remove technical holdings-unavailable
+  wording and avoid displaying placeholder dates for unusable snapshots.
+- Targeted v6.64 widget test passed for the holdings-unavailable wording.
+- v6.64 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (106 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
