@@ -2586,6 +2586,108 @@ class EtfCatalog {
   }
 }
 
+class EtfPriceHistoryGapDetail {
+  const EtfPriceHistoryGapDetail({
+    required this.code,
+    this.name = '',
+    required this.gapReason,
+    required this.coverageTier,
+    required this.rowCount,
+    required this.validationFailureCount,
+    required this.sourceStatus,
+    required this.sourceUrl,
+    this.lastAttemptAt,
+    required this.requestedMonths,
+    this.errorMessage,
+  });
+
+  final String code;
+  final String name;
+  final String gapReason;
+  final String coverageTier;
+  final int rowCount;
+  final int validationFailureCount;
+  final String sourceStatus;
+  final String sourceUrl;
+  final DateTime? lastAttemptAt;
+  final int requestedMonths;
+  final String? errorMessage;
+
+  String get displayName => name.trim().isEmpty ? code : name;
+}
+
+class EtfPriceHistoryGapDetails {
+  const EtfPriceHistoryGapDetails({
+    required this.items,
+    required this.status,
+    required this.sourceStatusLabel,
+    required this.sourceContract,
+    required this.sourceUrl,
+    required this.lastFetchedAt,
+    this.sourceUpdatedAt,
+    this.dataTime,
+    this.isStale = false,
+    this.reason,
+    required this.limit,
+    required this.rowCount,
+    required this.returnedCount,
+    required this.gapDetailCount,
+    this.catalogRowCount,
+    this.fromCatalog = false,
+    this.gapReasonCounts = const {},
+    this.gapReasonSamples = const {},
+    this.errorMessage,
+  });
+
+  factory EtfPriceHistoryGapDetails.empty({
+    DateTime? lastFetchedAt,
+    EtfDataStatus status = EtfDataStatus.error,
+    String sourceStatusLabel = 'unavailable',
+    String sourceContract = 'twse_multi_etf_price_history_gaps',
+    String sourceUrl = '',
+    String? reason,
+    int limit = 50,
+    String? errorMessage,
+  }) {
+    return EtfPriceHistoryGapDetails(
+      items: const [],
+      status: status,
+      sourceStatusLabel: sourceStatusLabel,
+      sourceContract: sourceContract,
+      sourceUrl: sourceUrl,
+      lastFetchedAt: lastFetchedAt ?? DateTime.now(),
+      reason: reason,
+      limit: limit,
+      rowCount: 0,
+      returnedCount: 0,
+      gapDetailCount: 0,
+      errorMessage: errorMessage,
+    );
+  }
+
+  final List<EtfPriceHistoryGapDetail> items;
+  final EtfDataStatus status;
+  final String sourceStatusLabel;
+  final String sourceContract;
+  final String sourceUrl;
+  final DateTime lastFetchedAt;
+  final DateTime? sourceUpdatedAt;
+  final DateTime? dataTime;
+  final bool isStale;
+  final String? reason;
+  final int limit;
+  final int rowCount;
+  final int returnedCount;
+  final int gapDetailCount;
+  final int? catalogRowCount;
+  final bool fromCatalog;
+  final Map<String, int> gapReasonCounts;
+  final Map<String, List<String>> gapReasonSamples;
+  final String? errorMessage;
+
+  bool get hasItems => items.isNotEmpty;
+}
+
 class Etf00631LLabData {
   const Etf00631LLabData({
     required this.profile,

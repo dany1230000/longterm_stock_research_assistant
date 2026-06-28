@@ -501,6 +501,76 @@ class Static00631LRepository extends Mock00631LRepository {
     );
   }
 
+  @override
+  Future<EtfPriceHistoryGapDetails> fetchEtfPriceHistoryGaps({
+    String? reason,
+    int limit = 50,
+    bool fromCatalog = true,
+  }) async {
+    final payload = await _tryGetJson('etf_price_history_gaps.json');
+    final normalizedReason = reason?.trim();
+    if (payload == null) {
+      return EtfPriceHistoryGapDetails.empty(
+        status: EtfDataStatus.error,
+        sourceStatusLabel: 'unavailable',
+        sourceContract: 'twse_multi_etf_static_price_history_gaps',
+        sourceUrl: _resolve('etf_price_history_gaps.json').toString(),
+        reason: normalizedReason,
+        limit: limit,
+        errorMessage:
+            'Static public etf_price_history_gaps.json is unavailable.',
+      );
+    }
+    final allItems = [
+      for (final item in _list(payload['items'])) _gapDetail(_map(item)),
+    ];
+    final filteredItems = normalizedReason == null || normalizedReason.isEmpty
+        ? allItems
+        : [
+            for (final item in allItems)
+              if (item.gapReason == normalizedReason) item,
+          ];
+    final pageLimit = limit.clamp(1, 500).toInt();
+    final pageItems = filteredItems.take(pageLimit).toList(growable: false);
+    final rawStatus = _string(payload['sourceStatus'], fallback: 'unavailable');
+    return EtfPriceHistoryGapDetails(
+      items: pageItems,
+      status: rawStatus == 'static_official' || rawStatus == 'cached'
+          ? EtfDataStatus.cached
+          : EtfDataStatus.error,
+      sourceStatusLabel: rawStatus,
+      sourceContract: _string(
+        payload['sourceContract'],
+        fallback: 'twse_multi_etf_static_price_history_gaps',
+      ),
+      sourceUrl: _string(
+        payload['sourceUrl'],
+        fallback: _resolve('etf_price_history_gaps.json').toString(),
+      ),
+      lastFetchedAt:
+          _dateTime(payload['generatedAt'] ?? payload['fetchedAt']) ??
+              DateTime.now(),
+      sourceUpdatedAt: _wallClockDateTime(payload['sourceUpdatedAt']) ??
+          _date(payload['sourceUpdatedAt']),
+      dataTime:
+          _wallClockDateTime(payload['dataTime']) ?? _date(payload['dataTime']),
+      isStale: payload['isStale'] == true,
+      reason: normalizedReason?.isEmpty == true ? null : normalizedReason,
+      limit: pageLimit,
+      rowCount: filteredItems.length,
+      returnedCount: pageItems.length,
+      gapDetailCount: _int(
+        payload['gapDetailCount'],
+        fallback: allItems.length,
+      ),
+      catalogRowCount: _nullableInt(payload['catalogRowCount']),
+      fromCatalog: fromCatalog,
+      gapReasonCounts: _intMap(payload['gapReasonCounts']),
+      gapReasonSamples: _stringListMap(payload['gapReasonSamples']),
+      errorMessage: payload['errorMessage']?.toString(),
+    );
+  }
+
   Future<Map<String, dynamic>> _getJson(String filename) async {
     final body = await _client.getString(_resolve(filename), timeout: timeout);
     final decoded = jsonDecode(body);
@@ -555,6 +625,23 @@ class Static00631LRepository extends Mock00631LRepository {
       errorMessage: payload['errorMessage']?.toString(),
     );
   }
+}
+
+EtfPriceHistoryGapDetail _gapDetail(Map<String, dynamic> payload) {
+  return EtfPriceHistoryGapDetail(
+    code: _string(payload['code']).trim().toUpperCase(),
+    name: _string(payload['name']),
+    gapReason: _string(payload['gapReason'], fallback: 'unknown'),
+    coverageTier: _string(payload['coverageTier'], fallback: 'unavailable'),
+    rowCount: _int(payload['rowCount']),
+    validationFailureCount: _int(payload['validationFailureCount']),
+    sourceStatus: _string(payload['sourceStatus'], fallback: 'unavailable'),
+    sourceUrl: _string(payload['sourceUrl']),
+    lastAttemptAt: _wallClockDateTime(payload['lastAttemptAt']) ??
+        _dateTime(payload['lastAttemptAt']),
+    requestedMonths: _int(payload['requestedMonths']),
+    errorMessage: payload['errorMessage']?.toString(),
+  );
 }
 
 EtfCatalogItem _catalogItem(

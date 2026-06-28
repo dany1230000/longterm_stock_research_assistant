@@ -25,7 +25,7 @@ Objective: make the first screen easier to understand and document the product d
 
 ## Phase 3 - Data Correctness and Coverage
 
-Status: in_progress
+Status: complete
 
 - Verify 00631L split-adjusted calculations and expose the adjusted/raw distinction more clearly.
 - v4.17 added model flags and an overview `資料正確性` panel for price field, split adjustment, coverage, row count, and source.
@@ -377,6 +377,22 @@ JSON manually.
 - Return gap reason counts, samples, detail rows, and catalog row count when the
   catalog universe is requested.
 - Keep the endpoint read-only and clearly scoped to data verification.
+
+## Phase 24 - v6.12 Gap Detail UI
+
+Status: in_progress
+
+Objective: make symbol-level ETF price-history gap details inspectable inside
+the app instead of requiring manual JSON/API checks.
+
+- Add frontend models for ETF price-history gap detail rows.
+- Add repository support for live proxy, static public, cached, and mock modes.
+- Add a settings-page `ETF gap details` panel with code, reason, source status,
+  row count, attempt time, and short error text.
+- Keep gap details as maintenance status only; unavailable rows are not used by
+  history, backtest, comparison, or AI performance data.
+- Validation passed with Flutter analyze/test/build, backend tests, release
+  check WARN with failures=0, and git diff check.
 
 ## Phase 5 - Backtest and Position UX
 

@@ -284,6 +284,38 @@ void main() {
     expect(catalog.focusItems.first.premiumDiscountPct, -0.4);
   });
 
+  test('proxy repository maps ETF gap detail payload', () async {
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/history/gaps': jsonEncode(_etfGapDetailsPayload()),
+      }),
+    );
+
+    final gaps = await repository.fetchEtfPriceHistoryGaps(
+      reason: 'official_empty',
+      limit: 20,
+    );
+
+    expect(gaps.status, EtfDataStatus.cached);
+    expect(gaps.sourceStatusLabel, 'cached');
+    expect(gaps.sourceContract, 'twse_multi_etf_price_history_gaps');
+    expect(gaps.reason, 'official_empty');
+    expect(gaps.limit, 20);
+    expect(gaps.rowCount, 2);
+    expect(gaps.returnedCount, 2);
+    expect(gaps.gapDetailCount, 2);
+    expect(gaps.gapReasonCounts['official_empty'], 1);
+    expect(gaps.gapReasonSamples['official_empty'], ['00999']);
+    expect(gaps.items.first.code, '00999');
+    expect(gaps.items.first.name, 'Gap Test ETF');
+    expect(gaps.items.first.gapReason, 'official_empty');
+    expect(gaps.items.first.sourceStatus, 'error');
+    expect(gaps.items.first.rowCount, 0);
+    expect(gaps.items.first.requestedMonths, 1);
+    expect(gaps.items.first.lastAttemptAt, DateTime(2026, 6, 21));
+    expect(gaps.items.first.errorMessage, 'official empty months');
+  });
+
   test('static repository reads static public price history and status',
       () async {
     final repository = Static00631LRepository(
@@ -296,6 +328,8 @@ void main() {
             jsonEncode(_staticEtfCatalogPayload()),
         '00631l-static-data/etf_price_history_index.json':
             jsonEncode(_staticEtfPriceHistoryIndexPayload()),
+        '00631l-static-data/etf_price_history_gaps.json':
+            jsonEncode(_staticEtfGapDetailsPayload()),
         '00631l-static-data/etf_price_history/0050.json': jsonEncode({
           ..._staticPriceHistoryPayload(),
           'code': '0050',
@@ -310,6 +344,10 @@ void main() {
     final status = await repository.fetchOperationsStatus();
     final analysis = await repository.fetchAiAnalysisSummary();
     final catalog = await repository.fetchEtfCatalog();
+    final gaps = await repository.fetchEtfPriceHistoryGaps(
+      reason: 'not_saved',
+      limit: 1,
+    );
     final fastData = await repository.fetchFastLabData();
 
     expect(history.status, EtfDataStatus.cached);
@@ -354,6 +392,14 @@ void main() {
     expect(catalog.items[1].priceHistoryRowCount, 3);
     expect(catalog.items[1].priceHistoryCoverageTier, 'recent');
     expect(catalog.items[2].hasPriceHistory, isFalse);
+    expect(gaps.sourceStatusLabel, 'static_official');
+    expect(gaps.sourceContract, 'twse_multi_etf_static_price_history_gaps');
+    expect(gaps.reason, 'not_saved');
+    expect(gaps.items, hasLength(1));
+    expect(gaps.items.single.code, '00999');
+    expect(gaps.items.single.gapReason, 'not_saved');
+    expect(gaps.rowCount, 2);
+    expect(gaps.returnedCount, 1);
     expect(analysis.disclaimer, '非買賣建議');
     expect(fastData.priceHistory.points, hasLength(3));
     expect(fastData.priceHistory.sourceStatusLabel, 'static_official');
@@ -1135,6 +1181,60 @@ Map<String, Object?> _etfCatalogPayload() {
   };
 }
 
+Map<String, Object?> _etfGapDetailsPayload() {
+  return {
+    'sourceStatus': 'cached',
+    'sourceContract': 'twse_multi_etf_price_history_gaps',
+    'sourceUrl': 'local://etf-history-gaps',
+    'fetchedAt': '2026-06-21T00:05:00+08:00',
+    'sourceUpdatedAt': '2026-06-21',
+    'dataTime': '2026-06-21',
+    'isStale': false,
+    'reason': 'official_empty',
+    'limit': 20,
+    'rowCount': 2,
+    'returnedCount': 2,
+    'gapDetailCount': 2,
+    'gapReasonCounts': {
+      'official_empty': 1,
+      'source_error': 1,
+    },
+    'gapReasonSamples': {
+      'official_empty': ['00999'],
+      'source_error': ['00749B'],
+    },
+    'items': [
+      {
+        'code': '00999',
+        'name': 'Gap Test ETF',
+        'gapReason': 'official_empty',
+        'coverageTier': 'unavailable',
+        'rowCount': 0,
+        'validationFailureCount': 0,
+        'sourceStatus': 'error',
+        'sourceUrl': 'https://example.test/STOCK_DAY?stockNo=00999',
+        'lastAttemptAt': '2026-06-21T00:00:00+08:00',
+        'requestedMonths': 1,
+        'errorMessage': 'official empty months',
+      },
+      {
+        'code': '00749B',
+        'name': 'Source Error ETF',
+        'gapReason': 'source_error',
+        'coverageTier': 'error',
+        'rowCount': 0,
+        'validationFailureCount': 0,
+        'sourceStatus': 'error',
+        'sourceUrl': 'https://example.test/STOCK_DAY?stockNo=00749B',
+        'lastAttemptAt': '2026-06-21T00:01:00+08:00',
+        'requestedMonths': 1,
+        'errorMessage': 'source timeout',
+      },
+    ],
+    'errorMessage': null,
+  };
+}
+
 Map<String, Object?> _staticPriceHistoryPayload() {
   return {
     ..._priceHistoryPayload(),
@@ -1222,6 +1322,46 @@ Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
       },
     ],
     'errorMessage': null,
+  };
+}
+
+Map<String, Object?> _staticEtfGapDetailsPayload() {
+  return {
+    ..._etfGapDetailsPayload(),
+    'sourceStatus': 'static_official',
+    'sourceContract': 'twse_multi_etf_static_price_history_gaps',
+    'sourceUrl': 'web/00631l-static-data/etf_price_history_gaps.json',
+    'reason': null,
+    'rowCount': 2,
+    'returnedCount': 2,
+    'items': [
+      {
+        'code': '00999',
+        'name': 'Static Gap ETF',
+        'gapReason': 'not_saved',
+        'coverageTier': 'unavailable',
+        'rowCount': 0,
+        'validationFailureCount': 0,
+        'sourceStatus': 'unavailable',
+        'sourceUrl': '',
+        'lastAttemptAt': null,
+        'requestedMonths': 0,
+        'errorMessage': null,
+      },
+      {
+        'code': '00998',
+        'name': 'Second Static Gap ETF',
+        'gapReason': 'not_saved',
+        'coverageTier': 'unavailable',
+        'rowCount': 0,
+        'validationFailureCount': 0,
+        'sourceStatus': 'unavailable',
+        'sourceUrl': '',
+        'lastAttemptAt': null,
+        'requestedMonths': 0,
+        'errorMessage': null,
+      },
+    ],
   };
 }
 

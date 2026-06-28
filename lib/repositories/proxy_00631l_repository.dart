@@ -482,6 +482,28 @@ class Proxy00631LRepository extends Official00631LRepository {
     );
   }
 
+  @override
+  Future<EtfPriceHistoryGapDetails> fetchEtfPriceHistoryGaps({
+    String? reason,
+    int limit = 50,
+    bool fromCatalog = true,
+  }) async {
+    final normalizedReason = reason?.trim();
+    final query = <String, String>{
+      'limit': limit.toString(),
+      'fromCatalog': fromCatalog ? 'true' : 'false',
+      if (normalizedReason != null && normalizedReason.isNotEmpty)
+        'reason': normalizedReason,
+    };
+    final uri = Uri(path: '/api/etf/history/gaps', queryParameters: query);
+    final payload = await _getJson(uri.toString());
+    return _gapDetailsFromPayload(
+      payload,
+      fallbackReason: normalizedReason,
+      fallbackLimit: limit,
+    );
+  }
+
   Future<Map<String, dynamic>> _getJson(String path) async {
     final body = await _client.getString(_resolve(path), timeout: timeout);
     final decoded = jsonDecode(body);
@@ -498,6 +520,60 @@ class Proxy00631LRepository extends Official00631LRepository {
     final normalizedPath = path.startsWith('/') ? path : '/$path';
     return Uri.parse('$base$normalizedPath');
   }
+}
+
+EtfPriceHistoryGapDetails _gapDetailsFromPayload(
+  Map<String, dynamic> payload, {
+  String? fallbackReason,
+  int fallbackLimit = 50,
+}) {
+  final rawStatus = _rawStatus(payload);
+  return EtfPriceHistoryGapDetails(
+    items: [
+      for (final item in _list(payload['items']))
+        _gapDetailFromPayload(_map(item)),
+    ],
+    status: _status(payload),
+    sourceStatusLabel: rawStatus.isEmpty ? _status(payload).label : rawStatus,
+    sourceContract: _string(
+      payload['sourceContract'],
+      fallback: 'twse_multi_etf_price_history_gaps',
+    ),
+    sourceUrl: _string(payload['sourceUrl']),
+    lastFetchedAt: _dateTime(payload['fetchedAt']) ?? DateTime.now(),
+    sourceUpdatedAt: _wallClockDateTime(payload['sourceUpdatedAt']) ??
+        _nullableDate(payload['sourceUpdatedAt']),
+    dataTime: _wallClockDateTime(payload['dataTime']) ??
+        _nullableDate(payload['dataTime']),
+    isStale: payload['isStale'] == true,
+    reason: payload['reason']?.toString() ?? fallbackReason,
+    limit: _int(payload['limit'], fallback: fallbackLimit),
+    rowCount: _int(payload['rowCount']),
+    returnedCount: _int(payload['returnedCount']),
+    gapDetailCount: _int(payload['gapDetailCount']),
+    catalogRowCount: _nullableInt(payload['catalogRowCount']),
+    fromCatalog: payload['fromCatalog'] == true,
+    gapReasonCounts: _intMap(payload['gapReasonCounts']),
+    gapReasonSamples: _stringListMap(payload['gapReasonSamples']),
+    errorMessage: payload['errorMessage']?.toString(),
+  );
+}
+
+EtfPriceHistoryGapDetail _gapDetailFromPayload(Map<String, dynamic> payload) {
+  return EtfPriceHistoryGapDetail(
+    code: _string(payload['code']).trim().toUpperCase(),
+    name: _string(payload['name']),
+    gapReason: _string(payload['gapReason'], fallback: 'unknown'),
+    coverageTier: _string(payload['coverageTier'], fallback: 'unavailable'),
+    rowCount: _int(payload['rowCount']),
+    validationFailureCount: _int(payload['validationFailureCount']),
+    sourceStatus: _string(payload['sourceStatus'], fallback: 'unavailable'),
+    sourceUrl: _string(payload['sourceUrl']),
+    lastAttemptAt: _wallClockDateTime(payload['lastAttemptAt']) ??
+        _dateTime(payload['lastAttemptAt']),
+    requestedMonths: _int(payload['requestedMonths']),
+    errorMessage: payload['errorMessage']?.toString(),
+  );
 }
 
 EtfCatalogItem _catalogItemFromPayload(Map<String, dynamic> payload) {

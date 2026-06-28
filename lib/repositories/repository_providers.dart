@@ -218,6 +218,14 @@ final selectedEtfPriceHistoryProvider =
   return ref.watch(official00631LRepositoryProvider).fetchEtfPriceHistory(code);
 });
 
+final etfPriceHistoryGapDetailsProvider =
+    FutureProvider<EtfPriceHistoryGapDetails>((ref) {
+  return ref.watch(official00631LRepositoryProvider).fetchEtfPriceHistoryGaps(
+        limit: 50,
+        fromCatalog: true,
+      );
+});
+
 final etfHistoryComparisonProvider =
     FutureProvider.family<List<EtfPriceHistory>, String>((ref, selectedCode) {
   final repository = ref.watch(official00631LRepositoryProvider);

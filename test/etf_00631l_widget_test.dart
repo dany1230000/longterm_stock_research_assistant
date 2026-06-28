@@ -1277,6 +1277,32 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('settings shows ETF price history gap detail rows',
+      (tester) async {
+    await _pumpLab(tester, _EtfGapDetailsRepository());
+
+    await _tapSection(tester, 'settings');
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('ETF 資料與比較能力'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('ETF 資料與比較能力'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-etf-gap-detail-panel')),
+      findsOneWidget,
+    );
+    expect(find.text('ETF gap details'), findsOneWidget);
+    expect(find.text('00999'), findsOneWidget);
+    expect(find.text('00749B'), findsOneWidget);
+    expect(find.text('official_empty'), findsWidgets);
+    expect(find.text('source_error'), findsWidgets);
+    expect(find.textContaining('source timeout'), findsOneWidget);
+    expect(find.textContaining('maintenance status only'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('live proxy failure keeps fallback visible', (tester) async {
     await _pumpLab(
       tester,
@@ -1563,6 +1589,67 @@ class _EtfCatalogGapOperationsRepository extends Mock00631LRepository {
       },
       gapReasonSamples: const {
         'not_saved': ['00999', '00998'],
+      },
+    );
+  }
+}
+
+class _EtfGapDetailsRepository extends _EtfCatalogGapOperationsRepository {
+  @override
+  Future<EtfPriceHistoryGapDetails> fetchEtfPriceHistoryGaps({
+    String? reason,
+    int limit = 50,
+    bool fromCatalog = true,
+  }) async {
+    final now = DateTime(2026, 6, 21, 10);
+    return EtfPriceHistoryGapDetails(
+      items: [
+        EtfPriceHistoryGapDetail(
+          code: '00999',
+          name: 'Static Gap ETF',
+          gapReason: 'official_empty',
+          coverageTier: 'unavailable',
+          rowCount: 0,
+          validationFailureCount: 0,
+          sourceStatus: 'error',
+          sourceUrl: 'https://example.test/STOCK_DAY?stockNo=00999',
+          lastAttemptAt: now,
+          requestedMonths: 1,
+          errorMessage: 'official empty months',
+        ),
+        EtfPriceHistoryGapDetail(
+          code: '00749B',
+          name: 'Source Error ETF',
+          gapReason: 'source_error',
+          coverageTier: 'error',
+          rowCount: 0,
+          validationFailureCount: 0,
+          sourceStatus: 'error',
+          sourceUrl: 'https://example.test/STOCK_DAY?stockNo=00749B',
+          lastAttemptAt: now,
+          requestedMonths: 1,
+          errorMessage: 'source timeout',
+        ),
+      ],
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'cached',
+      sourceContract: 'twse_multi_etf_price_history_gaps',
+      sourceUrl: 'local://etf-history-gaps',
+      lastFetchedAt: now,
+      sourceUpdatedAt: now,
+      dataTime: now,
+      reason: reason,
+      limit: limit,
+      rowCount: 2,
+      returnedCount: 2,
+      gapDetailCount: 2,
+      gapReasonCounts: const {
+        'official_empty': 1,
+        'source_error': 1,
+      },
+      gapReasonSamples: const {
+        'official_empty': ['00999'],
+        'source_error': ['00749B'],
       },
     );
   }

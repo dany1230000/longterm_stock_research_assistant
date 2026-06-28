@@ -67,6 +67,19 @@ abstract class Official00631LRepository {
     );
   }
 
+  Future<EtfPriceHistoryGapDetails> fetchEtfPriceHistoryGaps({
+    String? reason,
+    int limit = 50,
+    bool fromCatalog = true,
+  }) async {
+    return EtfPriceHistoryGapDetails.empty(
+      sourceStatusLabel: 'unavailable',
+      status: EtfDataStatus.error,
+      reason: reason,
+      limit: limit,
+    );
+  }
+
   Future<Etf00631LLabData> fetchFastLabData() async {
     final profileFuture = fetchProfile();
     final snapshotFuture = fetchDailySnapshot();

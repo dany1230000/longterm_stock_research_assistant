@@ -90,6 +90,9 @@ class _LeveragedEtf00631LScreenState
     final comparisonHistoriesValue = shouldLoadComparison
         ? ref.watch(etfHistoryComparisonProvider(_selectedEtfCode))
         : const AsyncValue<List<EtfPriceHistory>>.data([]);
+    final gapDetailsValue = _section == _LabSection.settings
+        ? ref.watch(etfPriceHistoryGapDetailsProvider)
+        : null;
     final detailsLoading = !fullValue.hasValue && fullValue.isLoading;
     final detailsError = fullValue.hasError && !fullValue.hasValue
         ? fullValue.error.toString()
@@ -123,6 +126,7 @@ class _LeveragedEtf00631LScreenState
                   comparisonHistoriesError: comparisonHistoriesValue.hasError
                       ? comparisonHistoriesValue.error
                       : null,
+                  gapDetailsValue: gapDetailsValue,
                   selectedSection: _section,
                   detailsLoading: detailsLoading,
                   detailsError: detailsError,
@@ -153,6 +157,7 @@ class _LeveragedEtf00631LScreenState
     ref.invalidate(etf00631LFastLabProvider);
     ref.invalidate(etf00631LLabProvider);
     ref.invalidate(selectedEtfPriceHistoryProvider(_selectedEtfCode));
+    ref.invalidate(etfPriceHistoryGapDetailsProvider);
     _lastFullRefreshAt = DateTime.now();
     _scheduleRefreshTimer(force: true);
   }
@@ -257,6 +262,7 @@ class _LabContent extends StatelessWidget {
     required this.comparisonHistories,
     required this.comparisonHistoriesLoading,
     required this.comparisonHistoriesError,
+    required this.gapDetailsValue,
     required this.selectedSection,
     required this.detailsLoading,
     required this.detailsError,
@@ -273,6 +279,7 @@ class _LabContent extends StatelessWidget {
   final List<EtfPriceHistory> comparisonHistories;
   final bool comparisonHistoriesLoading;
   final Object? comparisonHistoriesError;
+  final AsyncValue<EtfPriceHistoryGapDetails>? gapDetailsValue;
   final _LabSection selectedSection;
   final bool detailsLoading;
   final String? detailsError;
@@ -385,7 +392,11 @@ class _LabContent extends StatelessWidget {
       case _LabSection.ai:
         return _AiSection(data: data, selectedEtf: selectedEtf);
       case _LabSection.settings:
-        return _SettingsSection(data: data, selectedEtf: selectedEtf);
+        return _SettingsSection(
+          data: data,
+          selectedEtf: selectedEtf,
+          gapDetailsValue: gapDetailsValue,
+        );
     }
   }
 }
@@ -8465,10 +8476,12 @@ class _SettingsSection extends StatelessWidget {
   const _SettingsSection({
     required this.data,
     required this.selectedEtf,
+    required this.gapDetailsValue,
   });
 
   final Etf00631LLabData data;
   final _SelectedEtfViewData selectedEtf;
+  final AsyncValue<EtfPriceHistoryGapDetails>? gapDetailsValue;
 
   @override
   Widget build(BuildContext context) {
@@ -8578,6 +8591,10 @@ class _SettingsSection extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               _EtfDataLibrarySummary(data: data, compact: true),
+              _EtfGapDetailPanel(
+                value: gapDetailsValue,
+                status: status,
+              ),
               const SizedBox(height: 10),
               _StatusList(
                 items: [
@@ -9179,6 +9196,174 @@ class _EtfDataLibrarySummary extends StatelessWidget {
             item: _etfHistoryGapReasonItem(status),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _EtfGapDetailPanel extends StatelessWidget {
+  const _EtfGapDetailPanel({
+    required this.value,
+    required this.status,
+  });
+
+  final AsyncValue<EtfPriceHistoryGapDetails>? value;
+  final EtfOperationsStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final current = value?.valueOrNull;
+    final shouldShow = status.etfPriceHistoryGapDetailCount > 0 ||
+        current?.items.isNotEmpty == true ||
+        value?.isLoading == true ||
+        value?.hasError == true;
+    if (!shouldShow) {
+      return const SizedBox.shrink();
+    }
+
+    final theme = Theme.of(context);
+    final rows = current?.items.take(8).toList(growable: false) ?? const [];
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: DecoratedBox(
+        key: const ValueKey('00631l-etf-gap-detail-panel'),
+        decoration: BoxDecoration(
+          color: _marketPanelAltColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: _marketBorderColor(context)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'ETF gap details',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  _StatusPill(label: current?.sourceStatusLabel ?? 'loading'),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Data gap details are maintenance status only; unavailable rows are not used as history, backtest, or comparison data.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                ),
+              ),
+              const SizedBox(height: 8),
+              _StatusWrap(
+                labels: [
+                  'details ${formatInteger(current?.gapDetailCount ?? status.etfPriceHistoryGapDetailCount)}',
+                  'returned ${formatInteger(current?.returnedCount ?? rows.length)}',
+                  if (current?.reason != null) 'reason ${current!.reason}',
+                  if (current?.dataTime != null)
+                    'dataTime ${_dateTimeOrDash(current!.dataTime)}',
+                ],
+              ),
+              if (value?.isLoading == true) ...[
+                const SizedBox(height: 8),
+                const LinearProgressIndicator(),
+              ] else if (value?.hasError == true) ...[
+                const SizedBox(height: 8),
+                _EmptyPanel(
+                  title: 'Gap details unavailable',
+                  message: value?.error.toString() ?? 'Unknown error',
+                ),
+              ] else if (rows.isEmpty) ...[
+                const SizedBox(height: 8),
+                const _EmptyPanel(
+                  title: 'No gap detail rows',
+                  message:
+                      'The current ETF price-history status has no symbol-level maintenance rows.',
+                ),
+              ] else ...[
+                const SizedBox(height: 10),
+                for (final row in rows) ...[
+                  _EtfGapDetailRow(row: row),
+                  const SizedBox(height: 8),
+                ],
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EtfGapDetailRow extends StatelessWidget {
+  const _EtfGapDetailRow({required this.row});
+
+  final EtfPriceHistoryGapDetail row;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final error = row.errorMessage?.trim();
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(
+                  row.code,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                _StatusPill(label: row.gapReason),
+                _StatusPill(label: row.sourceStatus),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              row.displayName,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 6),
+            _StatusWrap(
+              labels: [
+                'tier ${row.coverageTier}',
+                'rows ${formatInteger(row.rowCount)}',
+                if (row.validationFailureCount > 0)
+                  'validation ${formatInteger(row.validationFailureCount)}',
+                if (row.requestedMonths > 0)
+                  'months ${formatInteger(row.requestedMonths)}',
+                if (row.lastAttemptAt != null)
+                  'attempt ${_dateTimeOrDash(row.lastAttemptAt)}',
+              ],
+            ),
+            if (error != null && error.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                error,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

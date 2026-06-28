@@ -1645,6 +1645,12 @@ v6.11 adds `GET /api/etf/history/gaps` for filtering ETF price-history gaps by
 reason and inspecting full detail from the backend. Summary:
 `docs\00631l_v6_11_gap_detail_api.md`.
 
+v6.12 shows ETF price-history gap details inside the app settings page. Live
+proxy reads `/api/etf/history/gaps`; static public mode reads
+`etf_price_history_gaps.json`. These rows are maintenance status only and are
+not used as history, backtest, comparison, or AI performance data. Summary:
+`docs\00631l_v6_12_gap_detail_ui.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

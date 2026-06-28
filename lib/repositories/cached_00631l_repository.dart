@@ -27,6 +27,7 @@ class Cached00631LRepository extends Official00631LRepository {
   EtfOperationsStatus? _operationsStatusCache;
   EtfAiAnalysisSummary? _aiAnalysisCache;
   EtfCatalog? _etfCatalogCache;
+  EtfPriceHistoryGapDetails? _etfPriceHistoryGapDetailsCache;
 
   @override
   Future<Etf00631LLabData> fetchFastLabData() async {
@@ -258,6 +259,35 @@ class Cached00631LRepository extends Official00631LRepository {
     }
   }
 
+  @override
+  Future<EtfPriceHistoryGapDetails> fetchEtfPriceHistoryGaps({
+    String? reason,
+    int limit = 50,
+    bool fromCatalog = true,
+  }) async {
+    try {
+      final gaps = await _primary
+          .fetchEtfPriceHistoryGaps(
+            reason: reason,
+            limit: limit,
+            fromCatalog: fromCatalog,
+          )
+          .timeout(primaryTimeout);
+      _etfPriceHistoryGapDetailsCache = gaps;
+      return gaps;
+    } catch (_) {
+      final cached = _etfPriceHistoryGapDetailsCache;
+      if (cached != null) {
+        return _cachedEtfPriceHistoryGapDetails(cached);
+      }
+      return _fallback.fetchEtfPriceHistoryGaps(
+        reason: reason,
+        limit: limit,
+        fromCatalog: fromCatalog,
+      );
+    }
+  }
+
   Future<EtfOperationsStatus> _operationsWithFallbackPriceHistory(
     EtfOperationsStatus primaryStatus,
   ) async {
@@ -293,6 +323,32 @@ EtfCatalog _cachedEtfCatalog(EtfCatalog catalog) {
     isStale: catalog.isStale,
     userDelayMs: catalog.userDelayMs,
     errorMessage: catalog.errorMessage,
+  );
+}
+
+EtfPriceHistoryGapDetails _cachedEtfPriceHistoryGapDetails(
+  EtfPriceHistoryGapDetails gaps,
+) {
+  return EtfPriceHistoryGapDetails(
+    items: gaps.items,
+    status: EtfDataStatus.cached,
+    sourceStatusLabel: 'cached',
+    sourceContract: gaps.sourceContract,
+    sourceUrl: gaps.sourceUrl,
+    lastFetchedAt: gaps.lastFetchedAt,
+    sourceUpdatedAt: gaps.sourceUpdatedAt,
+    dataTime: gaps.dataTime,
+    isStale: gaps.isStale,
+    reason: gaps.reason,
+    limit: gaps.limit,
+    rowCount: gaps.rowCount,
+    returnedCount: gaps.returnedCount,
+    gapDetailCount: gaps.gapDetailCount,
+    catalogRowCount: gaps.catalogRowCount,
+    fromCatalog: gaps.fromCatalog,
+    gapReasonCounts: gaps.gapReasonCounts,
+    gapReasonSamples: gaps.gapReasonSamples,
+    errorMessage: gaps.errorMessage,
   );
 }
 

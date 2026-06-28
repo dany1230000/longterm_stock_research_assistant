@@ -336,6 +336,60 @@ class Mock00631LRepository extends Official00631LRepository {
   }
 
   @override
+  Future<EtfPriceHistoryGapDetails> fetchEtfPriceHistoryGaps({
+    String? reason,
+    int limit = 50,
+    bool fromCatalog = true,
+  }) async {
+    final now = _clock();
+    final items = [
+      EtfPriceHistoryGapDetail(
+        code: '00999',
+        name: 'Mock gap ETF',
+        gapReason: 'not_saved',
+        coverageTier: 'unavailable',
+        rowCount: 0,
+        validationFailureCount: 0,
+        sourceStatus: 'mock',
+        sourceUrl: 'mock://etf-history-gaps/00999',
+        lastAttemptAt: now,
+        requestedMonths: 0,
+        errorMessage: 'Mock gap detail is for UI fallback only.',
+      ),
+    ];
+    final normalizedReason = reason?.trim();
+    final filtered = normalizedReason == null || normalizedReason.isEmpty
+        ? items
+        : [
+            for (final item in items)
+              if (item.gapReason == normalizedReason) item,
+          ];
+    final pageLimit = limit.clamp(1, 500).toInt();
+    final pageItems = filtered.take(pageLimit).toList(growable: false);
+    return EtfPriceHistoryGapDetails(
+      items: pageItems,
+      status: EtfDataStatus.mock,
+      sourceStatusLabel: 'mock',
+      sourceContract: 'mock_etf_price_history_gaps',
+      sourceUrl: 'mock://etf-history-gaps',
+      lastFetchedAt: now,
+      sourceUpdatedAt: now,
+      dataTime: now,
+      reason: normalizedReason?.isEmpty == true ? null : normalizedReason,
+      limit: pageLimit,
+      rowCount: filtered.length,
+      returnedCount: pageItems.length,
+      gapDetailCount: items.length,
+      fromCatalog: fromCatalog,
+      gapReasonCounts: const {'not_saved': 1},
+      gapReasonSamples: const {
+        'not_saved': ['00999'],
+      },
+      errorMessage: 'Mock gap details are for UI fallback only.',
+    );
+  }
+
+  @override
   Future<Etf00631LLabData> fetchLabData() async {
     final profile = await fetchProfile();
     final snapshot = await fetchDailySnapshot();

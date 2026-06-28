@@ -501,6 +501,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v6_9_gap_detail_status.md",
         "docs/00631l_v6_10_gap_reason_samples.md",
         "docs/00631l_v6_11_gap_detail_api.md",
+        "docs/00631l_v6_12_gap_detail_ui.md",
         "docs/00631l_remote_maintenance.md",
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",

@@ -217,3 +217,19 @@
   `flutter test` PASS (95 tests), `flutter build web` PASS, backend tests PASS
   (271 tests), `scripts\00631l_release_check.cmd` WARN with failures=0, and
   `git diff --check` PASS.
+- Started v6.12 to bring ETF price-history gap details into the app settings
+  page.
+- Added red tests for proxy/static repository gap-detail mapping and settings
+  UI rows. The first targeted run failed as expected because
+  `fetchEtfPriceHistoryGaps`, `EtfPriceHistoryGapDetails`, and
+  `EtfPriceHistoryGapDetail` did not exist yet.
+- Implemented gap-detail models, live proxy/static/cached/mock repositories,
+  an on-demand provider, and the settings `ETF gap details` maintenance panel.
+- Targeted v6.12 validation PASS: `flutter test
+  test\etf_00631l_proxy_repository_test.dart test\etf_00631l_widget_test.dart`
+  passed.
+- Full v6.12 validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed lib test` PASS, `flutter analyze` PASS,
+  `flutter test` PASS (97 tests), `flutter build web` PASS, backend tests PASS
+  (271 tests), `scripts\00631l_release_check.cmd` WARN with failures=0, and
+  `git diff --check` PASS.
