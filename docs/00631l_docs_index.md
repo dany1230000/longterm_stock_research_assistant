@@ -439,6 +439,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Position quick actions: `docs\00631l_v6_33_position_quick_actions.md`
 - AI daily bullets: `docs\00631l_v6_34_ai_daily_bullets.md`
 - Overview daily summary strip: `docs\00631l_v6_35_overview_daily_summary_strip.md`
+- Compact quote header: `docs\00631l_v6_36_compact_quote_header.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

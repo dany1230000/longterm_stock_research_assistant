@@ -1830,3 +1830,7 @@ interpretation bullets directly inside the top AI briefing card.
 v6.35 adds a compact overview daily summary strip below the quote header so the
 first mobile screen shows mode, daily holdings date, intraday NAV time,
 premium/discount status, history coverage, and the first AI brief together.
+
+v6.36 removes the duplicate 00631L quote meta strip from the overview header.
+The same context remains in the daily summary strip, so the chart and core
+status appear sooner on mobile.

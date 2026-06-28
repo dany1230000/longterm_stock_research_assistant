@@ -827,6 +827,28 @@ Completed in v6.35:
 - Widget coverage verifies the new strip in overview and phone-width tests.
 - Full validation passed with accepted WARN states only.
 
+## Phase 48 - v6.36 Compact Quote Header
+
+Status: complete
+
+Objective: reduce duplicate information above the overview chart so the first
+mobile screen reaches the chart and core status sooner.
+
+- Hide the 00631L quote meta strip because v6.35 daily summary already carries
+  NAV/session/history context.
+- Keep quote meta available for non-00631L selected ETF contexts.
+- Add widget coverage that 00631L overview hides the duplicate meta strip.
+- Keep data sources, history, backtest, and AI logic unchanged.
+
+Completed in v6.36:
+
+- 00631L overview quote header no longer shows the duplicate NAV/session/history
+  meta strip.
+- Non-00631L selected ETF contexts keep the quote meta strip.
+- Widget coverage verifies the 00631L overview hides the duplicate quote meta
+  strip.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +19,7 @@ void main() {
     expect(find.textContaining('ETF 研究室'), findsWidgets);
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.textContaining('市價'), findsWidgets);
-    expect(find.textContaining('預估淨值'), findsWidgets);
+    expect(find.textContaining('預估淨值'), findsNothing);
     expect(find.textContaining('折溢價'), findsWidgets);
     expect(find.text('核心資料'), findsOneWidget);
     expect(find.text('資料完整度'), findsNothing);
@@ -37,7 +37,7 @@ void main() {
     expect(find.text('分割調整'), findsNothing);
     expect(find.text('覆蓋型態'), findsNothing);
     expect(find.text('ETF歷史'), findsNothing);
-    expect(find.textContaining('歷史資料'), findsWidgets);
+    expect(find.textContaining('歷史資料'), findsNothing);
     expect(find.text('累積報酬'), findsOneWidget);
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.textContaining('官方曝險'), findsOneWidget);
@@ -49,8 +49,7 @@ void main() {
     final quoteMetaStrip = find.byKey(
       const ValueKey('00631l-quote-meta-strip'),
     );
-    expect(quoteMetaStrip, findsOneWidget);
-    expect(tester.getSize(quoteMetaStrip).height, lessThanOrEqualTo(24));
+    expect(quoteMetaStrip, findsNothing);
     expect(
       find.descendant(
         of: quoteMetaStrip,

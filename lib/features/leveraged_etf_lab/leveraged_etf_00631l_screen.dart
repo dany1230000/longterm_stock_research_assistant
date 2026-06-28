@@ -1853,28 +1853,30 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 5),
-            _QuoteMetaStrip(
-              items: [
-                _QuoteMetaItem(
-                  label: '預估淨值',
-                  value: _price(selectedEtf.estimatedNav),
-                ),
-                if (marketSession != null)
+            if (!selectedEtf.is00631L) ...[
+              const SizedBox(height: 5),
+              _QuoteMetaStrip(
+                items: [
                   _QuoteMetaItem(
-                    label: '時段',
-                    value: marketSession.phaseLabel,
-                    caption:
-                        '${marketSession.dataFreshnessLabel} · ${marketSession.ageText}',
+                    label: '預估淨值',
+                    value: _price(selectedEtf.estimatedNav),
                   ),
-                _QuoteMetaItem(
-                  label: '歷史資料',
-                  value: history.rowCount >= 2
-                      ? '${formatInteger(history.rowCount)} 筆'
-                      : '尚無',
-                ),
-              ],
-            ),
+                  if (marketSession != null)
+                    _QuoteMetaItem(
+                      label: '時段',
+                      value: marketSession.phaseLabel,
+                      caption:
+                          '${marketSession.dataFreshnessLabel} · ${marketSession.ageText}',
+                    ),
+                  _QuoteMetaItem(
+                    label: '歷史資料',
+                    value: history.rowCount >= 2
+                        ? '${formatInteger(history.rowCount)} 筆'
+                        : '尚無',
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),

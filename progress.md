@@ -515,3 +515,16 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.35 committed/pushed as `8ca8a31`, tag
+  `00631l-lab-v6.35-overview-daily-summary-strip`.
+- Public Pages marker and strict public static-data checks passed on v6.35.
+- Started v6.36 to reduce duplicate overview header information.
+- Hid the 00631L quote meta strip because the new daily summary strip now shows
+  the same NAV/session/history context.
+- Targeted quote-header and phone-width widget tests passed after updating the
+  old quote-meta expectations.
+- v6.36 full validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS; `flutter analyze` PASS; `flutter test`
+  PASS (101 tests); `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
