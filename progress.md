@@ -1303,3 +1303,13 @@
   chip while keeping non-live and completed error states unchanged.
 - Targeted v6.94 widget validation PASS: live backend warmup display helper and
   the full `test\etf_00631l_widget_test.dart` suite.
+- Completed v6.94 validation, commit, tag, push, and public release-marker
+  verification. Public static data check PASS:
+  release `00631l-lab-v6.94-public-live-warmup-status`, rowCount 2837,
+  coverage 2014-10-31..2026-06-26, ETF ready 231 / catalog 347.
+- Public mobile screenshot check confirmed 5-second cold state shows
+  `喚醒中 / 連線中`, and 20-second warmed state shows DAY 2026/06/26,
+  LIVE TWSE 13:31:00, and premium/discount -0.11%.
+- Started v6.95 public deploy sync status. Added model helpers for frontend
+  Pages vs backend release metadata, surfaced a short Settings/My badge, and
+  added targeted model/widget tests.

@@ -1219,6 +1219,17 @@ String _dailyReadinessDateTimeText(DateTime? value) {
   return '$date $hour:$minute:$second';
 }
 
+bool _gitShaMatches(String left, String right) {
+  final normalizedLeft = left.trim().toLowerCase();
+  final normalizedRight = right.trim().toLowerCase();
+  if (normalizedLeft.isEmpty || normalizedRight.isEmpty) {
+    return false;
+  }
+  return normalizedLeft == normalizedRight ||
+      normalizedLeft.startsWith(normalizedRight) ||
+      normalizedRight.startsWith(normalizedLeft);
+}
+
 class EtfOperationsStatus {
   const EtfOperationsStatus({
     required this.status,
@@ -1590,6 +1601,91 @@ class EtfOperationsStatus {
       return version;
     }
     return '$version / $tag';
+  }
+
+  bool get hasBackendReleaseMetadata =>
+      backendAppVersion.trim().isNotEmpty ||
+      backendReleaseTag.trim().isNotEmpty ||
+      backendGitSha.trim().isNotEmpty;
+
+  bool get hasStaticReleaseMetadata =>
+      staticReleaseAppVersion.trim().isNotEmpty ||
+      staticReleaseTag.trim().isNotEmpty ||
+      staticReleaseGitSha.trim().isNotEmpty;
+
+  bool get frontendBackendReleaseSynced {
+    if (!hasBackendReleaseMetadata || !hasStaticReleaseMetadata) {
+      return false;
+    }
+    if (backendGitSha.trim().isNotEmpty &&
+        staticReleaseGitSha.trim().isNotEmpty) {
+      return _gitShaMatches(backendGitSha, staticReleaseGitSha);
+    }
+    if (backendReleaseTag.trim().isNotEmpty &&
+        staticReleaseTag.trim().isNotEmpty) {
+      return backendReleaseTag.trim() == staticReleaseTag.trim();
+    }
+    return backendAppVersion.trim().isNotEmpty &&
+        staticReleaseAppVersion.trim().isNotEmpty &&
+        backendAppVersion.trim() == staticReleaseAppVersion.trim();
+  }
+
+  bool get frontendBackendReleaseMismatch =>
+      hasBackendReleaseMetadata &&
+      hasStaticReleaseMetadata &&
+      !frontendBackendReleaseSynced;
+
+  String get publicDeploymentSyncLabel {
+    if (sourceStatusLabel == 'static_public_data') {
+      return 'static only';
+    }
+    if (backendDisconnected) {
+      return 'backend offline';
+    }
+    if (!hasBackendReleaseMetadata && !hasStaticReleaseMetadata) {
+      return 'release unknown';
+    }
+    if (!hasBackendReleaseMetadata) {
+      return 'backend unknown';
+    }
+    if (!hasStaticReleaseMetadata) {
+      return 'frontend unknown';
+    }
+    if (frontendBackendReleaseSynced) {
+      return 'synced';
+    }
+    return 'version drift';
+  }
+
+  String get publicDeploymentSyncCaption {
+    final frontend = hasStaticReleaseMetadata ? staticReleaseLabel : 'unknown';
+    final backend = hasBackendReleaseMetadata ? backendReleaseLabel : 'unknown';
+    if (frontendBackendReleaseSynced) {
+      return 'Frontend and backend release metadata match.';
+    }
+    if (sourceStatusLabel == 'static_public_data') {
+      return 'Static public mode is active; live backend is not required for history/backtest.';
+    }
+    if (backendDisconnected) {
+      return 'Public backend is not connected; the app should keep static history fallback visible.';
+    }
+    return 'Frontend $frontend; backend $backend.';
+  }
+
+  String get publicDeploymentSyncAction {
+    if (frontendBackendReleaseSynced) {
+      return 'No deploy sync action is needed.';
+    }
+    if (sourceStatusLabel == 'static_public_data') {
+      return 'Use public backend mode only when live intraday data is needed.';
+    }
+    if (!hasBackendReleaseMetadata) {
+      return 'Set backend release metadata during deployment.';
+    }
+    if (!hasStaticReleaseMetadata) {
+      return 'Run static export before the Pages build.';
+    }
+    return 'Redeploy public backend when live API behavior must match the current Pages release.';
   }
 
   EtfDailyReadinessSummary get dailyReadinessSummary {

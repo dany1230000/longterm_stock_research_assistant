@@ -154,3 +154,7 @@
   show static fallback holdings as unavailable/error while the Render backend
   wakes up. After about 20 seconds the same page shows live/cached data. The
   first screen should describe that transient state as backend warmup.
+- v6.95 public reliability pass found the frontend Pages release can advance
+  while the public backend release metadata remains older. This is not the same
+  as data failure: the app needs a concise deploy-sync label so users can tell
+  whether live backend behavior is running the same release as the public PWA.

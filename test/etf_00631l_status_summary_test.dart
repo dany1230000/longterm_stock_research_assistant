@@ -105,6 +105,41 @@ void main() {
     expect(summary.actionNeededCount, 0);
     expect(summary.attentionCount, greaterThan(0));
   });
+
+  test('public deployment sync reports matching release metadata', () {
+    final status = _operationsStatus(
+      backendGitSha: 'abcdef1234567890',
+      staticReleaseGitSha: 'abcdef1',
+      backendReleaseTag: '00631l-lab-v6.test',
+      staticReleaseTag: '00631l-lab-v6.test',
+    );
+
+    expect(status.frontendBackendReleaseSynced, isTrue);
+    expect(status.frontendBackendReleaseMismatch, isFalse);
+    expect(status.publicDeploymentSyncLabel, 'synced');
+    expect(
+      status.publicDeploymentSyncCaption,
+      contains('release metadata match'),
+    );
+  });
+
+  test('public deployment sync reports frontend backend drift', () {
+    final status = _operationsStatus(
+      backendAppVersion: '6.90-backend',
+      backendReleaseTag: '00631l-lab-v6.90-backend',
+      backendGitSha: '1111111',
+      staticReleaseAppVersion: '6.94-frontend',
+      staticReleaseTag: '00631l-lab-v6.94-frontend',
+      staticReleaseGitSha: '2222222',
+    );
+
+    expect(status.frontendBackendReleaseSynced, isFalse);
+    expect(status.frontendBackendReleaseMismatch, isTrue);
+    expect(status.publicDeploymentSyncLabel, 'version drift');
+    expect(status.publicDeploymentSyncCaption, contains('Frontend'));
+    expect(
+        status.publicDeploymentSyncAction, contains('Redeploy public backend'));
+  });
 }
 
 EtfStatusSummary _summary({
@@ -234,6 +269,12 @@ EtfOperationsStatus _operationsStatus({
   int reportFailureCount = 0,
   int dailyCycleWarningCount = 0,
   int dailyCycleFailureCount = 0,
+  String backendAppVersion = '',
+  String backendReleaseTag = '',
+  String backendGitSha = '',
+  String staticReleaseAppVersion = '',
+  String staticReleaseTag = '',
+  String staticReleaseGitSha = '',
 }) {
   return EtfOperationsStatus(
     status: EtfDataStatus.cached,
@@ -246,6 +287,12 @@ EtfOperationsStatus _operationsStatus({
     intradaySourceMode: 'auto',
     twseIntradayNavConfigured: true,
     yuantaIntradayNavConfigured: true,
+    backendAppVersion: backendAppVersion,
+    backendReleaseTag: backendReleaseTag,
+    backendGitSha: backendGitSha,
+    staticReleaseAppVersion: staticReleaseAppVersion,
+    staticReleaseTag: staticReleaseTag,
+    staticReleaseGitSha: staticReleaseGitSha,
     publicApiBaseUrl: 'https://api.example.com',
     allowedOrigins: const ['https://00631l.example.com'],
     dataRoot: '/data',

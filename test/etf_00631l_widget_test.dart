@@ -2034,6 +2034,24 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('settings first screen shows public deploy version drift',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _DeploymentDriftRepository());
+
+    await _tapSection(tester, 'settings');
+    await tester.pumpAndSettle();
+
+    expect(find.text('version drift'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('AI daily facts fit in a compact phone row', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -2669,6 +2687,29 @@ class _SettingsBackendErrorRepository extends Mock00631LRepository {
   }
 }
 
+class _DeploymentDriftRepository extends Mock00631LRepository {
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() {
+    return fetchLabData();
+  }
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    return _operationsStatusWithEtfHistory(
+      readyCount: 231,
+      rowCount: 347,
+      sourceStatusLabel: 'cached',
+      backendAppVersion: '6.90-backend',
+      backendReleaseTag: '00631l-lab-v6.90-backend',
+      backendGitSha: '1111111',
+      staticReleaseAppVersion: '6.94-frontend',
+      staticReleaseTag: '00631l-lab-v6.94-frontend',
+      staticReleaseGitSha: '2222222',
+      tierCounts: const {'long_term': 8, 'recent': 223},
+    );
+  }
+}
+
 class _CatalogHistoryMetadataRepository extends Mock00631LRepository {
   @override
   Future<Etf00631LLabData> fetchFastLabData() {
@@ -2722,6 +2763,13 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
   int missingCount = 0,
   int attemptedCount = 0,
   int outOfCatalogCount = 0,
+  String sourceStatusLabel = 'static_public_data',
+  String backendAppVersion = '',
+  String backendReleaseTag = '',
+  String backendGitSha = '',
+  String staticReleaseAppVersion = '5.42-public-release-wait',
+  String staticReleaseTag = '00631l-lab-v5.42-public-release-wait',
+  String staticReleaseGitSha = 'b611c2c21c031b2fea2f182a778a46776093bb3f',
   Map<String, int> gapReasonCounts = const {
     'official_empty': 0,
     'not_saved': 0,
@@ -2735,7 +2783,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
   final now = DateTime(2026, 6, 11, 10);
   return EtfOperationsStatus(
     status: EtfDataStatus.cached,
-    sourceStatusLabel: 'static_public_data',
+    sourceStatusLabel: sourceStatusLabel,
     sourceContract: '00631l_static_public_operations',
     sourceUrl: 'local://operations-status',
     lastFetchedAt: now,
@@ -2744,9 +2792,12 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     intradaySourceMode: 'backend_required',
     twseIntradayNavConfigured: false,
     yuantaIntradayNavConfigured: false,
-    staticReleaseAppVersion: '5.42-public-release-wait',
-    staticReleaseTag: '00631l-lab-v5.42-public-release-wait',
-    staticReleaseGitSha: 'b611c2c21c031b2fea2f182a778a46776093bb3f',
+    backendAppVersion: backendAppVersion,
+    backendReleaseTag: backendReleaseTag,
+    backendGitSha: backendGitSha,
+    staticReleaseAppVersion: staticReleaseAppVersion,
+    staticReleaseTag: staticReleaseTag,
+    staticReleaseGitSha: staticReleaseGitSha,
     staticReleaseBuildTime: DateTime(2026, 6, 24, 8, 1, 9),
     publicApiBaseUrl: '',
     allowedOrigins: const [],

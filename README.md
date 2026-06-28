@@ -7,6 +7,8 @@ Latest mobile UI polish:
 - v6.94 clarifies public live-backend warmup on the first screen: when GitHub
   Pages is waiting for the Render backend, the DAY chip shows backend warmup
   instead of a confirmed data error.
+- v6.95 adds a public deploy sync badge in Settings/My so frontend Pages and
+  backend release drift is visible without opening scripts.
 - v6.93 reconciles public static ETF catalog rows against the ETF price-history
   index, so a stale seed catalog cannot publish a smaller searchable universe
   than the history/backtest data already exported to GitHub Pages.

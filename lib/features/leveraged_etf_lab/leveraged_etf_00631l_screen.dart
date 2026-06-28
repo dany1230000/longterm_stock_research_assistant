@@ -10176,6 +10176,12 @@ class _SettingsSection extends StatelessWidget {
                       : 'git ${_shortGitSha(status.staticReleaseGitSha)}; build ${_dateTimeOrDash(status.staticReleaseBuildTime)}',
                 ),
               _StatusItem(
+                label: 'Deploy sync',
+                status: status.publicDeploymentSyncLabel,
+                detail: status.publicDeploymentSyncCaption,
+                action: status.publicDeploymentSyncAction,
+              ),
+              _StatusItem(
                 label: '官方每日內容物',
                 status: status.holdingsHistoryStatus,
                 detail:
@@ -10529,6 +10535,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                     selectedEtf.priceHistory.sourceStatusLabel,
                   ),
                   releaseLabel,
+                  status.publicDeploymentSyncLabel,
                   '日常狀態',
                   readinessStatus,
                 ],
