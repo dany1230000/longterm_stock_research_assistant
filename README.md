@@ -1823,3 +1823,6 @@ changing historical data or backtest formulas.
 
 v6.33 shortens the position page action area. Save, JSON export, and clear are
 now compact horizontal quick actions while keeping position data local-only.
+
+v6.34 makes the AI page more answer-first by showing the first rule-based daily
+interpretation bullets directly inside the top AI briefing card.

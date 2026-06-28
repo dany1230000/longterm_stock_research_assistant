@@ -785,6 +785,25 @@ Completed in v6.33:
 - Widget coverage verifies the three quick-action tile keys.
 - Full validation passed with accepted WARN states only.
 
+## Phase 46 - v6.34 AI Daily Bullets
+
+Status: complete
+
+Objective: make the AI page open with concrete daily interpretation instead of
+requiring the user to scan lower detailed panels.
+
+- Show the first rule-based analysis bullets inside the top AI briefing card.
+- Keep source, holdings date, NAV time, and program action context visible.
+- Add widget coverage for the daily bullet area.
+- Keep rule-based analysis as the only active provider.
+
+Completed in v6.34:
+
+- The AI hero now shows the first two rule-based daily interpretation bullets.
+- Source, holdings date, NAV time, and program action context remain visible.
+- Widget coverage verifies the daily briefing bullet area.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

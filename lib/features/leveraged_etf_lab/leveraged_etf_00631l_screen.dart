@@ -8088,6 +8088,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
         ? '盤中 NAV 暫時不可用，折溢價狀態無法判斷。'
         : _premiumDescription(premium);
     final statusColor = _aiStatusColor(context, summary, premium);
+    final briefingBullets = summary.bullets.take(2).toList(growable: false);
 
     return DecoratedBox(
       key: const ValueKey('00631l-ai-daily-briefing-hero'),
@@ -8158,6 +8159,38 @@ class _AiDailyBriefingHero extends StatelessWidget {
                 ),
               ),
             ),
+            if (briefingBullets.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              DecoratedBox(
+                key: const ValueKey('00631l-ai-daily-briefing-bullets'),
+                decoration: BoxDecoration(
+                  color: _marketPanelAltColor(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: _marketBorderColor(context)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '當日判讀',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      for (final bullet in briefingBullets)
+                        _BulletLine(
+                          text: bullet,
+                          icon: Icons.analytics_outlined,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
             LayoutBuilder(
               builder: (context, constraints) {

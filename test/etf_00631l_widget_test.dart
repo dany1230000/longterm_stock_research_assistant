@@ -1350,6 +1350,10 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-daily-briefing-hero')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-daily-briefing-bullets')),
+      findsOneWidget,
+    );
     expect(find.text('今日 AI 判讀'), findsOneWidget);
     expect(find.textContaining('非買賣建議'), findsWidgets);
     expect(find.textContaining('程式操作'), findsWidgets);
