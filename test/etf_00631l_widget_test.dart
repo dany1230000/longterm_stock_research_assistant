@@ -502,7 +502,7 @@ void main() {
     );
     expect(
       find.descendant(of: dailySummary, matching: find.text('checking')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.descendant(of: dailySummary, matching: find.text('loading')),
@@ -560,12 +560,37 @@ void main() {
       findsNothing,
     );
     expect(
+      find.descendant(of: dailySummary, matching: find.text('checking')),
+      findsNothing,
+    );
+    expect(
       find.descendant(of: dailySummary, matching: find.text('unavailable')),
       findsWidgets,
     );
     expect(
       find.descendant(of: dailySummary, matching: find.text('error')),
       findsWidgets,
+    );
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('fast startup localizes intraday pending state', (tester) async {
+    final repository = _FastStartupNoIntradayNavRepository();
+
+    await _pumpLab(tester, repository, settle: false);
+    await tester.pump();
+
+    final dailySummary = find.byKey(
+      const ValueKey('00631l-overview-daily-summary-strip'),
+    );
+    expect(dailySummary, findsOneWidget);
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('連線中')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: dailySummary, matching: find.text('checking')),
+      findsNothing,
     );
     _expectNoTradingActionText();
   });
@@ -2511,6 +2536,27 @@ class _FastStartupNoUsableHoldingsRepository extends _FastStartupRepository {
       profile: data.profile,
       snapshot: snapshot,
       intradayNav: data.intradayNav,
+      futuresQuote: data.futuresQuote,
+      holdingsHistory: data.holdingsHistory,
+      intradayNavHistory: data.intradayNavHistory,
+      priceHistory: data.priceHistory,
+      operationsStatus: data.operationsStatus,
+      analysis: data.analysis,
+      aiAnalysis: data.aiAnalysis,
+      etfCatalog: data.etfCatalog,
+      lastFetchedAt: data.lastFetchedAt,
+    );
+  }
+}
+
+class _FastStartupNoIntradayNavRepository extends _FastStartupRepository {
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() async {
+    final data = await Mock00631LRepository().fetchFastLabData();
+    return Etf00631LLabData(
+      profile: data.profile,
+      snapshot: data.snapshot,
+      intradayNav: null,
       futuresQuote: data.futuresQuote,
       holdingsHistory: data.holdingsHistory,
       intradayNavHistory: data.intradayNavHistory,

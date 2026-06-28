@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.65 localizes background-pending labels in the summary row, replacing
+  `syncing` / `checking` with short Chinese labels.
 - v6.64 replaces technical holdings-unavailable wording with concise
   user-facing data status text and avoids showing placeholder trade dates.
 - v6.63 makes the DAY/LIVE/HIS summary row prefer known unavailable/error

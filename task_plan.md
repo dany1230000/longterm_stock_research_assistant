@@ -1444,6 +1444,29 @@ Completed in v6.64:
 - Widget coverage verifies the unavailable wording and date suppression.
 - Full validation passed with accepted WARN states only.
 
+## Phase 77 - v6.65 Summary Pending Labels
+
+Status: complete
+
+Objective: make overview summary pending states read like a localized app UI
+instead of debug/loading text.
+
+- Replace `syncing` / `checking` pending values with short Chinese labels.
+- Keep final source status labels such as `error`, `unavailable`, and
+  `live proxy` truthful.
+- Add widget coverage for intraday pending state without changing source
+  behavior.
+- Do not change data fetching, source-status decisions, price history,
+  holdings parsing, backtest, position, or AI logic.
+
+Completed in v6.65:
+
+- Pending summary labels now use `同步中`, `連線中`, and `檢查中`.
+- Final source labels remain truthful.
+- Widget coverage verifies the intraday pending state with a no-intraday fast
+  startup fixture.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

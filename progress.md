@@ -916,3 +916,19 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.64 committed/pushed as `6479134`, tag
+  `00631l-lab-v6.64-holdings-unavailable-wording`; public marker and strict
+  static-data checks passed.
+- Playwright mobile screenshot confirmed the holdings-unavailable card is now
+  product wording. Started v6.65 to replace debug-like pending labels in the
+  overview summary row.
+- Error: the first v6.65 fast-start test expected `連線中` in a fixture that
+  already had an intraday NAV data time. Resolution: keep that test focused on
+  removing old English labels and add a no-intraday fast-start fixture for the
+  localized pending state.
+- Targeted v6.65 fast-start widget tests passed.
+- v6.65 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (107 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

@@ -47,3 +47,6 @@
   unavailable/error. The holdings-status card still used technical
   `live backend` / `official holdings` wording and showed a placeholder date
   for an unusable snapshot.
+- v6.64 public mobile inspection confirmed holdings-unavailable wording is now
+  product-facing. Remaining first-screen polish: pending summary values still
+  used English loading words that read like debug state.

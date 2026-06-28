@@ -2873,7 +2873,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
         : snapshotKnownUnavailable
             ? 'unavailable'
             : detailsLoading
-                ? 'syncing'
+                ? '同步中'
                 : 'unavailable';
     final dayCaption = hasUsableSnapshot || snapshotKnownUnavailable
         ? data.snapshot.status.label
@@ -2885,7 +2885,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
         : navKnownUnavailable
             ? 'unavailable'
             : detailsLoading
-                ? 'checking'
+                ? '連線中'
                 : 'unavailable';
     final navCaption = hasNavTime || navKnownUnavailable
         ? _intradaySummarySourceLabel(nav)
@@ -2907,7 +2907,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
       _OverviewDailySummaryItem(
         badge: 'HIS',
         value: detailsLoading && !historyIsAvailable
-            ? 'checking'
+            ? '檢查中'
             : '${formatInteger(priceSummary.rowCount)}筆',
         caption: detailsLoading && !historyIsAvailable
             ? 'static'

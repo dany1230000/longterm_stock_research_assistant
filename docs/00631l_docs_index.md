@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Summary pending labels v6.65: `docs\00631l_v6_65_summary_pending_labels.md`
 - Holdings unavailable wording v6.64: `docs\00631l_v6_64_holdings_unavailable_wording.md`
 - Summary unavailable state v6.63: `docs\00631l_v6_63_summary_unavailable_state.md`
 - Exposure unavailable guard v6.62: `docs\00631l_v6_62_exposure_unavailable_guard.md`
