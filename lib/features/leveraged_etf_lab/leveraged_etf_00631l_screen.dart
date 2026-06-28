@@ -548,19 +548,19 @@ class _SelectedEtfViewData {
     return [
       _SelectedEtfCapabilityBadge(
         keySuffix: ready ? 'history-ready' : 'catalog-only',
-        label: ready ? 'history-ready' : 'catalog-only',
+        label: ready ? '歷史可用' : '僅清單資料',
       ),
       _SelectedEtfCapabilityBadge(
         keySuffix: ready ? 'backtest-ready' : 'backtest-paused',
-        label: ready ? 'backtest-ready' : 'backtest-paused',
+        label: ready ? '回測可用' : '回測暫停',
       ),
       _SelectedEtfCapabilityBadge(
         keySuffix: ready ? 'compare-ready' : 'compare-paused',
-        label: ready ? 'compare-ready' : 'compare-paused',
+        label: ready ? '比較可用' : '比較暫停',
       ),
       _SelectedEtfCapabilityBadge(
         keySuffix: ready ? 'ai-full-context' : 'ai-limited-context',
-        label: ready ? 'AI full-context' : 'AI limited-context',
+        label: ready ? 'AI 完整資料' : 'AI 有限資料',
       ),
     ];
   }
@@ -2433,12 +2433,12 @@ String get _frontendDataMode {
 
 String get _frontendDataModeLabel {
   if (_use00631LLiveProxy) {
-    return 'live proxy';
+    return '即時後端';
   }
   if (_use00631LStaticData) {
-    return 'static public';
+    return '公開靜態';
   }
-  return 'mock default';
+  return '示範資料';
 }
 
 String get _frontendDataModeDisplay {
@@ -2511,6 +2511,44 @@ String _statusDisplay(String? rawStatus) {
     case 'backend connected':
     case '後端可連線':
       return '後端已連線';
+  }
+  return value;
+}
+
+String _sourceStatusBadgeLabel(String? rawStatus) {
+  final value = rawStatus?.trim();
+  switch (value) {
+    case 'official':
+      return '官方';
+    case 'cached':
+      return '快取';
+    case 'mock':
+    case 'mock_default':
+      return '示範';
+    case 'error':
+      return '錯誤';
+    case 'stale':
+      return '過期';
+    case 'unavailable':
+    case null:
+    case '':
+      return '不可用';
+    case 'static_official':
+      return '靜態官方';
+    case 'static_public_data':
+    case 'static_public':
+      return '公開靜態';
+    case 'backend_required':
+      return '需後端';
+    case 'deferred':
+      return '稍後載入';
+    case 'live_proxy':
+      return '即時後端';
+    case 'local_only':
+    case 'local-only':
+      return '本機保存';
+    case 'rule_based':
+      return '規則分析';
   }
   return value;
 }
@@ -3091,7 +3129,7 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
               title: '內容物',
               value: formatTaiwanDate(data.snapshot.tradeDate),
               caption: '官方每日快照',
-              status: data.snapshot.status.label,
+              status: _sourceStatusBadgeLabel(data.snapshot.status.label),
             ),
             _OverviewClockItem(
               badge: 'LIVE',
@@ -3102,7 +3140,7 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
               caption: navSession == null
                   ? '需要 backend'
                   : '${navSession.phaseLabel} · ${navSession.dataFreshnessLabel}',
-              status: nav?.status.label ?? 'unavailable',
+              status: _sourceStatusBadgeLabel(nav?.status.label),
             ),
             _OverviewClockItem(
               badge: 'TX',
@@ -3118,7 +3156,9 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
               title: '歷史',
               value: _dateOrDash(priceSummary.coverageEnd),
               caption: '${formatInteger(priceSummary.rowCount)} rows',
-              status: selectedEtf.priceHistory.sourceStatusLabel,
+              status: _sourceStatusBadgeLabel(
+                selectedEtf.priceHistory.sourceStatusLabel,
+              ),
             ),
           ]
         : [
@@ -3129,14 +3169,16 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
                   ? _dateOrDash(priceSummary.coverageEnd)
                   : _sourceTimeText(selectedEtf.dataTime!),
               caption: selectedEtf.hasImportedHistory ? '歷史可用' : '僅清單資料',
-              status: selectedEtf.sourceStatusLabel,
+              status: _sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel),
             ),
             _OverviewClockItem(
               badge: 'HIS',
               title: '歷史',
               value: _dateOrDash(priceSummary.coverageEnd),
               caption: '${formatInteger(priceSummary.rowCount)} rows',
-              status: selectedEtf.priceHistory.sourceStatusLabel,
+              status: _sourceStatusBadgeLabel(
+                selectedEtf.priceHistory.sourceStatusLabel,
+              ),
             ),
             const _OverviewClockItem(
               badge: 'DAY',
@@ -3630,7 +3672,7 @@ class _SelectedEtfAtAGlancePanel extends StatelessWidget {
       _AtAGlanceMetricData(
         label: '市價',
         value: _price(selectedEtf.marketPrice),
-        caption: selectedEtf.sourceStatusLabel,
+        caption: _sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel),
       ),
       _AtAGlanceMetricData(
         label: '歷史資料',
@@ -3672,7 +3714,9 @@ class _SelectedEtfAtAGlancePanel extends StatelessWidget {
                         ),
                   ),
                 ),
-                _CompactTextBadge(label: selectedEtf.sourceStatusLabel),
+                _CompactTextBadge(
+                  label: _sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel),
+                ),
               ],
             ),
             const SizedBox(height: 6),
@@ -5482,7 +5526,11 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                _CompactTextBadge(label: priceHistory.sourceStatusLabel),
+                _CompactTextBadge(
+                  label: _sourceStatusBadgeLabel(
+                    priceHistory.sourceStatusLabel,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -5549,7 +5597,9 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
                       child: _SectionHeaderMetricChip(
                         metric: _SectionHeaderMetric(
                           label: '資料來源',
-                          value: priceHistory.sourceStatusLabel,
+                          value: _sourceStatusBadgeLabel(
+                            priceHistory.sourceStatusLabel,
+                          ),
                         ),
                       ),
                     ),
@@ -6467,10 +6517,10 @@ class _ComparisonDataReadinessStrip extends StatelessWidget {
         .take(6)
         .join(' / ');
     final labels = [
-      'candidates ${formatInteger(candidateCount)}',
-      'comparison-ready ${formatInteger(readyCount)}',
-      'skipped ${formatInteger(skippedMetrics.length)}',
-      if (skippedCodes.isNotEmpty) 'skipped codes $skippedCodes',
+      '候選 ${formatInteger(candidateCount)}',
+      '可比較 ${formatInteger(readyCount)}',
+      '略過 ${formatInteger(skippedMetrics.length)}',
+      if (skippedCodes.isNotEmpty) '略過 $skippedCodes',
     ];
     return Column(
       key: const ValueKey('00631l-etf-comparison-readiness-strip'),
@@ -6495,7 +6545,7 @@ class _ComparisonDataReadinessStrip extends StatelessWidget {
         if (skippedMetrics.isNotEmpty) ...[
           const SizedBox(height: 4),
           Text(
-            'Skipped rows have fewer than two price-history points and are not used in the comparison chart.',
+            '少於兩筆歷史價格的 ETF 不會放入比較圖。',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: _marketMutedTextColor(context),
                   fontWeight: FontWeight.w700,
@@ -6521,7 +6571,7 @@ class _ComparisonDataReadinessStrip extends StatelessWidget {
                     border: Border.all(color: _marketBorderColor(context)),
                   ),
                   child: Text(
-                    '${metric.code}: rows ${formatInteger(metric.rowCount)} / ${metric.sourceStatusLabel}',
+                    '${metric.code}: ${formatInteger(metric.rowCount)} 筆 / ${_sourceStatusBadgeLabel(metric.sourceStatusLabel)}',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: _marketMutedTextColor(context),
                           fontWeight: FontWeight.w800,
@@ -7756,9 +7806,9 @@ class _PositionSectionState extends State<_PositionSection> {
         _StatusWrap(
           labels: [
             input.hasPosition ? '持倉資料已輸入' : '尚未輸入持倉',
-            'local-only',
+            '本機保存',
             '目前標的 ${widget.selectedEtf.code}',
-            '行情來源 ${widget.selectedEtf.sourceStatusLabel}',
+            '行情來源 ${_sourceStatusBadgeLabel(widget.selectedEtf.sourceStatusLabel)}',
           ],
         ),
         const SizedBox(height: 8),
@@ -7840,7 +7890,7 @@ class _PositionSectionState extends State<_PositionSection> {
             subtitle: input.hasPosition
                 ? '依目前市價估算；資料只保存在本機瀏覽器。'
                 : '先輸入股數與平均成本，就能在本機估算持倉狀態。',
-            badges: ['local-only', widget.selectedEtf.code],
+            badges: ['本機保存', widget.selectedEtf.code],
           ),
         const SizedBox(height: 8),
         _PositionAccountStrip(
@@ -7866,7 +7916,7 @@ class _PositionSectionState extends State<_PositionSection> {
                 )
               : _SectionBlock(
                   title: '輸入持倉資料',
-                  subtitle: 'local-only，本機瀏覽器保存。清除資料後不會保留副本。',
+                  subtitle: '本機保存，資料留在本機瀏覽器；清除資料後不會保留副本。',
                   child: inputForm,
                 ),
         ),
@@ -8155,7 +8205,7 @@ class _PositionAccountStrip extends StatelessWidget {
                     ),
                   ),
                 ),
-                const _CompactTextBadge(label: 'local-only'),
+                const _CompactTextBadge(label: '本機保存'),
               ],
             ),
             const SizedBox(height: 3),
@@ -8175,7 +8225,7 @@ class _PositionAccountStrip extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '行情來源 ${selectedEtf.sourceStatusLabel}；歷史來源 ${selectedEtf.priceHistory.sourceStatusLabel}；資料時間 $dataTime。',
+              '行情來源 ${_sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel)}；歷史來源 ${_sourceStatusBadgeLabel(selectedEtf.priceHistory.sourceStatusLabel)}；資料時間 $dataTime。',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelSmall?.copyWith(
@@ -8450,7 +8500,7 @@ class _AiSection extends StatelessWidget {
         const SizedBox(height: 12),
         _SectionBlock(
           title: '今日 AI 快覽',
-          subtitle: 'rule_based 分析；聚焦今日資料時間、內容物、折溢價偏離與維護狀態。',
+          subtitle: '規則分析；聚焦今日資料時間、內容物、折溢價偏離與維護狀態。',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -8634,7 +8684,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
                     ),
                   ),
                 ),
-                const _CompactTextBadge(label: 'rule_based'),
+                const _CompactTextBadge(label: '規則分析'),
               ],
             ),
             const SizedBox(height: 6),
@@ -8652,7 +8702,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
               labels: [
                 'holdings ${_dateOrDash(snapshot.tradeDate)}',
                 'NAV ${_intradayDataTimeText(nav)}',
-                'source ${summary.sourceStatusLabel}',
+                '來源 ${_sourceStatusBadgeLabel(summary.sourceStatusLabel)}',
               ],
             ),
             const SizedBox(height: 10),
@@ -8922,7 +8972,7 @@ class _AiTodayInterpretationMatrix extends StatelessWidget {
       key: const ValueKey('00631l-ai-interpretation-matrix'),
       child: _SectionBlock(
         title: '今日判讀矩陣',
-        subtitle: 'rule_based 將今日資料拆成可檢查的四個面向；只描述資料狀態。',
+        subtitle: '規則分析將今日資料拆成可檢查的四個面向；只描述資料狀態。',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -9102,7 +9152,7 @@ class _AiTodaySnapshotPanel extends StatelessWidget {
                     ),
                   ),
                 ),
-                const _CompactTextBadge(label: 'rule_based'),
+                const _CompactTextBadge(label: '規則分析'),
               ],
             ),
             const SizedBox(height: 4),
@@ -9226,7 +9276,7 @@ class _AiBriefCards extends StatelessWidget {
     final intradayBrief = _findAnalysisBullet(summary, '盤中折溢價最新') ??
         '盤中 NAV ${_intradayDataTimeText(data.intradayNav)}；${premiumAssessment == null ? '目前沒有可判斷的盤中偏離資料。' : _premiumDescription(premiumAssessment)}';
     final riskBrief = _findAnalysisBullet(summary, '資料風險') ??
-        '資料來源 ${summary.sourceStatusLabel}；若資料 stale、error 或 unavailable，先檢查 backend 與來源時間。';
+        '資料來源 ${_sourceStatusBadgeLabel(summary.sourceStatusLabel)}；若資料過期、錯誤或不可用，先檢查 backend 與來源時間。';
 
     final cards = [
       _AiBriefTile(
@@ -9379,7 +9429,7 @@ class _AiDailyStatusPanel extends StatelessWidget {
         const SizedBox(height: 8),
         _BulletLine(
           text:
-              '整體 readiness ${summary.readinessLabel}；backend ${data.operationsStatus.backendConnectionLabel}；price history ${data.priceHistory.sourceStatusLabel}。',
+              '整體狀態 ${summary.readinessLabel}；後端 ${data.operationsStatus.backendConnectionLabel}；歷史資料 ${_sourceStatusBadgeLabel(data.priceHistory.sourceStatusLabel)}。',
           icon: Icons.fact_check_outlined,
         ),
         _BulletLine(
@@ -9443,12 +9493,12 @@ class _SelectedEtfAiSection extends StatelessWidget {
       children: [
         _SectionHeaderCard(
           title: '${selectedEtf.code} AI 快覽',
-          subtitle: 'rule_based 分析；只解釋目前已載入的 ETF catalog 與歷史資料。',
+          subtitle: '規則分析；只解釋目前已載入的 ETF catalog 與歷史資料。',
           icon: Icons.psychology_alt_outlined,
           badges: [
             'AI',
-            'rule_based',
-            selectedEtf.sourceStatusLabel,
+            '規則分析',
+            _sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel),
           ],
           metrics: [
             _SectionHeaderMetric(
@@ -9488,9 +9538,9 @@ class _SelectedEtfAiSection extends StatelessWidget {
             children: [
               _StatusWrap(
                 labels: [
-                  'source rule_based',
+                  '來源 規則分析',
                   'ETF ${selectedEtf.code}',
-                  selectedEtf.sourceStatusLabel,
+                  _sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel),
                   '價格欄位 $priceField',
                   '分割調整 $adjustmentLabel',
                   '非買賣建議',
@@ -9538,7 +9588,7 @@ class _AiSignalGrid extends StatelessWidget {
         _MetricCard(
           label: '資料狀態',
           value: summary.readinessLabel,
-          caption: 'source ${summary.sourceStatusLabel}',
+          caption: '來源 ${_sourceStatusBadgeLabel(summary.sourceStatusLabel)}',
           icon: Icons.verified_outlined,
         ),
         _MetricCard(
@@ -9828,13 +9878,13 @@ class _SettingsSection extends StatelessWidget {
             items: [
               const _StatusItem(
                 label: '帳戶',
-                status: 'not required',
+                status: '不需登入',
                 detail: '00631L 正二研究室目前不需要帳號或券商登入。',
                 action: '可直接使用公開 PWA；持倉資料留在本機。',
               ),
               const _StatusItem(
                 label: '外觀',
-                status: 'available',
+                status: '可切換',
                 detail: '右上角可切換夜間模式，偏好會保存在本機。',
                 action: '需要切換時點選月亮或太陽圖示。',
               ),
@@ -9842,13 +9892,13 @@ class _SettingsSection extends StatelessWidget {
                 label: '目前 ETF',
                 status: selectedEtf.code,
                 detail:
-                    '${selectedEtf.name}；價格資料 ${selectedEtf.priceHistory.sourceStatusLabel}。',
+                    '${selectedEtf.name}；價格資料 ${_sourceStatusBadgeLabel(selectedEtf.priceHistory.sourceStatusLabel)}。',
                 action: '左上角代號按鈕可搜尋並切換 ETF。',
               ),
               _StatusItem(
                 label: '持倉資料',
-                status: status.positionStatus,
-                detail: '${selectedEtf.code} 持倉追蹤採 local-only，不會上傳個人持倉。',
+                status: _sourceStatusBadgeLabel(status.positionStatus),
+                detail: '${selectedEtf.code} 持倉追蹤採本機保存，不會上傳個人持倉。',
                 action: '可在持倉頁保存、匯出 JSON 或清除。',
               ),
             ],
@@ -9862,35 +9912,35 @@ class _SettingsSection extends StatelessWidget {
             items: [
               _StatusItem(
                 label: 'PWA',
-                status: 'ready',
+                status: '可用',
                 detail:
                     '公開 GitHub Pages root 可直接開啟 ETF 研究室，並保留 static history fallback。',
                 action: '可先用 PWA 日常使用與收集 store 截圖素材。',
               ),
               _StatusItem(
                 label: 'Android',
-                status: 'planned',
+                status: '規劃中',
                 detail:
                     '目前 repo 尚未加入 Android 原生 scaffold 與 release signing 設定。',
                 action: '下一階段建立 Android shell、app id、icon、簽章與 store build 流程。',
               ),
               _StatusItem(
                 label: 'iOS',
-                status: 'planned',
+                status: '規劃中',
                 detail:
                     'iOS 上架需要 macOS、Xcode、Apple Developer 與 App Store Connect。',
                 action: '下一階段準備 bundle id、簽章、隱私資訊與 TestFlight 流程。',
               ),
               _StatusItem(
                 label: '隱私與支援',
-                status: 'needed',
+                status: '待準備',
                 detail:
                     '正式商店頁需要 privacy policy、support URL、app icon、截圖與資料使用說明。',
                 action: '先整理 policy 草稿與上架素材清單；不把任何 key 放進 repo。',
               ),
               _StatusItem(
                 label: 'Live backend',
-                status: 'ready template',
+                status: '範本就緒',
                 detail:
                     'public backend 已有 Docker / Render / CORS / persistent data 設計。',
                 action: '正式上架前確認 backend uptime、persistent volume 與公開 API URL。',
@@ -9921,15 +9971,16 @@ class _SettingsSection extends StatelessWidget {
                   _StatusItem(
                     label: 'catalog',
                     status: data.etfCatalog.hasData
-                        ? data.etfCatalog.sourceStatusLabel
-                        : status.etfCatalogStatus,
+                        ? _sourceStatusBadgeLabel(
+                            data.etfCatalog.sourceStatusLabel)
+                        : _sourceStatusBadgeLabel(status.etfCatalogStatus),
                     detail:
                         'rows ${data.etfCatalog.hasData ? data.etfCatalog.rowCount : status.etfCatalogRowCount}，dataTime ${_dateTimeOrDash(data.etfCatalog.dataTime ?? status.etfCatalogDataTime)}。',
                     action: '左上角代號按鈕可搜尋代號、名稱與分類。',
                   ),
                   const _StatusItem(
                     label: 'ETF comparison',
-                    status: 'available',
+                    status: '可使用',
                     detail: '歷史回測頁可自選 1-5 檔 ETF，比較同一區間的歷史報酬與回撤。',
                     action: '在歷史回測頁使用同類型篩選或手動勾選比較組合。',
                   ),
@@ -10250,7 +10301,7 @@ class _SettingsHeaderStrip extends StatelessWidget {
                     ),
                   ),
                 ),
-                const _CompactTextBadge(label: 'local-only'),
+                const _CompactTextBadge(label: '本機保存'),
               ],
             ),
             const SizedBox(height: 7),
@@ -10332,7 +10383,9 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                 labels: [
                   '免登入',
                   '目前 ${selectedEtf.code}',
-                  selectedEtf.priceHistory.sourceStatusLabel,
+                  _sourceStatusBadgeLabel(
+                    selectedEtf.priceHistory.sourceStatusLabel,
+                  ),
                   releaseLabel,
                   '日常狀態',
                   readinessStatus,
@@ -10365,7 +10418,7 @@ String _settingsDataModeCaption(EtfOperationsStatus status) {
   if (status.sourceStatusLabel == 'mock') {
     return '預設示範資料';
   }
-  if (_frontendDataModeLabel == 'live proxy') {
+  if (_use00631LLiveProxy) {
     return '後端連線狀態詳情在下方';
   }
   return status.backendConnectionLabel;
@@ -10398,7 +10451,7 @@ class _EtfResearchRoomReadinessPanel extends StatelessWidget {
           items: [
             const _StatusItem(
               label: '公開 PWA',
-              status: 'available',
+              status: '可用',
               detail:
                   'GitHub Pages static mode 可開啟；live intraday 需要 public backend。',
               action: '手機可直接開公開網址；若要 live，請保持 backend /ready 正常。',
@@ -10407,12 +10460,12 @@ class _EtfResearchRoomReadinessPanel extends StatelessWidget {
               label: '00631L 核心資料',
               status: data.status.label,
               detail:
-                  'holdings ${formatTaiwanDate(data.snapshot.tradeDate)}；price rows ${formatInteger(price.rowCount)}；intraday ${data.intradayNav?.status.label ?? 'unavailable'}。',
+                  'holdings ${formatTaiwanDate(data.snapshot.tradeDate)}；price rows ${formatInteger(price.rowCount)}；intraday ${_sourceStatusBadgeLabel(data.intradayNav?.status.label)}。',
               action: '每日執行 daily cycle，確認 official / cached / stale 狀態。',
             ),
             _StatusItem(
               label: '多 ETF 資料庫',
-              status: '$etfReady / $etfTotal ready',
+              status: '$etfReady / $etfTotal 可用',
               detail: '已匯入 ETF price history 的檔數會影響搜尋切換、歷史、回測與比較。',
               action:
                   '資料不足時執行 scripts\\00631l_import_etf_price_history.cmd --update。',
@@ -10425,7 +10478,7 @@ class _EtfResearchRoomReadinessPanel extends StatelessWidget {
             ),
             const _StatusItem(
               label: '持倉與 AI',
-              status: 'local-only / rule_based',
+              status: '本機保存 / 規則分析',
               detail: '持倉保存在瀏覽器本機；AI 目前只做 rule-based 資料解讀。',
               action: '需要移機前先匯出持倉 JSON；外部 LLM 預設關閉。',
             ),
@@ -10488,7 +10541,7 @@ class _EtfDataLibrarySummary extends StatelessWidget {
         icon: Icons.dataset_outlined,
       ),
       _MetricCard(
-        label: '歷史 ready',
+        label: '歷史可用',
         value: historyReadyValue,
         caption: status.etfPriceHistoryStatus,
         icon: Icons.query_stats_outlined,
@@ -10506,7 +10559,7 @@ class _EtfDataLibrarySummary extends StatelessWidget {
         icon: Icons.schedule_outlined,
       ),
       _MetricCard(
-        label: '尚未 ready',
+        label: '尚未可用',
         value: formatInteger(notReady),
         caption: '需補歷史或等待驗證',
         icon: Icons.hourglass_empty_outlined,
@@ -10525,7 +10578,7 @@ class _EtfDataLibrarySummary extends StatelessWidget {
       title: 'ETF 資料庫狀態',
       subtitle: compact
           ? '先看 catalog 與歷史價格覆蓋；缺口代表尚未有足夠資料可供比較或回測。'
-          : '顯示可搜尋的 ETF catalog 與已匯入歷史價格；ready 代表可用於歷史、回測與比較，不代表官方內容物已完整匯入。',
+          : '顯示可搜尋的 ETF catalog 與已匯入歷史價格；可用代表能用於歷史、回測與比較，不代表官方內容物已完整匯入。',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

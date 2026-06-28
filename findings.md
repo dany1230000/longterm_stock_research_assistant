@@ -120,3 +120,7 @@
   reason keys (`official_empty`, `source_error`, `not_saved`) directly to users.
   The raw keys are useful for data contracts, but public UI should show readable
   status labels.
+- v6.86 public settings review found several non-contract UI surfaces still
+  displayed internal status wording (`local-only`, `rule_based`, `available`,
+  `comparison-ready`). These labels are useful for implementation but should be
+  mapped before they reach the primary app UI.

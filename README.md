@@ -1981,3 +1981,8 @@ so the chart and settings appear sooner on phone screens.
 v6.50 shortens the AI page first screen. Detailed snapshot and interpretation
 cards now live inside advanced AI detail, while the page opens with the daily
 briefing and concise rule-based summary.
+
+v6.86 cleans up visible status wording in account/settings, position, AI, and
+comparison surfaces. Internal keys such as `local-only`, `rule_based`, and
+`comparison-ready` remain in data contracts but no longer appear as primary app
+labels.

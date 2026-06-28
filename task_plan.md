@@ -1852,6 +1852,29 @@ Completed in v6.85:
 - Coverage tier labels in user-facing status text are localized.
 - Raw gap reason keys remain unchanged for API/repository filtering.
 
+## Phase 98 - v6.86 Settings Status Labels
+
+Status: complete
+
+Objective: remove debug-style status labels from the account/settings,
+position, AI, and comparison surfaces.
+
+- Map common source/status keys to user-facing labels.
+- Replace visible `local-only`, `rule_based`, `available`, `planned`, and
+  comparison-readiness wording with concise app labels.
+- Keep raw keys in models, repositories, API payloads, ValueKeys, and filters.
+- Do not change data sources, calculations, backtest formulas, or ETF import
+  behavior.
+
+Completed in v6.86:
+
+- Added a source/status display helper for common internal keys.
+- Account/settings, position, AI, selected ETF, and comparison surfaces now use
+  user-facing labels such as `本機保存`, `規則分析`, `快取`, `公開靜態`, and
+  `可比較`.
+- Widget coverage was updated for the new labels.
+- Full validation passed with release-check WARN states and zero failures.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

@@ -1201,3 +1201,15 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- Started v6.86 after public settings inspection showed visible raw status
+  labels such as `local-only`, `rule_based`, `static_official`, `available`,
+  and comparison readiness keys.
+- v6.86 adds a display helper for common source/status keys and applies it to
+  account/settings, position, AI, selected ETF, and comparison surfaces while
+  leaving raw data-contract keys unchanged.
+- Targeted v6.86 widget validation PASS: position controls, AI/settings clean
+  status wording, and ETF data-library readiness.
+- v6.86 full validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

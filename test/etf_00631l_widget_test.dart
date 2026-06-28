@@ -949,7 +949,7 @@ void main() {
       find.byKey(const ValueKey('00631l-position-action-clear')),
       findsOneWidget,
     );
-    expect(find.textContaining('local-only'), findsWidgets);
+    expect(find.textContaining('本機保存'), findsWidgets);
   });
 
   testWidgets('position account summary fits on phone width', (tester) async {
@@ -1551,16 +1551,16 @@ void main() {
       find.byKey(const ValueKey('00631l-selected-etf-data-context-card')),
       findsNothing,
     );
-    expect(find.text('回測可用'), findsOneWidget);
+    expect(find.text('回測可用'), findsWidgets);
     expect(find.text('盤中 NAV 限 00631L'), findsOneWidget);
 
     await _tapSection(tester, 'position');
     await tester.pumpAndSettle();
     expect(find.textContaining('0050'), findsWidgets);
-    expect(find.textContaining('local-only'), findsWidgets);
+    expect(find.textContaining('本機保存'), findsWidgets);
     expect(find.text('目前標的 0050'), findsWidgets);
     expect(find.textContaining('行情來源'), findsWidgets);
-    expect(find.textContaining('歷史來源 cached'), findsWidgets);
+    expect(find.textContaining('歷史來源 快取'), findsWidgets);
 
     await _tapSection(tester, 'ai');
     await tester.pumpAndSettle();
@@ -1880,7 +1880,7 @@ void main() {
     expect(find.text('資料狀態'), findsWidgets);
     expect(find.text('內容物重點'), findsOneWidget);
     expect(find.textContaining('價格歷史共'), findsOneWidget);
-    expect(find.textContaining('rule_based'), findsWidgets);
+    expect(find.textContaining('規則分析'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);
 
     await _tapSection(tester, 'settings');
@@ -2042,7 +2042,7 @@ void main() {
 
     expect(find.text('ETF 資料庫狀態'), findsOneWidget);
     expect(find.text('catalog 檔數'), findsOneWidget);
-    expect(find.text('歷史 ready'), findsOneWidget);
+    expect(find.text('歷史可用'), findsOneWidget);
     expect(find.text('228 / 228'), findsOneWidget);
     expect(find.text('long-term'), findsOneWidget);
     expect(find.text('8'), findsWidgets);
@@ -2051,7 +2051,7 @@ void main() {
     expect(find.text('完成度'), findsOneWidget);
     expect(find.textContaining('缺口代表尚未有足夠資料'), findsOneWidget);
     expect(find.text('歷史可用比例'), findsOneWidget);
-    expect(find.text('尚未 ready'), findsOneWidget);
+    expect(find.text('尚未可用'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-settings-quick-summary-compact')),
       findsOneWidget,
@@ -2199,7 +2199,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('我的'), findsWidgets);
     expect(find.text('進階維護診斷'), findsOneWidget);
-    expect(find.textContaining('mock'), findsWidgets);
+    expect(find.textContaining('示範'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
