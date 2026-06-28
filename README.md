@@ -1986,3 +1986,7 @@ v6.86 cleans up visible status wording in account/settings, position, AI, and
 comparison surfaces. Internal keys such as `local-only`, `rule_based`, and
 `comparison-ready` remain in data contracts but no longer appear as primary app
 labels.
+
+v6.87 applies the same status-label cleanup to the overview DAY/LIVE/HIS
+summary, so the first screen no longer shows raw words such as `cached`,
+`backend`, or `unavailable` in the primary summary chips.

@@ -124,3 +124,6 @@
   displayed internal status wording (`local-only`, `rule_based`, `available`,
   `comparison-ready`). These labels are useful for implementation but should be
   mapped before they reach the primary app UI.
+- v6.87 public overview screenshot showed the first-screen DAY summary still
+  displayed raw `cached`. The overview summary should use the same display-label
+  mapping as settings and selected ETF surfaces.

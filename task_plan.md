@@ -1875,6 +1875,26 @@ Completed in v6.86:
 - Widget coverage was updated for the new labels.
 - Full validation passed with release-check WARN states and zero failures.
 
+## Phase 99 - v6.87 Overview Summary Status Labels
+
+Status: complete
+
+Objective: remove raw source/status words from the overview DAY/LIVE/HIS
+summary chips.
+
+- Localize known unavailable/error states in the daily summary.
+- Localize pending backend/static captions.
+- Keep raw source keys in data contracts and maintenance payloads.
+- Do not change data fetching, calculations, selected ETF behavior, or
+  backtest formulas.
+
+Completed in v6.87:
+
+- Overview DAY/LIVE/HIS summary captions now use user-facing labels for
+  cached/error/unavailable and pending backend/static states.
+- Known unavailable holdings and intraday pending widget paths are covered.
+- Full validation passed with release-check WARN states and zero failures.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

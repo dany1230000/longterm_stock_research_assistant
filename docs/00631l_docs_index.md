@@ -491,6 +491,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Backtest result compact: `docs\00631l_v6_49_backtest_result_compact.md`
 - AI detail progressive disclosure: `docs\00631l_v6_50_ai_detail_progressive.md`
 - Settings status labels: `docs\00631l_v6_86_settings_status_labels.md`
+- Overview summary status labels: `docs\00631l_v6_87_overview_summary_status_labels.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

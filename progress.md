@@ -1213,3 +1213,13 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- Started v6.87 after public overview screenshot still showed raw `cached` in
+  the DAY summary chip.
+- v6.87 localizes overview DAY/LIVE/HIS summary captions and known unavailable
+  states while keeping raw source keys in lower-level contracts.
+- Targeted v6.87 widget validation PASS: known unavailable holdings summary and
+  intraday pending summary.
+- v6.87 full validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

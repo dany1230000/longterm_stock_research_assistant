@@ -2909,26 +2909,26 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
     final dayValue = hasUsableSnapshot
         ? formatTaiwanDate(data.snapshot.tradeDate)
         : snapshotKnownUnavailable
-            ? 'unavailable'
+            ? '不可用'
             : detailsLoading
                 ? '同步中'
-                : 'unavailable';
+                : '不可用';
     final dayCaption = hasUsableSnapshot || snapshotKnownUnavailable
-        ? data.snapshot.status.label
+        ? _sourceStatusBadgeLabel(data.snapshot.status.label)
         : detailsLoading
-            ? 'daily'
-            : data.snapshot.status.label;
+            ? '每日'
+            : _sourceStatusBadgeLabel(data.snapshot.status.label);
     final navTime = hasNavTime
         ? formatTimeSeconds(nav!.dataTime!)
         : navKnownUnavailable
-            ? 'unavailable'
+            ? '不可用'
             : detailsLoading
                 ? '連線中'
-                : 'unavailable';
+                : '不可用';
     final navCaption = hasNavTime || navKnownUnavailable
         ? _intradaySummarySourceLabel(nav)
         : detailsLoading
-            ? 'backend'
+            ? '後端'
             : _intradaySummarySourceLabel(nav);
     final historyIsAvailable = priceSummary.rowCount >= 2;
     final items = [
@@ -2948,7 +2948,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
             ? '檢查中'
             : '${formatInteger(priceSummary.rowCount)}筆',
         caption: detailsLoading && !historyIsAvailable
-            ? 'static'
+            ? '靜態'
             : _summaryCoverageCompactYears(priceSummary),
       ),
     ];

@@ -560,11 +560,11 @@ void main() {
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('unavailable')),
+      find.descendant(of: dailySummary, matching: find.text('不可用')),
       findsWidgets,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('error')),
+      find.descendant(of: dailySummary, matching: find.text('錯誤')),
       findsWidgets,
     );
     _expectNoTradingActionText();
