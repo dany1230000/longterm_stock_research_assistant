@@ -471,7 +471,7 @@ void main() {
 
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.text('核心資料'), findsNothing);
-    expect(find.textContaining('背景更新中'), findsOneWidget);
+    expect(find.textContaining('背景更新中'), findsNothing);
     expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('更多資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);

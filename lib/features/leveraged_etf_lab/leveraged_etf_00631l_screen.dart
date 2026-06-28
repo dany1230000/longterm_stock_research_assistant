@@ -294,6 +294,8 @@ class _LabContent extends StatelessWidget {
       selectedEtfCode: selectedEtfCode,
       selectedPriceHistory: selectedPriceHistory,
     );
+    final showDetailsLoadState = detailsError != null ||
+        (detailsLoading && !_hasUsableFirstScreenData(data, selectedEtf));
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: appThemeModeNotifier,
       builder: (context, themeMode, _) {
@@ -333,8 +335,7 @@ class _LabContent extends StatelessWidget {
                                     onRefresh: onRefresh,
                                   ),
                                   const SizedBox(height: 8),
-                                  if (detailsLoading ||
-                                      detailsError != null) ...[
+                                  if (showDetailsLoadState) ...[
                                     _DetailsLoadStateStrip(
                                       isLoading: detailsLoading,
                                       errorMessage: detailsError,
@@ -361,6 +362,16 @@ class _LabContent extends StatelessWidget {
         );
       },
     );
+  }
+
+  bool _hasUsableFirstScreenData(
+    Etf00631LLabData data,
+    _SelectedEtfViewData selectedEtf,
+  ) {
+    final history = selectedEtf.priceHistory.completenessSummary();
+    final hasContext =
+        history.rowCount >= 2 || _hasUsableHoldingsSnapshot(data.snapshot);
+    return selectedEtf.marketPrice != null && hasContext;
   }
 
   Widget _sectionWidget(

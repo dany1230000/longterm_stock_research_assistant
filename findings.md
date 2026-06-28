@@ -26,3 +26,6 @@
 - v6.57 public mobile inspection showed the 00631L quote card title can still
   truncate because it uses the long fund registration name. The quote card
   should use the short product name while preserving the full name elsewhere.
+- v6.58 public mobile inspection confirmed the short quote title fits, but the
+  background-refresh banner still consumes first-screen space even when quote,
+  chart, and official holdings context are already visible.

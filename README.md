@@ -145,6 +145,8 @@ v6.57 prevents unavailable holdings snapshots from rendering misleading 0-value 
 
 v6.58 shortens the 00631L quote card title to `00631L 元大台灣50正2` so the first card reads like a stock app instead of truncating the long fund registration name.
 
+v6.59 hides the background-refresh banner when the first screen already has a usable quote plus history or official holdings context. Error/fallback states still appear, but normal background refresh no longer takes first-screen space.
+
 v4.35 adds a selected ETF history-quality card on the history/backtest page, so the visible row count, coverage range, source status, and adjustment status follow the ETF chosen from the top-left selector.
 
 v4.36 adds explicit chart range guidance on the history/backtest page and clearer selected-date wording for chart touch details.

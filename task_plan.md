@@ -1308,6 +1308,30 @@ Completed in v6.58:
   guard.
 - Full validation passed with accepted WARN states only.
 
+## Phase 71 - v6.59 First-Screen Refresh Quiet State
+
+Status: complete
+
+Objective: keep the mobile public homepage focused on quote, chart, and
+official daily context by hiding the background-refresh banner when usable
+first-screen data is already available.
+
+- Hide the background-refresh strip during normal fast startup if quote plus
+  history or official holdings context is usable.
+- Keep fallback/error strip behavior when full data fails.
+- Keep DAY / LIVE / HIS summary badges visible as the compact data-state
+  indicator.
+- Do not change price, holdings, intraday NAV, backtest, selected ETF, or AI
+  calculations.
+
+Completed in v6.59:
+
+- The normal background-refresh strip is hidden when the first screen already
+  has a quote plus usable history or official holdings context.
+- Full-data failure keeps the fallback/error strip visible.
+- Widget coverage verifies the quiet fast-start state.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

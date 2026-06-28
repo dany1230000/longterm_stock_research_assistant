@@ -93,6 +93,7 @@ This is the main entry point for 00631L lab documentation.
 - Fast static history overlay v6.56: `docs\00631l_v6_56_fast_static_history_overlay.md`
 - Holdings unavailable state v6.57: `docs\00631l_v6_57_holdings_unavailable_state.md`
 - Compact quote short name v6.58: `docs\00631l_v6_58_compact_quote_short_name.md`
+- First-screen refresh quiet state v6.59: `docs\00631l_v6_59_first_screen_refresh_quiet_state.md`
 - Chart range touch hint v4.49: `docs\00631l_v4_49_chart_range_touch_hint.md`
 - Selected search state v4.50: `docs\00631l_v4_50_selected_search_state.md`
 - Backend seed history fallback v4.51: `docs\00631l_v4_51_backend_seed_history_fallback.md`

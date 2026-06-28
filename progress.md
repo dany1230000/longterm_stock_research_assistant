@@ -833,3 +833,18 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.58 committed/pushed as `035fe53`, tag
+  `00631l-lab-v6.58-compact-quote-short-name`; public marker and strict
+  static data checks passed.
+- Playwright mobile screenshot verified the compact title fits, and identified
+  the remaining first-screen noise: the background-refresh banner appears even
+  when quote, chart, and holdings context are already visible.
+- Started v6.59 to hide the normal background-refresh banner when first-screen
+  data is already usable, while keeping fallback/error status visible.
+- Targeted fast-start widget test passed after adding the first-screen usability
+  guard.
+- v6.59 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (104 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.
