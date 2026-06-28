@@ -437,11 +437,19 @@ def _load_etf_catalog_payload(
                 warnings.append(f"etfCatalogUpdateFailed={error}")
 
     payload = load_etf_catalog(path, fetched_at=fetched_at)
+    seed_payload: dict[str, object] | None = None
+    if seed_path.exists():
+        seed_payload = load_etf_catalog(seed_path, fetched_at=fetched_at)
+        payload = _merge_etf_catalog_seed_if_needed(
+            payload=payload,
+            seed_payload=seed_payload,
+            notes=notes,
+        )
+
     if int(payload.get("rowCount") or 0) >= min_row_count:
         return payload
 
-    if seed_path.exists():
-        seed_payload = load_etf_catalog(seed_path, fetched_at=fetched_at)
+    if seed_payload is not None:
         seed_rows = int(seed_payload.get("rowCount") or 0)
         if seed_rows >= min_row_count:
             notes.append(
@@ -456,6 +464,48 @@ def _load_etf_catalog_payload(
         warnings.append(f"seedEtfCatalogMissing={seed_path}")
 
     return payload if payload.get("items") else None
+
+
+def _merge_etf_catalog_seed_if_needed(
+    *,
+    payload: dict[str, object],
+    seed_payload: dict[str, object],
+    notes: list[str],
+) -> dict[str, object]:
+    payload_items = [
+        item for item in payload.get("items") or [] if isinstance(item, dict)
+    ]
+    seed_items = [
+        item for item in seed_payload.get("items") or [] if isinstance(item, dict)
+    ]
+    if not seed_items:
+        return payload
+
+    merged_items: list[dict[str, object]] = []
+    seen_codes: set[str] = set()
+    for item in [*payload_items, *seed_items]:
+        code = str(item.get("code") or "").strip().upper()
+        if not code or code in seen_codes:
+            continue
+        seen_codes.add(code)
+        merged_items.append(item)
+
+    if len(merged_items) <= len(payload_items):
+        return payload
+
+    notes.append(
+        "seedEtfCatalogMerged="
+        f"localRows={len(payload_items)}; seedRows={len(seed_items)}; "
+        f"mergedRows={len(merged_items)}"
+    )
+    return {
+        **payload,
+        "items": merged_items,
+        "rowCount": len(merged_items),
+        "dataTime": payload.get("dataTime") or seed_payload.get("dataTime"),
+        "sourceUpdatedAt": payload.get("sourceUpdatedAt")
+        or seed_payload.get("sourceUpdatedAt"),
+    }
 
 
 def _merge_seed_if_needed(

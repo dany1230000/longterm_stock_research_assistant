@@ -1998,3 +1998,8 @@ percentages instead of compressing them into one combined `MIX` value.
 v6.89 cleans the AI analysis page wording so the public first screen no longer
 shows implementation phrases such as `static public mode`, `rows`, `cached`,
 or `public backend proxy` in primary bullets and action items.
+
+v6.90 strengthens static public ETF catalog completeness. Pages export now
+merges the committed ETF catalog seed into the runtime catalog snapshot by code,
+so a temporary TWSE catalog HTTP failure does not publish a smaller catalog than
+the ETF price-history index.

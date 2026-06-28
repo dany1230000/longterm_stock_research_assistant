@@ -107,6 +107,7 @@ class PublicStaticDataCheckTests(unittest.TestCase):
         self.assertEqual(payload["etfPriceHistoryCompletionTotal"], 345)
         self.assertEqual(payload["etfPriceHistoryCompletionGap"], 114)
         self.assertEqual(payload["etfPriceHistoryOutOfCatalogCount"], 2)
+        self.assertTrue(any("outOfCatalog=2" in item for item in payload["warnings"]))
         self.assertTrue(any("unclassified=2" in item for item in payload["warnings"]))
 
     def test_warns_when_gap_detail_count_is_lower_than_missing_count(self) -> None:
@@ -169,9 +170,10 @@ class PublicStaticDataCheckTests(unittest.TestCase):
             fetch_json=fetch_json,
         )
 
-        self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertEqual(payload["overallStatus"], "WARN")
         self.assertEqual(payload["etfPriceHistoryOutOfCatalogCount"], 2)
         self.assertEqual(payload["etfPriceHistoryUnclassifiedGapCount"], 0)
+        self.assertTrue(any("outOfCatalog=2" in item for item in payload["warnings"]))
 
     def test_unclassified_gap_count_is_zero_when_not_saved_is_clear(self) -> None:
         def fetch_json(url: str) -> dict[str, object]:

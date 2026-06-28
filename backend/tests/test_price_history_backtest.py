@@ -22,6 +22,7 @@ from backend.scripts.export_static_00631l_data import (
     build_static_export_compact_response,
     build_static_export_summary_line,
     _build_release_metadata,
+    _merge_etf_catalog_seed_if_needed,
     _merge_etf_price_history_seed_if_needed,
     _merge_seed_if_needed,
     _prepare_price_history_update_start,
@@ -66,6 +67,39 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertEqual(metadata["releaseTag"], "")
         self.assertEqual(metadata["appVersion"], "untagged-abc123456789")
         self.assertEqual(metadata["gitSha"], "abc1234567890deadbeef")
+
+    def test_etf_catalog_seed_merges_missing_catalog_codes(self) -> None:
+        notes: list[str] = []
+        payload = {
+            "sourceStatus": "static_official",
+            "dataTime": "2026-06-12T17:09:49+08:00",
+            "rowCount": 2,
+            "items": [
+                {"code": "0050", "name": "元大台灣50"},
+                {"code": "00631L", "name": "元大台灣50正2"},
+            ],
+        }
+        seed_payload = {
+            "rowCount": 3,
+            "items": [
+                {"code": "0050", "name": "元大台灣50"},
+                {"code": "00631L", "name": "元大台灣50正2"},
+                {"code": "00999A", "name": "seed-only ETF"},
+            ],
+        }
+
+        merged = _merge_etf_catalog_seed_if_needed(
+            payload=payload,
+            seed_payload=seed_payload,
+            notes=notes,
+        )
+
+        self.assertEqual(merged["rowCount"], 3)
+        self.assertEqual(
+            [item["code"] for item in merged["items"]],
+            ["0050", "00631L", "00999A"],
+        )
+        self.assertTrue(any("seedEtfCatalogMerged" in note for note in notes))
 
     def test_twse_stock_day_parser_maps_ohlcv(self) -> None:
         rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")

@@ -1937,6 +1937,20 @@ Completed in v6.89:
 - Targeted AI wording test and full validation passed with release-check WARN
   states and zero failures.
 
+## Phase 102 - v6.90 Static Catalog Completeness Guard
+
+Status: complete
+
+Objective: prevent temporary TWSE catalog fetch failures from reducing public
+static ETF catalog completeness.
+
+- Merge the committed ETF catalog seed into the runtime catalog payload by code.
+- Preserve live/local catalog rows while adding seed-only catalog symbols.
+- Warn when public static history contains symbols outside the catalog snapshot.
+- Keep price-history rows and gap classifications unchanged.
+- Full validation passed with acceptable WARN-only release check output and
+  `failures=0`.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

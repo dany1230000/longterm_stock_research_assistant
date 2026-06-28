@@ -1242,3 +1242,18 @@
   PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
   PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
   WARN with failures=0; `git diff --check` PASS.
+- Started v6.90 after public v6.89 static data check showed `etfCatalogRows=343`
+  while the ETF price-history index had 347 symbols. The Pages export warning
+  showed `etfCatalogUpdateFailed=HTTP 502`, so the catalog had regressed during
+  a transient source failure.
+- v6.90 merges committed ETF catalog seed rows into the runtime catalog payload
+  by code and warns whenever public history contains symbols outside the
+  catalog snapshot.
+- Targeted v6.90 backend validation PASS: catalog seed merge and public
+  out-of-catalog warning tests.
+- v6.90 static export update smoke PASS: `etfCatalogRows=347`,
+  `etfRows=347`, `etfOutOfCatalog=0`.
+- v6.90 full validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (274 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

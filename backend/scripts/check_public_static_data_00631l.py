@@ -152,6 +152,12 @@ def run_public_static_data_check(
             warnings.append(f"00631L rowCount below expected floor: {row_count}")
         if catalog_rows < 100:
             warnings.append(f"ETF catalog rows below expected floor: {catalog_rows}")
+        if etf_out_of_catalog:
+            warnings.append(
+                "ETF history index has symbols outside the catalog snapshot: "
+                f"history={etf_history_rows}, catalog={catalog_rows}, "
+                f"outOfCatalog={etf_out_of_catalog}",
+            )
         if etf_out_of_catalog and etf_unclassified_gap:
             warnings.append(
                 "ETF history index has more symbols than the catalog snapshot "

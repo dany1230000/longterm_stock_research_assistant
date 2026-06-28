@@ -133,3 +133,7 @@
 - v6.89 public AI-page review showed visible implementation wording in the
   primary analysis card. Analysis output should describe data state in product
   language even when the underlying provider remains rule-based.
+- v6.90 public static check found `etfCatalogRows=343` while ETF price-history
+  status still covered 347 symbols. The manifest warning showed a transient
+  TWSE catalog HTTP 502; catalog export should preserve the committed seed
+  catalog instead of publishing a reduced catalog snapshot.
