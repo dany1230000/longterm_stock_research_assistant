@@ -1175,3 +1175,18 @@
 - Targeted v6.83 validation PASS: `flutter test
   test\etf_00631l_widget_test.dart --plain-name "symbol search shows ETF data
   completion status"`.
+- Started v6.84 after comparing public ETF gap status with stale local ignored
+  static output. Public Pages has 116 classified ETF history gaps and zero
+  unclassified gaps; local `web\00631l-static-data` was old v5.96 output
+  because local Pages build skipped public attempt restore by default.
+- v6.84 changes `scripts\00631l_build_pages_static.cmd` so public ETF
+  import-attempt evidence is restored by default, with
+  `--skip-restore-public-attempts` kept for offline builds.
+- v6.84 targeted validation PASS: static Pages pipeline test and
+  `scripts\00631l_restore_public_etf_attempts.cmd`.
+- v6.84 local status after restore PASS: 347 catalog rows, 231 ready histories,
+  116 classified gaps, attempted 116, `not_saved=0`.
+- v6.84 full validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

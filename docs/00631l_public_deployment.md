@@ -153,6 +153,11 @@ scripts\00631l_export_static_data.cmd --update
 scripts\00631l_build_pages_static.cmd
 ```
 
+`scripts\00631l_build_pages_static.cmd` restores public ETF import-attempt
+evidence by default before export, so local static status uses the same
+classified ETF history gap evidence as GitHub Pages. For offline builds, run
+`scripts\00631l_build_pages_static.cmd --skip-restore-public-attempts`.
+
 GitHub Actions:
 
 - `.github/workflows/deploy_web.yml` supports manual `workflow_dispatch`.

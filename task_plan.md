@@ -1812,6 +1812,28 @@ Completed in v6.83:
   `統計母數`.
 - Widget coverage verifies the count label change.
 
+## Phase 96 - v6.84 Local Static Attempt Restore
+
+Status: complete
+
+Objective: make local static Pages builds reuse public ETF gap-classification
+evidence by default so local ignored static output does not drift behind public
+GitHub Pages status.
+
+- Restore public ETF import-attempt evidence by default in
+  `scripts\00631l_build_pages_static.cmd`.
+- Keep an explicit `--skip-restore-public-attempts` option for offline builds.
+- Update pipeline tests and docs.
+- Do not treat unavailable ETF histories as usable history.
+
+Completed in v6.84:
+
+- Local Pages static build restores public ETF import-attempt evidence by
+  default.
+- Offline builds can opt out with `--skip-restore-public-attempts`.
+- Local ETF status after restore matches public gap classification:
+  231 ready / 347 catalog rows, 116 classified gaps, `not_saved=0`.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

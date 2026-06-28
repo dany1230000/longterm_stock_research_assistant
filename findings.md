@@ -111,3 +111,8 @@
 - v6.83 search-sheet review found the expanded detail could show a loaded-list
   count and a larger readiness denominator together. The data is expected, but
   labels should explicitly say loaded list versus full denominator.
+- v6.84 investigation found public GitHub Pages static data is correctly
+  classified with 231 ready histories out of 347 ETF catalog rows and zero
+  unclassified gaps. The stale local ignored static folder still reflected
+  older v5.96 evidence because local Pages builds skipped public attempt
+  restore by default, while GitHub Actions already restored it.

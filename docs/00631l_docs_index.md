@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Local static attempt restore v6.84: `docs\00631l_v6_84_local_static_attempt_restore.md`
 - Search catalog count context v6.83: `docs\00631l_v6_83_search_catalog_count_context.md`
 - Search database detail labels v6.82: `docs\00631l_v6_82_search_database_detail_labels.md`
 - Search result count labels v6.81: `docs\00631l_v6_81_search_result_count_labels.md`

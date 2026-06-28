@@ -124,6 +124,7 @@ scripts\00631l_export_static_data.cmd --update
 set PUBLIC_BACKEND_URL=https://your-backend.example.com
 scripts\00631l_build_web_public.cmd
 scripts\00631l_build_pages_static.cmd
+scripts\00631l_build_pages_static.cmd --skip-restore-public-attempts
 ```
 
 Multi-ETF price-history status:
@@ -1678,6 +1679,13 @@ v6.0 restores public ETF import-attempt evidence from the previous static export
 before running missing-only probes in GitHub Pages. This lets scheduled builds
 carry gap evidence forward across clean runners. Summary:
 `docs\00631l_v6_0_public_attempt_carry_forward.md`.
+
+v6.84 makes the local Pages static build restore public ETF import-attempt
+evidence by default, so local ignored static exports use the same classified ETF
+history gap evidence as GitHub Pages. Use
+`scripts\00631l_build_pages_static.cmd --skip-restore-public-attempts` only for
+offline local builds. Summary:
+`docs\00631l_v6_84_local_static_attempt_restore.md`.
 
 v6.1 runs three bounded missing-ETF probe batches per Pages deployment after
 restoring public attempt evidence, so remaining ETF history gaps can be
