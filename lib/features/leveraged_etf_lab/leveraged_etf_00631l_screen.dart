@@ -5715,6 +5715,10 @@ class _EtfHistoryComparisonPanelState
       for (final metric in metrics)
         if (metric.rowCount >= 2) metric,
     ];
+    final skippedMetrics = [
+      for (final metric in metrics)
+        if (metric.rowCount < 2) metric,
+    ];
     final selectedCodes = _effectiveComparisonCodes(availableMetrics);
     final usableMetrics = [
       for (final metric in availableMetrics)
@@ -5866,6 +5870,12 @@ class _EtfHistoryComparisonPanelState
               ),
         ),
         const SizedBox(height: 10),
+        _ComparisonDataReadinessStrip(
+          candidateCount: metrics.length,
+          readyCount: availableMetrics.length,
+          skippedMetrics: skippedMetrics,
+        ),
+        const SizedBox(height: 10),
         _ComparisonBasketContextCard(basketContext: basketContext),
         const SizedBox(height: 10),
         if (usableMetrics.isEmpty)
@@ -5996,6 +6006,65 @@ class _ComparisonSelectionChips extends StatelessWidget {
             onSelected: (selected) => onChanged(metric.code, selected),
             visualDensity: VisualDensity.compact,
           ),
+      ],
+    );
+  }
+}
+
+class _ComparisonDataReadinessStrip extends StatelessWidget {
+  const _ComparisonDataReadinessStrip({
+    required this.candidateCount,
+    required this.readyCount,
+    required this.skippedMetrics,
+  });
+
+  final int candidateCount;
+  final int readyCount;
+  final List<_EtfComparisonMetric> skippedMetrics;
+
+  @override
+  Widget build(BuildContext context) {
+    final skippedCodes = skippedMetrics
+        .map((metric) => metric.code)
+        .where((code) => code.trim().isNotEmpty)
+        .take(6)
+        .join(' / ');
+    final labels = [
+      'candidates ${formatInteger(candidateCount)}',
+      'comparison-ready ${formatInteger(readyCount)}',
+      'skipped ${formatInteger(skippedMetrics.length)}',
+      if (skippedCodes.isNotEmpty) 'skipped codes $skippedCodes',
+    ];
+    return Column(
+      key: const ValueKey('00631l-etf-comparison-readiness-strip'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        KeyedSubtree(
+          key: ValueKey('00631l-etf-comparison-ready-count-$readyCount'),
+          child: const SizedBox.shrink(),
+        ),
+        KeyedSubtree(
+          key: ValueKey(
+            '00631l-etf-comparison-skipped-count-${skippedMetrics.length}',
+          ),
+          child: const SizedBox.shrink(),
+        ),
+        for (final metric in skippedMetrics.take(6))
+          KeyedSubtree(
+            key: ValueKey('00631l-etf-comparison-skipped-${metric.code}'),
+            child: const SizedBox.shrink(),
+          ),
+        _StatusWrap(labels: labels),
+        if (skippedMetrics.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            'Skipped rows have fewer than two price-history points and are not used in the comparison chart.',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
       ],
     );
   }

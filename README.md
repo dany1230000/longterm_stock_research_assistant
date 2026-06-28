@@ -1777,3 +1777,7 @@ stale workflow-run noise no longer blocks local release validation.
 v6.20 improves the top-left ETF search ranking. Symbol-like queries now prefer
 code matches and history-ready rows before looser name-only or catalog-only
 matches.
+
+v6.21 clarifies ETF comparison readiness. The comparison panel now separates
+candidate, comparison-ready, and skipped rows so catalog-only or insufficient
+history symbols are not silently mixed into comparison charts.

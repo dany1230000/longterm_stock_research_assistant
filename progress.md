@@ -347,3 +347,17 @@
   history-ready matches before looser catalog matches.
 - Added a widget test for code-match ranking and a visible rank contract through
   hidden keys.
+- Full v6.20 validation passed, v6.20 committed/pushed as `0b65726`, tag
+  `00631l-lab-v6.20-symbol-search-ranking`. Public Pages marker and strict
+  public static-data checks passed on v6.20.
+- Started v6.21 to clarify ETF comparison readiness when selected or basket
+  symbols have insufficient price-history rows.
+- Added comparison readiness metadata for candidate, comparison-ready, and
+  skipped rows.
+- Added a widget test that selects a catalog-only ETF and verifies it is shown
+  as skipped instead of being used in the comparison chart.
+- v6.21 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS after formatting one test file; `flutter analyze` PASS; `flutter test`
+  PASS (100 tests); `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

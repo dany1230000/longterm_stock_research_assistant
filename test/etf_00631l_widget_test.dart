@@ -768,6 +768,42 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('comparison readiness shows skipped catalog-only selected ETF',
+      (tester) async {
+    await _pumpLab(tester, _CatalogOnlyComparisonRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '00400A',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),
+    );
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-readiness-strip')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-skipped-count-1')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-skipped-00400A')),
+      findsOneWidget,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('symbol search marks ETF ready from catalog history metadata',
       (tester) async {
     await _pumpLab(tester, _CatalogHistoryMetadataRepository());
@@ -1644,6 +1680,28 @@ class _StaticHistoryOnlyRepository extends _PriceHistoryRepository {
   @override
   Future<EtfIntradayNav?> fetchIntradayNav() async {
     return null;
+  }
+}
+
+class _CatalogOnlyComparisonRepository extends _PriceHistoryRepository {
+  @override
+  Future<EtfPriceHistory> fetchEtfPriceHistory(
+    String code, {
+    int limit = 5000,
+  }) async {
+    final normalized = code.trim().toUpperCase();
+    if (normalized == '00400A') {
+      return EtfPriceHistory.empty(
+        code: normalized,
+        name: normalized,
+        lastFetchedAt: DateTime(2026, 6, 11),
+        status: EtfDataStatus.error,
+        sourceStatusLabel: 'catalog_only',
+        sourceUrl: 'local://00400a-catalog-only',
+        errorMessage: 'Catalog-only ETF has no imported price history.',
+      );
+    }
+    return super.fetchEtfPriceHistory(normalized, limit: limit);
   }
 }
 

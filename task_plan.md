@@ -507,7 +507,7 @@ Completed in v6.19:
 
 ## Phase 32 - v6.20 Symbol Search Ranking
 
-Status: in_progress
+Status: complete
 
 Objective: make the top-left ETF/stock search behave more like a production
 symbol picker.
@@ -516,6 +516,31 @@ symbol picker.
 - Rank code-prefix and code-contains matches before name-only matches.
 - Prefer history-ready rows over catalog-only rows for equal match quality.
 - Keep readiness labels truthful and do not change eligibility rules.
+
+Completed in v6.20:
+
+- Search results now rank code matches ahead of name-only matches.
+- Equal-rank results prefer history-ready rows before catalog-only rows.
+- Widget coverage verifies `0050` appears first for a symbol-like query.
+
+## Phase 33 - v6.21 Comparison Readiness
+
+Status: complete
+
+Objective: make ETF comparison data readiness explicit when selected or basket
+symbols do not have enough history rows for the comparison chart.
+
+- Show candidate, comparison-ready, and skipped counts in the comparison panel.
+- List skipped ETF codes when their active-range history has fewer than two rows.
+- Keep skipped rows out of chart, basket, and table calculations.
+- Keep catalog-only rows visible as data status, not usable comparison data.
+
+Completed in v6.21:
+
+- The comparison panel reports candidate, comparison-ready, and skipped rows.
+- Skipped code samples are visible and excluded from chart/table calculations.
+- Widget coverage verifies a catalog-only selected ETF appears as skipped.
+- Full validation passed with accepted WARN states only.
 
 ## Phase 5 - Backtest and Position UX
 
