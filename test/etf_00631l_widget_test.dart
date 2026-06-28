@@ -769,6 +769,38 @@ void main() {
       find.byKey(const ValueKey('00631l-position-compact-input-card')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-position-field-shares')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-field-average-cost')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-advanced-inputs')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-field-assets')),
+      findsNothing,
+    );
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-position-advanced-inputs')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-position-advanced-inputs')),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-position-field-assets')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-field-fee')),
+      findsOneWidget,
+    );
     expect(find.text('估算細節'), findsOneWidget);
     expect(find.textContaining('不需登入'), findsOneWidget);
     expect(find.textContaining('不會上傳'), findsOneWidget);

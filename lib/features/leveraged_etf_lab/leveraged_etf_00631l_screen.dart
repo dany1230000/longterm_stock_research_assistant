@@ -7758,34 +7758,53 @@ class _PositionSectionState extends State<_PositionSection> {
         _InputGrid(
           children: [
             _NumberField(
+              key: const ValueKey('00631l-position-field-shares'),
               label: '持有股數',
               controller: _sharesController,
               onChanged: (_) => setState(() {}),
             ),
             _NumberField(
+              key: const ValueKey('00631l-position-field-average-cost'),
               label: '平均成本',
               controller: _costController,
-              onChanged: (_) => setState(() {}),
-            ),
-            _NumberField(
-              label: '總資產，選填',
-              controller: _assetsController,
-              onChanged: (_) => setState(() {}),
-            ),
-            _NumberField(
-              label: '費用，選填',
-              controller: _feeController,
               onChanged: (_) => setState(() {}),
             ),
           ],
         ),
         const SizedBox(height: 8),
-        TextField(
-          controller: _noteController,
-          decoration: const InputDecoration(labelText: '備註，選填'),
-          minLines: 1,
-          maxLines: 2,
-          onChanged: (_) => setState(() {}),
+        _CompactExpansionPanel(
+          key: const ValueKey('00631l-position-advanced-inputs'),
+          title: '進階持倉欄位',
+          subtitle: '總資產、費用與備註，可選填。',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _InputGrid(
+                children: [
+                  _NumberField(
+                    key: const ValueKey('00631l-position-field-assets'),
+                    label: '總資產，選填',
+                    controller: _assetsController,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  _NumberField(
+                    key: const ValueKey('00631l-position-field-fee'),
+                    label: '費用，選填',
+                    controller: _feeController,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _noteController,
+                decoration: const InputDecoration(labelText: '備註，選填'),
+                minLines: 1,
+                maxLines: 2,
+                onChanged: (_) => setState(() {}),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
         _CompactExpansionPanel(
@@ -12123,6 +12142,7 @@ class _InputGrid extends StatelessWidget {
 
 class _NumberField extends StatelessWidget {
   const _NumberField({
+    super.key,
     required this.label,
     required this.controller,
     required this.onChanged,

@@ -1144,6 +1144,26 @@ Completed in v6.50:
 - AI page first screen opens with the daily briefing and concise summary.
 - Full validation passed with accepted WARN states only.
 
+## Phase 63 - v6.51 Position Advanced Fields
+
+Status: complete
+
+Objective: keep the local-only position page shorter on phones by moving
+optional position inputs behind progressive disclosure.
+
+- Keep share count and average cost as the always-visible essential fields.
+- Move total assets, fee, and note into an advanced position-fields panel.
+- Keep local-only storage, calculations, JSON export, and clear behavior
+  unchanged.
+- Add widget coverage for hidden-before-expansion and visible-after-expansion
+  behavior.
+
+Completed in v6.51:
+
+- Position page now keeps only share count and average cost visible by default.
+- Optional total assets, fee, and note moved into an advanced fields panel.
+- Targeted and full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
