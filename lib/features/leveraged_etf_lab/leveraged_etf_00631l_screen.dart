@@ -1398,16 +1398,16 @@ class _SymbolSearchDataCompletionStrip extends StatelessWidget {
             const SizedBox(height: 8),
             _CompactExpansionPanel(
               title: '資料細節',
-              subtitle: '展開查看 catalog rows、完整統計與 coverage tier。',
+              subtitle: '顯示 ETF 清單、歷史匯入狀態與期間分類。',
               child: _StatusWrap(
                 labels: [
-                  'catalog ${formatInteger(catalogRowCount)}',
+                  'ETF 清單 ${formatInteger(catalogRowCount)}',
                   if (effectiveCatalogRowCount != catalogRowCount)
-                    '完整統計 ${formatInteger(effectiveCatalogRowCount)}',
-                  'catalog source ${status.etfCatalogStatus}',
-                  'history source ${status.etfPriceHistoryStatus}',
-                  'long-term ${formatInteger(longTerm)}',
-                  'recent ${formatInteger(recent)}',
+                    '統計母數 ${formatInteger(effectiveCatalogRowCount)}',
+                  '清單來源 ${status.etfCatalogStatus}',
+                  '歷史來源 ${status.etfPriceHistoryStatus}',
+                  '長期資料 ${formatInteger(longTerm)}',
+                  '近期資料 ${formatInteger(recent)}',
                 ],
               ),
             ),

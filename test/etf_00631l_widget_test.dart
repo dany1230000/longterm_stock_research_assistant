@@ -241,18 +241,18 @@ void main() {
     );
     expect(find.text('ETF 資料庫狀態'), findsOneWidget);
     expect(find.textContaining('完成度'), findsOneWidget);
-    expect(find.text('catalog 16'), findsNothing);
-    expect(find.text('完整統計 228'), findsNothing);
+    expect(find.text('ETF 清單 16'), findsNothing);
+    expect(find.text('統計母數 228'), findsNothing);
     expect(find.text('歷史可用 228 / 228'), findsOneWidget);
     expect(find.text('缺口 0'), findsOneWidget);
-    expect(find.text('long-term 8'), findsNothing);
-    expect(find.text('recent 220'), findsNothing);
+    expect(find.text('長期資料 8'), findsNothing);
+    expect(find.text('近期資料 220'), findsNothing);
     await tester.tap(find.text('資料細節'));
     await tester.pumpAndSettle();
-    expect(find.text('catalog 16'), findsOneWidget);
-    expect(find.text('完整統計 228'), findsOneWidget);
-    expect(find.text('long-term 8'), findsOneWidget);
-    expect(find.text('recent 220'), findsOneWidget);
+    expect(find.text('ETF 清單 16'), findsOneWidget);
+    expect(find.text('統計母數 228'), findsOneWidget);
+    expect(find.text('長期資料 8'), findsOneWidget);
+    expect(find.text('近期資料 220'), findsOneWidget);
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
     _expectNoTradingActionText();
   });
@@ -264,12 +264,12 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
     await tester.pumpAndSettle();
 
-    expect(find.text('完整統計 344'), findsNothing);
+    expect(find.text('統計母數 344'), findsNothing);
     expect(find.text('歷史可用 228 / 344'), findsOneWidget);
     expect(find.text('缺口 116'), findsOneWidget);
     await tester.tap(find.text('資料細節'));
     await tester.pumpAndSettle();
-    expect(find.text('完整統計 344'), findsOneWidget);
+    expect(find.text('統計母數 344'), findsOneWidget);
 
     await tester.tap(find.byTooltip('關閉'));
     await tester.pumpAndSettle();

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Search database detail labels v6.82: `docs\00631l_v6_82_search_database_detail_labels.md`
 - Search result count labels v6.81: `docs\00631l_v6_81_search_result_count_labels.md`
 - Search static ETF readiness v6.80: `docs\00631l_v6_80_search_static_etf_readiness.md`
 - Settings compact summary v6.79: `docs\00631l_v6_79_settings_compact_summary.md`

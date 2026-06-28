@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.82 cleans up the expanded ETF search database detail panel by replacing
+  internal English labels with user-facing Chinese labels.
 - v6.81 cleans up the left-top ETF search sheet result counters: local result
   chips now say `目前結果 歷史可用` and `目前結果 未匯入歷史`, separate from the
   full database readiness summary.

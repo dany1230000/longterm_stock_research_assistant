@@ -1160,3 +1160,10 @@
 - Targeted v6.81 validation PASS: `flutter test
   test\etf_00631l_widget_test.dart --plain-name "catalog-only ETF selection
   shows missing history guidance"`.
+- Started v6.82 after the expanded ETF database detail panel still exposed
+  internal English labels such as catalog, history source, long-term, and
+  recent.
+- v6.82 replaces those expanded-detail labels with Chinese user-facing labels.
+- Targeted v6.82 validation PASS: `flutter test
+  test\etf_00631l_widget_test.dart --plain-name "symbol search shows ETF data
+  completion status"`.

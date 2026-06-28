@@ -105,3 +105,6 @@
 - v6.81 search-sheet review found the corrected global readiness summary was
   followed by English internal result chips. Current-result chips need explicit
   local context so users do not confuse them with full database coverage.
+- v6.82 search-sheet review found the expanded database detail still used
+  internal labels (`catalog`, `history source`, `long-term`, `recent`). These
+  belong in code/tests, not the public app surface.

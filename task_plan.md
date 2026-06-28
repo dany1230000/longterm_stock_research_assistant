@@ -1777,6 +1777,24 @@ Completed in v6.81:
 - Widget coverage verifies the catalog-only search case no longer renders the
   old English chip text.
 
+## Phase 94 - v6.82 Search Database Detail Labels
+
+Status: complete
+
+Objective: remove debug-style English labels from the expanded ETF database
+detail panel in the search sheet.
+
+- Replace catalog/history source and coverage-tier detail labels with
+  user-facing Chinese labels.
+- Keep the database readiness calculations unchanged.
+- Preserve the expanded detail panel for users who need deeper data status.
+
+Completed in v6.82:
+
+- Expanded database detail labels now read `ETF 清單`, `清單來源`,
+  `歷史來源`, `長期資料`, and `近期資料`.
+- Widget coverage verifies the expanded panel renders the new labels.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
