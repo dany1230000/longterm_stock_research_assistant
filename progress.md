@@ -1167,3 +1167,11 @@
 - Targeted v6.82 validation PASS: `flutter test
   test\etf_00631l_widget_test.dart --plain-name "symbol search shows ETF data
   completion status"`.
+- Started v6.83 after the public expanded search detail showed both the loaded
+  ETF list count and full readiness denominator. The data was correct, but the
+  labels needed clearer context.
+- v6.83 renames the loaded-list count to `目前清單` and keeps `統計母數` for the
+  full readiness denominator.
+- Targeted v6.83 validation PASS: `flutter test
+  test\etf_00631l_widget_test.dart --plain-name "symbol search shows ETF data
+  completion status"`.

@@ -1401,7 +1401,7 @@ class _SymbolSearchDataCompletionStrip extends StatelessWidget {
               subtitle: '顯示 ETF 清單、歷史匯入狀態與期間分類。',
               child: _StatusWrap(
                 labels: [
-                  'ETF 清單 ${formatInteger(catalogRowCount)}',
+                  '目前清單 ${formatInteger(catalogRowCount)}',
                   if (effectiveCatalogRowCount != catalogRowCount)
                     '統計母數 ${formatInteger(effectiveCatalogRowCount)}',
                   '清單來源 ${status.etfCatalogStatus}',

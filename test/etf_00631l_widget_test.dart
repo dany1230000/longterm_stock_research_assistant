@@ -241,7 +241,7 @@ void main() {
     );
     expect(find.text('ETF 資料庫狀態'), findsOneWidget);
     expect(find.textContaining('完成度'), findsOneWidget);
-    expect(find.text('ETF 清單 16'), findsNothing);
+    expect(find.text('目前清單 16'), findsNothing);
     expect(find.text('統計母數 228'), findsNothing);
     expect(find.text('歷史可用 228 / 228'), findsOneWidget);
     expect(find.text('缺口 0'), findsOneWidget);
@@ -249,7 +249,7 @@ void main() {
     expect(find.text('近期資料 220'), findsNothing);
     await tester.tap(find.text('資料細節'));
     await tester.pumpAndSettle();
-    expect(find.text('ETF 清單 16'), findsOneWidget);
+    expect(find.text('目前清單 16'), findsOneWidget);
     expect(find.text('統計母數 228'), findsOneWidget);
     expect(find.text('長期資料 8'), findsOneWidget);
     expect(find.text('近期資料 220'), findsOneWidget);

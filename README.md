@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v6.83 clarifies the expanded ETF search database counts: `目前清單` is the
+  currently loaded list, while `統計母數` is the full readiness denominator.
 - v6.82 cleans up the expanded ETF search database detail panel by replacing
   internal English labels with user-facing Chinese labels.
 - v6.81 cleans up the left-top ETF search sheet result counters: local result

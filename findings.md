@@ -108,3 +108,6 @@
 - v6.82 search-sheet review found the expanded database detail still used
   internal labels (`catalog`, `history source`, `long-term`, `recent`). These
   belong in code/tests, not the public app surface.
+- v6.83 search-sheet review found the expanded detail could show a loaded-list
+  count and a larger readiness denominator together. The data is expected, but
+  labels should explicitly say loaded list versus full denominator.

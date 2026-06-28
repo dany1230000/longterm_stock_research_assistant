@@ -1795,6 +1795,23 @@ Completed in v6.82:
   `歷史來源`, `長期資料`, and `近期資料`.
 - Widget coverage verifies the expanded panel renders the new labels.
 
+## Phase 95 - v6.83 Search Catalog Count Context
+
+Status: complete
+
+Objective: clarify why the loaded ETF list count and full readiness denominator
+can differ in the search database detail panel.
+
+- Rename the loaded-list count from `ETF 清單` to `目前清單`.
+- Keep `統計母數` for the full readiness denominator.
+- Preserve all readiness calculations.
+
+Completed in v6.83:
+
+- Expanded search database detail now distinguishes `目前清單` from
+  `統計母數`.
+- Widget coverage verifies the count label change.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
