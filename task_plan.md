@@ -1650,6 +1650,25 @@ Completed in v6.74:
 - The compact mini chart grid no longer overflows when chart date strips and
   touch detail are visible.
 
+## Phase 87 - v6.75 AI Answer-First Layout
+
+Status: complete
+
+Objective: make the AI tab read like a daily interpretation page instead of a
+status-grid page.
+
+- Route the AI tab to a clean answer-first section.
+- Keep the daily rule-based interpretation and program actions visible near
+  the top.
+- Move source grids, generated-time metadata, matrices, and completeness notes
+  into an advanced detail panel.
+- Preserve the existing rule-based analysis data and non-instructional scope.
+
+Completed in v6.75:
+
+- The AI page now opens with the daily interpretation and concise summary.
+- Detailed AI status cards remain available under `進階 AI 明細`.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

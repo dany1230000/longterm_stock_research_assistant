@@ -1080,3 +1080,20 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.74 committed/pushed as `39ade98`, tag
+  `00631l-lab-v6.74-history-range-context-fit`; public marker and strict
+  static-data checks passed. Public history screenshot confirmed the range
+  context uses a 2x2 compact layout and mini charts no longer overflow.
+- Started v6.75 after public AI-page inspection showed the daily
+  interpretation was followed by a broad status quick-view before the written
+  summary.
+- v6.75 adds a clean `_AiSectionV2` route for the AI tab: daily interpretation
+  and program actions stay visible first, while source grids, matrices, and
+  completeness details move into `進階 AI 明細`.
+- Targeted v6.75 validation PASS: `dart format` on touched Dart files and
+  `flutter test test\etf_00631l_widget_test.dart --plain-name "AI and settings sections render clean status wording"`.
+- v6.75 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (112 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

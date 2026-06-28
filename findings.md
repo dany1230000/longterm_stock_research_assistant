@@ -79,5 +79,9 @@
   dates are gone, but the current-range context cards could still truncate on
   phone width. Adding phone-width widget coverage also exposed compact mini
   chart cards that were too short for the date strip and touch detail.
+- v6.74 AI-page public inspection showed the page had a strong daily
+  interpretation card, but then immediately repeated a broad status quick-view
+  before the written summary. The AI tab should be answer-first, with source
+  grids and matrices behind advanced detail.
 - Position-page mobile inspection shows the account summary's horizontal fixed
   metric strip clips the `未實現損益` tile on phone width.

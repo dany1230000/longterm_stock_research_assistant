@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- AI answer-first layout v6.75: `docs\00631l_v6_75_ai_answer_first.md`
 - History range context fit v6.74: `docs\00631l_v6_74_history_range_context_fit.md`
 - History chart axis cleanup v6.73: `docs\00631l_v6_73_history_chart_axis_cleanup.md`
 - Settings data-mode caption v6.72: `docs\00631l_v6_72_settings_data_mode_caption.md`

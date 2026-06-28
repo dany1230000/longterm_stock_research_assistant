@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.75 makes the AI page answer-first: the first screen now shows the daily
+  rule-based interpretation and program actions, while source grids and deeper
+  matrices move into an advanced detail panel.
 - v6.74 makes the history/backtest range context fit phone width by wrapping
   the range metrics into two columns and giving mini charts enough height for
   their date strip and touch detail.
