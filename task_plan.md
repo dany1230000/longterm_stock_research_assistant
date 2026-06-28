@@ -1669,6 +1669,23 @@ Completed in v6.75:
 - The AI page now opens with the daily interpretation and concise summary.
 - Detailed AI status cards remain available under `進階 AI 明細`.
 
+## Phase 88 - v6.76 Position First-Screen Trim
+
+Status: complete
+
+Objective: make the position page start with account context and input work
+instead of repeated local-only explanation.
+
+- Hide the redundant position page title card.
+- Keep account summary, quick actions, and input controls visible.
+- Preserve local-only storage, JSON export, and position calculations.
+- Update widget coverage for the shorter first screen.
+
+Completed in v6.76:
+
+- The position tab now starts directly with account summary, actions, and input
+  controls.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

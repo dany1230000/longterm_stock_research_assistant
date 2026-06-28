@@ -1097,3 +1097,19 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.75 committed/pushed as `02b1234`, tag
+  `00631l-lab-v6.75-ai-answer-first`; public marker and strict static-data
+  checks passed. Public AI screenshot confirmed the tab now opens with daily
+  interpretation and keeps deeper status detail below.
+- Started v6.76 after reviewing the position page first screen. The local-only
+  title card repeated information already shown by the account summary and
+  action bar.
+- v6.76 hides the redundant position page title card so account summary,
+  actions, and input controls appear sooner.
+- Targeted v6.76 validation PASS: `dart format` on touched Dart files,
+  `flutter analyze`, and `flutter test test\etf_00631l_widget_test.dart
+  --plain-name "position section saves local-only data controls"`.
+- v6.76 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS; `flutter build web`
+  PASS; backend tests PASS (273 tests); `scripts\00631l_release_check.cmd`
+  WARN with failures=0; `git diff --check` PASS.

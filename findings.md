@@ -83,5 +83,8 @@
   interpretation card, but then immediately repeated a broad status quick-view
   before the written summary. The AI tab should be answer-first, with source
   grids and matrices behind advanced detail.
+- v6.75 position-page review showed the first card repeated local-only context
+  already shown by the account summary and action bar. Removing that title card
+  brings account status and input controls higher on phone screens.
 - Position-page mobile inspection shows the account summary's horizontal fixed
   metric strip clips the `未實現損益` tile on phone width.

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position first-screen trim v6.76: `docs\00631l_v6_76_position_first_screen_trim.md`
 - AI answer-first layout v6.75: `docs\00631l_v6_75_ai_answer_first.md`
 - History range context fit v6.74: `docs\00631l_v6_74_history_range_context_fit.md`
 - History chart axis cleanup v6.73: `docs\00631l_v6_73_history_chart_axis_cleanup.md`

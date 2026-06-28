@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.76 shortens the position page first screen by hiding the redundant
+  local-position header, so account summary, actions, and input fields appear
+  sooner.
 - v6.75 makes the AI page answer-first: the first screen now shows the daily
   rule-based interpretation and program actions, while source grids and deeper
   matrices move into an advanced detail panel.

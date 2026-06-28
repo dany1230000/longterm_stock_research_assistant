@@ -7729,6 +7729,8 @@ class _PositionSectionState extends State<_PositionSection> {
     });
   }
 
+  bool get _showPositionHeader => false;
+
   @override
   void dispose() {
     _sharesController.dispose();
@@ -7832,13 +7834,14 @@ class _PositionSectionState extends State<_PositionSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _CompactPageTitle(
-          title: '本機持倉',
-          subtitle: input.hasPosition
-              ? '依目前市價估算；資料只保存在本機瀏覽器。'
-              : '先輸入股數與平均成本，就能在本機估算持倉狀態。',
-          badges: ['local-only', widget.selectedEtf.code],
-        ),
+        if (_showPositionHeader)
+          _CompactPageTitle(
+            title: '本機持倉',
+            subtitle: input.hasPosition
+                ? '依目前市價估算；資料只保存在本機瀏覽器。'
+                : '先輸入股數與平均成本，就能在本機估算持倉狀態。',
+            badges: ['local-only', widget.selectedEtf.code],
+          ),
         const SizedBox(height: 8),
         _PositionAccountStrip(
           input: input,

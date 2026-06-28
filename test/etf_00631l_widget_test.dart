@@ -879,7 +879,7 @@ void main() {
     await _tapSection(tester, 'position');
     await tester.pumpAndSettle();
 
-    expect(find.text('本機持倉'), findsOneWidget);
+    expect(find.text('本機持倉'), findsNothing);
     expect(find.text('持倉狀態'), findsNothing);
     expect(find.text('持倉帳戶摘要'), findsOneWidget);
     expect(
