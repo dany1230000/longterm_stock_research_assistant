@@ -1789,3 +1789,6 @@ from chart and table calculations.
 v6.23 compacts ETF comparison controls for phone screens. Comparison actions
 now stay in one horizontal strip while preserving the existing filter and basket
 behavior.
+
+v6.24 shortens ETF comparison guidance so readiness counts, skipped details, and
+the chart appear sooner on phone screens.

@@ -384,3 +384,15 @@
   PASS (100 tests); `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- v6.23 committed/pushed as `89281f8`, tag
+  `00631l-lab-v6.23-compact-comparison-controls`. Public Pages marker and
+  strict public static-data checks passed on v6.23.
+- Started v6.24 to shorten comparison guidance and keep readiness data closer
+  to the chart.
+- Replaced the long comparison guidance line with a compact data-rule hint and
+  updated widget coverage.
+- v6.24 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS after formatting two Dart files; `flutter analyze` PASS; `flutter test`
+  PASS (100 tests); `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

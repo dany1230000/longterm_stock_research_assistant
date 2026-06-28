@@ -5855,7 +5855,7 @@ class _EtfHistoryComparisonPanelState
         ),
         const SizedBox(height: 6),
         Text(
-          '勾選 1-5 檔 ETF 建立比較組合；類型篩選只是快速選取，沒有固定比較基準。',
+          'Compare 1-5 ETFs. Rows need enough price history to enter the chart.',
           key: const ValueKey('00631l-etf-comparison-guidance'),
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: _marketMutedTextColor(context),

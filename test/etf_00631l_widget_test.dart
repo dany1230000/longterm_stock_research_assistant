@@ -1048,7 +1048,8 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-comparison-action-strip')),
       findsOneWidget,
     );
-    expect(find.textContaining('建立自己的 1-5 檔比較組合'), findsOneWidget);
+    expect(
+        find.textContaining('Rows need enough price history'), findsOneWidget);
     expect(find.textContaining('basket'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),

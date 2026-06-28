@@ -579,6 +579,23 @@ Completed in v6.23:
 - Widget coverage verifies the compact action strip is present.
 - Full validation passed with accepted WARN states only.
 
+## Phase 36 - v6.24 Compact Comparison Guidance
+
+Status: complete
+
+Objective: shorten the ETF comparison guidance so the chart and readiness data
+appear sooner on phone screens.
+
+- Replace the long comparison guidance sentence with a short data-rule hint.
+- Keep readiness and skipped details as the primary explanation.
+- Preserve comparison behavior and no-advice wording.
+
+Completed in v6.24:
+
+- Long comparison guidance was replaced with a compact data-rule hint.
+- Widget coverage now verifies the short hint.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress
