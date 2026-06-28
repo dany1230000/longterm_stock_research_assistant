@@ -3925,7 +3925,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                 ),
                 _HoldingDigestItem(
                   badge: 'MIX',
-                  title: '股票 / 期貨 / 現金',
+                  title: '股 / 期 / 現金',
                   value:
                       '${formatNullablePercent(snapshot.stockExposureWeightPct)} / ${formatNullablePercent(snapshot.futuresExposureWeightPct)}',
                   caption:
@@ -3961,18 +3961,14 @@ class _HoldingDigestStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Row(
       key: const ValueKey('00631l-overview-holdings-digest-strip'),
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: [
-          for (var index = 0; index < items.length; index++) ...[
-            if (index > 0) const SizedBox(width: 6),
-            _HoldingDigestTile(item: items[index]),
-          ],
+      children: [
+        for (var index = 0; index < items.length; index++) ...[
+          Expanded(child: _HoldingDigestTile(item: items[index])),
+          if (index != items.length - 1) const SizedBox(width: 6),
         ],
-      ),
+      ],
     );
   }
 }
@@ -3985,59 +3981,59 @@ class _HoldingDigestTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return SizedBox(
-      width: 142,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: _marketPanelAltColor(context),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: _marketBorderColor(context)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(9, 8, 9, 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  _MiniStatusBadge(label: item.badge),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      item.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: _marketTextColor(context),
-                        fontWeight: FontWeight.w900,
-                      ),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(9, 8, 9, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                _MiniStatusBadge(label: item.badge),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    item.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 7),
-              Text(
+                ),
+              ],
+            ),
+            const SizedBox(height: 7),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
                 item.value,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: _marketTextColor(context),
                   fontWeight: FontWeight.w900,
                 ),
               ),
-              const SizedBox(height: 3),
-              Text(
-                item.caption,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: _marketMutedTextColor(context),
-                  fontWeight: FontWeight.w800,
-                ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              item.caption,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w800,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

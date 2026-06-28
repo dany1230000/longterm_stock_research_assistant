@@ -1388,7 +1388,7 @@ void main() {
     expect(find.textContaining('每日官方快照'), findsOneWidget);
     expect(find.text('TX 期貨'), findsWidgets);
     expect(find.text('台積電現股'), findsOneWidget);
-    expect(find.text('股票 / 期貨 / 現金'), findsOneWidget);
+    expect(find.text('股 / 期 / 現金'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
       findsOneWidget,
@@ -1396,6 +1396,21 @@ void main() {
     expect(find.text('TX'), findsWidgets);
     expect(find.text('2330'), findsOneWidget);
     expect(find.text('MIX'), findsOneWidget);
+    final holdingsDigest = find.byKey(
+      const ValueKey('00631l-overview-holdings-digest-strip'),
+    );
+    final digestRect = tester.getRect(holdingsDigest);
+    for (final label in const ['TX', '2330', 'MIX']) {
+      final labelFinder = find.descendant(
+        of: holdingsDigest,
+        matching: find.text(label),
+      );
+      expect(labelFinder, findsWidgets);
+      expect(
+        tester.getRect(labelFinder.first).right,
+        lessThanOrEqualTo(digestRect.right),
+      );
+    }
     expect(find.byType(DataTable), findsNothing);
     await tester.ensureVisible(find.text('更多資料'));
     await tester.pumpAndSettle();

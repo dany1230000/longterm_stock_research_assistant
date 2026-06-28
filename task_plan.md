@@ -1002,6 +1002,29 @@ Completed in v6.43:
   card.
 - Full validation passed with accepted WARN states only.
 
+## Phase 56 - v6.44 Holdings Digest Grid Fit
+
+Status: complete
+
+Objective: make the overview official holdings digest fully visible on phone
+width.
+
+- Replace the horizontally scrolling TX/TSMC/MIX digest with a fixed three-cell
+  row.
+- Shorten the MIX label while preserving stock/futures/cash context.
+- Scale long percentages inside their tile instead of clipping the third tile.
+- Keep official holdings as daily snapshot data, not live intraday holdings.
+- Add phone-width widget coverage for the three digest badges.
+
+Completed in v6.44:
+
+- Overview official holdings digest now uses a fixed three-cell row.
+- The mix tile title is shortened and long percentage values scale inside the
+  tile.
+- Phone-width widget coverage verifies TX, 2330, and MIX stay inside the digest
+  row.
+- Full validation passed with accepted WARN states only.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

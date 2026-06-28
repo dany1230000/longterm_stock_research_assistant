@@ -626,3 +626,16 @@
   `flutter build web` PASS; backend tests PASS (273 tests);
   `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
   PASS.
+- Started v6.44 after v6.43 mobile screenshot confirmed the DAY/LIVE/HIS
+  summary fit, but the official holdings `MIX` tile was still partially clipped.
+- Changed the overview official holdings digest from horizontal scrolling to a
+  fixed three-cell row.
+- Shortened the third tile label to `股 / 期 / 現金` and let long percentages
+  scale down inside the tile.
+- Targeted phone-width widget test passed and verifies TX, 2330, and MIX stay
+  inside the digest row.
+- v6.44 validation PASS/WARN accepted: `dart format --set-exit-if-changed .`
+  PASS; `flutter analyze` PASS; `flutter test` PASS (101 tests);
+  `flutter build web` PASS; backend tests PASS (273 tests);
+  `scripts\00631l_release_check.cmd` WARN with failures=0; `git diff --check`
+  PASS.

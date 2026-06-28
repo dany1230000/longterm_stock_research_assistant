@@ -1858,3 +1858,7 @@ coverage.
 v6.43 makes the overview DAY / LIVE / HIS summary fit phone width as a fixed
 three-column grid. LIVE now shows time-only and HIS shows row count plus
 coverage years, while source labels remain truthful.
+
+v6.44 makes the overview official holdings digest fit phone width. TX futures,
+TSMC stock, and stock/futures/cash mix now stay in a fixed three-cell row with
+long percentages scaled inside each tile.
