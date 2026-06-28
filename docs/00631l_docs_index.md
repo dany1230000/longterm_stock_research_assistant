@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings compact summary v6.79: `docs\00631l_v6_79_settings_compact_summary.md`
 - ETF library readable summary v6.78: `docs\00631l_v6_78_etf_library_readable_summary.md`
 - ETF gap reason alignment v6.77: `docs\00631l_v6_77_etf_gap_reason_alignment.md`
 - Position first-screen trim v6.76: `docs\00631l_v6_76_position_first_screen_trim.md`

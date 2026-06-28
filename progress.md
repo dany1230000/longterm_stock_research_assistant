@@ -1137,3 +1137,9 @@
   keeping detailed diagnostics below it.
 - Added widget coverage for the classified public-style gap state: 231 / 347
   usable ETF histories, official-empty 96, source-error 20, unclassified 0.
+- Started v6.79 after public settings inspection showed the first screen still
+  spent too much height on a large overview grid.
+- Replaced the settings overview grid with a compact summary card that keeps
+  account state, selected ETF, frontend mode, release version, and daily status
+  as short badges.
+- Added widget coverage for the compact settings summary key.

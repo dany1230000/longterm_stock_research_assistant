@@ -10293,46 +10293,61 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = data.operationsStatus;
-    return _SectionBlock(
-      title: '我的總覽',
-      subtitle: '帳戶、外觀、目前 ETF 與本機資料放在這裡；維護診斷已收在下方。',
-      child: _ResponsiveMetricGrid(
-        cards: [
-          const _MetricCard(
-            label: '帳戶',
-            value: '免登入',
-            caption: '持倉只存在本機',
-            icon: Icons.person_outline,
+    final releaseLabel = status.staticReleaseAppVersion.isEmpty
+        ? '版本未載入'
+        : '版本 ${status.staticReleaseAppVersion}';
+    final readinessStatus = readinessLabel == '就緒' ? '就緒' : '進階檢查';
+    final theme = Theme.of(context);
+    return KeyedSubtree(
+      key: const ValueKey('00631l-settings-quick-summary-compact'),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '我的總覽',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  _StatusPill(label: _frontendDataModeLabel),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '帳戶、目前 ETF、資料模式與版本放在這裡；細節往下展開。',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.35,
+                ),
+              ),
+              const SizedBox(height: 10),
+              _StatusWrap(
+                labels: [
+                  '免登入',
+                  '目前 ${selectedEtf.code}',
+                  selectedEtf.priceHistory.sourceStatusLabel,
+                  releaseLabel,
+                  '日常狀態',
+                  readinessStatus,
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _settingsDataModeCaption(status),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
-          _MetricCard(
-            label: '目前 ETF',
-            value: selectedEtf.code,
-            caption: selectedEtf.priceHistory.sourceStatusLabel,
-            icon: Icons.search_outlined,
-          ),
-          _MetricCard(
-            label: '資料模式',
-            value: _frontendDataModeLabel,
-            caption: _settingsDataModeCaption(status),
-            icon: Icons.cloud_sync_outlined,
-          ),
-          if (status.sourceStatusLabel == 'static_public_data' ||
-              status.staticReleaseGitSha.isNotEmpty)
-            _MetricCard(
-              label: '公開靜態版本',
-              value: status.staticReleaseAppVersion.isEmpty
-                  ? '未載入'
-                  : status.staticReleaseAppVersion,
-              caption: _shortGitSha(status.staticReleaseGitSha),
-              icon: Icons.verified_outlined,
-            ),
-          _MetricCard(
-            label: '日常狀態',
-            value: readinessLabel == '正常' ? '正常' : '進階檢查',
-            caption: '詳細資料狀態在下方',
-            icon: Icons.fact_check_outlined,
-          ),
-        ],
+        ),
       ),
     );
   }

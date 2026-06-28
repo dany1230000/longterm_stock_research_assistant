@@ -95,3 +95,5 @@
 
 - v6.77 public static-data verification confirms every missing ETF history is now classified: public data has 231 usable histories out of 347 catalog rows, with 96 official-empty and 20 source-error gaps, and no unclassified gap.
 - v6.78 settings review showed the app already had the correct gap counts but needed a plain-language summary before the detailed maintenance metrics.
+
+- v6.79 public settings inspection showed the account/settings first screen was still too tall because the overview grid consumed most of the phone viewport. A compact badge summary is a better first-screen shape; detailed diagnostics should stay below.

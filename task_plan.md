@@ -1720,6 +1720,25 @@ Completed in v6.78:
 - Widget coverage verifies the classified-gap state with 231 / 347 usable ETF
   histories, official-empty 96, source-error 20, and unclassified 0.
 
+## Phase 91 - v6.79 Settings Compact Summary
+
+Status: complete
+
+Objective: make the settings/account first screen shorter and more app-like.
+
+- Replace the tall overview metric grid with a compact summary card.
+- Keep account state, selected ETF, data mode, release version, and daily status
+  visible as short badges.
+- Keep technical diagnostics and ETF data-library details below the first
+  screen.
+
+Completed in v6.79:
+
+- `_SettingsQuickSummaryGrid` now renders a compact summary card keyed as
+  `00631l-settings-quick-summary-compact`.
+- Widget coverage verifies the compact settings summary remains on the first
+  screen while advanced diagnostics stay hidden.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

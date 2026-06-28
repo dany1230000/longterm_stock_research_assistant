@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v6.79 compacts the settings/account first screen: the old overview grid is
+  now a short summary card with account state, selected ETF, data mode, release
+  version, and daily status badges.
 - v6.78 makes the ETF data-library panel easier to read: the app now shows a
   concise summary of usable ETF histories, classified missing histories, and
   remaining unclassified gaps before the detailed diagnostics.

@@ -1965,6 +1965,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
+      find.byKey(const ValueKey('00631l-settings-quick-summary-compact')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-etf-room-readiness-panel')),
       findsNothing,
     );
@@ -2047,8 +2051,10 @@ void main() {
     expect(find.textContaining('缺口代表尚未有足夠資料'), findsOneWidget);
     expect(find.text('歷史可用比例'), findsOneWidget);
     expect(find.text('尚未 ready'), findsOneWidget);
-    expect(find.text('公開靜態版本'), findsOneWidget);
-    expect(find.text('5.42-public-release-wait'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-settings-quick-summary-compact')),
+      findsOneWidget,
+    );
     expect(find.text('資料補齊動作'), findsOneWidget);
     expect(find.text('資料缺口原因'), findsOneWidget);
     expect(find.textContaining('缺口明細 0'), findsOneWidget);
