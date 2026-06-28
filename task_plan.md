@@ -453,6 +453,21 @@ symbol is selected.
   `flutter test`, `flutter build web`, backend tests, release check WARN with
   failures=0, and `git diff --check`.
 
+## Phase 29 - v6.17 Pages Release Tag Trigger
+
+Status: complete
+
+Objective: keep GitHub Pages static release metadata aligned with the current
+tag instead of falling back to stale default metadata.
+
+- Trigger the Pages workflow on `00631l-lab-v*` tag pushes.
+- Inject release metadata from the tag ref during tag-triggered builds.
+- Avoid stale default release tags when static export runs without an exact tag.
+- Add backend tests for workflow coverage and metadata fallback behavior.
+- Validation: `dart format --set-exit-if-changed .`, `flutter analyze`,
+  `flutter test`, `flutter build web`, backend tests, release check WARN with
+  failures=0, and `git diff --check`.
+
 ## Phase 5 - Backtest and Position UX
 
 Status: in_progress

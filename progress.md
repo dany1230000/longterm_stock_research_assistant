@@ -295,3 +295,20 @@
   (98 tests), `flutter build web` PASS, backend tests PASS (271 tests),
   `scripts\00631l_release_check.cmd` WARN with failures=0, and
   `git diff --check` PASS.
+- v6.16 committed/pushed as `c2d78aa`, tag
+  `00631l-lab-v6.16-selected-etf-capability-badges`.
+- Public Pages marker updated to v6.16 by SHA and strict public static-data
+  check passed, but the marker showed stale release tag
+  `00631l-lab-v5.72-release-metadata-tags`.
+- Started v6.17 to fix Pages release metadata when the branch workflow runs
+  before the release tag is visible.
+- Added red backend tests for Pages tag-trigger coverage and static export
+  untagged metadata fallback. They failed on missing tag trigger and stale
+  fallback metadata as expected.
+- Added Pages tag push trigger, tag-derived release metadata env, and untagged
+  static export fallback. Targeted backend tests passed.
+- Full v6.17 validation PASS/WARN accepted: `dart format
+  --set-exit-if-changed .` PASS, `flutter analyze` PASS, `flutter test` PASS
+  (98 tests), `flutter build web` PASS, backend tests PASS (272 tests),
+  `scripts\00631l_release_check.cmd` WARN with failures=0, and
+  `git diff --check` PASS.

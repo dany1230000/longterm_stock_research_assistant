@@ -1,10 +1,12 @@
 import json
+import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
+from unittest.mock import patch
 
 from backend.app.backtest import run_backtest
 from backend.app.etf_price_history import EtfPriceHistoryStore
@@ -14,10 +16,12 @@ from backend.app.price_history import (
     performance_summary,
 )
 from backend.app.static_export import export_static_00631l_data, static_export_status
+from backend.scripts import export_static_00631l_data as export_static_script
 from backend.scripts.export_static_00631l_data import (
     build_coverage_age_message,
     build_static_export_compact_response,
     build_static_export_summary_line,
+    _build_release_metadata,
     _merge_etf_price_history_seed_if_needed,
     _merge_seed_if_needed,
     _prepare_price_history_update_start,
@@ -34,6 +38,34 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             "5.72-release-metadata-tags",
         )
         self.assertEqual(_version_from_release_tag("other-tag"), "")
+
+    def test_static_export_release_metadata_does_not_fall_back_to_old_tag(
+        self,
+    ) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                "00631L_BACKEND_APP_VERSION": "",
+                "00631L_BACKEND_RELEASE_TAG": "",
+                "00631L_BACKEND_GIT_SHA": "",
+                "GITHUB_SHA": "abc1234567890deadbeef",
+            },
+        ):
+            with patch.object(
+                export_static_script,
+                "_git_exact_release_tag",
+                return_value="",
+            ):
+                with patch.object(
+                    export_static_script,
+                    "_git_head_sha",
+                    return_value="localsha",
+                ):
+                    metadata = _build_release_metadata()
+
+        self.assertEqual(metadata["releaseTag"], "")
+        self.assertEqual(metadata["appVersion"], "untagged-abc123456789")
+        self.assertEqual(metadata["gitSha"], "abc1234567890deadbeef")
 
     def test_twse_stock_day_parser_maps_ohlcv(self) -> None:
         rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")

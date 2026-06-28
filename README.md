@@ -1672,6 +1672,11 @@ ETF now shows whether history, backtest, comparison, and AI context are ready or
 paused because the row is catalog-only. Summary:
 `docs\00631l_v6_16_selected_etf_capability_badges.md`.
 
+v6.17 fixes public static release metadata. GitHub Pages now also deploys on
+`00631l-lab-v*` tag pushes and tag-triggered builds inject release metadata, so
+public `release.json` does not fall back to a stale label. Summary:
+`docs\00631l_v6_17_pages_release_tag_trigger.md`.
+
 v5.55 shortens the position page by moving save, JSON export, and clear actions
 directly under the local account summary.
 

@@ -609,27 +609,32 @@ def _seed_codes_for_multi_etf_mode(value: str, *, seed_dir: Path) -> list[str]:
 
 
 def _build_release_metadata() -> dict[str, str]:
+    git_sha = (
+        os.getenv("GITHUB_SHA", "").strip()
+        or os.getenv("00631L_BACKEND_GIT_SHA", "").strip()
+        or _git_head_sha()
+    )
     release_tag = (
         os.getenv("00631L_BACKEND_RELEASE_TAG", "").strip()
         or _git_exact_release_tag()
-        or settings.backend_release_tag
     )
     app_version = (
         os.getenv("00631L_BACKEND_APP_VERSION", "").strip()
         or _version_from_release_tag(release_tag)
-        or settings.backend_app_version
+        or _untagged_app_version(git_sha)
     )
     return {
         "appVersion": app_version,
         "releaseTag": release_tag,
-        "gitSha": (
-            os.getenv("GITHUB_SHA", "").strip()
-            or os.getenv("00631L_BACKEND_GIT_SHA", "").strip()
-            or _git_head_sha()
-        ),
+        "gitSha": git_sha,
         "buildTime": os.getenv("00631L_BACKEND_BUILD_TIME", "").strip()
         or datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
     }
+
+
+def _untagged_app_version(git_sha: str) -> str:
+    short_sha = git_sha.strip()[:12]
+    return f"untagged-{short_sha}" if short_sha else "untagged"
 
 
 def _git_exact_release_tag() -> str:
