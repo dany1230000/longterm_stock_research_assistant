@@ -95,6 +95,14 @@ if "%PROBE_MISSING%"=="1" (
     echo [00631L] Run scripts\00631l_build_pages_static.cmd --probe-missing to classify a small missing batch.
 )
 
+if "%REFRESH_ETF_HISTORY%"=="1" (
+    call scripts\00631l_import_tpex_etf_price_history.cmd --from-catalog --missing-only --official-empty-only --catalog-path backend\data\etf_catalog.json --limit 0 --start-date 2026-06-01 --allow-partial --summary-only --progress-every 25
+    if errorlevel 1 exit /b %ERRORLEVEL%
+) else (
+    echo [00631L] Skipping TPEx ETF price-history fallback for fast Pages build.
+    echo [00631L] Run scripts\00631l_build_pages_static.cmd --refresh-etf-history to recheck TWSE empty ETFs against TPEx.
+)
+
 call scripts\00631l_export_static_data.cmd --update --strict --max-coverage-age-days 7 --min-etf-catalog-row-count 100 --multi-etf-codes all-catalog --output-dir web\00631l-static-data --summary-only
 if errorlevel 1 exit /b %ERRORLEVEL%
 

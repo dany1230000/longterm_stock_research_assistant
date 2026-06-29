@@ -90,6 +90,10 @@ class Settings:
             "?response=json&date={yyyymmdd}&stockNo={symbol}"
         ),
     )
+    tpex_etf_price_history_url: str = os.getenv(
+        "TPEX_ETF_PRICE_HISTORY_URL",
+        "https://www.tpex.org.tw/www/zh-tw/ETFReport/historical",
+    )
     request_timeout_seconds: float = _env_float("00631L_PROXY_TIMEOUT_SECONDS", 8)
     profile_cache_seconds: int = _env_int("00631L_PROFILE_CACHE_SECONDS", 24 * 60 * 60)
     holdings_cache_seconds: int = _env_int("00631L_HOLDINGS_CACHE_SECONDS", 10 * 60)

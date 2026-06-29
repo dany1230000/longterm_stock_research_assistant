@@ -722,14 +722,25 @@ def _attempt_has_official_empty_result(attempt: dict[str, Any] | None) -> bool:
         return False
     row_count = int(attempt.get("rowCount") or 0)
     requested_months = int(attempt.get("requestedMonths") or 0)
+    requested_days = int(attempt.get("requestedDays") or 0)
     warnings = [str(item) for item in attempt.get("warnings") or []]
-    has_empty_month_warning = any("emptyMonths=" in item or "has no data list" in item for item in warnings)
-    return row_count == 0 and requested_months > 0 and has_empty_month_warning and not str(attempt.get("errorMessage") or "").strip()
+    has_empty_period_warning = any(
+        "emptyMonths=" in item
+        or "tpexEmptyDays=" in item
+        or "has no data list" in item
+        for item in warnings
+    )
+    return (
+        row_count == 0
+        and (requested_months > 0 or requested_days > 0)
+        and has_empty_period_warning
+        and not str(attempt.get("errorMessage") or "").strip()
+    )
 
 
 def _empty_status_error_message(attempt: dict[str, Any] | None) -> str:
     if _attempt_has_official_empty_result(attempt):
-        return "Last TWSE STOCK_DAY import attempt returned no rows for the requested months."
+        return "Last official ETF price-history import attempt returned no rows for the requested period."
     if attempt and str(attempt.get("errorMessage") or "").strip():
         return str(attempt.get("errorMessage"))
     return "No local ETF price history is saved for this code."
@@ -776,6 +787,7 @@ def _record(code: str, point: dict[str, Any]) -> dict[str, Any]:
         "adjustedClose": close,
         "adjustmentFactor": 1.0,
         "volume": _int(point.get("volume")),
+        "volumeUnit": str(point.get("volumeUnit") or "shares"),
         "nav": _float(point.get("nav")),
         "premiumDiscountPct": _float(point.get("premiumDiscountPct")),
         "sourceStatus": str(point.get("sourceStatus") or "official"),

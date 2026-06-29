@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v8.7 adds an official TPEx ETF daily-history fallback for ETF symbols that
+  return empty TWSE STOCK_DAY rows. The importer keeps `tpex_etf_historical_daily_json`
+  separate from TWSE and leaves symbols unavailable when TPEx also has no rows.
+
 - v8.6 adds a clearer ETF database completion strip in Settings: usable
   histories, official empty data, source items requiring attention, and
   unclassified items are separated.

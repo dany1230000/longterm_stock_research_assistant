@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- TPEx ETF history fallback v8.7: `docs\00631l_v8_7_tpex_etf_history_fallback.md`
 - ETF completion clarity v8.6: `docs\00631l_v8_6_etf_completion_clarity.md`
 - ETF source-error retry v8.5: `docs\00631l_v8_5_etf_source_error_retry.md`
 - ETF source redirect v8.4: `docs\00631l_v8_4_etf_source_redirect.md`
