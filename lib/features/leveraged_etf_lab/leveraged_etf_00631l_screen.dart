@@ -1786,7 +1786,7 @@ class _CompactQuoteHeader extends StatelessWidget {
         latestHistoryPoint != null &&
         quoteValue == latestHistoryPoint.close;
     final quoteStatusDisplay = usesCatalogQuote
-        ? 'catalog'
+        ? '清單'
         : usesHistoryQuote
             ? '歷史收盤'
             : _statusDisplay(quoteStatus);
@@ -1797,7 +1797,7 @@ class _CompactQuoteHeader extends StatelessWidget {
     final quoteCaptionDisplay = usesLiveQuote && selectedEtf.dataTime != null
         ? '市價 · ${marketSession!.phaseLabel} ${_sourceTimeText(selectedEtf.dataTime!)}'
         : usesCatalogQuote && selectedEtf.catalogItem?.dataTime != null
-            ? '市價 · catalog ${formatTaiwanDateTimeSeconds(selectedEtf.catalogItem!.dataTime!)}'
+            ? '市價 · 清單 ${formatTaiwanDateTimeSeconds(selectedEtf.catalogItem!.dataTime!)}'
             : usesHistoryQuote
                 ? '市價 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
                 : selectedEtf.dataTime == null
@@ -2366,21 +2366,21 @@ class _QuoteHeader extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: _StatusWrap(
                 labels: [
-                  'core ${_coreDataStatusLabel(data)}',
-                  'holdings ${data.snapshot.status.label}',
-                  'intraday ${nav?.status.label ?? 'unavailable'}',
-                  'history ${data.priceHistory.sourceStatusLabel}',
-                  'frontend $_frontendDataMode',
+                  '核心 ${_coreDataStatusLabel(data)}',
+                  '內容物 ${_sourceStatusBadgeLabel(data.snapshot.status.label)}',
+                  '盤中 ${_sourceStatusBadgeLabel(nav?.status.label)}',
+                  '歷史 ${_sourceStatusBadgeLabel(data.priceHistory.sourceStatusLabel)}',
+                  '前端 $_frontendDataModeLabel',
                   if (_use00631LLiveProxy)
-                    'api ${data.operationsStatus.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : data.operationsStatus.publicApiBaseUrl}',
+                    '後端 ${data.operationsStatus.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : data.operationsStatus.publicApiBaseUrl}',
                   if (_use00631LLiveProxy)
-                    'apiCheck ${_dateTimeOrDash(data.operationsStatus.lastFetchedAt)}',
-                  if (_use00631LStaticData) 'static $_staticDataBaseUrl00631l',
+                    '檢查 ${_dateTimeOrDash(data.operationsStatus.lastFetchedAt)}',
+                  if (_use00631LStaticData) '靜態 $_staticDataBaseUrl00631l',
                   if (_use00631LStaticData)
-                    'rows ${data.operationsStatus.priceHistoryRows}',
+                    '筆數 ${data.operationsStatus.priceHistoryRows}',
                   if (_use00631LStaticData)
-                    'generated ${_dateTimeOrDash(data.operationsStatus.latestExportUpdatedAt ?? data.priceHistory.lastFetchedAt)}',
-                  'backend ${data.operationsStatus.backendConnectionLabel}',
+                    '產生 ${_dateTimeOrDash(data.operationsStatus.latestExportUpdatedAt ?? data.priceHistory.lastFetchedAt)}',
+                  '連線 ${data.operationsStatus.backendConnectionLabel}',
                 ],
                 onDark: colorScheme.brightness == Brightness.light,
               ),
@@ -3228,7 +3228,7 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
               badge: 'HIS',
               title: '歷史',
               value: _dateOrDash(priceSummary.coverageEnd),
-              caption: '${formatInteger(priceSummary.rowCount)} rows',
+              caption: '${formatInteger(priceSummary.rowCount)} 筆',
               status: _sourceStatusBadgeLabel(
                 selectedEtf.priceHistory.sourceStatusLabel,
               ),
@@ -3248,7 +3248,7 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
               badge: 'HIS',
               title: '歷史',
               value: _dateOrDash(priceSummary.coverageEnd),
-              caption: '${formatInteger(priceSummary.rowCount)} rows',
+              caption: '${formatInteger(priceSummary.rowCount)} 筆',
               status: _sourceStatusBadgeLabel(
                 selectedEtf.priceHistory.sourceStatusLabel,
               ),
@@ -3591,23 +3591,22 @@ class _SelectedEtfDataContextCard extends StatelessWidget {
     final history = selectedEtf.historySummary;
     final latestDate = _dateOrDash(history.latest?.date);
     final historyReady = selectedEtf.hasImportedHistory;
-    final liveNavCaption = selectedEtf.is00631L
-        ? 'public backend 可更新 盤中 NAV'
-        : '此檔尚未建立 live NAV mapping';
+    final liveNavCaption =
+        selectedEtf.is00631L ? '公開後端可更新盤中 NAV' : '此檔尚未建立盤中 NAV 對應';
     final backtestCaption = historyReady ? '可用現有歷史資料做歷史與回測檢視' : '歷史不足，先不解讀回測';
     return KeyedSubtree(
       key: const ValueKey('00631l-selected-etf-data-context-card'),
       child: _SectionBlock(
         title: '資料脈絡',
-        subtitle: '${selectedEtf.code} 的資料覆蓋、欄位與 live 範圍；這裡只描述資料狀態，非買賣建議。',
+        subtitle: '${selectedEtf.code} 的資料覆蓋、欄位與即時範圍；這裡只描述資料狀態，非買賣建議。',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _StatusWrap(
               labels: [
                 'ETF ${selectedEtf.code}',
-                'history ${selectedEtf.priceHistory.sourceStatusLabel}',
-                'rows ${formatInteger(history.rowCount)}',
+                '歷史 ${_sourceStatusBadgeLabel(selectedEtf.priceHistory.sourceStatusLabel)}',
+                '筆數 ${formatInteger(history.rowCount)}',
                 selectedEtf.backtestReadinessLabel,
                 selectedEtf.liveNavScopeLabel,
                 '非買賣建議',
@@ -3645,18 +3644,17 @@ class _SelectedEtfDataContextCard extends StatelessWidget {
             const SizedBox(height: 12),
             _BulletLine(
               text: historyReady
-                  ? '${selectedEtf.code} 已有 ${formatInteger(history.rowCount)} 筆歷史價格，coverage ${selectedEtf.historyCoverageText}。'
-                  : '${selectedEtf.code} 目前沒有足夠歷史價格，畫面會保留 catalog/static/error 狀態。',
+                  ? '${selectedEtf.code} 已有 ${formatInteger(history.rowCount)} 筆歷史價格，資料範圍 ${selectedEtf.historyCoverageText}。'
+                  : '${selectedEtf.code} 目前沒有足夠歷史價格，畫面會保留清單、靜態或錯誤狀態。',
               icon: Icons.fact_check_outlined,
             ),
             const _BulletLine(
-              text:
-                  '即時 NAV / 折溢價 live mapping 目前以 00631L 為主；其他 ETF 先以歷史價格與 catalog 狀態觀察。',
+              text: '即時 NAV / 折溢價目前以 00631L 為主；其他 ETF 先以歷史價格與清單狀態觀察。',
               icon: Icons.sensors_outlined,
             ),
             _BulletLine(
               text:
-                  '價格分析使用 ${selectedEtf.priceFieldLabel}；若資料含分割或調整，請以調整價與 adjustmentFactor 為準。',
+                  '價格分析使用 ${selectedEtf.priceFieldLabel}；若資料含分割或調整，請以調整價與調整係數為準。',
               icon: Icons.rule_outlined,
             ),
             _BulletLine(
@@ -8281,7 +8279,7 @@ class _PositionAccountStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dataTime = summary.dataTime == null
-        ? 'unavailable'
+        ? '暫無'
         : formatTaiwanDateTimeSeconds(summary.dataTime!);
     final unrealizedPctText = summary.unrealizedPnlPct == null
         ? '尚無比例'
@@ -8518,8 +8516,8 @@ class _AiSectionV2 extends StatelessWidget {
                     const SizedBox(height: 12),
                     _StatusWrap(
                       labels: [
-                        'source ${summary.source}',
-                        'readiness ${summary.readinessLabel}',
+                        '分析來源 ${_statusDisplay(summary.source)}',
+                        '整體狀態 ${summary.readinessLabel}',
                         summary.disclaimer,
                       ],
                     ),
@@ -8647,8 +8645,8 @@ class _AiSection extends StatelessWidget {
               const SizedBox(height: 12),
               _StatusWrap(
                 labels: [
-                  'source ${summary.source}',
-                  'readiness ${summary.readinessLabel}',
+                  '分析來源 ${_statusDisplay(summary.source)}',
+                  '整體狀態 ${summary.readinessLabel}',
                   summary.disclaimer,
                 ],
               ),
@@ -9379,10 +9377,10 @@ class _AiDailyInterpretationCard extends StatelessWidget {
             const SizedBox(height: 8),
             _StatusWrap(
               labels: [
-                'holdings ${_dateOrDash(snapshot.tradeDate)}',
+                '內容物 ${_dateOrDash(snapshot.tradeDate)}',
                 'NAV ${_intradayDataTimeText(nav)}',
                 premium?.label ?? '折溢價資料不足',
-                'source ${summary.source}',
+                '分析來源 ${_statusDisplay(summary.source)}',
               ],
             ),
             const SizedBox(height: 10),
@@ -9577,8 +9575,7 @@ class _AiDailyStatusPanel extends StatelessWidget {
           icon: Icons.fact_check_outlined,
         ),
         _BulletLine(
-          text:
-              '官方每日內容物 tradeDate $holdingsDate；盤中 NAV dataTime $intradayTime；兩者更新頻率不同。',
+          text: '官方每日內容物日期 $holdingsDate；盤中 NAV 資料時間 $intradayTime；兩者更新頻率不同。',
           icon: Icons.schedule_outlined,
         ),
         const SizedBox(height: 10),
@@ -9591,12 +9588,12 @@ class _AiDailyStatusPanel extends StatelessWidget {
         const SizedBox(height: 8),
         _BulletLine(
           text:
-              'AI source ${summary.source}；analysis generatedAt $generatedAt；analysis dataTime $dataTime。',
+              'AI 來源 ${_statusDisplay(summary.source)}；分析產生時間 $generatedAt；分析資料時間 $dataTime。',
           icon: Icons.psychology_alt_outlined,
         ),
         _BulletLine(
           text:
-              '歷史價格 coverage ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，共 ${formatInteger(price.rowCount)} 筆。',
+              '歷史價格範圍 ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，共 ${formatInteger(price.rowCount)} 筆。',
           icon: Icons.timeline_outlined,
         ),
         const SizedBox(height: 10),
@@ -14601,16 +14598,15 @@ List<String> _aiTodaySnapshotBullets(
   final premiumAssessment = data.intradayNav?.premiumDiscountAssessment;
   final holdingsDate = _dateOrDash(_latestHoldingsDate(data));
   final intradayTime = _intradayDataTimeText(data.intradayNav);
-  final latestClose =
-      price.latest == null ? 'unavailable' : _price(price.latest!.close);
+  final latestClose = price.latest == null ? '暫無' : _price(price.latest!.close);
   final premiumText = premiumAssessment == null
       ? '目前沒有可判斷的盤中折溢價資料。'
       : _premiumDescription(premiumAssessment);
   return [
     '官方每日內容物：$holdingsDate；盤中 NAV：$intradayTime。',
     '折溢價狀態：$premiumText',
-    '歷史資料：${formatInteger(price.rowCount)} 筆，coverage ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，最新收盤 $latestClose。',
-    '資料狀態：readiness ${summary.readinessLabel}；backend ${data.operationsStatus.backendConnectionLabel}；價格歷史 ${data.priceHistory.sourceStatusLabel}。',
+    '歷史資料：${formatInteger(price.rowCount)} 筆，範圍 ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，最新收盤 $latestClose。',
+    '資料狀態：整體狀態 ${summary.readinessLabel}；後端 ${data.operationsStatus.backendConnectionLabel}；價格歷史 ${_sourceStatusBadgeLabel(data.priceHistory.sourceStatusLabel)}。',
   ];
 }
 
@@ -14620,7 +14616,7 @@ List<String> _completeDataBriefing(Etf00631LLabData data) {
   final holdings = data.holdingsHistory.trendSummary();
   final intraday = data.intradayNavHistory;
   final lines = <String>[
-    '價格歷史共 ${price.rowCount} 筆，coverage ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，source ${data.priceHistory.sourceStatusLabel}。',
+    '價格歷史共 ${price.rowCount} 筆，範圍 ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，來源 ${_sourceStatusBadgeLabel(data.priceHistory.sourceStatusLabel)}。',
   ];
   if (price.latest != null) {
     lines.add(

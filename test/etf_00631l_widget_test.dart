@@ -1580,14 +1580,14 @@ void main() {
       find.byKey(const ValueKey('00631l-selected-etf-readiness-banner')),
       findsNothing,
     );
-    expect(find.textContaining('3 rows'), findsWidgets);
+    expect(find.textContaining('3 筆'), findsWidgets);
     expect(find.textContaining('0050 元大台灣50'), findsWidgets);
     expect(find.text('0050 核心資料'), findsOneWidget);
     expect(find.text('資料正確性'), findsNothing);
     expect(find.text('目前檔案'), findsNothing);
     expect(find.text('0050'), findsWidgets);
     expect(find.textContaining('2025/06/03 - 2026/06/03'), findsWidgets);
-    expect(find.textContaining('市價 · catalog'), findsWidgets);
+    expect(find.textContaining('市價 · 清單'), findsWidgets);
     expect(find.text('官方內容物重點'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-selected-etf-history-readiness-strip')),
@@ -1620,9 +1620,9 @@ void main() {
     expect(find.text('日變動'), findsOneWidget);
     expect(find.text('回撤'), findsOneWidget);
     expect(find.textContaining('價格欄位 adjustedClose'), findsWidgets);
-    expect(find.textContaining('history cached'), findsWidgets);
-    expect(find.textContaining('rows 3'), findsWidgets);
-    expect(find.textContaining('此檔尚未建立 live NAV mapping'), findsWidgets);
+    expect(find.textContaining('歷史 快取'), findsWidgets);
+    expect(find.textContaining('筆數 3'), findsWidgets);
+    expect(find.textContaining('此檔尚未建立盤中 NAV 對應'), findsWidgets);
     expect(find.textContaining('分割調整 調整價可用'), findsWidgets);
     expect(find.textContaining('近一年區間'), findsWidgets);
     expect(find.textContaining('目前位置'), findsWidgets);

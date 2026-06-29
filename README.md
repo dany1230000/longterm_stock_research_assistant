@@ -2044,3 +2044,8 @@ panel now shows `ETF 清單` instead of the raw `catalog` label.
 v7.3 localizes the advanced data coverage panel. Labels such as `TX live`,
 `ETF catalog`, `ETF history`, `rows`, `coverage`, and `dataTime` now render as
 Chinese product wording in the app.
+
+v7.4 localizes the overview status chips and selected ETF context panel. The
+first-screen status row, history count captions, selected ETF data context, and
+AI detail chips now avoid raw terms such as `core`, `holdings`, `rows`,
+`catalog`, and `source`.
