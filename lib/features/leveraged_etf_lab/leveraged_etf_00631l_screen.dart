@@ -530,7 +530,7 @@ class _SelectedEtfViewData {
     if (hasImportedHistory) {
       return '$code 已載入 ${formatInteger(summary.rowCount)} 筆歷史價格，區間 ${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}。';
     }
-    return '$code 目前只有 ETF catalog 欄位，尚未匯入可驗證歷史價格。';
+    return '$code 目前只有 ETF 清單欄位，尚未匯入可驗證歷史價格。';
   }
 
   String get readinessAction {
@@ -1297,7 +1297,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                   ? _EmptyPanel(
                       title: '查無代號',
                       message: query.isEmpty
-                          ? 'ETF catalog 暫無明細。'
+                          ? 'ETF 清單暫無明細。'
                           : '目前沒有符合的 ETF 或內建股票研究資料。',
                     )
                   : ListView.separated(
@@ -1547,9 +1547,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
-                          item.targetType.isEmpty
-                              ? 'ETF catalog'
-                              : item.targetType,
+                          item.targetType.isEmpty ? 'ETF 清單' : item.targetType,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -6211,7 +6209,7 @@ class _HistoryBacktestSection extends StatelessWidget {
           const SizedBox(height: 10),
           const _SectionBlock(
             title: 'ETF 歷史資料尚未匯入',
-            subtitle: '目前只找到 ETF catalog；歷史圖表與回測需要先匯入該 ETF 的可驗證歷史價格。',
+            subtitle: '目前只找到 ETF 清單；歷史圖表與回測需要先匯入該 ETF 的可驗證歷史價格。',
             child: _StatusWrap(
               labels: [
                 '僅清單資料',
@@ -9648,7 +9646,7 @@ class _SelectedEtfAiSection extends StatelessWidget {
       children: [
         _SectionHeaderCard(
           title: '${selectedEtf.code} AI 快覽',
-          subtitle: '規則分析；只解釋目前已載入的 ETF catalog 與歷史資料。',
+          subtitle: '規則分析；只解釋目前已載入的 ETF 清單與歷史資料。',
           icon: Icons.psychology_alt_outlined,
           badges: [
             'AI',
@@ -9818,7 +9816,7 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
       children: [
         _SectionHeaderCard(
           title: 'ETF 資料庫',
-          subtitle: '整理 TWSE all-ETF catalog；可搜尋並切換 ETF，歷史比較在歷史回測頁使用。',
+          subtitle: '整理 TWSE 全 ETF 清單；可搜尋並切換 ETF，歷史比較在歷史回測頁使用。',
           icon: Icons.dataset_outlined,
           badges: [
             'ETF',
@@ -9946,13 +9944,13 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
                   ],
                 )
               : const _EmptyPanel(
-                  title: 'ETF catalog 暫不可用',
+                  title: 'ETF 清單暫不可用',
                   message: '公開後端可提供 ETF 清單；公開靜態模式仍保留 00631L 歷史與回測。',
                 ),
         ),
         const SizedBox(height: 12),
         _SectionBlock(
-          title: 'ETF catalog 快覽',
+          title: 'ETF 清單快覽',
           subtitle: '只對照 catalog snapshot 的行情與 NAV；長期績效比較請到歷史回測頁自選 1-5 檔。',
           child: _EtfComparisonPreview(catalog: catalog),
         ),
@@ -10735,7 +10733,7 @@ class _EtfDataLibrarySummary extends StatelessWidget {
       title: 'ETF 資料庫狀態',
       subtitle: compact
           ? '先看 catalog 與歷史價格覆蓋；缺口代表尚未有足夠資料可供比較或回測。'
-          : '顯示可搜尋的 ETF catalog 與已匯入歷史價格；可用代表能用於歷史、回測與比較，不代表官方內容物已完整匯入。',
+          : '顯示可搜尋的 ETF 清單與已匯入歷史價格；可用代表能用於歷史、回測與比較，不代表官方內容物已完整匯入。',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -10792,7 +10790,7 @@ class _EtfLibraryReadableSummary extends StatelessWidget {
         ? '目前 ${formatInteger(ready)} 檔 ETF 歷史資料可用。'
         : '目前 ${formatInteger(ready)} / ${formatInteger(total)} 檔 ETF 歷史資料可用；${formatInteger(missingCount)} 檔尚未可用。原因：官方空資料 ${formatInteger(officialEmpty)}、來源錯誤 ${formatInteger(sourceError)}、未分類 ${formatInteger(unclassified)}。';
     final action = allClassified
-        ? '資料缺口已有原因分類；維持靜態匯出與 release check。'
+        ? '資料缺口已有原因分類；維持靜態匯出與驗收檢查。'
         : '請執行 scripts\\00631l_probe_missing_etf_reasons.cmd 後重新匯出 static data。';
 
     return KeyedSubtree(
@@ -13614,7 +13612,7 @@ class _EtfHistoryReadiness {
     if (hasHistory) {
       return '$code 已匯入歷史價格，可查看歷史與回測。';
     }
-    return '$code 目前只有 ETF catalog；尚未匯入可驗證歷史價格。';
+    return '$code 目前只有 ETF 清單；尚未匯入可驗證歷史價格。';
   }
 }
 
@@ -14403,10 +14401,10 @@ _StatusItem _etfHistoryGapReasonItem(EtfOperationsStatus status) {
     label: '資料缺口原因',
     status: missing > 0 ? '${formatInteger(missing)} 檔待補' : '已清空',
     detail:
-        '$detail; $sampleDetail; 缺口明細 ${formatInteger(status.etfPriceHistoryGapDetailCount)}; attempted ${formatInteger(status.etfPriceHistoryAttemptedCount)}; retained history ${formatInteger(outOfCatalog)}',
+        '$detail；$sampleDetail；缺口明細 ${formatInteger(status.etfPriceHistoryGapDetailCount)}；已嘗試 ${formatInteger(status.etfPriceHistoryAttemptedCount)}；保留歷史 ${formatInteger(outOfCatalog)}',
     action: unclassified > 0
         ? '可執行 scripts\\00631l_probe_missing_etf_reasons.cmd，將缺口分類成官方空資料、來源錯誤、驗證錯誤或可用資料。'
-        : '目前 ETF history index 沒有待補缺口；維持 release check 即可。',
+        : '目前 ETF 歷史索引沒有待補缺口；維持驗收檢查即可。',
   );
 }
 
@@ -14419,7 +14417,7 @@ _StatusItem _etfHistoryNextActionItem({
     return const _StatusItem(
       label: '資料補齊動作',
       status: 'catalog 未載入',
-      detail: 'ETF catalog 或 price-history index 尚未載入，無法計算缺口。',
+      detail: 'ETF 清單或價格歷史索引尚未載入，無法計算缺口。',
       action:
           '請先執行 scripts\\00631l_import_etf_catalog.cmd，再執行 scripts\\00631l_import_missing_etf_batch.cmd。',
     );
@@ -14441,7 +14439,7 @@ _StatusItem _etfHistoryNextActionItem({
       status: '缺口已分類',
       detail:
           '目前已匯入 ${formatInteger(status.etfPriceHistoryReadyCount)} / ${formatInteger(historyTotal)} 檔 ETF 歷史；其餘缺口已有官方空資料或來源錯誤等原因。',
-      action: '請維持排程靜態匯出與 release check。',
+      action: '請維持排程靜態匯出與驗收檢查。',
     );
   }
   if (missingCount > 0) {
@@ -14701,7 +14699,7 @@ List<String> _selectedEtfProgramActions(_SelectedEtfViewData selectedEtf) {
       '若未來需要 ${selectedEtf.code} live NAV，需先建立官方來源 mapping 與 parser。',
     );
   }
-  actions.add('若資料時間不符合預期，先查看設定頁的 static/live mode 與資料覆蓋狀態。');
+  actions.add('若資料時間不符合預期，先查看設定頁的靜態/live 模式與資料覆蓋狀態。');
   return actions;
 }
 

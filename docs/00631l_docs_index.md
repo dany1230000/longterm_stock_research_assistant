@@ -512,6 +512,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - History and settings wording: `docs\00631l_v7_5_history_settings_wording.md`
 - Data quality labels: `docs\00631l_v7_6_data_quality_labels.md`
 - Settings maintenance wording: `docs\00631l_v7_7_settings_maintenance_wording.md`
+- ETF gap wording: `docs\00631l_v7_8_etf_gap_wording.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

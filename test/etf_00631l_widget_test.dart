@@ -2135,7 +2135,7 @@ void main() {
     expect(find.text('資料補齊動作'), findsOneWidget);
     expect(find.text('資料缺口原因'), findsOneWidget);
     expect(find.textContaining('缺口明細 0'), findsOneWidget);
-    expect(find.textContaining('retained history 0'), findsOneWidget);
+    expect(find.textContaining('保留歷史 0'), findsOneWidget);
     expect(
       find.textContaining(
         'scripts\\00631l_import_etf_price_history.cmd --status-only',

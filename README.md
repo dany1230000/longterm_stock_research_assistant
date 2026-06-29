@@ -2062,3 +2062,7 @@ v7.7 localizes settings and maintenance wording. ETF data gaps, deployment
 sync, backend status, reports, exports, backups, history row counts, and daily
 workflow prompts now read as product-facing Chinese while keeping script names
 available for program actions.
+
+v7.8 localizes ETF catalog and gap-detail wording. ETF catalog now appears as
+ETF 清單, and gap metadata such as attempted checks, retained history, and
+history indexes is described in Chinese without changing data eligibility.
