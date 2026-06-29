@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Comparison default v9.14: `docs\00631l_v9_14_comparison_default.md`
 - Selected ETF readiness v9.13: `docs\00631l_v9_13_selected_etf_readiness.md`
 - Compact overview readiness v9.12: `docs\00631l_v9_12_compact_overview_readiness.md`
 - Compact search status v9.4: `docs\00631l_v9_4_compact_search_status.md`

@@ -6585,7 +6585,7 @@ class _EtfHistoryComparisonPanelState
       children: [
         _SectionHeaderCard(
           title: 'ETF 歷史比較',
-          subtitle: '建立自己的 1-5 檔比較組合；可用類型快速帶入，也可清空後自行勾選。',
+          subtitle: '預設只看目前 ETF；可用同類型快速帶入，也可清空後自行勾選 1-5 檔。',
           icon: Icons.stacked_line_chart_outlined,
           badges: const [
             '自選組合',
@@ -6704,7 +6704,7 @@ class _EtfHistoryComparisonPanelState
         ),
         const SizedBox(height: 6),
         Text(
-          '可選 1-5 檔 ETF 比較；資料筆數足夠才會進入圖表。',
+          '預設只看目前 ETF；可選 1-5 檔 ETF 比較，資料筆數足夠才會進入圖表。',
           key: const ValueKey('00631l-etf-comparison-guidance'),
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: _marketMutedTextColor(context),
@@ -6800,9 +6800,9 @@ class _EtfHistoryComparisonPanelState
 
     final current = _selectedComparisonCodes;
     if (current == null) {
-      final preset = _presetComparisonCodes(_filter, availableMetrics);
-      _selectedComparisonCodes = preset.isNotEmpty
-          ? preset.take(5).toSet()
+      final selectedCode = widget.selectedHistory.code.trim().toUpperCase();
+      _selectedComparisonCodes = availableCodes.contains(selectedCode)
+          ? {selectedCode}
           : availableCodes.take(1).toSet();
     } else {
       final cleaned = current.where(availableCodes.contains).toSet();

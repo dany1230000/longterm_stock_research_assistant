@@ -1658,6 +1658,7 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-comparison-action-strip')),
       findsOneWidget,
     );
+    expect(find.textContaining('預設只看目前 ETF'), findsWidgets);
     expect(find.textContaining('資料筆數足夠才會進入圖表'), findsOneWidget);
     expect(find.textContaining('basket'), findsNothing);
     expect(
@@ -1670,7 +1671,7 @@ void main() {
         );
 
     expect(selectedLabel().data, contains('00631L'));
-    expect(selectedLabel().data, contains('0050'));
+    expect(selectedLabel().data, isNot(contains('0050')));
 
     final clearButton =
         find.byKey(const ValueKey('00631l-etf-comparison-clear'));
