@@ -1053,7 +1053,11 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
   @override
   Widget build(BuildContext context) {
     final query = _controller.text.trim().toLowerCase();
-    final catalog = widget.data.etfCatalog;
+    final catalogAsync = ref.watch(etf00631LCatalogProvider);
+    final loadedCatalog = catalogAsync.valueOrNull;
+    final catalog = loadedCatalog?.hasData == true
+        ? loadedCatalog!
+        : widget.data.etfCatalog;
     final stocksAsync = ref.watch(watchlistProvider);
     final readyHistoryCount = _searchReadyHistoryCount(widget.data);
     final catalogRowCount = catalog.hasData

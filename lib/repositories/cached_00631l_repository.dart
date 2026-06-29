@@ -327,7 +327,8 @@ class Cached00631LRepository extends Official00631LRepository {
     final needsOperations =
         _needsPriceHistoryFallback(primaryData.operationsStatus) ||
             _needsEtfHistoryFallback(primaryData.operationsStatus);
-    final needsCatalog = primaryData.etfCatalog.items.isEmpty;
+    final needsCatalog = primaryData.etfCatalog.items.isEmpty &&
+        primaryData.operationsStatus.etfCatalogRowCount <= 0;
     if (!needsHistory && !needsOperations && !needsCatalog) {
       return primaryData;
     }

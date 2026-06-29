@@ -25,14 +25,12 @@ class Static00631LRepository extends Mock00631LRepository {
     final futuresQuoteFuture = fetchFuturesQuote();
     final priceHistoryFuture = fetchPriceHistory();
     final operationsStatusFuture = fetchOperationsStatus();
-    final catalogFuture = fetchEtfCatalog();
 
     final profile = await profileFuture;
     final snapshot = await snapshotFuture;
     final futuresQuote = await futuresQuoteFuture;
     final priceHistory = await priceHistoryFuture;
     final operationsStatus = await operationsStatusFuture;
-    final catalog = await catalogFuture;
 
     return Etf00631LLabData(
       profile: profile,
@@ -60,9 +58,14 @@ class Static00631LRepository extends Mock00631LRepository {
         now: now,
       ),
       aiAnalysis: _analysisFromStaticStatus(operationsStatus),
-      etfCatalog: catalog,
+      etfCatalog: _deferredStaticCatalog(operationsStatus, now),
       lastFetchedAt: now,
     );
+  }
+
+  @override
+  Future<Etf00631LLabData> fetchLabData() {
+    return fetchFastLabData();
   }
 
   @override
@@ -419,6 +422,26 @@ class Static00631LRepository extends Mock00631LRepository {
   Future<EtfAiAnalysisSummary> fetchAiAnalysisSummary() async {
     final status = await fetchOperationsStatus();
     return _analysisFromStaticStatus(status);
+  }
+
+  EtfCatalog _deferredStaticCatalog(
+    EtfOperationsStatus status,
+    DateTime now,
+  ) {
+    final hasCatalogMetadata = status.etfCatalogRowCount > 0;
+    return EtfCatalog(
+      items: const [],
+      status: hasCatalogMetadata ? EtfDataStatus.cached : EtfDataStatus.error,
+      sourceStatusLabel:
+          hasCatalogMetadata ? status.etfCatalogStatus : 'deferred',
+      sourceContract: 'twse_all_etf_catalog_static_public_deferred',
+      sourceUrl: _resolve('etf_catalog.json').toString(),
+      lastFetchedAt: now,
+      dataTime: status.etfCatalogDataTime,
+      isStale: false,
+      errorMessage:
+          'Static ETF catalog loads only when ETF search or comparison opens.',
+    );
   }
 
   EtfAiAnalysisSummary _analysisFromStaticStatus(EtfOperationsStatus status) {

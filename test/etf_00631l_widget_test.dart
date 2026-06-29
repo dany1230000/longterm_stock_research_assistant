@@ -1061,6 +1061,33 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('top symbol search lazy-loads catalog when first data omits it',
+      (tester) async {
+    final repository = _DeferredCatalogSearchRepository();
+    await _pumpLab(tester, repository);
+
+    expect(repository.catalogRequestCount, 0);
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+
+    expect(repository.catalogRequestCount, 1);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      findsOneWidget,
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '0050',
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
+      findsOneWidget,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('symbol search ranks code matches before name matches',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
@@ -2499,6 +2526,58 @@ class _PriceHistoryRepository extends Mock00631LRepository {
       coverageStart: points.first.date,
       coverageEnd: points.last.date,
       isCompleteFromListing: false,
+    );
+  }
+}
+
+class _DeferredCatalogSearchRepository extends _PriceHistoryRepository {
+  int catalogRequestCount = 0;
+
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() async {
+    return _withoutCatalog(await Mock00631LRepository().fetchLabData());
+  }
+
+  @override
+  Future<Etf00631LLabData> fetchLabData() async {
+    return _withoutCatalog(await Mock00631LRepository().fetchLabData());
+  }
+
+  @override
+  Future<EtfCatalog> fetchEtfCatalog() async {
+    catalogRequestCount += 1;
+    return Mock00631LRepository().fetchEtfCatalog();
+  }
+
+  Etf00631LLabData _withoutCatalog(Etf00631LLabData data) {
+    return Etf00631LLabData(
+      profile: data.profile,
+      snapshot: data.snapshot,
+      intradayNav: data.intradayNav,
+      futuresQuote: data.futuresQuote,
+      holdingsHistory: data.holdingsHistory,
+      intradayNavHistory: data.intradayNavHistory,
+      priceHistory: data.priceHistory,
+      operationsStatus: _operationsStatusWithEtfHistory(
+        readyCount: 3,
+        rowCount: 3,
+        catalogRowCount: 3,
+        historyRowCount: 3,
+        tierCounts: const {
+          'long_term': 1,
+          'recent': 2,
+          'unavailable': 0,
+          'error': 0,
+        },
+      ),
+      analysis: data.analysis,
+      aiAnalysis: data.aiAnalysis,
+      etfCatalog: EtfCatalog.empty(
+        status: EtfDataStatus.cached,
+        sourceStatusLabel: 'deferred',
+        sourceContract: 'twse_all_etf_catalog_deferred_test',
+      ),
+      lastFetchedAt: data.lastFetchedAt,
     );
   }
 }

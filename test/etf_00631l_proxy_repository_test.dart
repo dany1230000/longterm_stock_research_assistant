@@ -502,6 +502,32 @@ void main() {
         status.etfPriceHistoryGapReasonSamples['official_empty'], ['009824']);
   });
 
+  test('static fast lab data defers full ETF catalog files', () async {
+    final client = _RecordingProxyHttpClient({
+      '00631l-static-data/price_history.json':
+          jsonEncode(_staticPriceHistoryPayload()),
+      '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
+      '00631l-static-data/release.json': jsonEncode(_staticReleasePayload()),
+    });
+    final repository = Static00631LRepository(client: client);
+
+    final fastData = await repository.fetchFastLabData();
+    final fullData = await repository.fetchLabData();
+
+    expect(
+      client.requestedPaths,
+      isNot(contains('00631l-static-data/etf_catalog.json')),
+    );
+    expect(
+      client.requestedPaths,
+      isNot(contains('00631l-static-data/etf_price_history_index.json')),
+    );
+    expect(fastData.etfCatalog.items, isEmpty);
+    expect(fastData.operationsStatus.etfCatalogRowCount, 3);
+    expect(fullData.etfCatalog.items, isEmpty);
+    expect(fullData.operationsStatus.etfPriceHistoryReadyCount, 1);
+  });
+
   test('proxy repository maps AI analysis summary payload', () async {
     final repository = Proxy00631LRepository(
       client: _FakeProxyHttpClient({
@@ -628,7 +654,8 @@ void main() {
     expect(
         data.operationsStatus.etfPriceHistoryGapReasonCounts['not_saved'], 2);
     expect(data.aiAnalysis.sourceStatusLabel, 'static_official');
-    expect(data.etfCatalog.sourceStatusLabel, 'static_official');
+    expect(data.etfCatalog.sourceStatusLabel, 'deferred');
+    expect(data.etfCatalog.items, isEmpty);
   });
 
   test('cached fast startup falls back when primary is slow', () async {

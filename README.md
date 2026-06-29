@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.1 lazy-loads the static ETF catalog. GitHub Pages first screen no longer
+  pulls `etf_catalog.json` or `etf_price_history_index.json`; the left-top ETF
+  search loads those files only when opened.
+
 - v9.0 trims the static-public first load. The first-screen operations status
   now reads compact readiness fields from `status.json` instead of also loading
   the full ETF catalog and price-history index.
