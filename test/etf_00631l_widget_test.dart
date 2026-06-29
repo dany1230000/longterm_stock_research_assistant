@@ -2071,6 +2071,31 @@ void main() {
       find.byKey(const ValueKey('00631l-settings-quick-summary-compact')),
       findsOneWidget,
     );
+    final preferenceGrid =
+        find.byKey(const ValueKey('00631l-settings-preference-grid'));
+    final accountCard =
+        find.byKey(const ValueKey('00631l-settings-preference-account'));
+    final appearanceCard =
+        find.byKey(const ValueKey('00631l-settings-preference-appearance'));
+    final selectedEtfCard =
+        find.byKey(const ValueKey('00631l-settings-preference-selected-etf'));
+    final positionCard =
+        find.byKey(const ValueKey('00631l-settings-preference-position'));
+    expect(preferenceGrid, findsOneWidget);
+    expect(accountCard, findsOneWidget);
+    expect(appearanceCard, findsOneWidget);
+    expect(selectedEtfCard, findsOneWidget);
+    expect(positionCard, findsOneWidget);
+    expect(
+      (tester.getTopLeft(accountCard).dy - tester.getTopLeft(appearanceCard).dy)
+          .abs(),
+      lessThan(2),
+      reason: 'Settings preference cards should use a compact two-column row.',
+    );
+    expect(
+      tester.getTopLeft(accountCard).dx,
+      lessThan(tester.getTopLeft(appearanceCard).dx),
+    );
     expect(
       find.byKey(const ValueKey('00631l-etf-room-readiness-panel')),
       findsNothing,

@@ -10216,28 +10216,36 @@ class _SettingsSection extends StatelessWidget {
         _SectionBlock(
           title: '帳戶與偏好',
           subtitle: '一般使用者只需要看這裡：登入、外觀、目前 ETF 與本機持倉狀態。',
-          child: _StatusList(
+          child: _SettingsPreferenceGrid(
             items: [
-              const _StatusItem(
+              const _SettingsPreferenceItem(
+                keySuffix: 'account',
+                icon: Icons.person_outline,
                 label: '帳戶',
                 status: '不需登入',
                 detail: '00631L 正二研究室目前不需要帳號或券商登入。',
                 action: '可直接使用公開 PWA；持倉資料留在本機。',
               ),
-              const _StatusItem(
+              const _SettingsPreferenceItem(
+                keySuffix: 'appearance',
+                icon: Icons.contrast_outlined,
                 label: '外觀',
                 status: '可切換',
                 detail: '右上角可切換夜間模式，偏好會保存在本機。',
                 action: '需要切換時點選月亮或太陽圖示。',
               ),
-              _StatusItem(
+              _SettingsPreferenceItem(
+                keySuffix: 'selected-etf',
+                icon: Icons.manage_search_outlined,
                 label: '目前 ETF',
                 status: selectedEtf.code,
                 detail:
                     '${selectedEtf.name}；價格資料 ${_sourceStatusBadgeLabel(selectedEtf.priceHistory.sourceStatusLabel)}。',
                 action: '左上角代號按鈕可搜尋並切換 ETF。',
               ),
-              _StatusItem(
+              _SettingsPreferenceItem(
+                keySuffix: 'position',
+                icon: Icons.account_balance_wallet_outlined,
                 label: '持倉資料',
                 status: _sourceStatusBadgeLabel(status.positionStatus),
                 detail: '${selectedEtf.code} 持倉追蹤採本機保存，不會上傳個人持倉。',
@@ -10685,6 +10693,136 @@ class _SettingsHeaderStrip extends StatelessWidget {
                 '目前 $selectedEtfCode',
                 _frontendDataModeLabel,
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsPreferenceItem {
+  const _SettingsPreferenceItem({
+    required this.keySuffix,
+    required this.icon,
+    required this.label,
+    required this.status,
+    required this.detail,
+    required this.action,
+  });
+
+  final String keySuffix;
+  final IconData icon;
+  final String label;
+  final String status;
+  final String detail;
+  final String action;
+}
+
+class _SettingsPreferenceGrid extends StatelessWidget {
+  const _SettingsPreferenceGrid({required this.items});
+
+  final List<_SettingsPreferenceItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyedSubtree(
+      key: const ValueKey('00631l-settings-preference-grid'),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final veryNarrow = constraints.maxWidth < 320;
+          return GridView.count(
+            crossAxisCount: veryNarrow ? 1 : 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: veryNarrow ? 2.6 : 1.34,
+            children: [
+              for (final item in items)
+                _SettingsPreferenceCard(
+                  key: ValueKey(
+                    '00631l-settings-preference-${item.keySuffix}',
+                  ),
+                  item: item,
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _SettingsPreferenceCard extends StatelessWidget {
+  const _SettingsPreferenceCard({
+    super.key,
+    required this.item,
+  });
+
+  final _SettingsPreferenceItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(item.icon, size: 17, color: theme.colorScheme.primary),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    item.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 7),
+            Text(
+              item.status,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              item.detail,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                height: 1.25,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              item.action,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ],
         ),
