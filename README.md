@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.21 clarifies history and backtest date ranges. The history page now shows
+  range mode, start date, and end date as separate compact labels, and chart
+  touch detail separates date from value for phone readability.
+
 - v9.20 adds a compact data summary to ETF search results. Before switching an
   ETF, the search sheet now shows historical row count, coverage, and price
   basis so data readiness is clearer.

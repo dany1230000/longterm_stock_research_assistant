@@ -767,6 +767,18 @@ void main() {
       findsWidgets,
     );
     expect(
+      find.byKey(const ValueKey('00631l-date-range-summary-mode')),
+      findsWidgets,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-date-range-summary-start')),
+      findsWidgets,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-date-range-summary-end')),
+      findsWidgets,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-history-range-1y')),
       findsOneWidget,
     );
@@ -847,6 +859,14 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-line-chart-touch-secondary')),
+      findsWidgets,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-line-chart-touch-date')),
+      findsWidgets,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-line-chart-touch-value')),
       findsWidgets,
     );
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);

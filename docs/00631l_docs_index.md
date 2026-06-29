@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History range details v9.21: `docs\00631l_v9_21_history_range_details.md`
 - Search data summary v9.20: `docs\00631l_v9_20_search_data_summary.md`
 - First-glance summary v9.19: `docs\00631l_v9_19_first_glance_summary.md`
 - Custom comparison basket v9.18: `docs\00631l_v9_18_custom_comparison_basket.md`

@@ -7827,6 +7827,12 @@ class _BacktestDateRangeControls extends StatelessWidget {
           endDate: endDate,
           rangeLabel: preset.label,
         ),
+        const SizedBox(height: 6),
+        _DateRangeInlineLabels(
+          startDate: startDate,
+          endDate: endDate,
+          rangeLabel: preset.label,
+        ),
         const SizedBox(height: 8),
         LayoutBuilder(
           builder: (context, constraints) {
@@ -7903,6 +7909,78 @@ class _BacktestDateRangeSummary extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DateRangeInlineLabels extends StatelessWidget {
+  const _DateRangeInlineLabels({
+    required this.startDate,
+    required this.endDate,
+    required this.rangeLabel,
+  });
+
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final String rangeLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textStyle = theme.textTheme.labelSmall?.copyWith(
+      color: _marketMutedTextColor(context),
+      fontWeight: FontWeight.w800,
+    );
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      children: [
+        _InlineDateRangeBadge(
+          key: const ValueKey('00631l-date-range-summary-mode'),
+          label: rangeLabel,
+        ),
+        Text(
+          '起 ${_dateOrDash(startDate)}',
+          key: const ValueKey('00631l-date-range-summary-start'),
+          style: textStyle,
+        ),
+        Text(
+          '迄 ${_dateOrDash(endDate)}',
+          key: const ValueKey('00631l-date-range-summary-end'),
+          style: textStyle,
+        ),
+      ],
+    );
+  }
+}
+
+class _InlineDateRangeBadge extends StatelessWidget {
+  const _InlineDateRangeBadge({
+    super.key,
+    required this.label,
+  });
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        child: Text(
+          label,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.w900,
+          ),
         ),
       ),
     );
@@ -12527,7 +12605,7 @@ class _MiniChartCard extends StatelessWidget {
                 points: points,
                 valueOf: valueOf ?? (point) => point.close,
                 labelOf: (point) => _monthDay(point.date),
-                height: 92,
+                height: 76,
                 color: theme.colorScheme.secondary,
               ),
             ),
@@ -13557,6 +13635,8 @@ class _ChartTouchDetail extends StatelessWidget {
             : '圖表區間 ${formatTaiwanDate(rangeStart!)} - ${formatTaiwanDate(rangeEnd!)}'
         : '$label ${formatTaiwanDate(point!.date)} · ${_compactChartValue(value!)}';
     final secondary = isManualSelection ? '再次點擊圖表可切換日期' : '點擊圖表可查看指定日期數值';
+    final secondaryDetail =
+        point == null || value == null ? secondary : '$primary · $secondary';
     return DecoratedBox(
       key: const ValueKey('00631l-line-chart-touch-detail'),
       decoration: BoxDecoration(
@@ -13569,25 +13649,90 @@ class _ChartTouchDetail extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              primary,
-              key: const ValueKey('00631l-line-chart-touch-primary'),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w900,
+            if (point != null && value != null)
+              Wrap(
+                key: const ValueKey('00631l-line-chart-touch-primary'),
+                spacing: 6,
+                runSpacing: 4,
+                children: [
+                  _ChartTouchInfoPill(
+                    key: const ValueKey('00631l-line-chart-touch-date'),
+                    label: '日期',
+                    value: formatTaiwanDate(point!.date),
+                  ),
+                  _ChartTouchInfoPill(
+                    key: const ValueKey('00631l-line-chart-touch-value'),
+                    label: '數值',
+                    value: _compactChartValue(value!),
+                  ),
+                ],
+              )
+            else
+              Text(
+                primary,
+                key: const ValueKey('00631l-line-chart-touch-primary'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
-            ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 3),
             Text(
-              secondary,
+              secondaryDetail,
               key: const ValueKey('00631l-line-chart-touch-secondary'),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: _marketMutedTextColor(context),
                 fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ChartTouchInfoPill extends StatelessWidget {
+  const _ChartTouchInfoPill({
+    super.key,
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow.withValues(alpha: 0.8),
+        borderRadius: BorderRadius.circular(7),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              value,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w900,
               ),
             ),
           ],
