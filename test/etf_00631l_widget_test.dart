@@ -976,6 +976,15 @@ void main() {
       find.byKey(const ValueKey('00631l-position-primary-actions')),
       findsOneWidget,
     );
+    final positionInputCard =
+        find.byKey(const ValueKey('00631l-position-compact-input-card'));
+    final positionActions =
+        find.byKey(const ValueKey('00631l-position-primary-actions'));
+    expect(
+      tester.getTopLeft(positionInputCard).dy,
+      lessThan(tester.getTopLeft(positionActions).dy),
+      reason: 'Empty position flow should show inputs before actions.',
+    );
     expect(find.text('尚未輸入持倉'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-position-empty-hint-strip')),

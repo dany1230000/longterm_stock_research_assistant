@@ -8259,13 +8259,15 @@ class _PositionSectionState extends State<_PositionSection> {
           summary: summary,
           selectedEtf: widget.selectedEtf,
         ),
-        const SizedBox(height: 8),
-        _PositionActionBar(
-          hasPosition: input.hasPosition,
-          onSave: _save,
-          onExport: _export,
-          onClear: _clear,
-        ),
+        if (input.hasPosition) ...[
+          const SizedBox(height: 8),
+          _PositionActionBar(
+            hasPosition: input.hasPosition,
+            onSave: _save,
+            onExport: _export,
+            onClear: _clear,
+          ),
+        ],
         const SizedBox(height: 12),
         KeyedSubtree(
           key: const ValueKey('00631l-position-compact-input-card'),
@@ -8281,6 +8283,15 @@ class _PositionSectionState extends State<_PositionSection> {
                   child: inputForm,
                 ),
         ),
+        if (!input.hasPosition) ...[
+          const SizedBox(height: 8),
+          _PositionActionBar(
+            hasPosition: input.hasPosition,
+            onSave: _save,
+            onExport: _export,
+            onClear: _clear,
+          ),
+        ],
       ],
     );
   }
