@@ -4,6 +4,8 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- ETF search readiness v8.1: `docs\00631l_v8_1_etf_search_readiness.md`
+- Mobile first screen v8.0: `docs\00631l_v8_0_mobile_first_screen.md`
 - ETF gap reason labels v6.85: `docs\00631l_v6_85_etf_gap_reason_labels.md`
 - Local static attempt restore v6.84: `docs\00631l_v6_84_local_static_attempt_restore.md`
 - Search catalog count context v6.83: `docs\00631l_v6_83_search_catalog_count_context.md`

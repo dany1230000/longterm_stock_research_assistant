@@ -169,6 +169,9 @@ void main() {
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
     expect(find.textContaining('可切換研究標的'), findsOneWidget);
     expect(find.text('歷史可用 15 / 16'), findsOneWidget);
+    expect(find.text('資料可用性'), findsOneWidget);
+    expect(find.text('可回測/比較 15 / 16'), findsOneWidget);
+    expect(find.text('僅清單 1'), findsOneWidget);
     expect(find.text('資料細節'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
@@ -189,6 +192,8 @@ void main() {
       findsOneWidget,
     );
     expect(find.textContaining('歷史可用'), findsWidgets);
+    expect(find.text('本次可用 1'), findsOneWidget);
+    expect(find.text('本次僅清單 0'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
@@ -270,9 +275,11 @@ void main() {
     );
     expect(find.text('ETF 資料庫狀態'), findsOneWidget);
     expect(find.textContaining('完成度'), findsOneWidget);
+    expect(find.text('資料可用性'), findsOneWidget);
     expect(find.text('目前清單 16'), findsNothing);
     expect(find.text('統計母數 228'), findsNothing);
     expect(find.text('歷史可用 228 / 228'), findsOneWidget);
+    expect(find.text('可回測/比較 228 / 228'), findsOneWidget);
     expect(find.text('缺口 0'), findsOneWidget);
     expect(find.text('長期資料 8'), findsNothing);
     expect(find.text('近期資料 220'), findsNothing);
@@ -295,7 +302,9 @@ void main() {
 
     expect(find.text('統計母數 344'), findsNothing);
     expect(find.text('歷史可用 228 / 344'), findsOneWidget);
+    expect(find.text('可回測/比較 228 / 344'), findsOneWidget);
     expect(find.text('缺口 116'), findsOneWidget);
+    expect(find.text('僅清單 116'), findsOneWidget);
     await tester.tap(find.text('資料細節'));
     await tester.pumpAndSettle();
     expect(find.text('統計母數 344'), findsOneWidget);
@@ -2102,12 +2111,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('ETF 資料庫狀態'), findsOneWidget);
-    expect(find.text('catalog 檔數'), findsOneWidget);
+    expect(find.text('清單檔數'), findsOneWidget);
     expect(find.text('歷史可用'), findsOneWidget);
     expect(find.text('228 / 228'), findsOneWidget);
-    expect(find.text('long-term'), findsOneWidget);
+    expect(find.text('長期'), findsOneWidget);
     expect(find.text('8'), findsWidgets);
-    expect(find.text('recent'), findsOneWidget);
+    expect(find.text('近期'), findsOneWidget);
     expect(find.text('220'), findsWidgets);
     expect(find.text('完成度'), findsOneWidget);
     expect(find.textContaining('缺口代表尚未有足夠資料'), findsOneWidget);

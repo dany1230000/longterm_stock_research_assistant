@@ -4,6 +4,13 @@
 
 Latest mobile UI polish:
 
+- v8.1 makes the left-top ETF search clearer: the sheet now shows ETF data
+  readiness, whether a result can be used for history/backtest/comparison, and
+  classified missing-data reasons without pretending unavailable ETF histories
+  are usable.
+- v8.0 removes the duplicated daily summary on the phone first screen. The
+  overview now keeps a compact quote, one `今日快覽`, and the visible one-year
+  chart.
 - v7.0 cleans up the loading skeleton labels. Slow first loads now show
   `盤中`, `內容物`, `歷史`, and `分析` instead of `LIVE / DAY / HIS / AI`.
 - v6.99 removes the `HIS` badge from the overview chart header so the first

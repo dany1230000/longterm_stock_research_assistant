@@ -1155,6 +1155,15 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               catalogRowCount: catalogRowCount,
               readyHistoryCount: readyHistoryCount,
             ),
+            const SizedBox(height: 8),
+            _SymbolSearchReadinessNotice(
+              data: widget.data,
+              catalogRowCount: catalogRowCount,
+              readyHistoryCount: readyHistoryCount,
+              visibleReadyCount: queryReadyCount,
+              visibleCatalogOnlyCount: queryCatalogOnlyCount,
+              hasQuery: query.isNotEmpty,
+            ),
             const SizedBox(height: 10),
             _StatusWrap(
               labels: [
@@ -1334,12 +1343,94 @@ class _SymbolSearchDataCompletionStrip extends StatelessWidget {
                   '目前清單 ${formatInteger(catalogRowCount)}',
                   if (effectiveCatalogRowCount != catalogRowCount)
                     '統計母數 ${formatInteger(effectiveCatalogRowCount)}',
-                  '清單來源 ${status.etfCatalogStatus}',
-                  '歷史來源 ${status.etfPriceHistoryStatus}',
+                  '清單來源 ${_sourceStatusBadgeLabel(status.etfCatalogStatus)}',
+                  '歷史來源 ${_sourceStatusBadgeLabel(status.etfPriceHistoryStatus)}',
                   '長期資料 ${formatInteger(longTerm)}',
                   '近期資料 ${formatInteger(recent)}',
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SymbolSearchReadinessNotice extends StatelessWidget {
+  const _SymbolSearchReadinessNotice({
+    required this.data,
+    required this.catalogRowCount,
+    required this.readyHistoryCount,
+    required this.visibleReadyCount,
+    required this.visibleCatalogOnlyCount,
+    required this.hasQuery,
+  });
+
+  final Etf00631LLabData data;
+  final int catalogRowCount;
+  final int readyHistoryCount;
+  final int visibleReadyCount;
+  final int visibleCatalogOnlyCount;
+  final bool hasQuery;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = data.operationsStatus;
+    final effectiveCatalogRowCount = _effectiveEtfCatalogRows(
+      status: status,
+      loadedCatalogRows: catalogRowCount,
+    );
+    final historyTotal = _etfDataCompletionTotal(
+      status: status,
+      catalogRows: effectiveCatalogRowCount,
+    );
+    final missingCount = status.etfPriceHistoryMissingCount > 0
+        ? status.etfPriceHistoryMissingCount
+        : (historyTotal - readyHistoryCount).clamp(0, historyTotal).toInt();
+    final unclassified =
+        status.etfPriceHistoryGapReasonCounts['not_saved'] ?? 0;
+    final gapStatus = missingCount <= 0
+        ? '全部可用'
+        : unclassified > 0
+            ? '仍有未分類缺口 ${formatInteger(unclassified)}'
+            : '缺口已分類';
+    final theme = Theme.of(context);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '資料可用性',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                _CompactTextBadge(label: gapStatus),
+              ],
+            ),
+            const SizedBox(height: 6),
+            _StatusWrap(
+              labels: [
+                '可回測/比較 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
+                if (missingCount > 0) '僅清單 ${formatInteger(missingCount)}',
+                if (missingCount > 0) _etfGapReasonCompactLabel(status),
+                if (hasQuery) '本次可用 ${formatInteger(visibleReadyCount)}',
+                if (hasQuery) '本次僅清單 ${formatInteger(visibleCatalogOnlyCount)}',
+              ],
             ),
           ],
         ),
@@ -10343,7 +10434,7 @@ class _EtfCatalogItemTile extends StatelessWidget {
                                 : '00631l-etf-list-catalog-only-${item.code}',
                           ),
                           child: _CompactTextBadge(
-                            label: hasHistory ? '歷史/回測可用' : '僅 catalog',
+                            label: hasHistory ? '歷史/回測可用' : '僅清單資料',
                           ),
                         ),
                         if (historyMetadataLabel.isNotEmpty)
@@ -10648,11 +10739,11 @@ class _EtfDataLibrarySummary extends StatelessWidget {
         icon: Icons.fact_check_outlined,
       ),
       _MetricCard(
-        label: 'catalog 檔數',
+        label: '清單檔數',
         value: formatInteger(catalogRows),
         caption: data.etfCatalog.hasData
-            ? data.etfCatalog.sourceStatusLabel
-            : status.etfCatalogStatus,
+            ? _sourceStatusBadgeLabel(data.etfCatalog.sourceStatusLabel)
+            : _sourceStatusBadgeLabel(status.etfCatalogStatus),
         icon: Icons.dataset_outlined,
       ),
       _MetricCard(
@@ -10662,13 +10753,13 @@ class _EtfDataLibrarySummary extends StatelessWidget {
         icon: Icons.query_stats_outlined,
       ),
       _MetricCard(
-        label: 'long-term',
+        label: '長期',
         value: formatInteger(longTerm),
         caption: '長期範圍',
         icon: Icons.timeline_outlined,
       ),
       _MetricCard(
-        label: 'recent',
+        label: '近期',
         value: formatInteger(recent),
         caption: '近期範圍',
         icon: Icons.schedule_outlined,
@@ -10684,7 +10775,7 @@ class _EtfDataLibrarySummary extends StatelessWidget {
         value: _dateTimeOrDash(
           status.etfPriceHistoryDataTime ?? data.etfCatalog.dataTime,
         ),
-        caption: 'history / catalog',
+        caption: '歷史 / 清單',
         icon: Icons.update_outlined,
       ),
     ];
@@ -14296,6 +14387,20 @@ String _etfGapReasonDetail(EtfOperationsStatus status) {
     return '缺口原因已清空';
   }
   return '缺口: ${parts.join(', ')}';
+}
+
+String _etfGapReasonCompactLabel(EtfOperationsStatus status) {
+  final counts = status.etfPriceHistoryGapReasonCounts;
+  final officialEmpty = counts['official_empty'] ?? 0;
+  final sourceError = counts['source_error'] ?? 0;
+  final notSaved = counts['not_saved'] ?? 0;
+  if (officialEmpty > 0 || sourceError > 0) {
+    return '原因 ${_etfGapReasonLabel('official_empty')} ${formatInteger(officialEmpty)} / ${_etfGapReasonLabel('source_error')} ${formatInteger(sourceError)}';
+  }
+  if (notSaved > 0) {
+    return '原因 ${_etfGapReasonLabel('not_saved')} ${formatInteger(notSaved)}';
+  }
+  return '原因已分類';
 }
 
 String _etfGapReasonSampleDetail(EtfOperationsStatus status) {
