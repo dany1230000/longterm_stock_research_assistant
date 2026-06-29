@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.3 adds `scripts\00631l_check_static_first_load_budget.cmd`, a focused
+  guard that keeps the public first screen from loading the full ETF catalog or
+  history index before search/comparison opens.
+
 - v9.2 adds explicit loading and error states to the left-top ETF search sheet
   while the full static ETF catalog is fetched on demand.
 
