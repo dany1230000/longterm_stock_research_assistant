@@ -2913,7 +2913,7 @@ class _OverviewSection extends StatelessWidget {
           title: '更多資料',
           subtitle: selectedEtf.is00631L
               ? '完整數字、資料來源與內容物變化需要時再展開。'
-              : '${selectedEtf.code} 的資料來源、coverage 與目前限制。',
+              : '${selectedEtf.code} 的資料來源、資料範圍與目前限制。',
           child: selectedEtf.is00631L
               ? _OverviewMorePanel(
                   data: data,
@@ -3841,14 +3841,14 @@ class _SelectedEtfMorePanel extends StatelessWidget {
               label: '價格歷史',
               status: selectedEtf.priceHistory.sourceStatusLabel,
               detail:
-                  'rows ${formatInteger(summary.rowCount)}，coverage ${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}。',
+                  '筆數 ${formatInteger(summary.rowCount)}，範圍 ${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}。',
               action: summary.rowCount >= 2
                   ? '可切到歷史回測頁調整日期與查看回測。'
                   : '請先匯入該 ETF 歷史價格。',
             ),
             const _StatusItem(
               label: '官方內容物',
-              status: '00631L only',
+              status: '僅 00631L',
               detail: '目前官方 內容物 parser 仍只接 00631L，不會套用到其他 ETF。',
               action: '其他 ETF 先使用清單資料與價格歷史；內容物資料後續再逐檔接入。',
             ),
@@ -3882,7 +3882,7 @@ class _OverviewMorePanel extends StatelessWidget {
         const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '資料正確性細節',
-          subtitle: '價格欄位、分割調整、coverage 與來源狀態。首屏只保留精簡版。',
+          subtitle: '價格欄位、分割調整、資料範圍與來源狀態。首屏只保留精簡版。',
           child: _OverviewDataQualityPanel(selectedEtf: selectedEtf),
         ),
         const SizedBox(height: 8),
@@ -5491,7 +5491,7 @@ class _HistorySection extends StatelessWidget {
         _SectionBlock(
           title: '價格歷史',
           subtitle: priceHistory.hasData
-              ? '完整 coverage ${_dateOrDash(priceHistory.coverageStart)} - ${_dateOrDash(priceHistory.coverageEnd)}；圖表預設最近 1 年。'
+              ? '完整資料範圍 ${_dateOrDash(priceHistory.coverageStart)} - ${_dateOrDash(priceHistory.coverageEnd)}；圖表預設最近 1 年。'
               : '尚無官方價格歷史，請執行 scripts\\00631l_update_price_history.cmd。',
           child: priceHistory.hasData
               ? _FilterablePriceHistoryBlock(priceHistory: priceHistory)
@@ -5504,7 +5504,7 @@ class _HistorySection extends StatelessWidget {
         _CompactExpansionPanel(
           key: const ValueKey('00631l-history-quality-expansion'),
           title: '資料品質',
-          subtitle: 'coverage、分割調整與來源狀態。',
+          subtitle: '資料範圍、分割調整與來源狀態。',
           child: _SelectedHistoryQualityCard(
             code: selectedEtfCode,
             name: selectedName,
@@ -5567,7 +5567,7 @@ class _HistorySection extends StatelessWidget {
             child: const _StatusWrap(
               labels: [
                 '價格歷史可用',
-                'holdings not connected',
+                '內容物尚未接入',
                 '不套用 00631L 內容物',
               ],
             ),
@@ -6008,7 +6008,7 @@ class _FilterablePriceHistoryBlockState
         const SizedBox(height: 12),
         _CompactExpansionPanel(
           title: '歷史資料完整度',
-          subtitle: '完整 rows、coverage、欄位完整度。',
+          subtitle: '完整筆數、資料範圍、欄位完整度。',
           child: _PriceCompletenessPanel(
             priceHistory: fullHistory,
             summary: fullSummary,
@@ -10186,7 +10186,7 @@ class _SettingsSection extends StatelessWidget {
                 label: '官方每日內容物',
                 status: status.holdingsHistoryStatus,
                 detail:
-                    'history count ${status.holdingsHistoryItemCount}，latest ${_dateOrDash(status.latestHoldingTradeDate)}。',
+                    '歷史筆數 ${status.holdingsHistoryItemCount}，最新 ${_dateOrDash(status.latestHoldingTradeDate)}。',
                 action: status.holdingsHistoryItemCount == 0
                     ? '請執行 scripts\\00631l_daily_cycle.cmd。'
                     : '每日資料已累積。',
@@ -10195,49 +10195,49 @@ class _SettingsSection extends StatelessWidget {
                 label: '盤中 NAV',
                 status: status.intradayHistoryStatus,
                 detail:
-                    'samples ${status.intradaySampleCount}，latest ${status.latestIntradayDataTime == null ? 'unavailable' : formatTaiwanDateTimeSeconds(status.latestIntradayDataTime!)}。',
+                    '樣本 ${status.intradaySampleCount}，最新 ${status.latestIntradayDataTime == null ? '暫無' : formatTaiwanDateTimeSeconds(status.latestIntradayDataTime!)}。',
                 action: status.intradaySampleCount == 0
-                    ? '請確認 TWSE URL、backend 與交易時段。'
+                    ? '請確認 TWSE URL、後端服務與交易時段。'
                     : '盤中估算資料已保存。',
               ),
               _StatusItem(
-                label: 'historical price',
+                label: '歷史價格',
                 status: status.priceHistoryStatus,
                 detail:
-                    'rows ${status.priceHistoryRows}，coverage ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}，generated ${_dateTimeOrDash(status.latestExportUpdatedAt)}。',
+                    '筆數 ${status.priceHistoryRows}，範圍 ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}，產生時間 ${_dateTimeOrDash(status.latestExportUpdatedAt)}。',
                 action: status.priceHistoryRows < 2
                     ? '請執行 scripts\\00631l_update_price_history.cmd；GitHub Pages 請執行 scripts\\00631l_export_static_data.cmd --update。'
                     : '歷史價格可供回測。',
               ),
               _StatusItem(
-                label: 'backtest',
+                label: '回測',
                 status: status.backtestStatus,
                 detail: status.backtestAvailable ? '價格歷史可用' : '價格歷史不足',
                 action: status.backtestAvailable ? '可在回測區使用。' : '請先更新歷史價格。',
               ),
               _StatusItem(
-                label: 'position local data',
+                label: '本機持倉資料',
                 status: status.positionStatus,
                 detail: '持倉資料保存在瀏覽器本機。',
                 action: '可在持倉區保存、匯出或清除。',
               ),
               _StatusItem(
-                label: 'daily cycle',
+                label: '日常流程',
                 status: status.dailyCycleStatus,
                 detail:
-                    'warnings ${status.dailyCycleWarningCount}，failures ${status.dailyCycleFailureCount}。',
+                    '提醒 ${status.dailyCycleWarningCount}，失敗 ${status.dailyCycleFailureCount}。',
                 action: status.dailyCycleStatus == 'PASS'
-                    ? '最近 daily cycle 可讀。'
+                    ? '最近日常流程可讀。'
                     : '請執行 scripts\\00631l_daily_cycle.cmd。',
               ),
               _StatusItem(
-                label: 'report / export / backup',
+                label: '報告 / 匯出 / 備份',
                 status: '${status.reportOverallStatus} / '
-                    '${status.exportAvailable ? 'ready' : 'missing'} / '
-                    '${status.backupAvailable ? 'ready' : 'missing'}',
+                    '${status.exportAvailable ? '已就緒' : '缺少'} / '
+                    '${status.backupAvailable ? '已就緒' : '缺少'}',
                 detail:
-                    'report ${status.latestReportPath ?? 'missing'}，export ${status.latestExportPath ?? 'missing'}，backup ${status.latestBackupPath ?? 'missing'}。',
-                action: '必要時執行 report、export、backup scripts。',
+                    '報告 ${status.latestReportPath ?? '缺少'}，匯出 ${status.latestExportPath ?? '缺少'}，備份 ${status.latestBackupPath ?? '缺少'}。',
+                action: '必要時執行 report、export、backup 腳本。',
               ),
               _StatusItem(
                 label: '公開部署設定',
@@ -10602,15 +10602,14 @@ class _EtfResearchRoomReadinessPanel extends StatelessWidget {
             const _StatusItem(
               label: '公開 PWA',
               status: '可用',
-              detail:
-                  'GitHub Pages static mode 可開啟；live intraday 需要 public backend。',
-              action: '手機可直接開公開網址；若要 live，請保持 backend /ready 正常。',
+              detail: 'GitHub Pages 公開靜態模式可開啟；盤中即時資料需要公開後端服務。',
+              action: '手機可直接開公開網址；若要盤中即時資料，請保持後端 /ready 正常。',
             ),
             _StatusItem(
               label: '00631L 核心資料',
               status: data.status.label,
               detail:
-                  'holdings ${formatTaiwanDate(data.snapshot.tradeDate)}；price rows ${formatInteger(price.rowCount)}；intraday ${_sourceStatusBadgeLabel(data.intradayNav?.status.label)}。',
+                  '內容物 ${formatTaiwanDate(data.snapshot.tradeDate)}；價格筆數 ${formatInteger(price.rowCount)}；盤中 ${_sourceStatusBadgeLabel(data.intradayNav?.status.label)}。',
               action: '每日執行 daily cycle，確認 official / cached / stale 狀態。',
             ),
             _StatusItem(
@@ -14652,28 +14651,28 @@ List<String> _selectedEtfAnalysisBullets(_SelectedEtfViewData selectedEtf) {
   final latest = history.latest;
   if (!selectedEtf.hasImportedHistory || latest == null) {
     return [
-      '${selectedEtf.code} 目前資料不足，AI 只顯示 catalog/static/error 狀態，不產生歷史結論。',
+      '${selectedEtf.code} 目前資料不足，AI 只顯示清單、靜態或錯誤狀態，不產生歷史結論。',
       '若要檢視歷史、回測或比較，需先匯入可驗證的價格歷史。',
       '盤中 NAV 目前只完整接 00631L；不會把 00631L 的即時資料套用到 ${selectedEtf.code}。',
       '此摘要只描述資料狀態，非買賣建議。',
     ];
   }
   final latestChange = history.latestCloseChange == null
-      ? 'unavailable'
+      ? '暫無'
       : '${history.latestCloseChange! >= 0 ? '+' : ''}${history.latestCloseChange!.toStringAsFixed(2)}';
   final rangePosition = _selectedEtfRangePositionText(history);
   final dailyMove = _selectedEtfDailyMoveText(history);
   final completeness = history.isCompleteFromListing ? '上市日起完整' : '部分區間';
   return [
-    '${selectedEtf.code} 歷史 coverage ${selectedEtf.historyCoverageText}，共 ${formatInteger(history.rowCount)} 筆，資料範圍為 $completeness。',
+    '${selectedEtf.code} 歷史資料範圍 ${selectedEtf.historyCoverageText}，共 ${formatInteger(history.rowCount)} 筆，資料範圍為 $completeness。',
     '最新交易日 ${_dateOrDash(latest.date)}，收盤 ${_price(latest.performanceClose)}，日變動 $latestChange / ${formatSignedNullablePercent(history.latestDailyReturnPct)}。',
     '$dailyMove；這是歷史收盤資料，不是盤中即時價格。',
     '區間累積報酬 ${formatSignedNullablePercent(performance.totalReturnPct)}，最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}，年化波動 ${formatNullablePercent(performance.annualizedVolatilityPct)}。',
     '近一年區間 ${_price(history.trailingLowClose)} - ${_price(history.trailingHighClose)}；目前位置 $rangePosition。',
-    '價格欄位使用 ${selectedEtf.priceFieldLabel}；${selectedEtf.adjustmentContextLabel}。若資料含分割或調整，請以 adjustmentFactor 與調整價為準。',
+    '價格欄位使用 ${selectedEtf.priceFieldLabel}；${selectedEtf.adjustmentContextLabel}。若資料含分割或調整，請以調整係數與調整價為準。',
     selectedEtf.is00631L
         ? '00631L 已接 盤中 NAV；官方 內容物 仍是每日快照。'
-        : '${selectedEtf.code} 尚未接 盤中 NAV；目前分析以歷史價格與 catalog 狀態為主。',
+        : '${selectedEtf.code} 尚未接 盤中 NAV；目前分析以歷史價格與清單狀態為主。',
     '回測不代表未來表現，非買賣建議。',
   ];
 }

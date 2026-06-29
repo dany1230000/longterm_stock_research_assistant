@@ -2049,3 +2049,7 @@ v7.4 localizes the overview status chips and selected ETF context panel. The
 first-screen status row, history count captions, selected ETF data context, and
 AI detail chips now avoid raw terms such as `core`, `holdings`, `rows`,
 `catalog`, and `source`.
+
+v7.5 localizes more history, backtest, and settings wording. Daily-use status
+now describes historical price, backtest, local position data, daily cycle,
+report/export/backup, static mode, and live backend in product-facing Chinese.

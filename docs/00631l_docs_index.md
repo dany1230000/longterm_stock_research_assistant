@@ -509,6 +509,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Catalog status label: `docs\00631l_v7_2_catalog_status_label.md`
 - Data coverage labels: `docs\00631l_v7_3_data_coverage_labels.md`
 - Front screen status labels: `docs\00631l_v7_4_front_screen_status_labels.md`
+- History and settings wording: `docs\00631l_v7_5_history_settings_wording.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary
