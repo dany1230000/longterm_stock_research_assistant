@@ -76,6 +76,10 @@ def export_static_00631l_data(
     )
     catalog_row_count = int(catalog_payload.get("rowCount") or 0)
     etf_history_row_count = int(etf_history_payload["rowCount"])
+    etf_history_source_contract_counts = etf_history_payload.get(
+        "historySourceContractCounts",
+        etf_history_payload.get("sourceContractCounts", {}),
+    )
     etf_out_of_catalog_count = _out_of_catalog_code_count(
         catalog_payload=catalog_payload,
         etf_history_payload=etf_history_payload,
@@ -108,6 +112,7 @@ def export_static_00631l_data(
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
         "etfPriceHistoryAttemptedCount": etf_history_payload.get("attemptedCount", 0),
         "etfPriceHistoryOutOfCatalogCount": etf_out_of_catalog_count,
+        "etfPriceHistorySourceContractCounts": etf_history_source_contract_counts,
         "etfPriceHistoryGapReasonCounts": etf_history_payload.get(
             "gapReasonCounts",
             {},
@@ -170,6 +175,7 @@ def export_static_00631l_data(
             "coverageTierCounts",
             {},
         ),
+        "etfPriceHistorySourceContractCounts": etf_history_source_contract_counts,
         "etfPriceHistoryGapReasonCounts": etf_history_payload.get(
             "gapReasonCounts",
             {},
@@ -221,6 +227,7 @@ def export_static_00631l_data(
             "coverageTierCounts",
             {},
         ),
+        "etfPriceHistorySourceContractCounts": etf_history_source_contract_counts,
         "etfPriceHistoryGapReasonCounts": etf_history_payload.get(
             "gapReasonCounts",
             {},
@@ -256,6 +263,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             "etfCatalogDataTime": None,
             "etfPriceHistoryAttemptedCount": 0,
             "etfPriceHistoryGapDetailCount": 0,
+            "etfPriceHistorySourceContractCounts": {},
             "etfPriceHistoryGapReasonSamples": {},
             "minimumCatalogRowCount": 0,
             "overallStatus": "WARN",
@@ -282,6 +290,7 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
             "etfCatalogDataTime": None,
             "etfPriceHistoryAttemptedCount": 0,
             "etfPriceHistoryGapDetailCount": 0,
+            "etfPriceHistorySourceContractCounts": {},
             "etfPriceHistoryGapReasonSamples": {},
             "minimumCatalogRowCount": 0,
             "overallStatus": "FAIL",
@@ -298,11 +307,17 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
     if not isinstance(release_payload, dict) or not release_payload:
         release_payload = _read_optional_json(output / "release.json")
     etf_tier_counts = manifest.get("etfPriceHistoryCoverageTierCounts")
+    etf_source_contract_counts = manifest.get("etfPriceHistorySourceContractCounts")
     etf_gap_reason_counts = manifest.get("etfPriceHistoryGapReasonCounts")
     etf_gap_reason_samples = manifest.get("etfPriceHistoryGapReasonSamples")
     legacy_etf_summary: dict[str, Any] = {}
     if not isinstance(etf_tier_counts, dict) or not etf_tier_counts:
         etf_tier_counts = etf_history_index.get("coverageTierCounts", {})
+    if not isinstance(etf_source_contract_counts, dict) or not etf_source_contract_counts:
+        etf_source_contract_counts = etf_history_index.get(
+            "historySourceContractCounts",
+            etf_history_index.get("sourceContractCounts", {}),
+        )
     if not isinstance(etf_gap_reason_counts, dict) or not etf_gap_reason_counts:
         etf_gap_reason_counts = etf_history_index.get("gapReasonCounts", {})
     if not isinstance(etf_gap_reason_samples, dict) or not etf_gap_reason_samples:
@@ -357,6 +372,9 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         or etf_history_index.get("dataTime")
         or legacy_etf_summary.get("dataTime"),
         "etfPriceHistoryCoverageTierCounts": etf_tier_counts,
+        "etfPriceHistorySourceContractCounts": etf_source_contract_counts
+        if isinstance(etf_source_contract_counts, dict)
+        else {},
         "etfPriceHistoryGapReasonCounts": etf_gap_reason_counts,
         "etfPriceHistoryGapReasonSamples": etf_gap_reason_samples
         if isinstance(etf_gap_reason_samples, dict)
@@ -515,6 +533,9 @@ def _catalog_history_fields(item: dict[str, Any]) -> dict[str, Any]:
         "priceHistoryPriceField": price_field,
         "priceHistoryAdjustmentMethod": adjustment_method,
         "priceHistoryAdjustmentEventCount": len(adjustment_events),
+        "priceHistorySourceContractCounts": item.get("historySourceContractCounts")
+        or item.get("sourceContractCounts")
+        or {},
     }
 
 
@@ -614,6 +635,8 @@ def _export_static_etf_price_history(
             "missingCount": len(codes),
             "gapDetailCount": len(codes),
             "attemptedCount": 0,
+            "historySourceContractCounts": {},
+            "sourceContractCounts": {},
             "gapReasonCounts": {"store_not_configured": len(codes)},
             "gapReasonSamples": {"store_not_configured": [str(code) for code in codes[:5]]},
             "items": [],
@@ -655,6 +678,7 @@ def _export_static_etf_price_history(
     gap_reason_counts = _gap_reason_counts(items)
     gap_reason_samples = _gap_reason_samples(items)
     gap_detail_items = _gap_detail_items(items)
+    source_contract_counts = _sum_source_contract_counts(items)
     if strict and codes and ready_count == 0:
         failures.append("No selected ETF price history is available for static export.")
 
@@ -680,6 +704,8 @@ def _export_static_etf_price_history(
         "attemptedCount": sum(1 for item in items if item.get("lastImportAttempt")),
         "missingSample": missing_codes[:10],
         "coverageTierCounts": tier_counts,
+        "historySourceContractCounts": source_contract_counts,
+        "sourceContractCounts": source_contract_counts,
         "gapReasonCounts": gap_reason_counts,
         "gapReasonSamples": gap_reason_samples,
         "items": items,
@@ -712,6 +738,25 @@ def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
         tier = str(item.get("coverageTier") or "unavailable")
         counts[tier] = counts.get(tier, 0) + 1
     return counts
+
+
+def _sum_source_contract_counts(items: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in items:
+        source_counts = item.get("historySourceContractCounts") or item.get(
+            "sourceContractCounts"
+        )
+        if not isinstance(source_counts, dict):
+            continue
+        for key, value in source_counts.items():
+            source = str(key or "").strip() or "unknown"
+            try:
+                count = int(value)
+            except (TypeError, ValueError):
+                count = 0
+            if count > 0:
+                counts[source] = counts.get(source, 0) + count
+    return dict(sorted(counts.items()))
 
 
 def _gap_reason_counts(items: list[dict[str, Any]]) -> dict[str, int]:

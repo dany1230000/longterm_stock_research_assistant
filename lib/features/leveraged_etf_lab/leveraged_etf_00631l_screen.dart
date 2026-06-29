@@ -1345,6 +1345,7 @@ class _SymbolSearchDataCompletionStrip extends StatelessWidget {
                     '統計母數 ${formatInteger(effectiveCatalogRowCount)}',
                   '清單來源 ${_sourceStatusBadgeLabel(status.etfCatalogStatus)}',
                   '歷史來源 ${_sourceStatusBadgeLabel(status.etfPriceHistoryStatus)}',
+                  _etfHistorySourceContractDetail(status),
                   '長期資料 ${formatInteger(longTerm)}',
                   '近期資料 ${formatInteger(recent)}',
                 ],
@@ -5891,7 +5892,13 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             _StatusWrap(
-              labels: _dedupeStatusLabels(['HIS', code, name, coverage]),
+              labels: _dedupeStatusLabels([
+                'HIS',
+                code,
+                name,
+                coverage,
+                _historySourceContractDetail(priceHistory.sourceContractCounts),
+              ]),
             ),
           ],
         ),
@@ -14310,6 +14317,7 @@ EtfPriceHistory _filteredPriceHistory(
     coverageStart: filteredPoints.isEmpty ? null : filteredPoints.first.date,
     coverageEnd: filteredPoints.isEmpty ? null : filteredPoints.last.date,
     isCompleteFromListing: false,
+    sourceContractCounts: history.sourceContractCounts,
     errorMessage: history.errorMessage,
   );
 }
@@ -14510,7 +14518,7 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
       label: 'ETF 價格歷史',
       status: data.operationsStatus.etfPriceHistoryStatus,
       detail:
-          '可用 ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / 清單 ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}；缺口明細 ${formatInteger(data.operationsStatus.etfPriceHistoryGapDetailCount)}；已嘗試 ${formatInteger(data.operationsStatus.etfPriceHistoryAttemptedCount)}；保留歷史 ${formatInteger(data.operationsStatus.etfPriceHistoryOutOfCatalogCount)}；${_etfCoverageTierDetail(data.operationsStatus)}；${_etfGapReasonDetail(data.operationsStatus)}；資料時間 ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}。',
+          '可用 ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / 清單 ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}；缺口明細 ${formatInteger(data.operationsStatus.etfPriceHistoryGapDetailCount)}；已嘗試 ${formatInteger(data.operationsStatus.etfPriceHistoryAttemptedCount)}；保留歷史 ${formatInteger(data.operationsStatus.etfPriceHistoryOutOfCatalogCount)}；${_etfCoverageTierDetail(data.operationsStatus)}；${_etfHistorySourceContractDetail(data.operationsStatus)}；${_etfGapReasonDetail(data.operationsStatus)}；資料時間 ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}。',
       action: data.operationsStatus.etfPriceHistoryReadyCount > 0
           ? 'ETF 價格歷史已可作為比較資料基礎。'
           : '請執行 scripts\\00631l_import_etf_price_history.cmd 匯入選取 ETF 的價格歷史。',
@@ -14524,6 +14532,36 @@ String _etfCoverageTierDetail(EtfOperationsStatus status) {
     return '資料期間分類暫無資料';
   }
   return '${_etfCoverageTierLabel('long_term')} ${formatInteger(counts['long_term'] ?? 0)}, ${_etfCoverageTierLabel('recent')} ${formatInteger(counts['recent'] ?? 0)}, ${_etfCoverageTierLabel('unavailable')} ${formatInteger(counts['unavailable'] ?? 0)}, ${_etfCoverageTierLabel('error')} ${formatInteger(counts['error'] ?? 0)}';
+}
+
+String _etfHistorySourceContractDetail(EtfOperationsStatus status) {
+  return _historySourceContractDetail(
+    status.etfPriceHistorySourceContractCounts,
+  );
+}
+
+String _historySourceContractDetail(Map<String, int> counts) {
+  if (counts.isEmpty) {
+    return '來源待確認';
+  }
+  final twse = counts['twse_stock_day_json'] ?? 0;
+  final tpex = counts['tpex_etf_historical_daily_json'] ?? 0;
+  final other = counts.entries
+      .where(
+        (entry) =>
+            entry.key != 'twse_stock_day_json' &&
+            entry.key != 'tpex_etf_historical_daily_json',
+      )
+      .fold<int>(0, (sum, entry) => sum + entry.value);
+  final parts = <String>[
+    if (twse > 0) 'TWSE ${formatInteger(twse)}',
+    if (tpex > 0) 'TPEx ${formatInteger(tpex)}',
+    if (other > 0) '其他 ${formatInteger(other)}',
+  ];
+  if (parts.isEmpty) {
+    return '來源待確認';
+  }
+  return '來源 ${parts.join(' / ')}';
 }
 
 String _etfGapReasonDetail(EtfOperationsStatus status) {

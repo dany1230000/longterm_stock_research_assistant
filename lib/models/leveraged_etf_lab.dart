@@ -1281,6 +1281,7 @@ class EtfOperationsStatus {
     this.etfPriceHistoryAttemptedCount = 0,
     this.etfPriceHistoryOutOfCatalogCount = 0,
     this.etfPriceHistoryCoverageTierCounts = const {},
+    this.etfPriceHistorySourceContractCounts = const {},
     this.etfPriceHistoryGapReasonCounts = const {},
     this.etfPriceHistoryGapReasonSamples = const {},
     this.etfPriceHistoryDataTime,
@@ -1368,6 +1369,7 @@ class EtfOperationsStatus {
       etfPriceHistoryAttemptedCount: 0,
       etfPriceHistoryOutOfCatalogCount: 0,
       etfPriceHistoryCoverageTierCounts: const {},
+      etfPriceHistorySourceContractCounts: const {},
       etfPriceHistoryGapReasonCounts: const {},
       etfPriceHistoryGapReasonSamples: const {},
       etfPriceHistoryDataTime: null,
@@ -1459,6 +1461,7 @@ class EtfOperationsStatus {
   final int etfPriceHistoryAttemptedCount;
   final int etfPriceHistoryOutOfCatalogCount;
   final Map<String, int> etfPriceHistoryCoverageTierCounts;
+  final Map<String, int> etfPriceHistorySourceContractCounts;
   final Map<String, int> etfPriceHistoryGapReasonCounts;
   final Map<String, List<String>> etfPriceHistoryGapReasonSamples;
   final DateTime? etfPriceHistoryDataTime;
@@ -2120,6 +2123,7 @@ class EtfPriceHistory {
     required this.coverageStart,
     required this.coverageEnd,
     required this.isCompleteFromListing,
+    this.sourceContractCounts = const {},
     this.errorMessage,
   });
 
@@ -2144,6 +2148,7 @@ class EtfPriceHistory {
       coverageStart: null,
       coverageEnd: null,
       isCompleteFromListing: false,
+      sourceContractCounts: const {},
       errorMessage: errorMessage,
     );
   }
@@ -2158,6 +2163,7 @@ class EtfPriceHistory {
   final DateTime? coverageStart;
   final DateTime? coverageEnd;
   final bool isCompleteFromListing;
+  final Map<String, int> sourceContractCounts;
   final String? errorMessage;
 
   bool get hasData => points.isNotEmpty;

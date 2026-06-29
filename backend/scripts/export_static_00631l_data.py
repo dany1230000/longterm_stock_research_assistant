@@ -44,6 +44,9 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
     tiers = payload.get("etfPriceHistoryCoverageTierCounts") or {}
     if not isinstance(tiers, dict):
         tiers = {}
+    source_counts = payload.get("etfPriceHistorySourceContractCounts") or {}
+    if not isinstance(source_counts, dict):
+        source_counts = {}
     etf_catalog_rows = int(payload.get("etfCatalogRowCount") or 0)
     etf_ready_rows = int(payload.get("etfPriceHistoryReadyCount") or 0)
     etf_history_rows = int(payload.get("etfPriceHistoryRowCount") or 0)
@@ -65,6 +68,24 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
         if tiers
         else "not_available"
     )
+    twse_source_rows = int(source_counts.get("twse_stock_day_json") or 0)
+    tpex_source_rows = int(
+        source_counts.get("tpex_etf_historical_daily_json") or 0
+    )
+    other_source_rows = sum(
+        int(value or 0)
+        for key, value in source_counts.items()
+        if key
+        not in {
+            "twse_stock_day_json",
+            "tpex_etf_historical_daily_json",
+        }
+    )
+    source_text = (
+        f"TWSE:{twse_source_rows},TPEx:{tpex_source_rows},other:{other_source_rows}"
+        if source_counts
+        else "not_available"
+    )
     parts = [
         "[summary]",
         f"overallStatus={payload.get('overallStatus', 'UNKNOWN')}",
@@ -78,6 +99,7 @@ def build_static_export_summary_line(payload: dict[str, object]) -> str:
         f"etfAttempted={etf_attempted_rows}",
         f"etfOutOfCatalog={etf_out_of_catalog_rows}",
         f"tiers={tier_text}",
+        f"sources={source_text}",
     ]
     if payload.get("outputDir"):
         parts.append(f"output={payload['outputDir']}")
@@ -128,6 +150,10 @@ def build_static_export_compact_response(
         ),
         "etfPriceHistoryCoverageTierCounts": payload.get(
             "etfPriceHistoryCoverageTierCounts",
+            {},
+        ),
+        "etfPriceHistorySourceContractCounts": payload.get(
+            "etfPriceHistorySourceContractCounts",
             {},
         ),
         "etfPriceHistorySeedMerge": payload.get("etfPriceHistorySeedMerge"),

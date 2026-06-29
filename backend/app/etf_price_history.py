@@ -184,12 +184,15 @@ class EtfPriceHistoryStore:
         normalized = normalize_etf_code(code)
         records = list(reversed(self.recent(normalized, limit)))
         status = self.status(normalized, fetched_at=fetched_at)
+        source_contract_counts = status.get("historySourceContractCounts") or {}
         return {
             "code": normalized,
             "items": _with_performance_fields(records),
             "limit": limit,
             "sourceStatus": status["sourceStatus"],
             "sourceContract": ETF_PRICE_HISTORY_CONTRACT,
+            "historySourceContractCounts": source_contract_counts,
+            "sourceContractCounts": source_contract_counts,
             "sourceUrl": status["sourceUrl"],
             "fetchedAt": fetched_at,
             "sourceUpdatedAt": status["coverageEnd"],
@@ -208,11 +211,14 @@ class EtfPriceHistoryStore:
         normalized = normalize_etf_code(code)
         records = self.all(normalized)
         status = self.status(normalized, fetched_at=fetched_at)
+        source_contract_counts = status.get("historySourceContractCounts") or {}
         return {
             "code": normalized,
             **performance_summary(records),
             "sourceStatus": status["sourceStatus"],
             "sourceContract": "twse_multi_etf_price_performance",
+            "historySourceContractCounts": source_contract_counts,
+            "sourceContractCounts": source_contract_counts,
             "sourceUrl": status["sourceUrl"],
             "fetchedAt": fetched_at,
             "sourceUpdatedAt": status["coverageEnd"],
@@ -247,6 +253,8 @@ class EtfPriceHistoryStore:
                 "code": normalized,
                 "sourceStatus": source_status,
                 "sourceContract": "twse_multi_etf_price_history_status",
+                "historySourceContractCounts": {},
+                "sourceContractCounts": {},
                 "sourceUrl": str((attempt or {}).get("sourceUrl") or source_info["sourceUrl"]),
                 "fetchedAt": fetched_at,
                 "sourceUpdatedAt": (attempt or {}).get("attemptedAt"),
@@ -272,6 +280,7 @@ class EtfPriceHistoryStore:
         end_date = _parse_iso_date(coverage_end)
         today = datetime.now(timezone.utc).date()
         validation = validate_etf_price_records(normalized, records)
+        source_contract_counts = _source_contract_counts(records)
         coverage_tier = _coverage_tier(
             coverage_start=coverage_start,
             row_count=len(records),
@@ -283,6 +292,8 @@ class EtfPriceHistoryStore:
             if validation["failureCount"]
             else source_info["sourceStatus"],
             "sourceContract": "twse_multi_etf_price_history_status",
+            "historySourceContractCounts": source_contract_counts,
+            "sourceContractCounts": source_contract_counts,
             "sourceUrl": source_info["sourceUrl"],
             "fetchedAt": fetched_at,
             "sourceUpdatedAt": coverage_end,
@@ -350,6 +361,7 @@ class EtfPriceHistoryStore:
         tier_counts = _coverage_tier_counts(items)
         gap_reason_counts = _gap_reason_counts(items)
         gap_reason_samples = _gap_reason_samples(items)
+        source_contract_counts = _aggregate_source_contract_counts(items)
         attempted_count = sum(1 for item in items if item.get("lastImportAttempt"))
         has_local = any(self._has_local_records(str(item.get("code") or "")) for item in items)
         source_status = "error" if validation_failure_count else (
@@ -367,6 +379,8 @@ class EtfPriceHistoryStore:
         return {
             "sourceStatus": source_status,
             "sourceContract": "twse_multi_etf_price_history_index",
+            "historySourceContractCounts": source_contract_counts,
+            "sourceContractCounts": source_contract_counts,
             "sourceUrl": source_url,
             "fetchedAt": fetched_at,
             "sourceUpdatedAt": latest,
@@ -596,6 +610,35 @@ def _coverage_tier_counts(items: list[dict[str, Any]]) -> dict[str, int]:
         tier = str(item.get("coverageTier") or "unavailable")
         counts[tier] = counts.get(tier, 0) + 1
     return counts
+
+
+def _source_contract_counts(records: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for record in records:
+        contract = str(record.get("sourceContract") or "").strip()
+        if not contract:
+            contract = "unknown"
+        counts[contract] = counts.get(contract, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _aggregate_source_contract_counts(items: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in items:
+        item_counts = item.get("historySourceContractCounts") or item.get(
+            "sourceContractCounts"
+        )
+        if not isinstance(item_counts, dict):
+            continue
+        for key, value in item_counts.items():
+            contract = str(key or "").strip() or "unknown"
+            try:
+                count = int(value)
+            except (TypeError, ValueError):
+                count = 0
+            if count > 0:
+                counts[contract] = counts.get(contract, 0) + count
+    return dict(sorted(counts.items()))
 
 
 def _gap_reason_counts(items: list[dict[str, Any]]) -> dict[str, int]:

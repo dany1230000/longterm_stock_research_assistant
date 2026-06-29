@@ -289,6 +289,8 @@ void main() {
     expect(find.text('統計母數 228'), findsOneWidget);
     expect(find.text('長期資料 8'), findsOneWidget);
     expect(find.text('近期資料 220'), findsOneWidget);
+    expect(find.textContaining('TWSE'), findsOneWidget);
+    expect(find.textContaining('TPEx'), findsOneWidget);
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
     _expectNoTradingActionText();
   });
@@ -2895,6 +2897,10 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     'source_error': 0,
     'not_ready': 0,
   },
+  Map<String, int> sourceContractCounts = const {
+    'twse_stock_day_json': 200,
+    'tpex_etf_historical_daily_json': 28,
+  },
   Map<String, List<String>> gapReasonSamples = const {},
 }) {
   final now = DateTime(2026, 6, 11, 10);
@@ -2947,6 +2953,7 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     etfPriceHistoryAttemptedCount: attemptedCount,
     etfPriceHistoryOutOfCatalogCount: outOfCatalogCount,
     etfPriceHistoryCoverageTierCounts: tierCounts,
+    etfPriceHistorySourceContractCounts: sourceContractCounts,
     etfPriceHistoryGapReasonCounts: gapReasonCounts,
     etfPriceHistoryGapReasonSamples: gapReasonSamples,
     etfPriceHistoryDataTime: now,

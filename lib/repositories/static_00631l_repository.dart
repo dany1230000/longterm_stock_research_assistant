@@ -222,6 +222,11 @@ class Static00631LRepository extends Mock00631LRepository {
     );
     final etfHistoryCoverageTierCounts =
         _intMap(etfHistoryPayload?['coverageTierCounts']);
+    final etfHistorySourceContractCounts = _intMap(
+      etfHistoryPayload?['historySourceContractCounts'] ??
+          etfHistoryPayload?['sourceContractCounts'] ??
+          statusPayload?['etfPriceHistorySourceContractCounts'],
+    );
     final etfHistoryGapReasonCounts = _intMap(
       etfHistoryPayload?['gapReasonCounts'] ??
           statusPayload?['etfPriceHistoryGapReasonCounts'],
@@ -251,6 +256,7 @@ class Static00631LRepository extends Mock00631LRepository {
         etfPriceHistoryAttemptedCount: etfHistoryAttemptedCount,
         etfPriceHistoryOutOfCatalogCount: etfHistoryOutOfCatalogCount,
         etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
+        etfPriceHistorySourceContractCounts: etfHistorySourceContractCounts,
         etfPriceHistoryGapReasonCounts: etfHistoryGapReasonCounts,
         etfPriceHistoryGapReasonSamples: etfHistoryGapReasonSamples,
         etfPriceHistoryDataTime: etfHistoryDataTime,
@@ -283,6 +289,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryAttemptedCount: etfHistoryAttemptedCount,
       etfPriceHistoryOutOfCatalogCount: etfHistoryOutOfCatalogCount,
       etfPriceHistoryCoverageTierCounts: etfHistoryCoverageTierCounts,
+      etfPriceHistorySourceContractCounts: etfHistorySourceContractCounts,
       etfPriceHistoryGapReasonCounts: etfHistoryGapReasonCounts,
       etfPriceHistoryGapReasonSamples: etfHistoryGapReasonSamples,
       etfPriceHistoryDataTime: etfHistoryDataTime,
@@ -316,6 +323,7 @@ class Static00631LRepository extends Mock00631LRepository {
     int etfPriceHistoryAttemptedCount = 0,
     int etfPriceHistoryOutOfCatalogCount = 0,
     Map<String, int> etfPriceHistoryCoverageTierCounts = const {},
+    Map<String, int> etfPriceHistorySourceContractCounts = const {},
     Map<String, int> etfPriceHistoryGapReasonCounts = const {},
     Map<String, List<String>> etfPriceHistoryGapReasonSamples = const {},
     DateTime? etfPriceHistoryDataTime,
@@ -374,6 +382,7 @@ class Static00631LRepository extends Mock00631LRepository {
       etfPriceHistoryAttemptedCount: etfPriceHistoryAttemptedCount,
       etfPriceHistoryOutOfCatalogCount: etfPriceHistoryOutOfCatalogCount,
       etfPriceHistoryCoverageTierCounts: etfPriceHistoryCoverageTierCounts,
+      etfPriceHistorySourceContractCounts: etfPriceHistorySourceContractCounts,
       etfPriceHistoryGapReasonCounts: etfPriceHistoryGapReasonCounts,
       etfPriceHistoryGapReasonSamples: etfPriceHistoryGapReasonSamples,
       etfPriceHistoryDataTime: etfPriceHistoryDataTime,
@@ -622,6 +631,10 @@ class Static00631LRepository extends Mock00631LRepository {
       coverageStart: _date(payload['coverageStart']),
       coverageEnd: _date(payload['coverageEnd']),
       isCompleteFromListing: payload['isCompleteFromListing'] == true,
+      sourceContractCounts: _intMap(
+        payload['historySourceContractCounts'] ??
+            payload['sourceContractCounts'],
+      ),
       errorMessage: payload['errorMessage']?.toString(),
     );
   }

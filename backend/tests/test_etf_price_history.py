@@ -551,6 +551,59 @@ class EtfPriceHistoryTests(unittest.TestCase):
         self.assertEqual(index["gapDetailCount"], 1)
         self.assertEqual(index["gapReasonCounts"]["not_saved"], 1)
 
+    def test_price_history_status_summarizes_record_source_contracts(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = EtfPriceHistoryStore(Path(temp_dir))
+            store.save_points(
+                "0050",
+                [
+                    {
+                        "code": "0050",
+                        "date": "2026-06-01",
+                        "open": 10,
+                        "high": 11,
+                        "low": 9,
+                        "close": 10,
+                        "volume": 100,
+                        "sourceContract": "twse_stock_day_json",
+                    },
+                    {
+                        "code": "0050",
+                        "date": "2026-06-02",
+                        "open": 11,
+                        "high": 12,
+                        "low": 10,
+                        "close": 11,
+                        "volume": 100,
+                        "sourceContract": "tpex_etf_historical_daily_json",
+                    },
+                ],
+            )
+
+            status = store.status(
+                "0050",
+                fetched_at="2026-06-21T00:00:00+00:00",
+            )
+            price = store.price_response(
+                code="0050",
+                limit=5000,
+                fetched_at="2026-06-21T00:00:00+00:00",
+            )
+            index = store.index_response(
+                fetched_at="2026-06-21T00:00:00+00:00",
+                codes=["0050"],
+            )
+
+        expected = {
+            "tpex_etf_historical_daily_json": 1,
+            "twse_stock_day_json": 1,
+        }
+        self.assertEqual(status["historySourceContractCounts"], expected)
+        self.assertEqual(status["sourceContractCounts"], expected)
+        self.assertEqual(price["historySourceContractCounts"], expected)
+        self.assertEqual(index["historySourceContractCounts"], expected)
+        self.assertEqual(index["sourceContractCounts"], expected)
+
     def test_status_summary_omits_full_item_dump(self) -> None:
         payload = {
             "sourceStatus": "cached",

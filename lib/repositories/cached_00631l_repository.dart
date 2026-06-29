@@ -540,6 +540,7 @@ EtfPriceHistory _cachedPriceHistory(EtfPriceHistory history) {
     coverageStart: history.coverageStart,
     coverageEnd: history.coverageEnd,
     isCompleteFromListing: history.isCompleteFromListing,
+    sourceContractCounts: history.sourceContractCounts,
     errorMessage: history.errorMessage,
   );
 }
@@ -594,6 +595,8 @@ EtfOperationsStatus _cachedOperationsStatus(EtfOperationsStatus status) {
     etfPriceHistoryAttemptedCount: status.etfPriceHistoryAttemptedCount,
     etfPriceHistoryOutOfCatalogCount: status.etfPriceHistoryOutOfCatalogCount,
     etfPriceHistoryCoverageTierCounts: status.etfPriceHistoryCoverageTierCounts,
+    etfPriceHistorySourceContractCounts:
+        status.etfPriceHistorySourceContractCounts,
     etfPriceHistoryGapReasonCounts: status.etfPriceHistoryGapReasonCounts,
     etfPriceHistoryGapReasonSamples: status.etfPriceHistoryGapReasonSamples,
     etfPriceHistoryDataTime: status.etfPriceHistoryDataTime,
@@ -688,6 +691,8 @@ EtfOperationsStatus _backendDisconnectedOperationsStatus(
     etfPriceHistoryAttemptedCount: status.etfPriceHistoryAttemptedCount,
     etfPriceHistoryOutOfCatalogCount: status.etfPriceHistoryOutOfCatalogCount,
     etfPriceHistoryCoverageTierCounts: status.etfPriceHistoryCoverageTierCounts,
+    etfPriceHistorySourceContractCounts:
+        status.etfPriceHistorySourceContractCounts,
     etfPriceHistoryGapReasonCounts: status.etfPriceHistoryGapReasonCounts,
     etfPriceHistoryGapReasonSamples: status.etfPriceHistoryGapReasonSamples,
     etfPriceHistoryDataTime: status.etfPriceHistoryDataTime,
@@ -905,6 +910,9 @@ EtfOperationsStatus _mergeOperationsPriceHistory(
     etfPriceHistoryCoverageTierCounts: useFallbackEtfHistory
         ? fallback.etfPriceHistoryCoverageTierCounts
         : primary.etfPriceHistoryCoverageTierCounts,
+    etfPriceHistorySourceContractCounts: useFallbackEtfHistory
+        ? fallback.etfPriceHistorySourceContractCounts
+        : primary.etfPriceHistorySourceContractCounts,
     etfPriceHistoryGapReasonCounts: useFallbackEtfHistory
         ? fallback.etfPriceHistoryGapReasonCounts
         : primary.etfPriceHistoryGapReasonCounts,

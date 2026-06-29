@@ -363,6 +363,71 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             self.assertEqual(price["code"], "0050")
             self.assertEqual(price["sourceStatus"], "static_official")
 
+    def test_static_export_preserves_etf_history_source_contract_counts(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            store = PriceHistoryStore(root / "price.jsonl")
+            rows = parse_twse_stock_day(_stock_day_fixture(), source_url="fixture://twse")
+            store.save_points(rows)
+            etf_store = EtfPriceHistoryStore(root / "etf_history")
+            etf_store.save_points("0050", rows[:2])
+            etf_store.save_points(
+                "006201",
+                [
+                    {
+                        "date": "2026-06-01",
+                        "open": 10,
+                        "high": 11,
+                        "low": 9,
+                        "close": 10,
+                        "volume": 100,
+                        "sourceContract": "tpex_etf_historical_daily_json",
+                    },
+                    {
+                        "date": "2026-06-02",
+                        "open": 11,
+                        "high": 12,
+                        "low": 10,
+                        "close": 11,
+                        "volume": 100,
+                        "sourceContract": "tpex_etf_historical_daily_json",
+                    },
+                ],
+            )
+
+            result = export_static_00631l_data(
+                output_dir=root / "static",
+                price_history_store=store,
+                etf_price_history_store=etf_store,
+                etf_price_history_codes=["0050", "006201"],
+                etf_catalog_payload=_etf_catalog_payload(),
+                strict=True,
+                minimum_catalog_row_count=2,
+            )
+
+            index = json.loads(
+                (root / "static" / "etf_price_history_index.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            price = json.loads(
+                (root / "static" / "etf_price_history" / "006201.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            manifest = json.loads(
+                (root / "static" / "manifest.json").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(result["etfPriceHistorySourceContractCounts"]["twse_stock_day_json"], 2)
+        self.assertEqual(
+            result["etfPriceHistorySourceContractCounts"]["tpex_etf_historical_daily_json"],
+            2,
+        )
+        self.assertEqual(index["historySourceContractCounts"], result["etfPriceHistorySourceContractCounts"])
+        self.assertEqual(price["historySourceContractCounts"], {"tpex_etf_historical_daily_json": 2})
+        self.assertEqual(manifest["etfPriceHistorySourceContractCounts"], result["etfPriceHistorySourceContractCounts"])
+
     def test_static_export_index_includes_catalog_missing_history(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -680,6 +745,10 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                     "unavailable": 0,
                     "error": 0,
                 },
+                "etfPriceHistorySourceContractCounts": {
+                    "twse_stock_day_json": 24449,
+                    "tpex_etf_historical_daily_json": 2155,
+                },
                 "outputDir": "web/00631l-static-data",
             }
         )
@@ -694,6 +763,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertIn("etfGapDetails=116", line)
         self.assertIn("etfOutOfCatalog=2", line)
         self.assertIn("tiers=long_term:8,recent:220,unavailable:0,error:0", line)
+        self.assertIn("sources=TWSE:24449,TPEx:2155,other:0", line)
 
     def test_static_export_summary_line_does_not_infer_missing_tier_counts(self) -> None:
         line = build_static_export_summary_line(
@@ -711,6 +781,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertIn("etfMissing=0", line)
         self.assertIn("etfGapDetails=0", line)
         self.assertIn("tiers=not_available", line)
+        self.assertIn("sources=not_available", line)
 
     def test_static_export_compact_response_keeps_cli_output_short(self) -> None:
         compact = build_static_export_compact_response(
@@ -734,6 +805,10 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                     "unavailable": 0,
                     "error": 0,
                 },
+                "etfPriceHistorySourceContractCounts": {
+                    "twse_stock_day_json": 24000,
+                    "tpex_etf_historical_daily_json": 2000,
+                },
                 "outputDir": "web/00631l-static-data",
                 "release": {"releaseTag": "00631l-lab-test"},
                 "warnings": ["seed merged", "recent import partial " + ("details;" * 40)],
@@ -747,6 +822,12 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertEqual(compact["etfPriceHistoryReadyCount"], 230)
         self.assertEqual(compact["etfPriceHistoryOutOfCatalogCount"], 2)
         self.assertEqual(compact["etfPriceHistoryGapDetailCount"], 114)
+        self.assertEqual(
+            compact["etfPriceHistorySourceContractCounts"][
+                "tpex_etf_historical_daily_json"
+            ],
+            2000,
+        )
         self.assertEqual(compact["warningCount"], 2)
         self.assertEqual(compact["warningsSample"], ["seed merged"])
         self.assertNotIn("files", compact)

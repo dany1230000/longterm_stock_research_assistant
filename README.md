@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v8.8 shows ETF price-history source provenance in the app and static JSON.
+  TWSE STOCK_DAY rows and TPEx ETF daily-history fallback rows are counted
+  separately so source labels stay truthful.
+
 - v8.7 adds an official TPEx ETF daily-history fallback for ETF symbols that
   return empty TWSE STOCK_DAY rows. The importer keeps `tpex_etf_historical_daily_json`
   separate from TWSE and leaves symbols unavailable when TPEx also has no rows.

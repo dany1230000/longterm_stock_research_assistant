@@ -202,6 +202,13 @@ void main() {
     expect(status.etfPriceHistoryOutOfCatalogCount, 1);
     expect(status.etfPriceHistoryCoverageTierCounts['long_term'], 2);
     expect(status.etfPriceHistoryCoverageTierCounts['recent'], 3);
+    expect(
+        status.etfPriceHistorySourceContractCounts['twse_stock_day_json'], 3);
+    expect(
+      status.etfPriceHistorySourceContractCounts[
+          'tpex_etf_historical_daily_json'],
+      2,
+    );
     expect(status.etfPriceHistoryGapReasonCounts['not_saved'], 0);
     expect(status.etfPriceHistoryGapReasonSamples, isEmpty);
     expect(status.etfPriceHistoryDataTime, DateTime(2026, 6, 12));
@@ -242,6 +249,8 @@ void main() {
     expect(history.points.first.adjustedClose, 30.5);
     expect(history.points.first.adjustmentFactor, 1.0);
     expect(history.points.last.drawdownPct, -3.23);
+    expect(history.sourceContractCounts['twse_stock_day_json'], 2);
+    expect(history.sourceContractCounts['tpex_etf_historical_daily_json'], 1);
   });
 
   test('proxy repository maps selected ETF price history payload', () async {
@@ -370,6 +379,15 @@ void main() {
     expect(status.etfPriceHistoryGapDetailCount, 2);
     expect(status.etfPriceHistoryOutOfCatalogCount, 1);
     expect(status.etfPriceHistoryCoverageTierCounts['recent'], 1);
+    expect(
+      status.etfPriceHistorySourceContractCounts['twse_stock_day_json'],
+      2,
+    );
+    expect(
+      status.etfPriceHistorySourceContractCounts[
+          'tpex_etf_historical_daily_json'],
+      1,
+    );
     expect(status.etfPriceHistoryGapReasonCounts['not_saved'], 2);
     expect(status.etfPriceHistoryGapReasonSamples['not_saved'],
         ['00631L', '00999']);
@@ -980,6 +998,10 @@ Map<String, Object?> _operationsStatusPayload() {
         'unavailable': 0,
         'error': 0,
       },
+      'historySourceContractCounts': {
+        'twse_stock_day_json': 3,
+        'tpex_etf_historical_daily_json': 2,
+      },
       'gapReasonCounts': {
         'official_empty': 0,
         'not_saved': 0,
@@ -1174,6 +1196,10 @@ Map<String, Object?> _priceHistoryPayload() {
     'isCompleteFromListing': false,
     'isStale': false,
     'priceField': 'adjustedClose',
+    'historySourceContractCounts': {
+      'twse_stock_day_json': 2,
+      'tpex_etf_historical_daily_json': 1,
+    },
     'errorMessage': null,
   };
 }
@@ -1338,6 +1364,10 @@ Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
     'gapDetailCount': 2,
     'attemptedCount': 1,
     'outOfCatalogCount': 1,
+    'historySourceContractCounts': {
+      'twse_stock_day_json': 2,
+      'tpex_etf_historical_daily_json': 1,
+    },
     'coverageTierCounts': {
       'long_term': 0,
       'recent': 1,
@@ -1363,6 +1393,10 @@ Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
         'coverageEnd': '2026-06-03',
         'coverageTier': 'recent',
         'rowCount': 3,
+        'historySourceContractCounts': {
+          'twse_stock_day_json': 2,
+          'tpex_etf_historical_daily_json': 1,
+        },
         'priceField': 'adjustedClose',
         'priceAdjustment': {
           'method': 'known_etf_split_events',

@@ -249,6 +249,10 @@ class Proxy00631LRepository extends Official00631LRepository {
       coverageStart: _nullableDate(payload['coverageStart']),
       coverageEnd: _nullableDate(payload['coverageEnd']),
       isCompleteFromListing: payload['isCompleteFromListing'] == true,
+      sourceContractCounts: _intMap(
+        payload['historySourceContractCounts'] ??
+            payload['sourceContractCounts'],
+      ),
       errorMessage: payload['errorMessage']?.toString(),
     );
   }
@@ -359,6 +363,10 @@ class Proxy00631LRepository extends Official00631LRepository {
           _int(etfPriceHistory['outOfCatalogCount']),
       etfPriceHistoryCoverageTierCounts: _intMap(
         etfPriceHistory['coverageTierCounts'],
+      ),
+      etfPriceHistorySourceContractCounts: _intMap(
+        etfPriceHistory['historySourceContractCounts'] ??
+            etfPriceHistory['sourceContractCounts'],
       ),
       etfPriceHistoryGapReasonCounts: _intMap(
         etfPriceHistory['gapReasonCounts'],

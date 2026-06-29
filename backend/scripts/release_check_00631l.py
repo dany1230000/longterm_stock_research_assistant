@@ -531,6 +531,7 @@ def _required_files_check() -> dict[str, Any]:
         ".github/workflows/00631l_backend_maintenance.yml",
         "docs/00631l_daily_report_guide.md",
         "docs/00631l_v8_7_tpex_etf_history_fallback.md",
+        "docs/00631l_v8_8_etf_history_source_provenance.md",
         "deploy/docker-compose.yml",
         "deploy/Caddyfile",
         "deploy/nginx.example.conf",
