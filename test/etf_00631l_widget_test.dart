@@ -1954,7 +1954,7 @@ void main() {
     expect(find.text('ETF 資料與比較能力'), findsOneWidget);
     expect(find.text('ETF 研究室完成度'), findsNothing);
     expect(find.text('公開 PWA'), findsNothing);
-    expect(find.text('catalog'), findsNothing);
+    expect(find.text('ETF 清單'), findsNothing);
     expect(find.text('ETF 比較'), findsNothing);
     expect(find.text('ETF 資料預覽'), findsNothing);
     expect(find.text('元大台灣50正2'), findsNothing);
@@ -1990,7 +1990,7 @@ void main() {
     );
     expect(find.text('ETF 研究室完成度'), findsOneWidget);
     expect(find.text('公開 PWA'), findsOneWidget);
-    expect(find.text('catalog'), findsWidgets);
+    expect(find.text('ETF 清單'), findsWidgets);
     expect(find.text('ETF 比較'), findsOneWidget);
 
     await tester.scrollUntilVisible(

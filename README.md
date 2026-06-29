@@ -2037,3 +2037,6 @@ and history/backtest labels that mixed Chinese with raw phrases such as
 v7.1 localizes the remaining settings-panel comparison status label. The
 advanced ETF data panel now shows `ETF 比較` instead of an internal English
 label.
+
+v7.2 localizes the settings ETF catalog status label. The advanced ETF data
+panel now shows `ETF 清單` instead of the raw `catalog` label.

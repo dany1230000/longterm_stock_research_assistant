@@ -10117,7 +10117,7 @@ class _SettingsSection extends StatelessWidget {
               _StatusList(
                 items: [
                   _StatusItem(
-                    label: 'catalog',
+                    label: 'ETF 清單',
                     status: data.etfCatalog.hasData
                         ? _sourceStatusBadgeLabel(
                             data.etfCatalog.sourceStatusLabel)
