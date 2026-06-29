@@ -2597,6 +2597,9 @@ class EtfCatalogItem {
     this.priceHistoryCoverageStart,
     this.priceHistoryCoverageEnd,
     this.priceHistorySourceStatus = '',
+    this.priceHistoryGapReason = '',
+    this.priceHistoryLastAttemptAt,
+    this.priceHistoryErrorMessage,
   });
 
   final String code;
@@ -2614,6 +2617,9 @@ class EtfCatalogItem {
   final DateTime? priceHistoryCoverageStart;
   final DateTime? priceHistoryCoverageEnd;
   final String priceHistorySourceStatus;
+  final String priceHistoryGapReason;
+  final DateTime? priceHistoryLastAttemptAt;
+  final String? priceHistoryErrorMessage;
 
   String get displayName => name.trim().isEmpty ? code : name;
   bool get hasPriceHistory => priceHistoryRowCount >= 2;

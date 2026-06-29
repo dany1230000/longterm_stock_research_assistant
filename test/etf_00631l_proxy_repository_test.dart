@@ -392,6 +392,11 @@ void main() {
     expect(catalog.items[1].priceHistoryRowCount, 3);
     expect(catalog.items[1].priceHistoryCoverageTier, 'recent');
     expect(catalog.items[2].hasPriceHistory, isFalse);
+    expect(catalog.items[2].priceHistoryGapReason, 'official_empty');
+    expect(catalog.items[2].priceHistoryLastAttemptAt,
+        DateTime(2026, 6, 12, 13, 33));
+    expect(catalog.items[2].priceHistoryErrorMessage,
+        'TWSE returned an empty STOCK_DAY payload.');
     expect(gaps.sourceStatusLabel, 'static_official');
     expect(gaps.sourceContract, 'twse_multi_etf_static_price_history_gaps');
     expect(gaps.reason, 'not_saved');
@@ -1443,6 +1448,12 @@ Map<String, Object?> _staticEtfCatalogPayload() {
         'previousNav': 22.39,
         'dataTime': '2026-06-12T13:31:00+08:00',
         'targetType': '1',
+        'rowCount': 0,
+        'coverageTier': 'unavailable',
+        'priceHistorySourceStatus': 'unavailable',
+        'priceHistoryGapReason': 'official_empty',
+        'priceHistoryLastAttemptAt': '2026-06-12T13:33:00+08:00',
+        'priceHistoryErrorMessage': 'TWSE returned an empty STOCK_DAY payload.',
       },
     ],
     'errorMessage': null,

@@ -435,7 +435,22 @@ def _reconcile_catalog_with_history_index(
     if not history_items:
         return catalog_payload
 
-    seen_codes = {_normalized_code(item.get("code")) for item in catalog_items}
+    history_by_code = {
+        _normalized_code(item.get("code")): item
+        for item in history_items
+        if _normalized_code(item.get("code"))
+    }
+    enriched_items: list[dict[str, Any]] = []
+    enriched_count = 0
+    for item in catalog_items:
+        code = _normalized_code(item.get("code"))
+        history_item = history_by_code.get(code)
+        if history_item:
+            item = {**item, **_catalog_history_fields(history_item)}
+            enriched_count += 1
+        enriched_items.append(item)
+
+    seen_codes = {_normalized_code(item.get("code")) for item in enriched_items}
     seen_codes.discard("")
     additions: list[dict[str, Any]] = []
     for item in history_items:
@@ -445,17 +460,46 @@ def _reconcile_catalog_with_history_index(
         seen_codes.add(code)
         additions.append(_catalog_item_from_history_status(item, generated_at=generated_at))
 
-    if not additions:
+    if not additions and not enriched_count:
         return catalog_payload
 
-    merged_items = catalog_items + additions
-    warnings.append(f"historyIndexCatalogMerged={len(additions)}")
+    merged_items = enriched_items + additions
+    if additions:
+        warnings.append(f"historyIndexCatalogMerged={len(additions)}")
+    if enriched_count:
+        warnings.append(f"historyIndexCatalogEnriched={enriched_count}")
     return {
         **catalog_payload,
         "items": merged_items,
         "rowCount": len(merged_items),
         "historyIndexMergedCount": int(catalog_payload.get("historyIndexMergedCount") or 0)
         + len(additions),
+        "historyIndexEnrichedCount": int(
+            catalog_payload.get("historyIndexEnrichedCount") or 0
+        )
+        + enriched_count,
+    }
+
+
+def _catalog_history_fields(item: dict[str, Any]) -> dict[str, Any]:
+    row_count = int(item.get("rowCount") or 0)
+    coverage_tier = str(item.get("coverageTier") or "")
+    source_status = str(item.get("sourceStatus") or "")
+    gap_reason = str(item.get("gapReason") or "")
+    last_attempt = item.get("lastAttemptAt")
+    error_message = item.get("errorMessage")
+    if row_count >= 2 and coverage_tier != "unavailable":
+        gap_reason = ""
+        error_message = None
+    return {
+        "coverageStart": item.get("coverageStart"),
+        "coverageEnd": item.get("coverageEnd"),
+        "coverageTier": coverage_tier,
+        "rowCount": row_count,
+        "priceHistorySourceStatus": source_status,
+        "priceHistoryGapReason": gap_reason,
+        "priceHistoryLastAttemptAt": last_attempt,
+        "priceHistoryErrorMessage": error_message,
     }
 
 
@@ -485,11 +529,7 @@ def _catalog_item_from_history_status(
         "sourceUpdatedAt": item.get("sourceUpdatedAt")
         or item.get("coverageEnd")
         or item.get("dataTime"),
-        "coverageStart": item.get("coverageStart"),
-        "coverageEnd": item.get("coverageEnd"),
-        "coverageTier": item.get("coverageTier"),
-        "rowCount": int(item.get("rowCount") or 0),
-        "priceHistorySourceStatus": item.get("sourceStatus"),
+        **_catalog_history_fields(item),
     }
 
 

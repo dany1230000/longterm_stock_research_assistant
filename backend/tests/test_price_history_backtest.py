@@ -391,6 +391,9 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
+            catalog = json.loads(
+                (root / "static" / "etf_catalog.json").read_text(encoding="utf-8")
+            )
 
         self.assertEqual(result["overallStatus"], "PASS")
         self.assertEqual(result["etfPriceHistoryRowCount"], 2)
@@ -408,6 +411,12 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         self.assertEqual(gaps["reasonSamples"]["not_saved"], ["00999"])
         self.assertEqual(gaps["items"][0]["code"], "00999")
         self.assertEqual(gaps["items"][0]["gapReason"], "not_saved")
+        catalog_by_code = {item["code"]: item for item in catalog["items"]}
+        self.assertEqual(catalog_by_code["0050"]["rowCount"], len(rows))
+        self.assertEqual(catalog_by_code["0050"]["priceHistoryGapReason"], "")
+        self.assertEqual(catalog_by_code["00999"]["rowCount"], 0)
+        self.assertEqual(catalog_by_code["00999"]["coverageTier"], "unavailable")
+        self.assertEqual(catalog_by_code["00999"]["priceHistoryGapReason"], "not_saved")
 
     def test_static_export_catalog_reconciles_history_index_codes(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v8.2 carries per-symbol ETF history gap metadata into the search catalog:
+  catalog-only ETF rows now show why history is unavailable without treating
+  missing data as usable history.
+
 - v8.1 makes the left-top ETF search clearer: the sheet now shows ETF data
   readiness, whether a result can be used for history/backtest/comparison, and
   classified missing-data reasons without pretending unavailable ETF histories

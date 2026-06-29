@@ -593,6 +593,11 @@ EtfCatalogItem _catalogItemFromPayload(Map<String, dynamic> payload) {
     priceHistoryCoverageStart: _date(payload['priceHistoryCoverageStart']),
     priceHistoryCoverageEnd: _date(payload['priceHistoryCoverageEnd']),
     priceHistorySourceStatus: _string(payload['priceHistorySourceStatus']),
+    priceHistoryGapReason: _string(payload['priceHistoryGapReason']),
+    priceHistoryLastAttemptAt:
+        _wallClockDateTime(payload['priceHistoryLastAttemptAt']) ??
+            _dateTime(payload['priceHistoryLastAttemptAt']),
+    priceHistoryErrorMessage: payload['priceHistoryErrorMessage']?.toString(),
   );
 }
 

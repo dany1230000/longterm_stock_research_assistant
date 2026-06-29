@@ -659,11 +659,32 @@ EtfCatalogItem _catalogItem(
     outstandingUnitsDelta: _nullableInt(payload['outstandingUnitsDelta']),
     dataTime: _wallClockDateTime(payload['dataTime']),
     targetType: _string(payload['targetType']),
-    priceHistoryRowCount: _int(historyPayload?['rowCount']),
-    priceHistoryCoverageTier: _string(historyPayload?['coverageTier']),
-    priceHistoryCoverageStart: _date(historyPayload?['coverageStart']),
-    priceHistoryCoverageEnd: _date(historyPayload?['coverageEnd']),
-    priceHistorySourceStatus: _string(historyPayload?['sourceStatus']),
+    priceHistoryRowCount: _int(
+      historyPayload?['rowCount'] ?? payload['rowCount'],
+    ),
+    priceHistoryCoverageTier: _string(
+      historyPayload?['coverageTier'] ?? payload['coverageTier'],
+    ),
+    priceHistoryCoverageStart: _date(
+      historyPayload?['coverageStart'] ?? payload['coverageStart'],
+    ),
+    priceHistoryCoverageEnd: _date(
+      historyPayload?['coverageEnd'] ?? payload['coverageEnd'],
+    ),
+    priceHistorySourceStatus: _string(
+      historyPayload?['sourceStatus'] ?? payload['priceHistorySourceStatus'],
+    ),
+    priceHistoryGapReason: _string(
+      historyPayload?['gapReason'] ?? payload['priceHistoryGapReason'],
+    ),
+    priceHistoryLastAttemptAt: _wallClockDateTime(
+            historyPayload?['lastAttemptAt'] ??
+                payload['priceHistoryLastAttemptAt']) ??
+        _dateTime(historyPayload?['lastAttemptAt'] ??
+            payload['priceHistoryLastAttemptAt']),
+    priceHistoryErrorMessage:
+        (historyPayload?['errorMessage'] ?? payload['priceHistoryErrorMessage'])
+            ?.toString(),
   );
 }
 

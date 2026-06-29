@@ -1520,6 +1520,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
     final readiness = _etfHistoryReadiness(item);
     final hasHistory = readiness.hasHistory;
     final historyMetadataLabel = _etfHistoryMetadataLabel(item);
+    final missingReasonLabel = _etfHistoryMissingReasonLabel(item);
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
       borderRadius: BorderRadius.circular(12),
@@ -1587,6 +1588,15 @@ class _SymbolSearchResultTile extends StatelessWidget {
                         ),
                         if (historyMetadataLabel.isNotEmpty)
                           _CompactTextBadge(label: historyMetadataLabel),
+                        if (missingReasonLabel.isNotEmpty)
+                          KeyedSubtree(
+                            key: ValueKey(
+                              '00631l-symbol-gap-reason-${item.code}',
+                            ),
+                            child: _CompactTextBadge(
+                              label: missingReasonLabel,
+                            ),
+                          ),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -10385,6 +10395,7 @@ class _EtfCatalogItemTile extends StatelessWidget {
     final theme = Theme.of(context);
     final hasHistory = _catalogItemHasImportedEtfHistory(item);
     final historyMetadataLabel = _etfHistoryMetadataLabel(item);
+    final missingReasonLabel = _etfHistoryMissingReasonLabel(item);
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => onSelected(item.code),
@@ -10439,6 +10450,15 @@ class _EtfCatalogItemTile extends StatelessWidget {
                         ),
                         if (historyMetadataLabel.isNotEmpty)
                           _CompactTextBadge(label: historyMetadataLabel),
+                        if (missingReasonLabel.isNotEmpty)
+                          KeyedSubtree(
+                            key: ValueKey(
+                              '00631l-etf-list-gap-reason-${item.code}',
+                            ),
+                            child: _CompactTextBadge(
+                              label: missingReasonLabel,
+                            ),
+                          ),
                       ],
                     ),
                   ],
@@ -13697,6 +13717,25 @@ String _etfHistoryMetadataLabel(EtfCatalogItem item) {
       ? 'history'
       : item.priceHistoryCoverageTier.trim();
   return '$tier · ${formatInteger(item.priceHistoryRowCount)} 筆';
+}
+
+String _etfHistoryMissingReasonLabel(EtfCatalogItem item) {
+  if (_catalogItemHasImportedEtfHistory(item)) {
+    return '';
+  }
+  final reason = item.priceHistoryGapReason.trim();
+  if (reason.isNotEmpty) {
+    return _etfGapReasonLabel(reason);
+  }
+  final tier = item.priceHistoryCoverageTier.trim();
+  if (tier == 'error') {
+    return _etfGapReasonLabel('source_error');
+  }
+  final sourceStatus = item.priceHistorySourceStatus.trim();
+  if (sourceStatus == 'error') {
+    return _etfGapReasonLabel('source_error');
+  }
+  return '';
 }
 
 int _searchReadyHistoryCount(Etf00631LLabData data) {

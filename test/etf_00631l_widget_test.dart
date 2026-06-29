@@ -1083,7 +1083,7 @@ void main() {
 
   testWidgets('catalog-only ETF selection shows missing history guidance',
       (tester) async {
-    await _pumpLab(tester, Mock00631LRepository());
+    await _pumpLab(tester, _CatalogOnlyGapReasonRepository());
 
     await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
     await tester.pumpAndSettle();
@@ -1125,6 +1125,10 @@ void main() {
     expect(find.textContaining('catalog-only'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-symbol-catalog-only-00400A')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-gap-reason-00400A')),
       findsOneWidget,
     );
     expect(
@@ -2515,6 +2519,64 @@ class _CatalogOnlyComparisonRepository extends _PriceHistoryRepository {
       );
     }
     return super.fetchEtfPriceHistory(normalized, limit: limit);
+  }
+}
+
+class _CatalogOnlyGapReasonRepository extends Mock00631LRepository {
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() {
+    return fetchLabData();
+  }
+
+  @override
+  Future<EtfOperationsStatus> fetchOperationsStatus() async {
+    return _operationsStatusWithEtfHistory(
+      readyCount: 0,
+      rowCount: 1,
+      catalogRowCount: 1,
+      historyRowCount: 1,
+      missingCount: 1,
+      attemptedCount: 1,
+      tierCounts: const {'unavailable': 1},
+      gapReasonCounts: const {
+        'official_empty': 0,
+        'not_saved': 1,
+        'insufficient_rows': 0,
+        'validation_error': 0,
+        'source_error': 0,
+        'not_ready': 0,
+      },
+      gapReasonSamples: const {
+        'not_saved': ['00400A'],
+      },
+    );
+  }
+
+  @override
+  Future<EtfCatalog> fetchEtfCatalog() async {
+    final now = DateTime(2026, 6, 11, 10);
+    return EtfCatalog(
+      items: [
+        EtfCatalogItem(
+          code: '00400A',
+          name: 'Catalog Gap ETF',
+          marketPrice: 14.63,
+          dataTime: now,
+          targetType: 'ETF',
+          priceHistoryCoverageTier: 'unavailable',
+          priceHistorySourceStatus: 'unavailable',
+          priceHistoryGapReason: 'not_saved',
+          priceHistoryLastAttemptAt: now,
+        ),
+      ],
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'static_public_data',
+      sourceContract: 'twse_all_etf_catalog_test',
+      sourceUrl: 'local://catalog-gap-reason',
+      lastFetchedAt: now,
+      dataTime: now,
+      isStale: false,
+    );
   }
 }
 
