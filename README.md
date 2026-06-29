@@ -2053,3 +2053,7 @@ AI detail chips now avoid raw terms such as `core`, `holdings`, `rows`,
 v7.5 localizes more history, backtest, and settings wording. Daily-use status
 now describes historical price, backtest, local position data, daily cycle,
 report/export/backup, static mode, and live backend in product-facing Chinese.
+
+v7.6 localizes data coverage and price completeness panels. Price rows,
+intraday state, holdings count, integrity, coverage range, missing OHLC, volume,
+daily return, and backend captions now use Chinese product labels.

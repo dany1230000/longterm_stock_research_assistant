@@ -670,7 +670,7 @@ void main() {
       find.byKey(const ValueKey('00631l-history-quality-expansion')),
       findsOneWidget,
     );
-    expect(find.textContaining('coverage'), findsWidgets);
+    expect(find.textContaining('範圍'), findsWidgets);
     expect(find.text('static_official'), findsNothing);
     expect(find.textContaining('static_official'), findsNothing);
     expect(find.text('價格歷史'), findsOneWidget);

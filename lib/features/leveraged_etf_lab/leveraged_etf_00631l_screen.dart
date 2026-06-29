@@ -11535,9 +11535,9 @@ class _DataCoveragePanel extends StatelessWidget {
             price.isCompleteFromListing
                 ? '價格歷史已補齊到上市日起'
                 : '價格歷史 ${price.rowCount >= 2 ? '部分區間' : '尚無資料'}',
-            'price rows ${formatInteger(price.rowCount)}',
+            '價格筆數 ${formatInteger(price.rowCount)}',
             '內容物紀錄 $holdingsCount',
-            'intraday $intradayTime',
+            '盤中 $intradayTime',
           ],
         ),
         const SizedBox(height: 12),
@@ -11561,9 +11561,9 @@ class _HoldingsCoveragePanel extends StatelessWidget {
       children: [
         _StatusWrap(
           labels: [
-            'history count $count',
-            'latest ${_dateOrDash(_latestHoldingsDate(data))}',
-            'integrity ${status.integrityStatus}',
+            '歷史筆數 $count',
+            '最新 ${_dateOrDash(_latestHoldingsDate(data))}',
+            '完整性 ${_sourceStatusBadgeLabel(status.integrityStatus)}',
             _holdingsGapText(data),
           ],
         ),
@@ -11613,10 +11613,10 @@ class _PriceCompletenessPanel extends StatelessWidget {
       children: [
         _StatusWrap(
           labels: [
-            'source ${priceHistory.sourceStatusLabel}',
-            'rows ${summary.rowCount}',
-            'coverage ${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}',
-            summary.isCompleteFromListing ? 'from listing' : 'partial range',
+            '來源 ${_sourceStatusBadgeLabel(priceHistory.sourceStatusLabel)}',
+            '筆數 ${summary.rowCount}',
+            '範圍 ${_dateOrDash(summary.coverageStart)} - ${_dateOrDash(summary.coverageEnd)}',
+            summary.isCompleteFromListing ? '上市日起完整' : '部分區間',
           ],
         ),
         const SizedBox(height: 12),
@@ -11626,22 +11626,22 @@ class _PriceCompletenessPanel extends StatelessWidget {
               label: '最新收盤',
               value: _price(latest?.close),
               caption: summary.latestDailyReturnPct == null
-                  ? '日報酬 unavailable'
+                  ? '日報酬暫無'
                   : '日報酬 ${formatSignedNullablePercent(summary.latestDailyReturnPct)}',
               icon: Icons.candlestick_chart_outlined,
             ),
             _MetricCard(
               label: '最新 OHLC',
               value: latest == null
-                  ? 'unavailable'
+                  ? '暫無'
                   : '${_price(latest.open)} / ${_price(latest.high)} / ${_price(latest.low)}',
-              caption: summary.hasOhlc ? '開 / 高 / 低' : 'OHLC unavailable',
+              caption: summary.hasOhlc ? '開 / 高 / 低' : 'OHLC 暫無',
               icon: Icons.stacked_line_chart_outlined,
             ),
             _MetricCard(
               label: '成交量',
               value: formatInteger(latest?.volume),
-              caption: summary.hasVolume ? '最新交易日' : 'volume unavailable',
+              caption: summary.hasVolume ? '最新交易日' : '成交量暫無',
               icon: Icons.bar_chart_outlined,
             ),
             _MetricCard(
@@ -11656,7 +11656,7 @@ class _PriceCompletenessPanel extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'NAV 欄位 ${summary.hasNav ? '可用' : '尚未覆蓋'}，折溢價欄位 ${summary.hasPremiumDiscount ? '可用' : '尚未覆蓋'}；盤中 live 折溢價仍以 backend 盤中 NAV 為準。',
+          'NAV 欄位 ${summary.hasNav ? '可用' : '尚未覆蓋'}，折溢價欄位 ${summary.hasPremiumDiscount ? '可用' : '尚未覆蓋'}；盤中折溢價仍以後端盤中 NAV 為準。',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -11684,7 +11684,7 @@ class _PriceTrendCharts extends StatelessWidget {
         ),
         _MiniChartCard(
           title: '累積報酬',
-          caption: '從 coverage start 計算',
+          caption: '從資料起點計算',
           points: priceHistory.points,
           valueOf: (point) =>
               point.cumulativeReturnPct ??
@@ -14474,7 +14474,7 @@ List<_StatusItem> _holdingsCoverageItems(Etf00631LLabData data) {
       label: 'history 累積',
       status: _holdingsCoverageStatus(data),
       detail:
-          'history count $count，latest ${_dateOrDash(_latestHoldingsDate(data))}；不是發行以來完整 holdings。',
+          '歷史筆數 $count，最新 ${_dateOrDash(_latestHoldingsDate(data))}；不是發行以來完整內容物。',
       action: count == 0
           ? '請執行 scripts\\00631l_daily_cycle.cmd。'
           : '後續每日執行 daily cycle 會繼續補新的官方快照。',
@@ -14507,7 +14507,7 @@ String _holdingsCoverageStatus(Etf00631LLabData data) {
     return 'not accumulated';
   }
   if (status.integrityFailureCount > 0) {
-    return 'integrity fail';
+    return '完整性異常';
   }
   if (status.holdingsMissingWeekdayCount > 0) {
     return '${data.holdingsHistory.sourceStatusLabel} gap';
@@ -14637,7 +14637,7 @@ List<String> _completeDataBriefing(Etf00631LLabData data) {
       '今日 盤中 NAV samples ${intraday.sampleCount}，折溢價區間 ${formatSignedNullablePercent(intraday.lowestPremiumDiscountPct)} 至 ${formatSignedNullablePercent(intraday.highestPremiumDiscountPct)}，最後時間 ${_dateTimeOrDash(intraday.lastDataTime)}。',
     );
   } else {
-    lines.add('盤中 NAV history 尚未累積；live 折溢價需 public backend 與 TWSE 資料可用。');
+    lines.add('盤中 NAV 歷史尚未累積；盤中折溢價需公開後端與 TWSE 資料可用。');
   }
   lines.add(
     '維護狀態：backend ${data.operationsStatus.backendConnectionCaption}，report ${data.operationsStatus.reportOverallStatus}，export ${data.operationsStatus.exportAvailable ? 'ready' : 'missing'}，backup ${data.operationsStatus.backupAvailable ? 'ready' : 'missing'}。',
