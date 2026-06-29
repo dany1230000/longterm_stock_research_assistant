@@ -2066,3 +2066,8 @@ available for program actions.
 v7.8 localizes ETF catalog and gap-detail wording. ETF catalog now appears as
 ETF 清單, and gap metadata such as attempted checks, retained history, and
 history indexes is described in Chinese without changing data eligibility.
+
+v7.9 improves the mobile overview density. The first screen now keeps quote,
+today summary, one-year chart, holdings digest, and one advanced-data entry in
+a clearer order, while detailed data-quality and maintenance diagnostics stay
+behind the advanced section.

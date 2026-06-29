@@ -1809,7 +1809,7 @@ class _CompactQuoteHeader extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+        padding: const EdgeInsets.fromLTRB(10, 7, 10, 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1844,11 +1844,11 @@ class _CompactQuoteHeader extends StatelessWidget {
                         _price(quoteValue),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.headlineSmall?.copyWith(
+                        style: theme.textTheme.titleLarge?.copyWith(
                           color: _marketTextColor(context),
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0,
-                          height: 0.96,
+                          height: 1.0,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -2896,6 +2896,8 @@ class _OverviewSection extends StatelessWidget {
             detailsLoading: detailsLoading,
           ),
           const SizedBox(height: 8),
+          _OverviewBriefPanel(data: data),
+          const SizedBox(height: 8),
         ],
         if (!selectedEtf.is00631L)
           _SelectedEtfAtAGlancePanel(selectedEtf: selectedEtf),
@@ -2919,9 +2921,9 @@ class _OverviewSection extends StatelessWidget {
           const SizedBox(height: 8),
         ],
         _CompactExpansionPanel(
-          title: '更多資料',
+          title: '進階資料',
           subtitle: selectedEtf.is00631L
-              ? '完整數字、資料來源與內容物變化需要時再展開。'
+              ? '資料來源、完整性、比較與維護細節集中在這裡。'
               : '${selectedEtf.code} 的資料來源、資料範圍與目前限制。',
           child: selectedEtf.is00631L
               ? _OverviewMorePanel(
@@ -4970,7 +4972,6 @@ class _AtAGlanceMetricGrid extends StatelessWidget {
   }
 }
 
-// ignore: unused_element
 class _OverviewBriefPanel extends StatelessWidget {
   const _OverviewBriefPanel({required this.data});
 
@@ -4980,20 +4981,26 @@ class _OverviewBriefPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final nav = data.intradayNav;
+    final price = data.priceHistory.completenessSummary();
+    final latestHolding = _hasUsableHoldingsSnapshot(data.snapshot)
+        ? _latestHoldingsDate(data)
+        : null;
+    final navTime = nav?.dataTime;
     return DecoratedBox(
+      key: const ValueKey('00631l-overview-brief-panel'),
       decoration: BoxDecoration(
         color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.fromLTRB(10, 9, 10, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const _MiniStatusBadge(label: 'OVERVIEW'),
+                const _MiniStatusBadge(label: 'TODAY'),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -5010,13 +5017,40 @@ class _OverviewBriefPanel extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               _overviewAiBrief(data),
-              maxLines: 3,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
-                height: 1.45,
+                height: 1.35,
                 color: theme.colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
               ),
+            ),
+            const SizedBox(height: 10),
+            _AtAGlanceMetricGrid(
+              metrics: [
+                _AtAGlanceMetricData(
+                  label: '內容物',
+                  value: _dateOrDash(latestHolding),
+                  caption: _sourceStatusBadgeLabel(data.snapshot.status.label),
+                ),
+                _AtAGlanceMetricData(
+                  label: '盤中 NAV',
+                  value: navTime == null ? '暫無' : _sourceTimeText(navTime),
+                  caption: _sourceStatusBadgeLabel(
+                      nav?.status.label ?? 'unavailable'),
+                ),
+                _AtAGlanceMetricData(
+                  label: '歷史',
+                  value: '${formatInteger(price.rowCount)} 筆',
+                  caption:
+                      '${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}',
+                ),
+                _AtAGlanceMetricData(
+                  label: '後端',
+                  value: data.operationsStatus.backendConnectionLabel,
+                  caption: _frontendDataModeLabel,
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             _StatusWrap(
