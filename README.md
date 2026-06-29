@@ -4,6 +4,11 @@
 
 Latest mobile UI polish:
 
+- v9.15 adds a first-screen guard for the overview chart. Phone-width tests now
+  verify that the one-year chart itself remains visible in the first viewport,
+  so future header/status changes cannot quietly push the main trend view too
+  far down.
+
 - v9.4 compacts the left-top ETF search sheet: database readiness is now a
   one-line summary, with detailed coverage behind a scrollable expansion panel.
 

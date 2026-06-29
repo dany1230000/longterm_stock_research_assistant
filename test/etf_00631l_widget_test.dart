@@ -394,6 +394,11 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-brief-panel')),
       findsNothing,
     );
+    final chartFinder = find.byKey(
+      const ValueKey('00631l-overview-sparkline-chart'),
+    );
+    expect(chartFinder, findsOneWidget);
+    expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(720));
     final stripRect = tester.getRect(readinessStrip);
     for (final label in const ['內容物', '盤中 NAV', '歷史', '後端']) {
       final labelFinder = find.descendant(

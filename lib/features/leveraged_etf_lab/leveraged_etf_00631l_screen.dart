@@ -4834,6 +4834,7 @@ class _SparklineChartState extends State<_SparklineChart> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
+          key: const ValueKey('00631l-overview-sparkline-chart'),
           height: 112,
           child: LineChart(
             LineChartData(
