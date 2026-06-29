@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.19 adds a compact first-glance row to the mobile quote header. The first
+  screen now groups price, data, and history before the detailed readiness
+  numbers while keeping the one-year chart visible.
+
 - v9.18 makes ETF comparison explicitly user-selected. The history/backtest
   comparison panel now shows a custom-basket summary, and selecting one ETF no
   longer implies that 00631L is part of the comparison set.

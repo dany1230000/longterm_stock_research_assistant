@@ -2022,7 +2022,9 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ],
               ),
             ],
-            const SizedBox(height: 7),
+            const SizedBox(height: 5),
+            const _OverviewFirstGlanceStrip(),
+            const SizedBox(height: 4),
             _QuoteReadinessStrip(data: data, selectedEtf: selectedEtf),
             if (!selectedEtf.is00631L) ...[
               const SizedBox(height: 4),
@@ -2100,6 +2102,34 @@ class _QuoteReadinessItem {
   final String label;
   final String value;
   final String caption;
+}
+
+class _OverviewFirstGlanceStrip extends StatelessWidget {
+  const _OverviewFirstGlanceStrip();
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: _marketMutedTextColor(context),
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0,
+          height: 1,
+        );
+    return Row(
+      key: const ValueKey('00631l-overview-first-glance-strip'),
+      children: [
+        for (final label in const ['行情', '資料', '歷史'])
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: style,
+            ),
+          ),
+      ],
+    );
+  }
 }
 
 class _QuoteReadinessStrip extends StatelessWidget {
