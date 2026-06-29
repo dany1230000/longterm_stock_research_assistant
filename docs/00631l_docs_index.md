@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- ETF price basis v8.3: `docs\00631l_v8_3_etf_price_basis.md`
 - ETF gap metadata v8.2: `docs\00631l_v8_2_etf_gap_metadata.md`
 - ETF search readiness v8.1: `docs\00631l_v8_1_etf_search_readiness.md`
 - Mobile first screen v8.0: `docs\00631l_v8_0_mobile_first_screen.md`
@@ -519,6 +520,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Overview density: `docs\00631l_v7_9_overview_density.md`
 - Mobile first screen: `docs\00631l_v8_0_mobile_first_screen.md`
 - ETF gap metadata: `docs\00631l_v8_2_etf_gap_metadata.md`
+- ETF price basis: `docs\00631l_v8_3_etf_price_basis.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

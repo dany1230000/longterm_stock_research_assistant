@@ -414,6 +414,12 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
         catalog_by_code = {item["code"]: item for item in catalog["items"]}
         self.assertEqual(catalog_by_code["0050"]["rowCount"], len(rows))
         self.assertEqual(catalog_by_code["0050"]["priceHistoryGapReason"], "")
+        self.assertEqual(catalog_by_code["0050"]["priceHistoryPriceField"], "adjustedClose")
+        self.assertEqual(
+            catalog_by_code["0050"]["priceHistoryAdjustmentMethod"],
+            "known_etf_split_events",
+        )
+        self.assertEqual(catalog_by_code["0050"]["priceHistoryAdjustmentEventCount"], 1)
         self.assertEqual(catalog_by_code["00999"]["rowCount"], 0)
         self.assertEqual(catalog_by_code["00999"]["coverageTier"], "unavailable")
         self.assertEqual(catalog_by_code["00999"]["priceHistoryGapReason"], "not_saved")

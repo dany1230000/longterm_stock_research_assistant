@@ -391,6 +391,10 @@ void main() {
     expect(catalog.items[1].hasPriceHistory, isTrue);
     expect(catalog.items[1].priceHistoryRowCount, 3);
     expect(catalog.items[1].priceHistoryCoverageTier, 'recent');
+    expect(catalog.items[1].priceHistoryPriceField, 'adjustedClose');
+    expect(catalog.items[1].priceHistoryAdjustmentMethod,
+        'known_etf_split_events');
+    expect(catalog.items[1].priceHistoryAdjustmentEventCount, 1);
     expect(catalog.items[2].hasPriceHistory, isFalse);
     expect(catalog.items[2].priceHistoryGapReason, 'official_empty');
     expect(catalog.items[2].priceHistoryLastAttemptAt,
@@ -1359,6 +1363,18 @@ Map<String, Object?> _staticEtfPriceHistoryIndexPayload() {
         'coverageEnd': '2026-06-03',
         'coverageTier': 'recent',
         'rowCount': 3,
+        'priceField': 'adjustedClose',
+        'priceAdjustment': {
+          'method': 'known_etf_split_events',
+          'priceFieldForReturns': 'adjustedClose',
+          'events': [
+            {
+              'effectiveDate': '2025-06-18',
+              'ratio': 4,
+              'description': '0050 split fixture',
+            },
+          ],
+        },
         'errorMessage': null,
       },
     ],

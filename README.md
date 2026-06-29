@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v8.3 carries ETF price-basis metadata into search results: history-ready ETF
+  rows can now show whether comparison/backtest context uses adjusted prices or
+  raw close prices.
+
 - v8.2 carries per-symbol ETF history gap metadata into the search catalog:
   catalog-only ETF rows now show why history is unavailable without treating
   missing data as usable history.

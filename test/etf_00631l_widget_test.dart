@@ -1283,6 +1283,10 @@ void main() {
     );
     expect(find.text('recent · 12 筆'), findsOneWidget);
     expect(
+      find.byKey(const ValueKey('00631l-symbol-price-basis-00701')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-symbol-catalog-only-00701')),
       findsNothing,
     );
@@ -2821,6 +2825,9 @@ class _CatalogHistoryMetadataRepository extends Mock00631LRepository {
           priceHistoryCoverageStart: DateTime(2026, 1, 1),
           priceHistoryCoverageEnd: DateTime(2026, 6, 11),
           priceHistorySourceStatus: 'static_official',
+          priceHistoryPriceField: 'close',
+          priceHistoryAdjustmentMethod: 'none',
+          priceHistoryAdjustmentEventCount: 0,
         ),
       ],
       status: EtfDataStatus.cached,

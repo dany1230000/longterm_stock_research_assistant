@@ -598,6 +598,11 @@ EtfCatalogItem _catalogItemFromPayload(Map<String, dynamic> payload) {
         _wallClockDateTime(payload['priceHistoryLastAttemptAt']) ??
             _dateTime(payload['priceHistoryLastAttemptAt']),
     priceHistoryErrorMessage: payload['priceHistoryErrorMessage']?.toString(),
+    priceHistoryPriceField: _string(payload['priceHistoryPriceField']),
+    priceHistoryAdjustmentMethod:
+        _string(payload['priceHistoryAdjustmentMethod']),
+    priceHistoryAdjustmentEventCount:
+        _int(payload['priceHistoryAdjustmentEventCount']),
   );
 }
 

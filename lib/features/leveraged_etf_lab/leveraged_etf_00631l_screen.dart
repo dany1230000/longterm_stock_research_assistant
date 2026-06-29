@@ -1521,6 +1521,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
     final hasHistory = readiness.hasHistory;
     final historyMetadataLabel = _etfHistoryMetadataLabel(item);
     final missingReasonLabel = _etfHistoryMissingReasonLabel(item);
+    final priceBasisLabel = _etfHistoryPriceBasisLabel(item);
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
       borderRadius: BorderRadius.circular(12),
@@ -1588,6 +1589,13 @@ class _SymbolSearchResultTile extends StatelessWidget {
                         ),
                         if (historyMetadataLabel.isNotEmpty)
                           _CompactTextBadge(label: historyMetadataLabel),
+                        if (priceBasisLabel.isNotEmpty)
+                          KeyedSubtree(
+                            key: ValueKey(
+                              '00631l-symbol-price-basis-${item.code}',
+                            ),
+                            child: _CompactTextBadge(label: priceBasisLabel),
+                          ),
                         if (missingReasonLabel.isNotEmpty)
                           KeyedSubtree(
                             key: ValueKey(
@@ -10396,6 +10404,7 @@ class _EtfCatalogItemTile extends StatelessWidget {
     final hasHistory = _catalogItemHasImportedEtfHistory(item);
     final historyMetadataLabel = _etfHistoryMetadataLabel(item);
     final missingReasonLabel = _etfHistoryMissingReasonLabel(item);
+    final priceBasisLabel = _etfHistoryPriceBasisLabel(item);
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => onSelected(item.code),
@@ -10450,6 +10459,13 @@ class _EtfCatalogItemTile extends StatelessWidget {
                         ),
                         if (historyMetadataLabel.isNotEmpty)
                           _CompactTextBadge(label: historyMetadataLabel),
+                        if (priceBasisLabel.isNotEmpty)
+                          KeyedSubtree(
+                            key: ValueKey(
+                              '00631l-etf-list-price-basis-${item.code}',
+                            ),
+                            child: _CompactTextBadge(label: priceBasisLabel),
+                          ),
                         if (missingReasonLabel.isNotEmpty)
                           KeyedSubtree(
                             key: ValueKey(
@@ -13734,6 +13750,20 @@ String _etfHistoryMissingReasonLabel(EtfCatalogItem item) {
   final sourceStatus = item.priceHistorySourceStatus.trim();
   if (sourceStatus == 'error') {
     return _etfGapReasonLabel('source_error');
+  }
+  return '';
+}
+
+String _etfHistoryPriceBasisLabel(EtfCatalogItem item) {
+  if (!_catalogItemHasImportedEtfHistory(item)) {
+    return '';
+  }
+  final priceField = item.priceHistoryPriceField.trim();
+  if (priceField == 'adjustedClose') {
+    return item.priceHistoryAdjustmentEventCount > 0 ? '調整價/分割' : '調整價';
+  }
+  if (priceField == 'close') {
+    return '收盤價';
   }
   return '';
 }

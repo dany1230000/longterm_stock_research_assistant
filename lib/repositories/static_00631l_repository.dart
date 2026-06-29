@@ -685,6 +685,17 @@ EtfCatalogItem _catalogItem(
     priceHistoryErrorMessage:
         (historyPayload?['errorMessage'] ?? payload['priceHistoryErrorMessage'])
             ?.toString(),
+    priceHistoryPriceField: _string(
+      historyPayload?['priceField'] ?? payload['priceHistoryPriceField'],
+    ),
+    priceHistoryAdjustmentMethod: _string(
+      _map(historyPayload?['priceAdjustment'])['method'] ??
+          payload['priceHistoryAdjustmentMethod'],
+    ),
+    priceHistoryAdjustmentEventCount:
+        _list(_map(historyPayload?['priceAdjustment'])['events']).isNotEmpty
+            ? _list(_map(historyPayload?['priceAdjustment'])['events']).length
+            : _int(payload['priceHistoryAdjustmentEventCount']),
   );
 }
 

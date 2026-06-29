@@ -488,6 +488,18 @@ def _catalog_history_fields(item: dict[str, Any]) -> dict[str, Any]:
     gap_reason = str(item.get("gapReason") or "")
     last_attempt = item.get("lastAttemptAt")
     error_message = item.get("errorMessage")
+    price_adjustment = item.get("priceAdjustment")
+    if not isinstance(price_adjustment, dict):
+        price_adjustment = {}
+    adjustment_events = price_adjustment.get("events")
+    if not isinstance(adjustment_events, list):
+        adjustment_events = []
+    price_field = str(
+        item.get("priceField")
+        or price_adjustment.get("priceFieldForReturns")
+        or ""
+    )
+    adjustment_method = str(price_adjustment.get("method") or "")
     if row_count >= 2 and coverage_tier != "unavailable":
         gap_reason = ""
         error_message = None
@@ -500,6 +512,9 @@ def _catalog_history_fields(item: dict[str, Any]) -> dict[str, Any]:
         "priceHistoryGapReason": gap_reason,
         "priceHistoryLastAttemptAt": last_attempt,
         "priceHistoryErrorMessage": error_message,
+        "priceHistoryPriceField": price_field,
+        "priceHistoryAdjustmentMethod": adjustment_method,
+        "priceHistoryAdjustmentEventCount": len(adjustment_events),
     }
 
 
