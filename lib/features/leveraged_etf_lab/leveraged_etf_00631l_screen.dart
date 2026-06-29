@@ -10123,7 +10123,7 @@ class _SettingsSection extends StatelessWidget {
                             data.etfCatalog.sourceStatusLabel)
                         : _sourceStatusBadgeLabel(status.etfCatalogStatus),
                     detail:
-                        'rows ${data.etfCatalog.hasData ? data.etfCatalog.rowCount : status.etfCatalogRowCount}，dataTime ${_dateTimeOrDash(data.etfCatalog.dataTime ?? status.etfCatalogDataTime)}。',
+                        '筆數 ${data.etfCatalog.hasData ? data.etfCatalog.rowCount : status.etfCatalogRowCount}，資料時間 ${_dateTimeOrDash(data.etfCatalog.dataTime ?? status.etfCatalogDataTime)}。',
                     action: '左上角代號按鈕可搜尋代號、名稱與分類。',
                   ),
                   const _StatusItem(
@@ -10140,7 +10140,7 @@ class _SettingsSection extends StatelessWidget {
         const SizedBox(height: 10),
         _CompactExpansionPanel(
           title: '資料模式與完整度',
-          subtitle: 'static 歷史資料、live backend 與內容物狀態需要時再看。',
+          subtitle: '公開靜態歷史資料、即時後端與內容物狀態需要時再看。',
           child: _StatusList(items: _dataCoverageItems(data)),
         ),
         const SizedBox(height: 10),
@@ -14240,18 +14240,18 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
       label: '價格歷史',
       status: _priceCoverageStatus(data),
       detail:
-          'rows ${formatInteger(price.rowCount)}，coverage ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，source ${data.priceHistory.sourceStatusLabel}。',
+          '筆數 ${formatInteger(price.rowCount)}，範圍 ${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}，來源 ${_sourceStatusBadgeLabel(data.priceHistory.sourceStatusLabel)}。',
       action: price.rowCount >= 2
           ? price.isCompleteFromListing
-              ? '已可支援歷史與回測；coverage 仍以 static manifest 與官方更新時間為準。'
-              : '可支援歷史與回測，但 coverage 不是完整上市以來區間。'
+              ? '已可支援歷史與回測；資料範圍仍以公開靜態清單與官方更新時間為準。'
+              : '可支援歷史與回測，但資料範圍不是完整上市以來區間。'
           : '請執行 scripts\\00631l_update_price_history.cmd 或 scripts\\00631l_export_static_data.cmd --update。',
     ),
     _StatusItem(
       label: '內容物歷史',
       status: _holdingsCoverageStatus(data),
       detail:
-          'latest ${_dateOrDash(latestHoldingDate)}，history count $holdingsCount；${_holdingsGapText(data)}；官方 ratio 是每日快照。',
+          '最新 ${_dateOrDash(latestHoldingDate)}，歷史筆數 $holdingsCount；${_holdingsGapText(data)}；官方 ratio 是每日快照。',
       action: holdingsCount > 0
           ? _holdingsIntegrityAction(data)
           : '請執行 scripts\\00631l_daily_cycle.cmd 累積官方每日快照。',
@@ -14259,10 +14259,10 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
     _StatusItem(
       label: '盤中 NAV / 折溢價',
       status: data.intradayNav?.status.label ?? 'unavailable',
-      detail: 'dataTime $intradayTime；盤中 NAV 需要 backend 連到 TWSE all_etf.txt。',
+      detail: '資料時間 $intradayTime；盤中 NAV 需要後端服務連到 TWSE all_etf.txt。',
       action: data.intradayNav == null
-          ? 'static public mode 只提供歷史與回測；若要盤中資料，請啟用 public backend。'
-          : '請以資料時間與 sourceContract 為準。',
+          ? '公開靜態模式只提供歷史與回測；若要盤中資料，請啟用公開後端服務。'
+          : '請以資料時間與來源格式為準。',
     ),
     _StatusItem(
       label: '盤中時段',
@@ -14271,31 +14271,31 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
           '${intradaySession.phaseLabel}；${intradaySession.dataFreshnessLabel}；資料年齡 ${intradaySession.ageText}；下一次自動刷新 ${intradaySession.refreshText}。',
       action: intradaySession.isRegularSession
           ? '盤中只高頻更新 NAV、折溢價與狀態；官方 內容物 仍是每日快照。'
-          : '非盤中時段會保留最後資料時間，請以官方 dataTime 為準。',
+          : '非盤中時段會保留最後資料時間，請以官方資料時間為準。',
     ),
     _StatusItem(
-      label: 'TX live',
+      label: '台指期即時',
       status: txQuote.status.label,
       detail:
-          'TAIFEX ${txQuote.sourceContract ?? 'quote'}；${txQuote.contractMonth} $txSymbol ${_price(txQuote.txPrice)}，加權指數 ${_price(txQuote.weightedIndex)}，基差 ${formatSignedNullablePercent(txQuote.futuresBasisPct)}，dataTime $txTime。官方 內容物 TX 權重 ${txLine == null ? 'unavailable' : formatNullablePercent(txLine.weightPct)}。',
+          'TAIFEX 來源 ${txQuote.sourceContract ?? 'quote'}；${txQuote.contractMonth} $txSymbol ${_price(txQuote.txPrice)}，加權指數 ${_price(txQuote.weightedIndex)}，基差 ${formatSignedNullablePercent(txQuote.futuresBasisPct)}，資料時間 $txTime。官方內容物台指期權重 ${txLine == null ? '暫無' : formatNullablePercent(txLine.weightPct)}。',
       action: txQuote.txPrice == null
           ? '請確認 TAIFEX 交易時段、backend 連線與 TAIFEX_TX_SOCKJS_URL 設定。'
-          : '請以 TAIFEX dataTime 與官方 內容物 tradeDate 分別判讀。',
+          : '請以 TAIFEX 資料時間與官方內容物日期分別判讀。',
     ),
     _StatusItem(
-      label: 'ETF catalog',
+      label: 'ETF 清單資料',
       status: data.operationsStatus.etfCatalogStatus,
       detail:
-          'TWSE all_etf rows ${formatInteger(data.operationsStatus.etfCatalogRowCount)}; dataTime ${_dateTimeOrDash(data.operationsStatus.etfCatalogDataTime)}.',
+          'TWSE all_etf 筆數 ${formatInteger(data.operationsStatus.etfCatalogRowCount)}；資料時間 ${_dateTimeOrDash(data.operationsStatus.etfCatalogDataTime)}。',
       action: data.operationsStatus.etfCatalogRowCount > 0
-          ? 'ETF catalog already imported; 00631L stays as the focused research room.'
-          : 'Run scripts\\00631l_import_etf_catalog.cmd to import TWSE all_etf catalog.',
+          ? 'ETF 清單已匯入；目前研究室仍以選取 ETF 為核心。'
+          : '請執行 scripts\\00631l_import_etf_catalog.cmd 匯入 TWSE all_etf 清單。',
     ),
     _StatusItem(
-      label: 'ETF history',
+      label: 'ETF 價格歷史',
       status: data.operationsStatus.etfPriceHistoryStatus,
       detail:
-          'ready ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / symbols ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}; 缺口明細 ${formatInteger(data.operationsStatus.etfPriceHistoryGapDetailCount)}; attempted ${formatInteger(data.operationsStatus.etfPriceHistoryAttemptedCount)}; retained history ${formatInteger(data.operationsStatus.etfPriceHistoryOutOfCatalogCount)}; ${_etfCoverageTierDetail(data.operationsStatus)}; ${_etfGapReasonDetail(data.operationsStatus)}; dataTime ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}.',
+          '可用 ${formatInteger(data.operationsStatus.etfPriceHistoryReadyCount)} / 清單 ${formatInteger(data.operationsStatus.etfPriceHistoryRowCount)}；缺口明細 ${formatInteger(data.operationsStatus.etfPriceHistoryGapDetailCount)}；已嘗試 ${formatInteger(data.operationsStatus.etfPriceHistoryAttemptedCount)}；保留歷史 ${formatInteger(data.operationsStatus.etfPriceHistoryOutOfCatalogCount)}；${_etfCoverageTierDetail(data.operationsStatus)}；${_etfGapReasonDetail(data.operationsStatus)}；資料時間 ${_dateTimeOrDash(data.operationsStatus.etfPriceHistoryDataTime)}。',
       action: data.operationsStatus.etfPriceHistoryReadyCount > 0
           ? 'ETF 價格歷史已可作為比較資料基礎。'
           : '請執行 scripts\\00631l_import_etf_price_history.cmd 匯入選取 ETF 的價格歷史。',
@@ -14306,7 +14306,7 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
 String _etfCoverageTierDetail(EtfOperationsStatus status) {
   final counts = status.etfPriceHistoryCoverageTierCounts;
   if (counts.isEmpty) {
-    return '資料期間分類 unavailable';
+    return '資料期間分類暫無資料';
   }
   return '${_etfCoverageTierLabel('long_term')} ${formatInteger(counts['long_term'] ?? 0)}, ${_etfCoverageTierLabel('recent')} ${formatInteger(counts['recent'] ?? 0)}, ${_etfCoverageTierLabel('unavailable')} ${formatInteger(counts['unavailable'] ?? 0)}, ${_etfCoverageTierLabel('error')} ${formatInteger(counts['error'] ?? 0)}';
 }
@@ -14314,7 +14314,7 @@ String _etfCoverageTierDetail(EtfOperationsStatus status) {
 String _etfGapReasonDetail(EtfOperationsStatus status) {
   final counts = status.etfPriceHistoryGapReasonCounts;
   if (counts.isEmpty) {
-    return '缺口原因 unavailable';
+    return '缺口原因暫無資料';
   }
   final parts = <String>[
     if ((counts['official_empty'] ?? 0) > 0)
@@ -14331,7 +14331,7 @@ String _etfGapReasonDetail(EtfOperationsStatus status) {
       '${_etfGapReasonLabel('not_ready')} ${formatInteger(counts['not_ready'] ?? 0)}',
   ];
   if (parts.isEmpty) {
-    return '缺口原因 clear';
+    return '缺口原因已清空';
   }
   return '缺口: ${parts.join(', ')}';
 }
@@ -14339,7 +14339,7 @@ String _etfGapReasonDetail(EtfOperationsStatus status) {
 String _etfGapReasonSampleDetail(EtfOperationsStatus status) {
   final samples = status.etfPriceHistoryGapReasonSamples;
   if (samples.isEmpty) {
-    return '樣本代號 unavailable';
+    return '樣本代號暫無資料';
   }
   final parts = <String>[];
   for (final entry in samples.entries) {
@@ -14350,7 +14350,7 @@ String _etfGapReasonSampleDetail(EtfOperationsStatus status) {
     parts.add('${_etfGapReasonLabel(entry.key)}: ${codes.join(', ')}');
   }
   if (parts.isEmpty) {
-    return '樣本代號 unavailable';
+    return '樣本代號暫無資料';
   }
   return '樣本代號 ${parts.join(' / ')}';
 }
@@ -14397,7 +14397,7 @@ _StatusItem _etfHistoryGapReasonItem(EtfOperationsStatus status) {
   final outOfCatalog = status.etfPriceHistoryOutOfCatalogCount;
   return _StatusItem(
     label: '資料缺口原因',
-    status: missing > 0 ? '${formatInteger(missing)} 檔待補' : 'clear',
+    status: missing > 0 ? '${formatInteger(missing)} 檔待補' : '已清空',
     detail:
         '$detail; $sampleDetail; 缺口明細 ${formatInteger(status.etfPriceHistoryGapDetailCount)}; attempted ${formatInteger(status.etfPriceHistoryAttemptedCount)}; retained history ${formatInteger(outOfCatalog)}',
     action: unclassified > 0

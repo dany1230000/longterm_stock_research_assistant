@@ -2040,3 +2040,7 @@ label.
 
 v7.2 localizes the settings ETF catalog status label. The advanced ETF data
 panel now shows `ETF 清單` instead of the raw `catalog` label.
+
+v7.3 localizes the advanced data coverage panel. Labels such as `TX live`,
+`ETF catalog`, `ETF history`, `rows`, `coverage`, and `dataTime` now render as
+Chinese product wording in the app.

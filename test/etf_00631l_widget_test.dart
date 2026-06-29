@@ -1966,7 +1966,7 @@ void main() {
     expect(find.text('隱私與支援'), findsNothing);
     expect(find.text('內容物歷史'), findsNothing);
     expect(find.text('盤中 NAV / 折溢價'), findsNothing);
-    expect(find.text('TX live'), findsNothing);
+    expect(find.text('台指期即時'), findsNothing);
 
     await tester.scrollUntilVisible(
       find.text('App 上架準備'),
@@ -2003,9 +2003,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('內容物歷史'), findsOneWidget);
     expect(find.text('盤中 NAV / 折溢價'), findsOneWidget);
-    expect(find.text('TX live'), findsOneWidget);
-    expect(find.text('ETF history'), findsWidgets);
-    expect(find.textContaining('coverage tier'), findsWidgets);
+    expect(find.text('台指期即時'), findsOneWidget);
+    expect(find.text('ETF 價格歷史'), findsWidgets);
+    expect(find.textContaining('資料期間分類'), findsWidgets);
     _expectNoTradingActionText();
   });
 
