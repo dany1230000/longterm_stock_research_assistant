@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Selected ETF price context v9.17: `docs\00631l_v9_17_selected_etf_price_context.md`
 - AI daily conclusion v9.16: `docs\00631l_v9_16_ai_daily_conclusion.md`
 - First-screen chart guard v9.15: `docs\00631l_v9_15_first_screen_chart_guard.md`
 - Comparison default v9.14: `docs\00631l_v9_14_comparison_default.md`

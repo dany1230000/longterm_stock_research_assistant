@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.17 moves selected-ETF price correctness into the quote header. After using
+  the top-left ETF search, the header now shows the history coverage, price
+  field, and split-adjustment status together.
+
 - v9.16 makes the AI tab more answer-first. The first AI card now includes a
   dedicated daily-data interpretation with holdings date, intraday NAV time,
   premium/discount context, history coverage, and a non-investment disclaimer.

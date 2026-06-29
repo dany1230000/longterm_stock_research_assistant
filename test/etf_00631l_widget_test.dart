@@ -1757,6 +1757,11 @@ void main() {
       find.byKey(const ValueKey('00631l-selected-etf-data-context-card')),
       findsNothing,
     );
+    final overviewCoverageLine = tester.widget<Text>(
+      find.byKey(const ValueKey('00631l-selected-etf-coverage-line')),
+    );
+    expect(overviewCoverageLine.data, contains('價格欄位'));
+    expect(overviewCoverageLine.data, contains('分割調整'));
     expect(find.text('回測可用'), findsWidgets);
     expect(find.text('盤中 NAV 限 00631L'), findsOneWidget);
 

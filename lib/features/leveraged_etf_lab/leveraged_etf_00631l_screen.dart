@@ -2027,7 +2027,7 @@ class _CompactQuoteHeader extends StatelessWidget {
             if (!selectedEtf.is00631L) ...[
               const SizedBox(height: 4),
               Text(
-                '資料範圍 ${selectedEtf.historyCoverageText}',
+                '資料範圍 ${selectedEtf.historyCoverageText} · 價格欄位 ${selectedEtf.priceFieldLabel} · 分割調整 ${_priceAdjustmentConfidenceLabel(selectedEtf.code, selectedEtf.historySummary)}',
                 key: const ValueKey('00631l-selected-etf-coverage-line'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
