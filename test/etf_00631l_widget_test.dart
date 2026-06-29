@@ -56,8 +56,12 @@ void main() {
     expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('進階資料'), findsOneWidget);
     expect(
-      find.byKey(const ValueKey('00631l-overview-brief-panel')),
+      find.byKey(const ValueKey('00631l-quote-readiness-strip')),
       findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-brief-panel')),
+      findsNothing,
     );
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('資料正確性'), findsNothing);
@@ -74,7 +78,7 @@ void main() {
     expect(find.text('HIS'), findsNothing);
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
     final summaryTop = tester
-        .getTopLeft(find.byKey(const ValueKey('00631l-overview-brief-panel')))
+        .getTopLeft(find.byKey(const ValueKey('00631l-quote-readiness-strip')))
         .dy;
     expect(summaryTop, lessThan(chartTitleTop));
     expect(find.text('官方 NAV'), findsNothing);
@@ -382,25 +386,29 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsNothing,
     );
-    final briefPanel = find.byKey(
-      const ValueKey('00631l-overview-brief-panel'),
+    final readinessStrip = find.byKey(
+      const ValueKey('00631l-quote-readiness-strip'),
     );
-    expect(briefPanel, findsOneWidget);
-    final briefRect = tester.getRect(briefPanel);
+    expect(readinessStrip, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-overview-brief-panel')),
+      findsNothing,
+    );
+    final stripRect = tester.getRect(readinessStrip);
     for (final label in const ['內容物', '盤中 NAV', '歷史', '後端']) {
       final labelFinder = find.descendant(
-        of: briefPanel,
+        of: readinessStrip,
         matching: find.text(label),
       );
       expect(labelFinder, findsOneWidget);
       expect(
         tester.getRect(labelFinder).right,
-        lessThanOrEqualTo(briefRect.right),
+        lessThanOrEqualTo(stripRect.right),
       );
     }
     for (final label in const ['DAY', 'LIVE', 'HIS']) {
       expect(
-        find.descendant(of: briefPanel, matching: find.text(label)),
+        find.descendant(of: readinessStrip, matching: find.text(label)),
         findsNothing,
       );
     }
@@ -563,48 +571,52 @@ void main() {
     expect(find.text('進階資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
-    final briefPanel = find.byKey(
-      const ValueKey('00631l-overview-brief-panel'),
+    final readinessStrip = find.byKey(
+      const ValueKey('00631l-quote-readiness-strip'),
     );
-    expect(briefPanel, findsOneWidget);
+    expect(readinessStrip, findsOneWidget);
     expect(
-      find.descendant(of: briefPanel, matching: find.text('syncing')),
+      find.byKey(const ValueKey('00631l-overview-brief-panel')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('checking')),
+      find.descendant(of: readinessStrip, matching: find.text('syncing')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('loading')),
+      find.descendant(of: readinessStrip, matching: find.text('checking')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('daily')),
+      find.descendant(of: readinessStrip, matching: find.text('loading')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('backend')),
+      find.descendant(of: readinessStrip, matching: find.text('daily')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('pending')),
+      find.descendant(of: readinessStrip, matching: find.text('backend')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('P/D')),
+      find.descendant(of: readinessStrip, matching: find.text('pending')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('twse_a_k_json')),
+      find.descendant(of: readinessStrip, matching: find.text('P/D')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('error')),
+      find.descendant(of: readinessStrip, matching: find.text('twse_a_k_json')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('unavailable')),
+      find.descendant(of: readinessStrip, matching: find.text('error')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: readinessStrip, matching: find.text('unavailable')),
       findsNothing,
     );
     _expectNoTradingActionText();
@@ -622,24 +634,24 @@ void main() {
     await _pumpLab(tester, repository, settle: false);
     await tester.pump();
 
-    final briefPanel = find.byKey(
-      const ValueKey('00631l-overview-brief-panel'),
+    final readinessStrip = find.byKey(
+      const ValueKey('00631l-quote-readiness-strip'),
     );
-    expect(briefPanel, findsOneWidget);
+    expect(readinessStrip, findsOneWidget);
     expect(
-      find.descendant(of: briefPanel, matching: find.text('syncing')),
+      find.descendant(of: readinessStrip, matching: find.text('syncing')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('checking')),
+      find.descendant(of: readinessStrip, matching: find.text('checking')),
       findsNothing,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('不可用')),
+      find.descendant(of: readinessStrip, matching: find.text('不可用')),
       findsWidgets,
     );
     expect(
-      find.descendant(of: briefPanel, matching: find.text('錯誤')),
+      find.descendant(of: readinessStrip, matching: find.text('錯誤')),
       findsWidgets,
     );
     _expectNoTradingActionText();
@@ -651,14 +663,14 @@ void main() {
     await _pumpLab(tester, repository, settle: false);
     await tester.pump();
 
-    final briefPanel = find.byKey(
-      const ValueKey('00631l-overview-brief-panel'),
+    final readinessStrip = find.byKey(
+      const ValueKey('00631l-quote-readiness-strip'),
     );
-    expect(briefPanel, findsOneWidget);
-    expect(find.descendant(of: briefPanel, matching: find.text('暫無')),
+    expect(readinessStrip, findsOneWidget);
+    expect(find.descendant(of: readinessStrip, matching: find.text('暫無')),
         findsWidgets);
     expect(
-      find.descendant(of: briefPanel, matching: find.text('checking')),
+      find.descendant(of: readinessStrip, matching: find.text('checking')),
       findsNothing,
     );
     _expectNoTradingActionText();

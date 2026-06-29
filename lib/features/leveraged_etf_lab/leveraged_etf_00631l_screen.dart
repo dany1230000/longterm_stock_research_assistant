@@ -2022,6 +2022,10 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ],
               ),
             ],
+            if (selectedEtf.is00631L) ...[
+              const SizedBox(height: 7),
+              _QuoteReadinessStrip(data: data),
+            ],
           ],
         ),
       ),
@@ -2070,6 +2074,126 @@ class _QuoteMetaStrip extends StatelessWidget {
               ),
         ),
       ),
+    );
+  }
+}
+
+class _QuoteReadinessItem {
+  const _QuoteReadinessItem({
+    required this.label,
+    required this.value,
+    required this.caption,
+  });
+
+  final String label;
+  final String value;
+  final String caption;
+}
+
+class _QuoteReadinessStrip extends StatelessWidget {
+  const _QuoteReadinessStrip({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final nav = data.intradayNav;
+    final price = data.priceHistory.completenessSummary();
+    final latestHolding = _hasUsableHoldingsSnapshot(data.snapshot)
+        ? _latestHoldingsDate(data)
+        : null;
+    final navTime = nav?.dataTime;
+    final snapshotStatus = _sourceStatusBadgeLabel(data.snapshot.status.label);
+    final navStatus = _sourceStatusBadgeLabel(nav?.status.label);
+    final items = [
+      _QuoteReadinessItem(
+        label: '內容物',
+        value: latestHolding == null ? '不可用' : _summaryMonthDay(latestHolding),
+        caption: snapshotStatus,
+      ),
+      _QuoteReadinessItem(
+        label: '盤中 NAV',
+        value: navTime == null ? '暫無' : _summaryTimeMinute(navTime),
+        caption: navStatus,
+      ),
+      _QuoteReadinessItem(
+        label: '歷史',
+        value: price.rowCount >= 2 ? '${formatInteger(price.rowCount)}筆' : '尚無',
+        caption: _summaryCoverageCompactYears(price),
+      ),
+      _QuoteReadinessItem(
+        label: '後端',
+        value: data.operationsStatus.backendConnectionLabel,
+        caption: _frontendDataModeLabel,
+      ),
+    ];
+
+    return DecoratedBox(
+      key: const ValueKey('00631l-quote-readiness-strip'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: Row(
+          children: [
+            for (var index = 0; index < items.length; index++) ...[
+              Expanded(child: _QuoteReadinessChip(item: items[index])),
+              if (index != items.length - 1) const SizedBox(width: 4),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuoteReadinessChip extends StatelessWidget {
+  const _QuoteReadinessChip({required this.item});
+
+  final _QuoteReadinessItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          item.label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: _marketMutedTextColor(context),
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0,
+          ),
+        ),
+        const SizedBox(height: 1),
+        Text(
+          item.value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: _marketTextColor(context),
+            fontWeight: FontWeight.w900,
+            letterSpacing: 0,
+          ),
+        ),
+        Text(
+          item.caption,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: _marketMutedTextColor(context),
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -3014,10 +3138,6 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
-        if (selectedEtf.is00631L) ...[
-          _OverviewBriefPanel(data: data),
-          const SizedBox(height: 8),
-        ],
         if (!selectedEtf.is00631L)
           _SelectedEtfAtAGlancePanel(selectedEtf: selectedEtf),
         if (!selectedEtf.is00631L) const SizedBox(height: 8),
@@ -5169,89 +5289,6 @@ class _AtAGlanceMetricGrid extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-}
-
-class _OverviewBriefPanel extends StatelessWidget {
-  const _OverviewBriefPanel({required this.data});
-
-  final Etf00631LLabData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final nav = data.intradayNav;
-    final price = data.priceHistory.completenessSummary();
-    final latestHolding = _hasUsableHoldingsSnapshot(data.snapshot)
-        ? _latestHoldingsDate(data)
-        : null;
-    final navTime = nav?.dataTime;
-    return DecoratedBox(
-      key: const ValueKey('00631l-overview-brief-panel'),
-      decoration: BoxDecoration(
-        color: _marketPanelColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const _MiniStatusBadge(label: 'DATA'),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _overviewAiBrief(data),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                      height: 1.2,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                _CompactTextBadge(label: _frontendDataModeLabel),
-              ],
-            ),
-            const SizedBox(height: 8),
-            _AtAGlanceMetricGrid(
-              metrics: [
-                _AtAGlanceMetricData(
-                  label: '內容物',
-                  value: latestHolding == null
-                      ? '不可用'
-                      : _dateOrDash(latestHolding),
-                  caption: _sourceStatusBadgeLabel(data.snapshot.status.label),
-                ),
-                _AtAGlanceMetricData(
-                  label: '盤中 NAV',
-                  value: navTime == null ? '暫無' : _sourceTimeText(navTime),
-                  caption: _sourceStatusBadgeLabel(
-                      nav?.status.label ?? 'unavailable'),
-                ),
-                _AtAGlanceMetricData(
-                  label: '歷史',
-                  value: '${formatInteger(price.rowCount)} 筆',
-                  caption:
-                      '${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}',
-                ),
-                _AtAGlanceMetricData(
-                  label: '後端',
-                  value: data.operationsStatus.backendConnectionLabel,
-                  caption: _frontendDataModeLabel,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -15156,13 +15193,6 @@ String _intradayDataTimeText(EtfIntradayNav? intradayNav) {
   return intradayNav?.dataTime == null
       ? 'unavailable'
       : formatTaiwanDateTimeSeconds(intradayNav!.dataTime!);
-}
-
-String _overviewAiBrief(Etf00631LLabData data) {
-  if (data.aiAnalysis.bullets.isEmpty) {
-    return 'AI 摘要暫無內容；請確認資料來源狀態後重新整理。';
-  }
-  return data.aiAnalysis.bullets.first;
 }
 
 String? _findAnalysisBullet(EtfAiAnalysisSummary summary, String marker) {

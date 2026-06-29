@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Compact overview readiness v9.12: `docs\00631l_v9_12_compact_overview_readiness.md`
 - Compact search status v9.4: `docs\00631l_v9_4_compact_search_status.md`
 - Static first-load budget v9.3: `docs\00631l_v9_3_static_first_load_budget.md`
 - Search loading state v9.2: `docs\00631l_v9_2_search_loading_state.md`
