@@ -209,6 +209,11 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
     );
+    final symbolDataSummary0050 = tester.widget<Text>(
+      find.byKey(const ValueKey('00631l-symbol-data-summary-0050')),
+    );
+    expect(symbolDataSummary0050.data, contains('歷史'));
+    expect(symbolDataSummary0050.data, contains('資料基礎'));
     expect(find.text('歷史/回測可用'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-symbol-capability-0050-history')),

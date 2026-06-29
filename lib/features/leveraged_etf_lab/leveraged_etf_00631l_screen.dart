@@ -1609,6 +1609,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
     final historyMetadataLabel = _etfHistoryMetadataLabel(item);
     final missingReasonLabel = _etfHistoryMissingReasonLabel(item);
     final priceBasisLabel = _etfHistoryPriceBasisLabel(item);
+    final dataSummary = _symbolSearchDataSummary(item);
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
       borderRadius: BorderRadius.circular(12),
@@ -1693,6 +1694,18 @@ class _SymbolSearchResultTile extends StatelessWidget {
                             ),
                           ),
                       ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      dataSummary,
+                      key: ValueKey('00631l-symbol-data-summary-${item.code}'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: _marketMutedTextColor(context),
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Wrap(
@@ -14319,6 +14332,22 @@ String _etfHistoryPriceBasisLabel(EtfCatalogItem item) {
     return '收盤價';
   }
   return '';
+}
+
+String _symbolSearchDataSummary(EtfCatalogItem item) {
+  if (!_catalogItemHasImportedEtfHistory(item)) {
+    final reason = _etfHistoryMissingReasonLabel(item);
+    return reason.isEmpty ? '歷史：尚未匯入；資料基礎：待補齊' : '歷史：尚未匯入；資料基礎：$reason';
+  }
+  final rows = formatInteger(item.priceHistoryRowCount);
+  final start = item.priceHistoryCoverageStart;
+  final end = item.priceHistoryCoverageEnd;
+  final coverage = start == null || end == null
+      ? '區間待確認'
+      : '${formatTaiwanDate(start)}-${formatTaiwanDate(end)}';
+  final basis = _etfHistoryPriceBasisLabel(item);
+  final basisText = basis.isEmpty ? '可驗證價格歷史' : basis;
+  return '歷史：$rows 筆，$coverage；資料基礎：$basisText';
 }
 
 int _searchReadyHistoryCount(Etf00631LLabData data) {

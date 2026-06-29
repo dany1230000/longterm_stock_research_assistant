@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.20 adds a compact data summary to ETF search results. Before switching an
+  ETF, the search sheet now shows historical row count, coverage, and price
+  basis so data readiness is clearer.
+
 - v9.19 adds a compact first-glance row to the mobile quote header. The first
   screen now groups price, data, and history before the detailed readiness
   numbers while keeping the one-year chart visible.
