@@ -9004,6 +9004,23 @@ class _AiDailyBriefingHero extends StatelessWidget {
     final statusColor = _aiStatusColor(context, summary, premium);
     final briefingBullets =
         summary.bullets.take(2).map(_aiDisplayText).toList(growable: false);
+    final priceSummary = data.priceHistory.completenessSummary();
+    final todayReadouts = [
+      _AiTodayReadoutItem(
+        label: '當日資料',
+        detail:
+            '官方內容物 ${_dateOrDash(snapshot.tradeDate)}；盤中 NAV ${_intradayDataTimeText(nav)}。每日快照與盤中估算分開判讀。',
+      ),
+      _AiTodayReadoutItem(
+        label: '價格偏離',
+        detail: premiumText,
+      ),
+      _AiTodayReadoutItem(
+        label: '結構觀察',
+        detail:
+            'TX ${formatNullablePercent(txWeight)}；台積電 ${formatNullablePercent(tsmcWeight)}；歷史價格 ${formatInteger(priceSummary.rowCount)} 筆。',
+      ),
+    ];
 
     return DecoratedBox(
       key: const ValueKey('00631l-ai-daily-briefing-hero'),
@@ -9071,6 +9088,28 @@ class _AiDailyBriefingHero extends StatelessWidget {
                   color: _marketTextColor(context),
                   height: 1.35,
                   fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            DecoratedBox(
+              key: const ValueKey('00631l-ai-today-readout'),
+              decoration: BoxDecoration(
+                color: _marketPanelAltColor(context),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: _marketBorderColor(context)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    for (var index = 0;
+                        index < todayReadouts.length;
+                        index += 1) ...[
+                      if (index > 0) const SizedBox(height: 8),
+                      _AiTodayReadoutRow(item: todayReadouts[index]),
+                    ],
+                  ],
                 ),
               ),
             ),
@@ -9239,6 +9278,58 @@ class _AiDailyBriefingFact extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AiTodayReadoutItem {
+  const _AiTodayReadoutItem({
+    required this.label,
+    required this.detail,
+  });
+
+  final String label;
+  final String detail;
+}
+
+class _AiTodayReadoutRow extends StatelessWidget {
+  const _AiTodayReadoutRow({required this.item});
+
+  final _AiTodayReadoutItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 68,
+          child: Text(
+            item.label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            item.detail,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: _marketTextColor(context),
+              height: 1.3,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

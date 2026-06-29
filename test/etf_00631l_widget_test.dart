@@ -1928,6 +1928,13 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-daily-briefing-bullets')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-today-readout')),
+      findsOneWidget,
+    );
+    expect(find.text('當日資料'), findsOneWidget);
+    expect(find.text('價格偏離'), findsOneWidget);
+    expect(find.text('結構觀察'), findsOneWidget);
     expect(find.text('今日 AI 分析摘要'), findsNothing);
     expect(find.text('重點摘要'), findsNothing);
     expect(find.text('進階 AI 明細'), findsOneWidget);
