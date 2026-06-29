@@ -107,11 +107,27 @@ def export_static_00631l_data(
         "generatedAt": generated_at,
         "outputDir": str(output),
         "minimumRowCount": required_rows,
+        "etfCatalogStatus": catalog_payload.get("sourceStatus", "unavailable"),
         "etfCatalogRowCount": catalog_row_count,
         "etfCatalogDataTime": catalog_payload.get("dataTime"),
+        "etfPriceHistoryStatus": etf_history_payload.get(
+            "sourceStatus",
+            "unavailable",
+        ),
+        "etfPriceHistoryRowCount": etf_history_row_count,
+        "etfPriceHistoryReadyCount": etf_history_payload["readyCount"],
         "etfPriceHistoryMissingCount": etf_history_payload.get("missingCount", 0),
+        "etfPriceHistoryGapDetailCount": etf_history_payload.get(
+            "gapDetailCount",
+            0,
+        ),
         "etfPriceHistoryAttemptedCount": etf_history_payload.get("attemptedCount", 0),
         "etfPriceHistoryOutOfCatalogCount": etf_out_of_catalog_count,
+        "etfPriceHistoryDataTime": etf_history_payload["dataTime"],
+        "etfPriceHistoryCoverageTierCounts": etf_history_payload.get(
+            "coverageTierCounts",
+            {},
+        ),
         "etfPriceHistorySourceContractCounts": etf_history_source_contract_counts,
         "etfPriceHistoryGapReasonCounts": etf_history_payload.get(
             "gapReasonCounts",

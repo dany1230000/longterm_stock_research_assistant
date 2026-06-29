@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Static first load trim v9.0: `docs\00631l_v9_0_static_first_load_trim.md`
 - Public ETF history carry-forward v8.9: `docs\00631l_v8_9_public_etf_history_carry_forward.md`
 - ETF history source provenance v8.8: `docs\00631l_v8_8_etf_history_source_provenance.md`
 - TPEx ETF history fallback v8.7: `docs\00631l_v8_7_tpex_etf_history_fallback.md`

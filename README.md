@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.0 trims the static-public first load. The first-screen operations status
+  now reads compact readiness fields from `status.json` instead of also loading
+  the full ETF catalog and price-history index.
+
 - v8.9 keeps public static ETF price histories from regressing by restoring
   deployed `etf_price_history/*.json` rows before the next GitHub Pages export.
   Missing official rows still remain unavailable instead of being inferred.

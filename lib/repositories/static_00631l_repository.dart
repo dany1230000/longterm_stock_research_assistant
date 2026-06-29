@@ -191,52 +191,51 @@ class Static00631LRepository extends Mock00631LRepository {
   Future<EtfOperationsStatus> fetchOperationsStatus() async {
     final statusPayload = await _tryGetJson('status.json');
     final releasePayload = await _tryGetJson('release.json');
-    final catalogPayload = await _tryGetJson('etf_catalog.json');
-    final etfHistoryPayload = await _tryGetJson('etf_price_history_index.json');
-    final catalogRawStatus =
-        _string(catalogPayload?['sourceStatus'], fallback: 'unavailable');
-    final catalogRowCount = _int(catalogPayload?['rowCount']);
+    final rawStatus =
+        _string(statusPayload?['sourceStatus'], fallback: 'unavailable');
+    final compactReadyStatus =
+        rawStatus == 'static_official' ? 'static_official' : 'unavailable';
+    final catalogRowCount = _int(statusPayload?['etfCatalogRowCount']);
+    final catalogRawStatus = _string(
+      statusPayload?['etfCatalogStatus'],
+      fallback: catalogRowCount > 0 ? compactReadyStatus : 'unavailable',
+    );
     final catalogDataTime = _wallClockDateTime(
-      catalogPayload?['dataTime'] ?? catalogPayload?['sourceUpdatedAt'],
+      statusPayload?['etfCatalogDataTime'],
     );
-    final etfHistoryRawStatus =
-        _string(etfHistoryPayload?['sourceStatus'], fallback: 'unavailable');
-    final etfHistoryRowCount = _int(etfHistoryPayload?['rowCount']);
-    final etfHistoryReadyCount = _int(etfHistoryPayload?['readyCount']);
-    final etfHistoryMissingCount = _int(
-      etfHistoryPayload?['missingCount'] ??
-          statusPayload?['etfPriceHistoryMissingCount'],
+    final etfHistoryRowCount = _int(statusPayload?['etfPriceHistoryRowCount']);
+    final etfHistoryReadyCount =
+        _int(statusPayload?['etfPriceHistoryReadyCount']);
+    final etfHistoryRawStatus = _string(
+      statusPayload?['etfPriceHistoryStatus'],
+      fallback: etfHistoryRowCount > 0 || etfHistoryReadyCount > 0
+          ? compactReadyStatus
+          : 'unavailable',
     );
-    final etfHistoryGapDetailCount = _int(
-      etfHistoryPayload?['gapDetailCount'] ??
-          statusPayload?['etfPriceHistoryGapDetailCount'],
-    );
-    final etfHistoryAttemptedCount = _int(
-      etfHistoryPayload?['attemptedCount'] ??
-          statusPayload?['etfPriceHistoryAttemptedCount'],
-    );
+    final etfHistoryMissingCount =
+        _int(statusPayload?['etfPriceHistoryMissingCount']);
+    final etfHistoryGapDetailCount =
+        _int(statusPayload?['etfPriceHistoryGapDetailCount']);
+    final etfHistoryAttemptedCount =
+        _int(statusPayload?['etfPriceHistoryAttemptedCount']);
     final etfHistoryOutOfCatalogCount = _int(
-      etfHistoryPayload?['outOfCatalogCount'] ??
-          statusPayload?['etfPriceHistoryOutOfCatalogCount'] ??
+      statusPayload?['etfPriceHistoryOutOfCatalogCount'] ??
           (etfHistoryRowCount - catalogRowCount).clamp(0, etfHistoryRowCount),
     );
     final etfHistoryCoverageTierCounts =
-        _intMap(etfHistoryPayload?['coverageTierCounts']);
+        _intMap(statusPayload?['etfPriceHistoryCoverageTierCounts']);
     final etfHistorySourceContractCounts = _intMap(
-      etfHistoryPayload?['historySourceContractCounts'] ??
-          etfHistoryPayload?['sourceContractCounts'] ??
-          statusPayload?['etfPriceHistorySourceContractCounts'],
+      statusPayload?['etfPriceHistorySourceContractCounts'],
     );
     final etfHistoryGapReasonCounts = _intMap(
-      etfHistoryPayload?['gapReasonCounts'] ??
-          statusPayload?['etfPriceHistoryGapReasonCounts'],
+      statusPayload?['etfPriceHistoryGapReasonCounts'],
     );
     final etfHistoryGapReasonSamples = _stringListMap(
-      etfHistoryPayload?['gapReasonSamples'] ??
-          statusPayload?['etfPriceHistoryGapReasonSamples'],
+      statusPayload?['etfPriceHistoryGapReasonSamples'],
     );
-    final etfHistoryDataTime = _date(etfHistoryPayload?['dataTime']) ??
-        _wallClockDateTime(etfHistoryPayload?['dataTime']);
+    final etfHistoryDataTime =
+        _date(statusPayload?['etfPriceHistoryDataTime']) ??
+            _wallClockDateTime(statusPayload?['etfPriceHistoryDataTime']);
     if (statusPayload == null) {
       return _staticOperationsStatus(
         rawStatus: 'unavailable',
@@ -267,8 +266,6 @@ class Static00631LRepository extends Mock00631LRepository {
         errorMessage: 'Static public status.json is unavailable.',
       );
     }
-    final rawStatus =
-        _string(statusPayload['sourceStatus'], fallback: 'unavailable');
     final rowCount = _int(statusPayload['rowCount']);
     return _staticOperationsStatus(
       rawStatus: rawStatus,

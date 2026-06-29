@@ -355,6 +355,17 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
             )
             self.assertEqual(index["readyCount"], 1)
             self.assertEqual(index["coverageTierCounts"]["recent"], 1)
+            status = json.loads(
+                (root / "static" / "status.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(status["etfPriceHistoryRowCount"], 1)
+            self.assertEqual(status["etfPriceHistoryReadyCount"], 1)
+            self.assertEqual(status["etfPriceHistoryGapDetailCount"], 0)
+            self.assertEqual(status["etfPriceHistoryDataTime"], index["dataTime"])
+            self.assertEqual(
+                status["etfPriceHistoryCoverageTierCounts"]["recent"],
+                1,
+            )
             price = json.loads(
                 (root / "static" / "etf_price_history" / "0050.json").read_text(
                     encoding="utf-8"

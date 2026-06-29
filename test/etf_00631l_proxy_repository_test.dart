@@ -442,6 +442,66 @@ void main() {
     );
   });
 
+  test(
+      'static operations status uses compact status without loading large catalog files',
+      () async {
+    final client = _RecordingProxyHttpClient({
+      '00631l-static-data/status.json': jsonEncode({
+        ..._staticStatusPayload(),
+        'etfCatalogRowCount': 3,
+        'etfCatalogDataTime': '2026-06-12T13:31:00+08:00',
+        'etfPriceHistoryRowCount': 3,
+        'etfPriceHistoryReadyCount': 1,
+        'etfPriceHistoryMissingCount': 2,
+        'etfPriceHistoryGapDetailCount': 2,
+        'etfPriceHistoryAttemptedCount': 1,
+        'etfPriceHistoryOutOfCatalogCount': 1,
+        'etfPriceHistoryDataTime': '2026-06-12',
+        'etfPriceHistoryCoverageTierCounts': {
+          'long_term': 0,
+          'recent': 1,
+          'unavailable': 2,
+          'error': 0,
+        },
+        'etfPriceHistorySourceContractCounts': {
+          'twse_stock_day_json': 3,
+        },
+        'etfPriceHistoryGapReasonCounts': {
+          'official_empty': 1,
+          'not_saved': 1,
+        },
+        'etfPriceHistoryGapReasonSamples': {
+          'official_empty': ['009824'],
+        },
+      }),
+      '00631l-static-data/release.json': jsonEncode(_staticReleasePayload()),
+    });
+    final repository = Static00631LRepository(client: client);
+
+    final status = await repository.fetchOperationsStatus();
+
+    expect(client.requestedPaths, [
+      '00631l-static-data/status.json',
+      '00631l-static-data/release.json',
+    ]);
+    expect(status.etfCatalogRowCount, 3);
+    expect(status.etfCatalogDataTime, DateTime(2026, 6, 12, 13, 31));
+    expect(status.etfPriceHistoryStatus, 'static_official');
+    expect(status.etfPriceHistoryRowCount, 3);
+    expect(status.etfPriceHistoryReadyCount, 1);
+    expect(status.etfPriceHistoryMissingCount, 2);
+    expect(status.etfPriceHistoryGapDetailCount, 2);
+    expect(status.etfPriceHistoryAttemptedCount, 1);
+    expect(status.etfPriceHistoryOutOfCatalogCount, 1);
+    expect(status.etfPriceHistoryDataTime, DateTime(2026, 6, 12));
+    expect(status.etfPriceHistoryCoverageTierCounts['recent'], 1);
+    expect(
+        status.etfPriceHistorySourceContractCounts['twse_stock_day_json'], 3);
+    expect(status.etfPriceHistoryGapReasonCounts['official_empty'], 1);
+    expect(
+        status.etfPriceHistoryGapReasonSamples['official_empty'], ['009824']);
+  });
+
   test('proxy repository maps AI analysis summary payload', () async {
     final repository = Proxy00631LRepository(
       client: _FakeProxyHttpClient({
@@ -617,6 +677,26 @@ class _FakeProxyHttpClient implements ProxyHttpClient {
     Uri uri, {
     Duration timeout = const Duration(seconds: 8),
   }) async {
+    final response = responses[uri.path] ?? responses[uri.toString()];
+    if (response == null) {
+      throw StateError('missing fake response for ${uri.path}');
+    }
+    return response;
+  }
+}
+
+class _RecordingProxyHttpClient implements ProxyHttpClient {
+  _RecordingProxyHttpClient(this.responses);
+
+  final Map<String, String> responses;
+  final List<String> requestedPaths = [];
+
+  @override
+  Future<String> getString(
+    Uri uri, {
+    Duration timeout = const Duration(seconds: 8),
+  }) async {
+    requestedPaths.add(uri.path);
     final response = responses[uri.path] ?? responses[uri.toString()];
     if (response == null) {
       throw StateError('missing fake response for ${uri.path}');
@@ -1328,10 +1408,38 @@ Map<String, Object?> _staticStatusPayload() {
     'coverageStart': '2026-06-01',
     'coverageEnd': '2026-06-03',
     'rowCount': 3,
+    'etfCatalogStatus': 'static_official',
+    'etfCatalogRowCount': 3,
+    'etfCatalogDataTime': '2026-06-12T13:31:00+08:00',
+    'etfPriceHistoryStatus': 'static_official',
+    'etfPriceHistoryRowCount': 3,
+    'etfPriceHistoryReadyCount': 1,
     'etfPriceHistoryMissingCount': 2,
     'etfPriceHistoryGapDetailCount': 2,
     'etfPriceHistoryAttemptedCount': 1,
     'etfPriceHistoryOutOfCatalogCount': 1,
+    'etfPriceHistoryDataTime': '2026-06-03',
+    'etfPriceHistorySourceContractCounts': {
+      'twse_stock_day_json': 2,
+      'tpex_etf_historical_daily_json': 1,
+    },
+    'etfPriceHistoryCoverageTierCounts': {
+      'long_term': 0,
+      'recent': 1,
+      'unavailable': 2,
+      'error': 0,
+    },
+    'etfPriceHistoryGapReasonCounts': {
+      'official_empty': 0,
+      'not_saved': 2,
+      'insufficient_rows': 0,
+      'validation_error': 0,
+      'source_error': 0,
+      'not_ready': 0,
+    },
+    'etfPriceHistoryGapReasonSamples': {
+      'not_saved': ['00631L', '00999'],
+    },
     'isCompleteFromListing': false,
     'isStale': false,
     'outputDir': 'web/00631l-static-data',
