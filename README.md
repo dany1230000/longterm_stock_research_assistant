@@ -2057,3 +2057,8 @@ report/export/backup, static mode, and live backend in product-facing Chinese.
 v7.6 localizes data coverage and price completeness panels. Price rows,
 intraday state, holdings count, integrity, coverage range, missing OHLC, volume,
 daily return, and backend captions now use Chinese product labels.
+
+v7.7 localizes settings and maintenance wording. ETF data gaps, deployment
+sync, backend status, reports, exports, backups, history row counts, and daily
+workflow prompts now read as product-facing Chinese while keeping script names
+available for program actions.

@@ -535,7 +535,7 @@ class _SelectedEtfViewData {
 
   String get readinessAction {
     if (is00631L) {
-      return '保持 daily cycle 與 static export 更新。';
+      return '保持每日流程與靜態匯出更新。';
     }
     if (hasImportedHistory) {
       return '可查看歷史、回測與自選比較；內容物資料仍以 00631L 為主。';
@@ -591,7 +591,7 @@ class _SelectedEtfViewData {
   }
 
   String get liveNavScopeLabel {
-    return is00631L ? '盤中 NAV backend' : '盤中 NAV 限 00631L';
+    return is00631L ? '盤中 NAV 後端' : '盤中 NAV 限 00631L';
   }
 }
 
@@ -2057,7 +2057,7 @@ class _OverviewActionRow extends StatelessWidget {
 String _historyChangeSubtitle(EtfHoldingsHistoryTrendSummary history) {
   final latest = history.latest;
   if (latest == null) {
-    return '尚無 daily cycle 累積資料；不補假資料。';
+    return '尚無每日流程累積資料；不補假資料。';
   }
   return 'latest ${formatTaiwanDate(latest.tradeDate)}，TX ${formatNullablePercent(latest.txWeightPct)}，台積電 ${formatNullablePercent(latest.tsmcWeightPct)}。';
 }
@@ -2547,6 +2547,17 @@ String _sourceStatusBadgeLabel(String? rawStatus) {
     case 'local_only':
     case 'local-only':
       return '本機保存';
+    case 'PASS':
+    case 'pass':
+    case 'OK':
+    case 'ok':
+      return '正常';
+    case 'WARN':
+    case 'warn':
+      return '需留意';
+    case 'FAIL':
+    case 'fail':
+      return '異常';
     case 'rule_based':
       return '規則分析';
   }
@@ -3071,7 +3082,7 @@ String _summaryCoverageCompactYears(
   final start = summary.coverageStart;
   final end = summary.coverageEnd;
   if (start == null || end == null) {
-    return 'coverage';
+    return '資料區間';
   }
   if (start.year == end.year) {
     return '${start.year}';
@@ -3095,7 +3106,7 @@ String _summaryTimeMinute(DateTime dateTime) {
 String _intradaySummarySourceLabel(EtfIntradayNav? nav) {
   final contract = nav?.sourceContract?.trim().toLowerCase();
   if (contract == null || contract.isEmpty) {
-    return nav?.status.label ?? 'backend required';
+    return nav?.status.label ?? '需要後端';
   }
   if (contract.contains('twse')) {
     return 'TWSE';
@@ -3211,7 +3222,7 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
                   ? '暫無'
                   : _sourceTimeText(nav!.dataTime!),
               caption: navSession == null
-                  ? '需要 backend'
+                  ? '需要後端'
                   : '${navSession.phaseLabel} · ${navSession.dataFreshnessLabel}',
               status: _sourceStatusBadgeLabel(nav?.status.label),
             ),
@@ -3425,7 +3436,7 @@ class _OverviewQualityRibbon extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           child: Row(
             children: [
-              const _MiniStatusBadge(label: 'DATA'),
+              const _MiniStatusBadge(label: '資料'),
               const SizedBox(width: 8),
               Text(
                 '資料正確性',
@@ -3522,7 +3533,7 @@ class _SelectedEtfReadinessBanner extends StatelessWidget {
           children: [
             Row(
               children: [
-                _MiniStatusBadge(label: ready ? 'READY' : 'DATA'),
+                _MiniStatusBadge(label: ready ? '可用' : '資料'),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -3699,7 +3710,7 @@ class _SelectedEtfHistoryReadinessStrip extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Text('${formatInteger(history.rowCount)} rows'),
+              Text('${formatInteger(history.rowCount)} 筆'),
               const SizedBox(width: 10),
               Text(selectedEtf.historyCoverageText),
               const SizedBox(width: 10),
@@ -3904,7 +3915,7 @@ class _OverviewMorePanel extends StatelessWidget {
           child: history.latest == null
               ? const _EmptyPanel(
                   title: '尚無內容物紀錄',
-                  message: '請先執行 daily cycle 累積官方每日快照。',
+                  message: '請先執行每日流程累積官方每日快照。',
                 )
               : _HistoryChangeCards(summary: history),
         ),
@@ -3975,7 +3986,7 @@ class _OverviewDataQualityPanel extends StatelessWidget {
           children: [
             Row(
               children: [
-                const _MiniStatusBadge(label: 'DATA'),
+                const _MiniStatusBadge(label: '資料'),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -5058,7 +5069,7 @@ class _OverviewComparisonPanel extends StatelessWidget {
                   _ComparisonRowData(
                     label: '預估淨值',
                     value: _price(nav?.estimatedNav),
-                    caption: '需 live backend',
+                    caption: '需公開後端',
                   ),
                   _ComparisonRowData(
                     label: '官方 NAV',
@@ -5097,7 +5108,7 @@ class _OverviewComparisonPanel extends StatelessWidget {
                     ),
                     caption: price.rowCount < 2
                         ? '尚無 價格歷史'
-                        : '${formatInteger(price.rowCount)} rows',
+                        : '${formatInteger(price.rowCount)} 筆',
                   ),
                   _ComparisonRowData(
                     label: '歷史區間',
@@ -5134,7 +5145,7 @@ class _OverviewHiddenDetails extends StatelessWidget {
         const SizedBox(height: 8),
         _CompactExpansionPanel(
           title: '歷史資料完整度',
-          subtitle: 'rows、coverage、52 週區間與欄位覆蓋。',
+          subtitle: '筆數、範圍、52 週區間與欄位覆蓋。',
           child: _PriceCompletenessPanel(
             priceHistory: data.priceHistory,
             summary: priceCompleteness,
@@ -5175,7 +5186,7 @@ class _OverviewModeCards extends StatelessWidget {
           primary: _price(nav?.marketPrice),
           secondary:
               '折溢價 ${formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct)}',
-          caption: 'live backend 可連線時更新；static mode 不提供盤中資料',
+          caption: '公開後端可連線時更新；靜態模式不提供盤中資料',
           progressValue: nav?.estimatedPremiumDiscountPct == null
               ? null
               : (nav!.estimatedPremiumDiscountPct!.abs() / 1.5)
@@ -5185,7 +5196,7 @@ class _OverviewModeCards extends StatelessWidget {
         _HoldingInfoCard(
           badge: 'HIS',
           title: '歷史價格',
-          primary: '${formatInteger(price.rowCount)} rows',
+          primary: '${formatInteger(price.rowCount)} 筆',
           secondary:
               '${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}',
           caption: price.isCompleteFromListing ? '已補齊到上市日起' : '目前為部分區間',
@@ -5446,7 +5457,7 @@ class _HoldingsSection extends StatelessWidget {
               const SizedBox(height: 8),
               _CompactExpansionPanel(
                 title: '內容物歷史覆蓋',
-                subtitle: '本機 history 從 daily cycle 開始保存，不補假過去資料。',
+                subtitle: '本機歷史從每日流程開始保存，不補假過去資料。',
                 child: _HoldingsCoveragePanel(data: data),
               ),
             ],
@@ -5515,7 +5526,7 @@ class _HistorySection extends StatelessWidget {
         if (show00631LHoldingsHistory)
           _SectionBlock(
             title: '每日內容物紀錄',
-            subtitle: '官方內容物紀錄從 daily cycle 開始累積，不補假過去資料。',
+            subtitle: '官方內容物紀錄從每日流程開始累積，不補假過去資料。',
             child: data.holdingsHistory.hasData
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -5557,7 +5568,7 @@ class _HistorySection extends StatelessWidget {
                   )
                 : const _EmptyPanel(
                     title: '尚無內容物紀錄',
-                    message: '請執行 daily cycle 累積官方每日快照。',
+                    message: '請執行每日流程累積官方每日快照。',
                   ),
           )
         else
@@ -5730,7 +5741,7 @@ class _SelectedHistoryQualityCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '價格欄位 $priceField；分割調整 $splitAdjustmentLabel；回測只使用目前 coverage 內的已載入收盤資料，回測不代表未來表現。',
+              '價格欄位 $priceField；分割調整 $splitAdjustmentLabel；回測只使用目前資料範圍內的已載入收盤資料，回測不代表未來表現。',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 height: 1.35,
@@ -6503,7 +6514,7 @@ class _EtfHistoryComparisonPanelState
             labels: [
               '自選比較',
               _filter.label,
-              'rows ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
+              '筆數 ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
               'history comparison',
             ],
           ),
@@ -7538,15 +7549,14 @@ class _BacktestDateRangeControls extends StatelessWidget {
                 key: const ValueKey('00631l-start-date-button'),
                 label: '開始日期',
                 value: _dateOrDash(startDate),
-                caption:
-                    firstDate == null ? 'history start unavailable' : '點擊調整',
+                caption: firstDate == null ? '起始日暫無' : '點擊調整',
                 onTap: onStartTap,
               ),
               _BacktestDateButton(
                 key: const ValueKey('00631l-end-date-button'),
                 label: '結束日期',
                 value: _dateOrDash(endDate),
-                caption: lastDate == null ? 'history end unavailable' : '點擊調整',
+                caption: lastDate == null ? '結束日暫無' : '點擊調整',
                 onTap: onEndTap,
               ),
             ];
@@ -8466,7 +8476,7 @@ class _AiSectionV2 extends StatelessWidget {
     final visibleBullets =
         summary.bullets.take(3).map(_aiDisplayText).toList(growable: false);
     final visibleActions = summary.actionItems.isEmpty
-        ? const ['目前沒有需要處理的程式操作；請維持 daily cycle 與資料檢查。']
+        ? const ['目前沒有需要處理的程式操作；請維持每日流程與資料檢查。']
         : summary.actionItems
             .take(3)
             .map(_aiDisplayText)
@@ -9093,15 +9103,15 @@ class _AiTodayInterpretationMatrix extends StatelessWidget {
         label: '內容物變化',
         value: holdings == null ? '歷史不足' : '已累積',
         detail: holdings == null
-            ? '尚未累積內容物紀錄，請先跑 daily cycle。'
+            ? '尚未累積內容物紀錄，請先執行每日流程。'
             : 'TX ${formatNullablePercent(holdings.txWeightPct)}；台積電 ${formatNullablePercent(holdings.tsmcWeightPct)}；股票/期貨 ${formatNullablePercent(holdings.stockExposurePct)} / ${formatNullablePercent(holdings.futuresExposurePct)}。',
         status: holdings == null
             ? 'unavailable'
             : data.holdingsHistory.sourceStatusLabel,
       ),
       _AiInterpretationItem(
-        label: '歷史 coverage',
-        value: '${formatInteger(price.rowCount)} rows',
+        label: '歷史範圍',
+        value: '${formatInteger(price.rowCount)} 筆',
         detail:
             '${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}；${price.isCompleteFromListing ? '上市日起完整' : '目前為部分區間'}。',
         status: data.priceHistory.sourceStatusLabel,
@@ -9418,7 +9428,7 @@ class _AiBriefCards extends StatelessWidget {
     final intradayBrief = _findAnalysisBullet(summary, '盤中折溢價最新') ??
         '盤中 NAV ${_intradayDataTimeText(data.intradayNav)}；${premiumAssessment == null ? '目前沒有可判斷的盤中偏離資料。' : _premiumDescription(premiumAssessment)}';
     final riskBrief = _findAnalysisBullet(summary, '資料風險') ??
-        '資料來源 ${_sourceStatusBadgeLabel(summary.sourceStatusLabel)}；若資料過期、錯誤或不可用，先檢查 backend 與來源時間。';
+        '資料來源 ${_sourceStatusBadgeLabel(summary.sourceStatusLabel)}；若資料過期、錯誤或不可用，先檢查後端與來源時間。';
 
     final cards = [
       _AiBriefTile(
@@ -9937,8 +9947,7 @@ class _EtfCatalogSectionState extends State<_EtfCatalogSection> {
                 )
               : const _EmptyPanel(
                   title: 'ETF catalog 暫不可用',
-                  message:
-                      'live backend 可提供 ETF catalog；static public mode 仍保留 00631L 歷史與回測。',
+                  message: '公開後端可提供 ETF 清單；公開靜態模式仍保留 00631L 歷史與回測。',
                 ),
         ),
         const SizedBox(height: 12),
@@ -10084,11 +10093,10 @@ class _SettingsSection extends StatelessWidget {
                 action: '先整理 policy 草稿與上架素材清單；不把任何 key 放進 repo。',
               ),
               _StatusItem(
-                label: 'Live backend',
+                label: '公開後端',
                 status: '範本就緒',
-                detail:
-                    'public backend 已有 Docker / Render / CORS / persistent data 設計。',
-                action: '正式上架前確認 backend uptime、persistent volume 與公開 API URL。',
+                detail: '公開後端已有 Docker / Render / CORS / 持久化資料設計。',
+                action: '正式上架前確認後端可用性、persistent volume 與公開 API URL。',
               ),
             ],
           ),
@@ -10143,16 +10151,15 @@ class _SettingsSection extends StatelessWidget {
         const SizedBox(height: 10),
         _CompactExpansionPanel(
           title: '進階維護診斷',
-          subtitle: 'backend、history、report、export、backup 與部署設定。',
+          subtitle: '後端、歷史、日報、匯出、備份與部署設定。',
           child: _StatusList(
             items: [
               _StatusItem(
                 label: '後端連線',
                 status: status.sourceStatusLabel,
                 detail: status.backendConnectionCaption,
-                action: status.backendDisconnected
-                    ? '請啟動 backend 或檢查公開 backend URL。'
-                    : '後端可連線。',
+                action:
+                    status.backendDisconnected ? '請啟動後端或檢查公開後端 URL。' : '後端可連線。',
               ),
               _StatusItem(
                 label: '後端版本',
@@ -10161,7 +10168,7 @@ class _SettingsSection extends StatelessWidget {
                     : status.backendAppVersion,
                 detail: status.backendReleaseLabel,
                 action: status.backendGitSha.isEmpty
-                    ? 'set 00631L_BACKEND_GIT_SHA during deployment for exact build trace.'
+                    ? '部署時設定 00631L_BACKEND_GIT_SHA，方便追蹤後端版本。'
                     : 'git ${status.backendGitSha}',
               ),
               if (status.sourceStatusLabel == 'static_public_data' ||
@@ -10173,11 +10180,11 @@ class _SettingsSection extends StatelessWidget {
                       : status.staticReleaseAppVersion,
                   detail: status.staticReleaseLabel,
                   action: status.staticReleaseGitSha.isEmpty
-                      ? 'run scripts\\00631l_export_static_data.cmd --update before the Pages build.'
+                      ? 'Pages 建置前請執行 scripts\\00631l_export_static_data.cmd --update。'
                       : 'git ${_shortGitSha(status.staticReleaseGitSha)}; build ${_dateTimeOrDash(status.staticReleaseBuildTime)}',
                 ),
               _StatusItem(
-                label: 'Deploy sync',
+                label: '部署同步',
                 status: status.publicDeploymentSyncLabel,
                 detail: status.publicDeploymentSyncCaption,
                 action: status.publicDeploymentSyncAction,
@@ -10232,12 +10239,13 @@ class _SettingsSection extends StatelessWidget {
               ),
               _StatusItem(
                 label: '報告 / 匯出 / 備份',
-                status: '${status.reportOverallStatus} / '
+                status:
+                    '${_sourceStatusBadgeLabel(status.reportOverallStatus)} / '
                     '${status.exportAvailable ? '已就緒' : '缺少'} / '
                     '${status.backupAvailable ? '已就緒' : '缺少'}',
                 detail:
                     '報告 ${status.latestReportPath ?? '缺少'}，匯出 ${status.latestExportPath ?? '缺少'}，備份 ${status.latestBackupPath ?? '缺少'}。',
-                action: '必要時執行 report、export、backup 腳本。',
+                action: '必要時執行日報、匯出、備份腳本。',
               ),
               _StatusItem(
                 label: '公開部署設定',
@@ -10267,7 +10275,7 @@ class _EtfComparisonPreview extends StatelessWidget {
     if (items.isEmpty) {
       return const _EmptyPanel(
         title: '尚無可比較 ETF',
-        message: '需要 live backend ETF catalog 才能顯示比較基礎資料。',
+        message: '需要公開後端 ETF 清單，才能顯示比較基礎資料。',
       );
     }
     return Column(
@@ -10610,7 +10618,7 @@ class _EtfResearchRoomReadinessPanel extends StatelessWidget {
               status: data.status.label,
               detail:
                   '內容物 ${formatTaiwanDate(data.snapshot.tradeDate)}；價格筆數 ${formatInteger(price.rowCount)}；盤中 ${_sourceStatusBadgeLabel(data.intradayNav?.status.label)}。',
-              action: '每日執行 daily cycle，確認 official / cached / stale 狀態。',
+              action: '每日執行每日流程，確認官方 / 快取 / 過期狀態。',
             ),
             _StatusItem(
               label: '多 ETF 資料庫',
@@ -10698,13 +10706,13 @@ class _EtfDataLibrarySummary extends StatelessWidget {
       _MetricCard(
         label: 'long-term',
         value: formatInteger(longTerm),
-        caption: '長期 coverage',
+        caption: '長期範圍',
         icon: Icons.timeline_outlined,
       ),
       _MetricCard(
         label: 'recent',
         value: formatInteger(recent),
-        caption: '近期 coverage',
+        caption: '近期範圍',
         icon: Icons.schedule_outlined,
       ),
       _MetricCard(
@@ -10784,7 +10792,7 @@ class _EtfLibraryReadableSummary extends StatelessWidget {
         ? '目前 ${formatInteger(ready)} 檔 ETF 歷史資料可用。'
         : '目前 ${formatInteger(ready)} / ${formatInteger(total)} 檔 ETF 歷史資料可用；${formatInteger(missingCount)} 檔尚未可用。原因：官方空資料 ${formatInteger(officialEmpty)}、來源錯誤 ${formatInteger(sourceError)}、未分類 ${formatInteger(unclassified)}。';
     final action = allClassified
-        ? '資料缺口已有原因分類；維持 static export 與 release check。'
+        ? '資料缺口已有原因分類；維持靜態匯出與 release check。'
         : '請執行 scripts\\00631l_probe_missing_etf_reasons.cmd 後重新匯出 static data。';
 
     return KeyedSubtree(
@@ -10927,7 +10935,7 @@ class _EtfGapDetailPanelState extends State<_EtfGapDetailPanel> {
               ] else if (widget.value?.hasError == true) ...[
                 const SizedBox(height: 8),
                 _EmptyPanel(
-                  title: 'Gap details unavailable',
+                  title: '缺口明細暫不可用',
                   message: widget.value?.error.toString() ?? 'Unknown error',
                 ),
               ] else if (allRows.isEmpty) ...[
@@ -13272,7 +13280,7 @@ class _ErrorState extends StatelessWidget {
       children: [
         _SectionBlock(
           title: '00631L 資料載入失敗',
-          subtitle: '頁面沒有取得可用資料。請檢查 backend 或 mock fallback 設定。',
+          subtitle: '頁面沒有取得可用資料。請檢查後端或 mock fallback 設定。',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -14275,7 +14283,7 @@ List<_StatusItem> _dataCoverageItems(Etf00631LLabData data) {
       detail:
           'TAIFEX 來源 ${txQuote.sourceContract ?? 'quote'}；${txQuote.contractMonth} $txSymbol ${_price(txQuote.txPrice)}，加權指數 ${_price(txQuote.weightedIndex)}，基差 ${formatSignedNullablePercent(txQuote.futuresBasisPct)}，資料時間 $txTime。官方內容物台指期權重 ${txLine == null ? '暫無' : formatNullablePercent(txLine.weightPct)}。',
       action: txQuote.txPrice == null
-          ? '請確認 TAIFEX 交易時段、backend 連線與 TAIFEX_TX_SOCKJS_URL 設定。'
+          ? '請確認 TAIFEX 交易時段、後端連線與 TAIFEX_TX_SOCKJS_URL 設定。'
           : '請以 TAIFEX 資料時間與官方內容物日期分別判讀。',
     ),
     _StatusItem(
@@ -14424,7 +14432,7 @@ _StatusItem _etfHistoryNextActionItem({
       detail:
           '目前已匯入 ${formatInteger(status.etfPriceHistoryReadyCount)} / ${formatInteger(historyTotal)} 檔 ETF 歷史，仍有未分類缺口。',
       action:
-          'Run scripts\\00631l_probe_missing_etf_reasons.cmd, then scripts\\00631l_export_static_data.cmd --status-only.',
+          '請執行 scripts\\00631l_probe_missing_etf_reasons.cmd，完成後再執行 scripts\\00631l_export_static_data.cmd --status-only。',
     );
   }
   if (missingCount > 0) {
@@ -14433,7 +14441,7 @@ _StatusItem _etfHistoryNextActionItem({
       status: '缺口已分類',
       detail:
           '目前已匯入 ${formatInteger(status.etfPriceHistoryReadyCount)} / ${formatInteger(historyTotal)} 檔 ETF 歷史；其餘缺口已有官方空資料或來源錯誤等原因。',
-      action: 'Keep the scheduled static export and release check running.',
+      action: '請維持排程靜態匯出與 release check。',
     );
   }
   if (missingCount > 0) {
@@ -14467,7 +14475,7 @@ List<_StatusItem> _holdingsCoverageItems(Etf00631LLabData data) {
       detail:
           'tradeDate ${formatTaiwanDate(snapshot.tradeDate)}；這是 Yuanta official ratio 每日資料。',
       action: snapshot.isStale(data.lastFetchedAt)
-          ? '請執行 daily cycle 並確認官方 ratio 來源。'
+          ? '請執行每日流程並確認官方 ratio 來源。'
           : '請以官方內容物日期為準。',
     ),
     _StatusItem(
@@ -14477,7 +14485,7 @@ List<_StatusItem> _holdingsCoverageItems(Etf00631LLabData data) {
           '歷史筆數 $count，最新 ${_dateOrDash(_latestHoldingsDate(data))}；不是發行以來完整內容物。',
       action: count == 0
           ? '請執行 scripts\\00631l_daily_cycle.cmd。'
-          : '後續每日執行 daily cycle 會繼續補新的官方快照。',
+          : '後續每日執行每日流程會繼續補新的官方快照。',
     ),
     _StatusItem(
       label: '完整性檢查',
@@ -14533,12 +14541,12 @@ String _holdingsIntegrityAction(Etf00631LLabData data) {
     return '請執行 scripts\\00631l_check_integrity.cmd 並修正資料檔。';
   }
   if (status.holdingsMissingWeekdayCount > 0) {
-    return '請檢查缺日是否為尚未執行 daily cycle；可重新執行 daily cycle 後再檢查。';
+    return '請檢查缺日是否為尚未執行每日流程；可重新執行每日流程後再檢查。';
   }
   if (status.integrityStatus == 'missing') {
     return '請執行 scripts\\00631l_check_integrity.cmd 產生完整性狀態。';
   }
-  return '已從本機 daily cycle 開始累積；不補假過去內容物。';
+  return '已從本機每日流程開始累積；不補假過去內容物。';
 }
 
 String _dateListPreview(List<DateTime> dates, {int limit = 3}) {
@@ -14630,7 +14638,7 @@ List<String> _completeDataBriefing(Etf00631LLabData data) {
       '最新 官方每日內容物：TX 權重 ${formatNullablePercent(holdings.latest!.txWeightPct)}，台積電權重 ${formatNullablePercent(holdings.latest!.tsmcWeightPct)}，股票/期貨/現金保證金 ${formatNullablePercent(holdings.latest!.stockExposurePct)} / ${formatNullablePercent(holdings.latest!.futuresExposurePct)} / ${formatNullablePercent(holdings.latest!.cashAndMarginPct)}。',
     );
   } else {
-    lines.add('尚無內容物紀錄，請執行 daily cycle 累積官方每日快照。');
+    lines.add('尚無內容物紀錄，請執行每日流程累積官方每日快照。');
   }
   if (intraday.hasData) {
     lines.add(
@@ -14640,7 +14648,7 @@ List<String> _completeDataBriefing(Etf00631LLabData data) {
     lines.add('盤中 NAV 歷史尚未累積；盤中折溢價需公開後端與 TWSE 資料可用。');
   }
   lines.add(
-    '維護狀態：backend ${data.operationsStatus.backendConnectionCaption}，report ${data.operationsStatus.reportOverallStatus}，export ${data.operationsStatus.exportAvailable ? 'ready' : 'missing'}，backup ${data.operationsStatus.backupAvailable ? 'ready' : 'missing'}。',
+    '維護狀態：後端 ${data.operationsStatus.backendConnectionCaption}，日報 ${_sourceStatusBadgeLabel(data.operationsStatus.reportOverallStatus)}，匯出 ${data.operationsStatus.exportAvailable ? '已就緒' : '缺少'}，備份 ${data.operationsStatus.backupAvailable ? '已就緒' : '缺少'}。',
   );
   return lines;
 }
