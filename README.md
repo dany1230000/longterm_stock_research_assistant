@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.2 adds explicit loading and error states to the left-top ETF search sheet
+  while the full static ETF catalog is fetched on demand.
+
 - v9.1 lazy-loads the static ETF catalog. GitHub Pages first screen no longer
   pulls `etf_catalog.json` or `etf_price_history_index.json`; the left-top ETF
   search loads those files only when opened.

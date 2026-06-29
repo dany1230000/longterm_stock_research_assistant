@@ -1088,6 +1088,53 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('top symbol search shows loading while lazy catalog resolves',
+      (tester) async {
+    final repository = _SlowCatalogSearchRepository();
+    await _pumpLab(tester, repository);
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(repository.catalogRequestCount, 1);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-catalog-loading')),
+      findsOneWidget,
+    );
+
+    await repository.completeCatalog();
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '0050',
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
+      findsOneWidget,
+    );
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('top symbol search shows error when lazy catalog fails',
+      (tester) async {
+    final repository = _ErrorCatalogSearchRepository();
+    await _pumpLab(tester, repository);
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+
+    expect(repository.catalogRequestCount, 1);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-search-catalog-error')),
+      findsOneWidget,
+    );
+    expect(find.text('ETF 目錄載入失敗'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('symbol search ranks code matches before name matches',
       (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
@@ -2579,6 +2626,31 @@ class _DeferredCatalogSearchRepository extends _PriceHistoryRepository {
       ),
       lastFetchedAt: data.lastFetchedAt,
     );
+  }
+}
+
+class _SlowCatalogSearchRepository extends _DeferredCatalogSearchRepository {
+  final Completer<EtfCatalog> _catalogCompleter = Completer<EtfCatalog>();
+
+  @override
+  Future<EtfCatalog> fetchEtfCatalog() {
+    catalogRequestCount += 1;
+    return _catalogCompleter.future;
+  }
+
+  Future<void> completeCatalog() async {
+    if (_catalogCompleter.isCompleted) {
+      return;
+    }
+    _catalogCompleter.complete(await Mock00631LRepository().fetchEtfCatalog());
+  }
+}
+
+class _ErrorCatalogSearchRepository extends _DeferredCatalogSearchRepository {
+  @override
+  Future<EtfCatalog> fetchEtfCatalog() {
+    catalogRequestCount += 1;
+    return Future<EtfCatalog>.error(StateError('catalog unavailable'));
   }
 }
 

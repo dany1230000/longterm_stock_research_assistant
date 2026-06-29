@@ -1058,6 +1058,8 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
     final catalog = loadedCatalog?.hasData == true
         ? loadedCatalog!
         : widget.data.etfCatalog;
+    final catalogLoading = catalogAsync.isLoading && !catalog.hasData;
+    final catalogError = catalogAsync.hasError && !catalog.hasData;
     final stocksAsync = ref.watch(watchlistProvider);
     final readyHistoryCount = _searchReadyHistoryCount(widget.data);
     final catalogRowCount = catalog.hasData
@@ -1237,12 +1239,22 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               ),
             Flexible(
               child: visibleItems.isEmpty && stockItems.isEmpty
-                  ? _EmptyPanel(
-                      title: '查無代號',
-                      message: query.isEmpty
-                          ? 'ETF 清單暫無明細。'
-                          : '目前沒有符合的 ETF 或內建股票研究資料。',
-                    )
+                  ? catalogLoading
+                      ? const _SymbolSearchLoadingPanel()
+                      : catalogError
+                          ? const _EmptyPanel(
+                              key: ValueKey(
+                                '00631l-symbol-search-catalog-error',
+                              ),
+                              title: 'ETF 目錄載入失敗',
+                              message: '請稍後重新開啟搜尋；目前仍保留已載入的資料狀態。',
+                            )
+                          : _EmptyPanel(
+                              title: '查無代號',
+                              message: query.isEmpty
+                                  ? 'ETF 清單暫無明細。'
+                                  : '目前沒有符合的 ETF 或內建股票研究資料。',
+                            )
                   : ListView.separated(
                       shrinkWrap: true,
                       itemCount: visibleItems.length + stockItems.length,
@@ -1260,6 +1272,43 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                         return _StockSearchResultTile(stock: stock);
                       },
                     ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SymbolSearchLoadingPanel extends StatelessWidget {
+  const _SymbolSearchLoadingPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-symbol-search-catalog-loading'),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: theme.colorScheme.surfaceContainerHighest,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2.4),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'ETF 目錄載入中，請稍候。',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
             ),
           ],
         ),
@@ -13409,6 +13458,7 @@ class _BulletLine extends StatelessWidget {
 
 class _EmptyPanel extends StatelessWidget {
   const _EmptyPanel({
+    super.key,
     required this.title,
     required this.message,
   });

@@ -535,6 +535,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v8_9_public_etf_history_carry_forward.md",
         "docs/00631l_v9_0_static_first_load_trim.md",
         "docs/00631l_v9_1_lazy_static_catalog.md",
+        "docs/00631l_v9_2_search_loading_state.md",
         "deploy/docker-compose.yml",
         "deploy/Caddyfile",
         "deploy/nginx.example.conf",
