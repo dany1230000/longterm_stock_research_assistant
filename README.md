@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.23 compacts the position page source details. The position account summary
+  now uses market source, history source, and data-time chips instead of a long
+  first-screen sentence.
+
 - v9.22 makes the AI page more answer-first. The top AI briefing now includes a
   daily decision strip for today data, deviation interpretation, history data,
   and follow-up program action.

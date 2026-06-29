@@ -1028,6 +1028,15 @@ void main() {
       find.byKey(const ValueKey('00631l-position-account-metric-strip')),
       findsOneWidget,
     );
+    final sourceStrip =
+        find.byKey(const ValueKey('00631l-position-source-chip-strip'));
+    expect(sourceStrip, findsOneWidget);
+    for (final label in const ['行情來源', '歷史來源', '資料時間']) {
+      expect(
+        find.descendant(of: sourceStrip, matching: find.textContaining(label)),
+        findsOneWidget,
+      );
+    }
     expect(
       find.byKey(const ValueKey('00631l-position-primary-actions')),
       findsOneWidget,

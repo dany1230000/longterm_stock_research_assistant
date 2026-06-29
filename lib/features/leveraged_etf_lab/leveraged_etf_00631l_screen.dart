@@ -8734,17 +8734,36 @@ class _PositionAccountStrip extends StatelessWidget {
               items: items,
             ),
             const SizedBox(height: 8),
-            Text(
-              '行情來源 ${_sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel)}；歷史來源 ${_sourceStatusBadgeLabel(selectedEtf.priceHistory.sourceStatusLabel)}；資料時間 $dataTime。',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w700,
-              ),
+            _PositionSourceChipStrip(
+              selectedEtf: selectedEtf,
+              dataTime: dataTime,
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PositionSourceChipStrip extends StatelessWidget {
+  const _PositionSourceChipStrip({
+    required this.selectedEtf,
+    required this.dataTime,
+  });
+
+  final _SelectedEtfViewData selectedEtf;
+  final String dataTime;
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyedSubtree(
+      key: const ValueKey('00631l-position-source-chip-strip'),
+      child: _StatusWrap(
+        labels: [
+          '行情來源 ${_sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel)}',
+          '歷史來源 ${_sourceStatusBadgeLabel(selectedEtf.priceHistory.sourceStatusLabel)}',
+          '資料時間 $dataTime',
+        ],
       ),
     );
   }
