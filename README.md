@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v8.4 handles TWSE STOCK_DAY HTTP redirects during ETF history imports, so
+  redirect responses are not misclassified as source errors. Official empty
+  responses remain unavailable and are not treated as usable history.
+
 - v8.3 carries ETF price-basis metadata into search results: history-ready ETF
   rows can now show whether comparison/backtest context uses adjusted prices or
   raw close prices.

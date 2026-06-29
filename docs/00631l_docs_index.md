@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- ETF source redirect v8.4: `docs\00631l_v8_4_etf_source_redirect.md`
 - ETF price basis v8.3: `docs\00631l_v8_3_etf_price_basis.md`
 - ETF gap metadata v8.2: `docs\00631l_v8_2_etf_gap_metadata.md`
 - ETF search readiness v8.1: `docs\00631l_v8_1_etf_search_readiness.md`

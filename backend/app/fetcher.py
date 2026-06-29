@@ -25,6 +25,13 @@ def fetch_text(url: str, timeout_seconds: float) -> str:
             encoding = response.headers.get_content_charset() or "utf-8"
             return raw.decode(encoding, errors="replace")
     except HTTPError as error:
+        if 300 <= error.code < 400:
+            try:
+                return _fetch_text_with_curl(url, timeout_seconds)
+            except FetchError as curl_error:
+                raise FetchError(
+                    f"HTTP {error.code} redirect while fetching {url}; curl fallback failed: {curl_error}"
+                ) from error
         raise FetchError(f"HTTP {error.code} while fetching {url}") from error
     except URLError as error:
         try:
