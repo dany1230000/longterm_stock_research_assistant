@@ -514,6 +514,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Settings maintenance wording: `docs\00631l_v7_7_settings_maintenance_wording.md`
 - ETF gap wording: `docs\00631l_v7_8_etf_gap_wording.md`
 - Overview density: `docs\00631l_v7_9_overview_density.md`
+- Mobile first screen: `docs\00631l_v8_0_mobile_first_screen.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

@@ -383,7 +383,6 @@ class _LabContent extends StatelessWidget {
         return _OverviewSection(
           data: data,
           selectedEtf: selectedEtf,
-          detailsLoading: detailsLoading,
         );
       case _LabSection.historyBacktest:
         return _HistoryBacktestSection(
@@ -700,9 +699,7 @@ class _LabLoadingShell extends StatelessWidget {
                           const SizedBox(height: 8),
                           const _LoadingQuoteCard(),
                           const SizedBox(height: 8),
-                          const _LoadingMetricGrid(),
-                          const SizedBox(height: 8),
-                          const _LoadingSectionCard(title: '今日狀態'),
+                          const _LoadingSectionCard(title: '準備首頁資料'),
                         ],
                       ),
                     ),
@@ -788,73 +785,6 @@ class _LoadingQuoteCard extends StatelessWidget {
                 _LoadingBar(width: 108, height: 34),
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LoadingMetricGrid extends StatelessWidget {
-  const _LoadingMetricGrid();
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 620 ? 4 : 2;
-        return GridView.count(
-          key: const ValueKey('00631l-loading-metric-grid'),
-          crossAxisCount: columns,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
-          childAspectRatio: columns == 4 ? 2.05 : 2.0,
-          children: const [
-            _LoadingMiniMetricCard(label: '盤中'),
-            _LoadingMiniMetricCard(label: '內容物'),
-            _LoadingMiniMetricCard(label: '歷史'),
-            _LoadingMiniMetricCard(label: '分析'),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _LoadingMiniMetricCard extends StatelessWidget {
-  const _LoadingMiniMetricCard({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelAltColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const SizedBox(height: 6),
-            const _LoadingBar(width: double.infinity, height: 10),
-            const SizedBox(height: 5),
-            const _LoadingBar(width: 62, height: 8),
           ],
         ),
       ),
@@ -2874,12 +2804,10 @@ class _OverviewSection extends StatelessWidget {
   const _OverviewSection({
     required this.data,
     required this.selectedEtf,
-    required this.detailsLoading,
   });
 
   final Etf00631LLabData data;
   final _SelectedEtfViewData selectedEtf;
-  final bool detailsLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -2891,11 +2819,6 @@ class _OverviewSection extends StatelessWidget {
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
         if (selectedEtf.is00631L) ...[
-          _OverviewDailySummaryStrip(
-            data: data,
-            detailsLoading: detailsLoading,
-          ),
-          const SizedBox(height: 8),
           _OverviewBriefPanel(data: data),
           const SizedBox(height: 8),
         ],
@@ -2938,6 +2861,7 @@ class _OverviewSection extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _OverviewDailySummaryStrip extends StatelessWidget {
   const _OverviewDailySummaryStrip({
     required this.data,
@@ -5030,7 +4954,9 @@ class _OverviewBriefPanel extends StatelessWidget {
               metrics: [
                 _AtAGlanceMetricData(
                   label: '內容物',
-                  value: _dateOrDash(latestHolding),
+                  value: latestHolding == null
+                      ? '不可用'
+                      : _dateOrDash(latestHolding),
                   caption: _sourceStatusBadgeLabel(data.snapshot.status.label),
                 ),
                 _AtAGlanceMetricData(
@@ -5056,8 +4982,8 @@ class _OverviewBriefPanel extends StatelessWidget {
             _StatusWrap(
               labels: [
                 _frontendDataModeLabel,
-                '資料 ${data.status.label}',
-                'NAV ${_dateTimeOrDash(nav?.dataTime)}',
+                '資料 ${_sourceStatusBadgeLabel(data.status.label)}',
+                'NAV ${_sourceStatusBadgeLabel(nav?.status.label ?? 'unavailable')}',
                 data.aiAnalysis.disclaimer,
               ],
             ),

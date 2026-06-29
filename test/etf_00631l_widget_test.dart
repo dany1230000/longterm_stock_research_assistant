@@ -49,7 +49,7 @@ void main() {
     expect(find.textContaining('預估淨值'), findsNothing);
     expect(find.textContaining('折溢價'), findsWidgets);
     expect(find.text('核心資料'), findsNothing);
-    expect(find.text('今日摘要'), findsOneWidget);
+    expect(find.text('今日快覽'), findsOneWidget);
     expect(find.text('資料完整度'), findsNothing);
     expect(find.text('回測'), findsNothing);
     expect(find.text('可用'), findsNothing);
@@ -69,11 +69,11 @@ void main() {
     expect(find.text('分割調整'), findsNothing);
     expect(find.text('覆蓋型態'), findsNothing);
     expect(find.text('ETF歷史'), findsNothing);
-    expect(find.text('歷史資料'), findsOneWidget);
+    expect(find.text('歷史'), findsWidgets);
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.text('HIS'), findsNothing);
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
-    final summaryTop = tester.getTopLeft(find.text('今日摘要')).dy;
+    final summaryTop = tester.getTopLeft(find.text('今日快覽')).dy;
     expect(summaryTop, lessThan(chartTitleTop));
     expect(find.text('官方 NAV'), findsNothing);
     expect(find.textContaining('Mock 預設'), findsWidgets);
@@ -106,7 +106,7 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
-      findsOneWidget,
+      findsNothing,
     );
     await tester.ensureVisible(find.text('進階資料'));
     await tester.pumpAndSettle();
@@ -331,7 +331,7 @@ void main() {
 
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.text('核心資料'), findsNothing);
-    expect(find.text('今日摘要'), findsOneWidget);
+    expect(find.text('今日快覽'), findsOneWidget);
     expect(find.text('資料完整度'), findsNothing);
     expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('進階資料'), findsOneWidget);
@@ -346,30 +346,27 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
-      findsOneWidget,
+      findsNothing,
     );
-    expect(
-      find.byKey(const ValueKey('00631l-overview-daily-summary-grid')),
-      findsOneWidget,
+    final briefPanel = find.byKey(
+      const ValueKey('00631l-overview-brief-panel'),
     );
-    final dailySummary = find.byKey(
-      const ValueKey('00631l-overview-daily-summary-strip'),
-    );
-    final dailySummaryRect = tester.getRect(dailySummary);
-    for (final label in const ['官方內容物', '盤中 NAV', '歷史資料']) {
+    expect(briefPanel, findsOneWidget);
+    final briefRect = tester.getRect(briefPanel);
+    for (final label in const ['內容物', '盤中 NAV', '歷史', '後端']) {
       final labelFinder = find.descendant(
-        of: dailySummary,
+        of: briefPanel,
         matching: find.text(label),
       );
       expect(labelFinder, findsOneWidget);
       expect(
         tester.getRect(labelFinder).right,
-        lessThanOrEqualTo(dailySummaryRect.right),
+        lessThanOrEqualTo(briefRect.right),
       );
     }
     for (final label in const ['DAY', 'LIVE', 'HIS']) {
       expect(
-        find.descendant(of: dailySummary, matching: find.text(label)),
+        find.descendant(of: briefPanel, matching: find.text(label)),
         findsNothing,
       );
     }
@@ -454,7 +451,7 @@ void main() {
     await tester.pump();
 
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
-    expect(find.text('今日狀態'), findsOneWidget);
+    expect(find.text('準備首頁資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(repository.fullRequested, isFalse);
@@ -501,22 +498,8 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-loading-metric-grid')),
-      findsOneWidget,
+      findsNothing,
     );
-    final loadingMetricGrid =
-        find.byKey(const ValueKey('00631l-loading-metric-grid'));
-    for (final label in const ['盤中', '內容物', '歷史', '分析']) {
-      expect(
-        find.descendant(of: loadingMetricGrid, matching: find.text(label)),
-        findsOneWidget,
-      );
-    }
-    for (final label in const ['LIVE', 'DAY', 'HIS', 'AI']) {
-      expect(
-        find.descendant(of: loadingMetricGrid, matching: find.text(label)),
-        findsNothing,
-      );
-    }
     expect(
       find.byKey(const ValueKey('00631l-loading-section-card')),
       findsOneWidget,
@@ -537,48 +520,48 @@ void main() {
     expect(find.text('進階資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
-    final dailySummary = find.byKey(
-      const ValueKey('00631l-overview-daily-summary-strip'),
+    final briefPanel = find.byKey(
+      const ValueKey('00631l-overview-brief-panel'),
     );
-    expect(dailySummary, findsOneWidget);
+    expect(briefPanel, findsOneWidget);
     expect(
-      find.descendant(of: dailySummary, matching: find.text('syncing')),
+      find.descendant(of: briefPanel, matching: find.text('syncing')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('checking')),
+      find.descendant(of: briefPanel, matching: find.text('checking')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('loading')),
+      find.descendant(of: briefPanel, matching: find.text('loading')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('daily')),
+      find.descendant(of: briefPanel, matching: find.text('daily')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('backend')),
+      find.descendant(of: briefPanel, matching: find.text('backend')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('pending')),
+      find.descendant(of: briefPanel, matching: find.text('pending')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('P/D')),
+      find.descendant(of: briefPanel, matching: find.text('P/D')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('twse_a_k_json')),
+      find.descendant(of: briefPanel, matching: find.text('twse_a_k_json')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('error')),
+      find.descendant(of: briefPanel, matching: find.text('error')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('unavailable')),
+      find.descendant(of: briefPanel, matching: find.text('unavailable')),
       findsNothing,
     );
     _expectNoTradingActionText();
@@ -596,24 +579,24 @@ void main() {
     await _pumpLab(tester, repository, settle: false);
     await tester.pump();
 
-    final dailySummary = find.byKey(
-      const ValueKey('00631l-overview-daily-summary-strip'),
+    final briefPanel = find.byKey(
+      const ValueKey('00631l-overview-brief-panel'),
     );
-    expect(dailySummary, findsOneWidget);
+    expect(briefPanel, findsOneWidget);
     expect(
-      find.descendant(of: dailySummary, matching: find.text('syncing')),
+      find.descendant(of: briefPanel, matching: find.text('syncing')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('checking')),
+      find.descendant(of: briefPanel, matching: find.text('checking')),
       findsNothing,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('不可用')),
+      find.descendant(of: briefPanel, matching: find.text('不可用')),
       findsWidgets,
     );
     expect(
-      find.descendant(of: dailySummary, matching: find.text('錯誤')),
+      find.descendant(of: briefPanel, matching: find.text('錯誤')),
       findsWidgets,
     );
     _expectNoTradingActionText();
@@ -625,16 +608,14 @@ void main() {
     await _pumpLab(tester, repository, settle: false);
     await tester.pump();
 
-    final dailySummary = find.byKey(
-      const ValueKey('00631l-overview-daily-summary-strip'),
+    final briefPanel = find.byKey(
+      const ValueKey('00631l-overview-brief-panel'),
     );
-    expect(dailySummary, findsOneWidget);
+    expect(briefPanel, findsOneWidget);
+    expect(find.descendant(of: briefPanel, matching: find.text('暫無')),
+        findsWidgets);
     expect(
-      find.descendant(of: dailySummary, matching: find.text('連線中')),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: dailySummary, matching: find.text('checking')),
+      find.descendant(of: briefPanel, matching: find.text('checking')),
       findsNothing,
     );
     _expectNoTradingActionText();

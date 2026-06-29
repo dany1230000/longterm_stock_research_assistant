@@ -2071,3 +2071,8 @@ v7.9 improves the mobile overview density. The first screen now keeps quote,
 today summary, one-year chart, holdings digest, and one advanced-data entry in
 a clearer order, while detailed data-quality and maintenance diagnostics stay
 behind the advanced section.
+
+v8.0 removes the duplicate first-screen daily summary on mobile. The overview
+now uses one `今日快覽` block for content date, intraday NAV, history rows, and
+backend status, keeps the one-year chart open, and shortens the loading shell
+so the public PWA feels less like a blank waiting page.
