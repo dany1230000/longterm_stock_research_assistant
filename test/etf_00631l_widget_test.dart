@@ -1723,7 +1723,20 @@ void main() {
     );
     expect(find.textContaining('3 筆'), findsWidgets);
     expect(find.textContaining('0050 元大台灣50'), findsWidgets);
-    expect(find.text('0050 核心資料'), findsOneWidget);
+    expect(find.text('0050 核心資料'), findsNothing);
+    expect(
+      find.byKey(const ValueKey('00631l-quote-readiness-strip')),
+      findsOneWidget,
+    );
+    for (final label in const ['價格', '歷史', '回測', '盤中 NAV']) {
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('00631l-quote-readiness-strip')),
+          matching: find.text(label),
+        ),
+        findsOneWidget,
+      );
+    }
     expect(find.text('資料正確性'), findsNothing);
     expect(find.text('目前檔案'), findsNothing);
     expect(find.text('0050'), findsWidgets);
@@ -1732,7 +1745,7 @@ void main() {
     expect(find.text('官方內容物重點'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-selected-etf-history-readiness-strip')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-selected-etf-data-context-card')),

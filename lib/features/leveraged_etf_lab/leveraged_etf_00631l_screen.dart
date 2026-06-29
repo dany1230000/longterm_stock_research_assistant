@@ -2022,9 +2022,21 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ],
               ),
             ],
-            if (selectedEtf.is00631L) ...[
-              const SizedBox(height: 7),
-              _QuoteReadinessStrip(data: data),
+            const SizedBox(height: 7),
+            _QuoteReadinessStrip(data: data, selectedEtf: selectedEtf),
+            if (!selectedEtf.is00631L) ...[
+              const SizedBox(height: 4),
+              Text(
+                '資料範圍 ${selectedEtf.historyCoverageText}',
+                key: const ValueKey('00631l-selected-etf-coverage-line'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0,
+                ),
+              ),
             ],
           ],
         ),
@@ -2091,42 +2103,78 @@ class _QuoteReadinessItem {
 }
 
 class _QuoteReadinessStrip extends StatelessWidget {
-  const _QuoteReadinessStrip({required this.data});
+  const _QuoteReadinessStrip({
+    required this.data,
+    required this.selectedEtf,
+  });
 
   final Etf00631LLabData data;
+  final _SelectedEtfViewData selectedEtf;
 
   @override
   Widget build(BuildContext context) {
     final nav = data.intradayNav;
-    final price = data.priceHistory.completenessSummary();
+    final price = selectedEtf.priceHistory.completenessSummary();
     final latestHolding = _hasUsableHoldingsSnapshot(data.snapshot)
         ? _latestHoldingsDate(data)
         : null;
     final navTime = nav?.dataTime;
     final snapshotStatus = _sourceStatusBadgeLabel(data.snapshot.status.label);
     final navStatus = _sourceStatusBadgeLabel(nav?.status.label);
-    final items = [
-      _QuoteReadinessItem(
-        label: '內容物',
-        value: latestHolding == null ? '不可用' : _summaryMonthDay(latestHolding),
-        caption: snapshotStatus,
-      ),
-      _QuoteReadinessItem(
-        label: '盤中 NAV',
-        value: navTime == null ? '暫無' : _summaryTimeMinute(navTime),
-        caption: navStatus,
-      ),
-      _QuoteReadinessItem(
-        label: '歷史',
-        value: price.rowCount >= 2 ? '${formatInteger(price.rowCount)}筆' : '尚無',
-        caption: _summaryCoverageCompactYears(price),
-      ),
-      _QuoteReadinessItem(
-        label: '後端',
-        value: data.operationsStatus.backendConnectionLabel,
-        caption: _frontendDataModeLabel,
-      ),
-    ];
+    final latestSelectedPoint = price.latest;
+    final items = selectedEtf.is00631L
+        ? [
+            _QuoteReadinessItem(
+              label: '內容物',
+              value: latestHolding == null
+                  ? '不可用'
+                  : _summaryMonthDay(latestHolding),
+              caption: snapshotStatus,
+            ),
+            _QuoteReadinessItem(
+              label: '盤中 NAV',
+              value: navTime == null ? '暫無' : _summaryTimeMinute(navTime),
+              caption: navStatus,
+            ),
+            _QuoteReadinessItem(
+              label: '歷史',
+              value: price.rowCount >= 2
+                  ? '${formatInteger(price.rowCount)}筆'
+                  : '尚無',
+              caption: selectedEtf.historyCoverageText,
+            ),
+            _QuoteReadinessItem(
+              label: '後端',
+              value: data.operationsStatus.backendConnectionLabel,
+              caption: _frontendDataModeLabel,
+            ),
+          ]
+        : [
+            _QuoteReadinessItem(
+              label: '價格',
+              value: latestSelectedPoint == null
+                  ? _price(selectedEtf.marketPrice)
+                  : _summaryMonthDay(latestSelectedPoint.date),
+              caption: _sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel),
+            ),
+            _QuoteReadinessItem(
+              label: '歷史',
+              value: price.rowCount >= 2
+                  ? '${formatInteger(price.rowCount)}筆'
+                  : '尚無',
+              caption: _summaryCoverageCompactYears(price),
+            ),
+            _QuoteReadinessItem(
+              label: '回測',
+              value: selectedEtf.backtestReadinessLabel,
+              caption: selectedEtf.priceFieldLabel,
+            ),
+            _QuoteReadinessItem(
+              label: '盤中 NAV',
+              value: selectedEtf.is00631L ? '可用' : '未接',
+              caption: selectedEtf.liveNavScopeLabel,
+            ),
+          ];
 
     return DecoratedBox(
       key: const ValueKey('00631l-quote-readiness-strip'),
@@ -3138,9 +3186,6 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
-        if (!selectedEtf.is00631L)
-          _SelectedEtfAtAGlancePanel(selectedEtf: selectedEtf),
-        if (!selectedEtf.is00631L) const SizedBox(height: 8),
         _AlwaysExpandedPanel(
           title: selectedEtf.is00631L ? '價格與曝險' : '價格走勢',
           subtitle: selectedEtf.is00631L
@@ -3151,10 +3196,6 @@ class _OverviewSection extends StatelessWidget {
               : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
         ),
         const SizedBox(height: 8),
-        if (!selectedEtf.is00631L) ...[
-          _SelectedEtfHistoryReadinessStrip(selectedEtf: selectedEtf),
-          const SizedBox(height: 8),
-        ],
         if (selectedEtf.is00631L) ...[
           _OverviewHoldingsDigestPanel(data: data),
           const SizedBox(height: 8),
@@ -3969,80 +4010,6 @@ class _SelectedEtfHistoryReadinessStrip extends StatelessWidget {
               ],
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SelectedEtfAtAGlancePanel extends StatelessWidget {
-  const _SelectedEtfAtAGlancePanel({required this.selectedEtf});
-
-  final _SelectedEtfViewData selectedEtf;
-
-  @override
-  Widget build(BuildContext context) {
-    final history = selectedEtf.priceHistory.completenessSummary();
-    final performance = selectedEtf.priceHistory.performance;
-    final metrics = [
-      _AtAGlanceMetricData(
-        label: '目前 ETF',
-        value: selectedEtf.code,
-        caption: selectedEtf.name,
-      ),
-      _AtAGlanceMetricData(
-        label: '市價',
-        value: _price(selectedEtf.marketPrice),
-        caption: _sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel),
-      ),
-      _AtAGlanceMetricData(
-        label: '歷史資料',
-        value: history.rowCount >= 2
-            ? '${formatInteger(history.rowCount)} 筆'
-            : '缺資料',
-        caption:
-            '${_dateOrDash(history.coverageStart)} - ${_dateOrDash(history.coverageEnd)}',
-      ),
-      _AtAGlanceMetricData(
-        label: '累積報酬',
-        value: formatSignedNullablePercent(performance.totalReturnPct),
-        caption:
-            '最大回撤 ${formatSignedNullablePercent(performance.maxDrawdownPct)}',
-      ),
-    ];
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '${selectedEtf.code} 核心資料',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: _marketTextColor(context),
-                          fontWeight: FontWeight.w900,
-                        ),
-                  ),
-                ),
-                _CompactTextBadge(
-                  label: _sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            _AtAGlanceMetricGrid(metrics: metrics),
-          ],
         ),
       ),
     );
