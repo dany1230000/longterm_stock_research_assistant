@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- ETF completion clarity v8.6: `docs\00631l_v8_6_etf_completion_clarity.md`
 - ETF source-error retry v8.5: `docs\00631l_v8_5_etf_source_error_retry.md`
 - ETF source redirect v8.4: `docs\00631l_v8_4_etf_source_redirect.md`
 - ETF price basis v8.3: `docs\00631l_v8_3_etf_price_basis.md`

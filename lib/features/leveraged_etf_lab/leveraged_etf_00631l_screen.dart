@@ -10833,6 +10833,12 @@ class _EtfDataLibrarySummary extends StatelessWidget {
             historyTotal: historyTotal,
             missingCount: notReady,
           ),
+          const SizedBox(height: 8),
+          _EtfLibraryCompletionStrip(
+            status: status,
+            historyTotal: historyTotal,
+            missingCount: notReady,
+          ),
           const SizedBox(height: 10),
           _StatusRow(
             item: _etfHistoryNextActionItem(
@@ -10888,6 +10894,93 @@ class _EtfLibraryReadableSummary extends StatelessWidget {
           status: statusText,
           detail: detail,
           action: action,
+        ),
+      ),
+    );
+  }
+}
+
+class _EtfLibraryCompletionStrip extends StatelessWidget {
+  const _EtfLibraryCompletionStrip({
+    required this.status,
+    required this.historyTotal,
+    required this.missingCount,
+  });
+
+  final EtfOperationsStatus status;
+  final int historyTotal;
+  final int missingCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final counts = status.etfPriceHistoryGapReasonCounts;
+    final ready = status.etfPriceHistoryReadyCount;
+    final total = historyTotal > 0 ? historyTotal : ready + missingCount;
+    final officialEmpty = counts['official_empty'] ?? 0;
+    final sourceError = counts['source_error'] ?? 0;
+    final unclassified = counts['not_saved'] ?? 0;
+    final statusLine = sourceError <= 0 && unclassified <= 0
+        ? '所有缺口已有官方回覆或分類'
+        : '仍有來源待處理或未分類缺口';
+    final actionLine = sourceError <= 0
+        ? '資料維護已確認：可用資料與官方空資料分開標示。'
+        : '可執行 scripts\\00631l_import_missing_etf_batch.cmd 重新檢查來源錯誤。';
+
+    return DecoratedBox(
+      key: const ValueKey('00631l-etf-library-completion-strip'),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  _InlineQualityPill(
+                    label: '可用',
+                    value: '${formatInteger(ready)}/${formatInteger(total)}',
+                  ),
+                  _InlineQualityPill(
+                    label: '官方空資料',
+                    value: formatInteger(officialEmpty),
+                  ),
+                  _InlineQualityPill(
+                    label: '來源待處理',
+                    value: formatInteger(sourceError),
+                  ),
+                  _InlineQualityPill(
+                    label: '未分類',
+                    value: formatInteger(unclassified),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              statusLine,
+              key: const ValueKey('00631l-etf-library-completion-status-text'),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: _marketTextColor(context),
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              actionLine,
+              key: const ValueKey('00631l-etf-library-completion-action-text'),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ],
         ),
       ),
     );

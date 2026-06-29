@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v8.6 adds a clearer ETF database completion strip in Settings: usable
+  histories, official empty data, source items requiring attention, and
+  unclassified items are separated.
+
 - v8.5 lets the ETF history importer retry previous `source_error` attempts
   while still skipping official empty attempts, so fixed transport issues can
   be resolved by the next maintenance run.

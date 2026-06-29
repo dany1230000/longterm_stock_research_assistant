@@ -2163,6 +2163,37 @@ void main() {
     final readableSummary =
         find.byKey(const ValueKey('00631l-etf-library-readable-summary'));
     expect(readableSummary, findsOneWidget);
+    final completionStrip =
+        find.byKey(const ValueKey('00631l-etf-library-completion-strip'));
+    expect(completionStrip, findsOneWidget);
+    expect(
+      find.descendant(of: completionStrip, matching: find.text('可用')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: completionStrip, matching: find.text('231/347')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: completionStrip, matching: find.text('官方空資料')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: completionStrip, matching: find.text('116')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: completionStrip, matching: find.text('來源待處理')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: completionStrip, matching: find.text('0')),
+      findsWidgets,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-library-completion-status-text')),
+      findsOneWidget,
+    );
     expect(
       find.descendant(
         of: readableSummary,
@@ -2184,14 +2215,14 @@ void main() {
     expect(
       find.descendant(
         of: readableSummary,
-        matching: find.textContaining('官方空資料 96'),
+        matching: find.textContaining('官方空資料 116'),
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
         of: readableSummary,
-        matching: find.textContaining('來源錯誤 20'),
+        matching: find.textContaining('來源錯誤 0'),
       ),
       findsOneWidget,
     );
@@ -2679,16 +2710,15 @@ class _EtfClassifiedGapOperationsRepository
         'error': 0,
       },
       gapReasonCounts: const {
-        'official_empty': 96,
+        'official_empty': 116,
         'not_saved': 0,
         'insufficient_rows': 0,
         'validation_error': 0,
-        'source_error': 20,
+        'source_error': 0,
         'not_ready': 0,
       },
       gapReasonSamples: const {
         'official_empty': ['006201', '00679B', '00687B'],
-        'source_error': ['00749B', '00750B', '00751B'],
       },
     );
   }
