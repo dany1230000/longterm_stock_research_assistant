@@ -3,5 +3,5 @@ setlocal
 
 cd /d "%~dp0.."
 
-py backend\scripts\import_etf_price_history.py --from-catalog --missing-only --skip-attempted --allow-partial --limit 20 --progress-every 10 --summary-only %*
+py backend\scripts\import_etf_price_history.py --from-catalog --missing-only --skip-attempted --retry-source-errors --allow-partial --limit 20 --progress-every 10 --summary-only %*
 exit /b %ERRORLEVEL%

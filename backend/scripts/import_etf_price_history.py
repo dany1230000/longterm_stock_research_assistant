@@ -19,6 +19,7 @@ from backend.app.etf_price_history import (  # noqa: E402
     EtfPriceHistoryStore,
     catalog_codes,
     fetch_etf_price_history,
+    import_attempt_gap_reason,
     parse_code_list,
 )
 from backend.app.fetcher import fetch_text  # noqa: E402
@@ -55,6 +56,15 @@ def main() -> int:
         help=(
             "When used with --missing-only, also skip codes that already have "
             "local import-attempt evidence."
+        ),
+    )
+    parser.add_argument(
+        "--retry-source-errors",
+        action="store_true",
+        help=(
+            "When used with --skip-attempted, retry codes whose last import "
+            "attempt was a source_error while still skipping official empty "
+            "attempts."
         ),
     )
     parser.add_argument("--start-date", default="")
@@ -137,6 +147,7 @@ def main() -> int:
             "requestedCodes": [],
             "missingOnly": bool(args.missing_only),
             "skipAttempted": bool(args.skip_attempted),
+            "retrySourceErrors": bool(args.retry_source_errors),
             "readyCount": store.index_response(fetched_at=now).get("readyCount", 0),
             "validationFailureCount": 0,
             "validationWarningCount": 0,
@@ -289,6 +300,7 @@ def main() -> int:
         "requestedCodes": codes,
         "missingOnly": bool(args.missing_only),
         "skipAttempted": bool(args.skip_attempted),
+        "retrySourceErrors": bool(args.retry_source_errors),
         "readyCount": index.get("readyCount", 0),
         "validationFailureCount": index.get("validationFailureCount", 0),
         "validationWarningCount": index.get("validationWarningCount", 0),
@@ -318,14 +330,24 @@ def select_import_codes(
         all_codes = _resolve_codes(args, apply_slice=False)
         missing_codes = filter_missing_codes(all_codes, store)
         if bool(getattr(args, "skip_attempted", False)):
-            missing_codes = filter_attempted_codes(missing_codes, store)
+            missing_codes = filter_attempted_codes(
+                missing_codes,
+                store,
+                retry_source_errors=bool(getattr(args, "retry_source_errors", False)),
+            )
         return _slice_codes(missing_codes, args)
     codes = _resolve_codes(args)
     if bool(getattr(args, "missing_only", False)):
         missing_codes = filter_missing_codes(codes, store)
-        return filter_attempted_codes(missing_codes, store) if bool(
-            getattr(args, "skip_attempted", False)
-        ) else missing_codes
+        return (
+            filter_attempted_codes(
+                missing_codes,
+                store,
+                retry_source_errors=bool(getattr(args, "retry_source_errors", False)),
+            )
+            if bool(getattr(args, "skip_attempted", False))
+            else missing_codes
+        )
     return codes
 
 
@@ -373,12 +395,18 @@ def filter_missing_codes(
 def filter_attempted_codes(
     codes: list[str],
     store: EtfPriceHistoryStore,
+    *,
+    retry_source_errors: bool = False,
 ) -> list[str]:
-    return [
-        code
-        for code in codes
-        if store.import_attempt(code.strip().upper()) is None
-    ]
+    remaining = []
+    for code in codes:
+        attempt = store.import_attempt(code.strip().upper())
+        if attempt is None:
+            remaining.append(code)
+            continue
+        if retry_source_errors and import_attempt_gap_reason(attempt) == "source_error":
+            remaining.append(code)
+    return remaining
 
 
 def should_emit_progress(position: int, total: int, every: int) -> bool:
@@ -419,6 +447,7 @@ def build_import_summary_response(
         "requestedCodesSample": requested_codes[: max(sample_size, 0)],
         "missingOnly": payload.get("missingOnly", False),
         "skipAttempted": payload.get("skipAttempted", False),
+        "retrySourceErrors": payload.get("retrySourceErrors", False),
         "readyCount": payload.get("readyCount", 0),
         "validationFailureCount": payload.get("validationFailureCount", 0),
         "validationWarningCount": payload.get("validationWarningCount", 0),

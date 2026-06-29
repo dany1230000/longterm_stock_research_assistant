@@ -706,6 +706,10 @@ def _gap_reason_for_empty_attempt(attempt: dict[str, Any] | None) -> str:
     return "not_saved"
 
 
+def import_attempt_gap_reason(attempt: dict[str, Any] | None) -> str:
+    return _gap_reason_for_empty_attempt(attempt)
+
+
 def _attempt_has_source_error(attempt: dict[str, Any] | None) -> bool:
     if not attempt:
         return False

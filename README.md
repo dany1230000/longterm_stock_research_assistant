@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v8.5 lets the ETF history importer retry previous `source_error` attempts
+  while still skipping official empty attempts, so fixed transport issues can
+  be resolved by the next maintenance run.
+
 - v8.4 handles TWSE STOCK_DAY HTTP redirects during ETF history imports, so
   redirect responses are not misclassified as source errors. Official empty
   responses remain unavailable and are not treated as usable history.
@@ -178,7 +182,7 @@ scripts\00631l_import_etf_price_history.cmd --from-catalog --offset 230 --limit 
 ```
 
 Use `--summary-only` for daily rowCount/readyCount/coverage checks. Use the validation command when full per-ETF detail is needed.
-Use `--missing-only` to skip ETF codes that already have ready price-history rows. Use `--offset` and `--limit` for broad catalog backfills so a failed or paused run can continue from the middle of the catalog. Full refresh mode uses the earliest supported ETF history start date; incremental mode starts from the latest cached month for each ETF.
+Use `--missing-only` to skip ETF codes that already have ready price-history rows. Use `--retry-source-errors` with `--skip-attempted` when fixed source transport issues should be retried without rechecking prior official empty results. Use `--offset` and `--limit` for broad catalog backfills so a failed or paused run can continue from the middle of the catalog. Full refresh mode uses the earliest supported ETF history start date; incremental mode starts from the latest cached month for each ETF.
 Use `scripts\00631l_import_missing_etf_batch.cmd` for the default safe local missing-only batch.
 
 ETF price-history coverage tiers:

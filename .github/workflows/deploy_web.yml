@@ -109,7 +109,7 @@ jobs:
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.refresh_etf_histories == 'true' || inputs.full_etf_refresh == 'true'))
         timeout-minutes: 10
         continue-on-error: true
-        run: python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --skip-attempted --catalog-path backend/data/etf_catalog.json --limit 50 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10
+        run: python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --skip-attempted --retry-source-errors --catalog-path backend/data/etf_catalog.json --limit 50 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10
 
       - name: Probe missing ETF gap reasons
         timeout-minutes: 18
@@ -118,7 +118,7 @@ jobs:
         run: |
           for batch in 1 2 3; do
             echo "Probe missing ETF gap reasons batch ${batch}/3"
-            python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --skip-attempted --catalog-path backend/data/etf_catalog.json --limit 20 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10 || echo "WARN: missing ETF probe batch ${batch} did not complete"
+            python backend/scripts/import_etf_price_history.py --from-catalog --missing-only --skip-attempted --retry-source-errors --catalog-path backend/data/etf_catalog.json --limit 20 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 10 || echo "WARN: missing ETF probe batch ${batch} did not complete"
           done
 
       - name: Export static 00631L data

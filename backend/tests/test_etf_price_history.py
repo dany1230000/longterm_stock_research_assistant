@@ -936,6 +936,43 @@ class EtfPriceHistoryTests(unittest.TestCase):
                 ["0050", "006208"],
             )
 
+    def test_import_missing_only_can_retry_source_error_attempts(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            store = EtfPriceHistoryStore(Path(temp_dir) / "history")
+            store.record_import_attempt(
+                "0056",
+                {
+                    "sourceStatus": "error",
+                    "sourceUrl": "fixture://0056",
+                    "attemptedAt": "2026-06-27T00:00:00+00:00",
+                    "requestedMonths": 1,
+                    "rowCount": 0,
+                    "warnings": ["emptyMonths=1"],
+                    "errorMessage": "",
+                },
+            )
+            store.record_import_attempt(
+                "006208",
+                {
+                    "sourceStatus": "error",
+                    "sourceUrl": "fixture://006208",
+                    "attemptedAt": "2026-06-27T00:00:00+00:00",
+                    "requestedMonths": 1,
+                    "rowCount": 0,
+                    "warnings": [],
+                    "errorMessage": "HTTP 307 while fetching fixture://006208",
+                },
+            )
+
+            self.assertEqual(
+                filter_attempted_codes(
+                    ["0050", "0056", "006208", "00878"],
+                    store,
+                    retry_source_errors=True,
+                ),
+                ["0050", "006208", "00878"],
+            )
+
     def test_import_missing_only_catalog_batches_limit_after_filtering(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
