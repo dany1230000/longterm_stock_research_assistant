@@ -1900,73 +1900,9 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-daily-briefing-bullets')),
       findsOneWidget,
     );
-    if (find.text('今日 AI 分析摘要').evaluate().isNotEmpty) {
-      expect(find.text('今日 AI 分析摘要'), findsOneWidget);
-      expect(find.text('重點摘要'), findsOneWidget);
-      expect(find.text('程式操作'), findsWidgets);
-      expect(find.text('進階 AI 明細'), findsOneWidget);
-      expect(
-        find.byKey(const ValueKey('00631l-ai-today-snapshot')),
-        findsNothing,
-      );
-      expect(
-        find.byKey(const ValueKey('00631l-ai-daily-interpretation-card')),
-        findsNothing,
-      );
-      expect(
-        find.byKey(const ValueKey('00631l-ai-interpretation-matrix')),
-        findsNothing,
-      );
-      expect(
-        find.byKey(const ValueKey('00631l-ai-daily-brief')),
-        findsNothing,
-      );
-      await tester.scrollUntilVisible(
-        find.text('進階 AI 明細'),
-        220,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('進階 AI 明細'));
-      await tester.pumpAndSettle();
-      expect(
-        find.byKey(const ValueKey('00631l-ai-daily-brief')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const ValueKey('00631l-ai-intraday-brief')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const ValueKey('00631l-ai-risk-brief')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const ValueKey('00631l-ai-interpretation-matrix')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const ValueKey('00631l-ai-today-snapshot')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const ValueKey('00631l-ai-daily-interpretation-card')),
-        findsOneWidget,
-      );
-      expect(find.text('資料完整性'), findsOneWidget);
-      expect(find.text('非買賣建議'), findsWidgets);
-
-      await _tapSection(tester, 'settings');
-      await tester.pumpAndSettle();
-      expect(find.textContaining('00631L'), findsWidgets);
-      _expectNoTradingActionText();
-      return;
-    }
-    expect(find.text('今日 AI 判讀'), findsOneWidget);
-    expect(find.textContaining('非買賣建議'), findsWidgets);
-    expect(find.textContaining('程式操作'), findsWidgets);
-    expect(find.textContaining('TX'), findsWidgets);
-    expect(find.textContaining('台積電'), findsWidgets);
+    expect(find.text('今日 AI 分析摘要'), findsNothing);
+    expect(find.text('重點摘要'), findsNothing);
+    expect(find.text('進階 AI 明細'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-ai-today-snapshot')),
       findsNothing,
@@ -1979,27 +1915,10 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-interpretation-matrix')),
       findsNothing,
     );
-    expect(find.text('今日判讀矩陣'), findsNothing);
-    expect(find.text('資料新鮮度'), findsNothing);
-    expect(find.text('內容物變化'), findsNothing);
-    expect(find.text('歷史範圍'), findsNothing);
-    expect(find.byKey(const ValueKey('00631l-ai-daily-brief')), findsOneWidget);
     expect(
-      find.byKey(const ValueKey('00631l-ai-intraday-brief')),
-      findsOneWidget,
+      find.byKey(const ValueKey('00631l-ai-daily-brief')),
+      findsNothing,
     );
-    expect(find.byKey(const ValueKey('00631l-ai-risk-brief')), findsOneWidget);
-    expect(find.text('今日 AI 快覽'), findsOneWidget);
-    expect(find.text('今日 AI 分析摘要'), findsOneWidget);
-    expect(find.text('今日資料狀態'), findsNothing);
-    expect(find.text('資料來源與時間'), findsNothing);
-    expect(find.text('缺口與下一步'), findsNothing);
-    expect(find.text('資料狀態'), findsNothing);
-    expect(find.text('內容物重點'), findsNothing);
-    expect(find.textContaining('折溢價'), findsWidgets);
-    expect(find.text('今日重點'), findsOneWidget);
-    expect(find.text('進階 AI 明細'), findsOneWidget);
-    expect(find.textContaining('價格歷史共'), findsNothing);
     await tester.scrollUntilVisible(
       find.text('進階 AI 明細'),
       220,
@@ -2009,6 +1928,18 @@ void main() {
     await tester.tap(find.text('進階 AI 明細'));
     await tester.pumpAndSettle();
     expect(
+      find.byKey(const ValueKey('00631l-ai-daily-brief')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-intraday-brief')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-risk-brief')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-ai-interpretation-matrix')),
       findsOneWidget,
     );
@@ -2020,16 +1951,9 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-daily-interpretation-card')),
       findsOneWidget,
     );
-    expect(find.text('今日判讀矩陣'), findsOneWidget);
-    expect(find.text('資料新鮮度'), findsOneWidget);
-    expect(find.text('內容物變化'), findsOneWidget);
-    expect(find.text('歷史範圍'), findsOneWidget);
-    expect(find.text('今日資料狀態'), findsOneWidget);
-    expect(find.text('資料來源與時間'), findsOneWidget);
-    expect(find.text('缺口與下一步'), findsOneWidget);
-    expect(find.text('資料狀態'), findsWidgets);
-    expect(find.text('內容物重點'), findsOneWidget);
-    expect(find.textContaining('價格歷史共'), findsOneWidget);
+    expect(find.text('資料完整性'), findsOneWidget);
+    expect(find.text('非買賣建議'), findsWidgets);
+
     expect(find.textContaining('規則分析'), findsWidgets);
     expect(find.textContaining('非買賣建議'), findsWidgets);
     expect(find.textContaining('static public mode'), findsNothing);

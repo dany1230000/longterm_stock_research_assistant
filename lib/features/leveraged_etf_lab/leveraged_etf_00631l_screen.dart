@@ -8618,137 +8618,99 @@ class _AiSectionV2 extends StatelessWidget {
       return _SelectedEtfAiSection(selectedEtf: selectedEtf);
     }
     final summary = data.aiAnalysis;
-    final visibleBullets =
-        summary.bullets.take(3).map(_aiDisplayText).toList(growable: false);
-    final visibleActions = summary.actionItems.isEmpty
-        ? const ['目前沒有需要處理的程式操作；請維持每日流程與資料檢查。']
-        : summary.actionItems
-            .take(3)
-            .map(_aiDisplayText)
-            .toList(growable: false);
     final hiddenBullets =
-        summary.bullets.skip(3).map(_aiDisplayText).toList(growable: false);
+        summary.bullets.skip(2).map(_aiDisplayText).toList(growable: false);
     final hiddenActions =
-        summary.actionItems.skip(3).map(_aiDisplayText).toList(growable: false);
+        summary.actionItems.skip(1).map(_aiDisplayText).toList(growable: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _AiDailyBriefingHero(data: data, summary: summary),
-        const SizedBox(height: 12),
-        _SectionBlock(
-          title: '今日 AI 分析摘要',
-          subtitle: '依據官方內容物、盤中 NAV、歷史資料與維護狀態產生；非買賣建議。',
+        const SizedBox(height: 10),
+        _CompactExpansionPanel(
+          title: '進階 AI 明細',
+          subtitle: '來源、矩陣、資料完整性與更多程式操作；需要核對時再展開。',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '重點摘要',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              for (final bullet in visibleBullets)
-                _BulletLine(text: bullet, icon: Icons.insights_outlined),
-              const SizedBox(height: 8),
-              Text(
-                '程式操作',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              for (final action in visibleActions)
-                _BulletLine(text: action, icon: Icons.task_alt_outlined),
+              _AiBriefCards(data: data, summary: summary),
               const SizedBox(height: 12),
-              _CompactExpansionPanel(
-                title: '進階 AI 明細',
-                subtitle: '展開查看來源、快覽、矩陣與資料完整性。',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _AiBriefCards(data: data, summary: summary),
-                    const SizedBox(height: 12),
-                    _StatusWrap(
-                      labels: [
-                        '分析來源 ${_statusDisplay(summary.source)}',
-                        '整體狀態 ${summary.readinessLabel}',
-                        summary.disclaimer,
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      '產生時間 ${formatTaiwanDateTimeSeconds(summary.generatedAt)}'
-                      '${summary.dataTime == null ? '' : '；資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}'}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                    ),
-                    const SizedBox(height: 12),
-                    _AiTodaySnapshotPanel(data: data, summary: summary),
-                    const SizedBox(height: 12),
-                    _AiDailyInterpretationCard(data: data, summary: summary),
-                    const SizedBox(height: 12),
-                    _AiTodayInterpretationMatrix(
-                      data: data,
-                      summary: summary,
-                    ),
-                    const SizedBox(height: 12),
-                    _AiDailyStatusPanel(data: data, summary: summary),
-                    const SizedBox(height: 12),
-                    _AiSignalGrid(data: data, summary: summary),
-                    const SizedBox(height: 12),
-                    if (hiddenBullets.isNotEmpty) ...[
-                      Text(
-                        '更多 AI 摘要',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w900),
-                      ),
-                      const SizedBox(height: 8),
-                      for (final bullet in hiddenBullets)
-                        _BulletLine(
-                          text: bullet,
-                          icon: Icons.insights_outlined,
-                        ),
-                      const SizedBox(height: 8),
-                    ],
-                    if (hiddenActions.isNotEmpty) ...[
-                      Text(
-                        '更多程式操作',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w900),
-                      ),
-                      const SizedBox(height: 8),
-                      for (final action in hiddenActions)
-                        _BulletLine(
-                          text: action,
-                          icon: Icons.task_alt_outlined,
-                        ),
-                      const SizedBox(height: 8),
-                    ],
-                    Text(
-                      '資料完整性',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w900),
-                    ),
-                    const SizedBox(height: 8),
-                    for (final bullet in _completeDataBriefing(data))
-                      _BulletLine(
-                        text: _aiDisplayText(bullet),
-                        icon: Icons.analytics_outlined,
-                      ),
-                    const SizedBox(height: 8),
-                    const Text('非買賣建議'),
-                  ],
-                ),
+              _StatusWrap(
+                labels: [
+                  '分析來源 ${_statusDisplay(summary.source)}',
+                  '整體狀態 ${summary.readinessLabel}',
+                  summary.disclaimer,
+                ],
               ),
+              const SizedBox(height: 10),
+              Text(
+                '產生時間 ${formatTaiwanDateTimeSeconds(summary.generatedAt)}'
+                '${summary.dataTime == null ? '' : '；資料時間 ${formatTaiwanDateTimeSeconds(summary.dataTime!)}'}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              _AiTodaySnapshotPanel(data: data, summary: summary),
+              const SizedBox(height: 12),
+              _AiDailyInterpretationCard(data: data, summary: summary),
+              const SizedBox(height: 12),
+              _AiTodayInterpretationMatrix(
+                data: data,
+                summary: summary,
+              ),
+              const SizedBox(height: 12),
+              _AiDailyStatusPanel(data: data, summary: summary),
+              const SizedBox(height: 12),
+              _AiSignalGrid(data: data, summary: summary),
+              const SizedBox(height: 12),
+              if (hiddenBullets.isNotEmpty) ...[
+                Text(
+                  '更多 AI 摘要',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 8),
+                for (final bullet in hiddenBullets)
+                  _BulletLine(
+                    text: bullet,
+                    icon: Icons.insights_outlined,
+                  ),
+                const SizedBox(height: 8),
+              ],
+              if (hiddenActions.isNotEmpty) ...[
+                Text(
+                  '更多程式操作',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 8),
+                for (final action in hiddenActions)
+                  _BulletLine(
+                    text: action,
+                    icon: Icons.task_alt_outlined,
+                  ),
+                const SizedBox(height: 8),
+              ],
+              Text(
+                '資料完整性',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(height: 8),
+              for (final bullet in _completeDataBriefing(data))
+                _BulletLine(
+                  text: _aiDisplayText(bullet),
+                  icon: Icons.analytics_outlined,
+                ),
+              const SizedBox(height: 8),
+              const Text('非買賣建議'),
             ],
           ),
         ),
