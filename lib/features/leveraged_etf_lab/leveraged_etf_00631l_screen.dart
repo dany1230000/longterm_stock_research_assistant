@@ -6460,6 +6460,13 @@ class _HistoryBacktestSection extends StatelessWidget {
           show00631LHoldingsHistory: selectedEtf.is00631L,
         ),
         const SizedBox(height: 10),
+        _BacktestSection(
+          key: const ValueKey('00631l-backtest-view'),
+          data: data,
+          selectedEtfCode: selectedEtfCode,
+          priceHistory: history,
+        ),
+        const SizedBox(height: 10),
         _EtfHistoryComparisonPanel(
           key: const ValueKey('00631l-etf-history-comparison'),
           selectedEtfCode: selectedEtfCode,
@@ -6467,13 +6474,6 @@ class _HistoryBacktestSection extends StatelessWidget {
           histories: comparisonHistories,
           isLoading: comparisonHistoriesLoading,
           error: comparisonHistoriesError,
-        ),
-        const SizedBox(height: 10),
-        _BacktestSection(
-          key: const ValueKey('00631l-backtest-view'),
-          data: data,
-          selectedEtfCode: selectedEtfCode,
-          priceHistory: history,
         ),
       ],
     );

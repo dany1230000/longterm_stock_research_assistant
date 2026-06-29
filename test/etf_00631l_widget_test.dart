@@ -877,6 +877,16 @@ void main() {
     expect(find.textContaining('回測區間'), findsOneWidget);
     expect(find.textContaining('策略 定期定額'), findsOneWidget);
     expect(find.textContaining('樣本'), findsOneWidget);
+    final backtestView = find.byKey(const ValueKey('00631l-backtest-view'));
+    final comparisonPanel =
+        find.byKey(const ValueKey('00631l-etf-history-comparison'));
+    expect(backtestView, findsOneWidget);
+    expect(comparisonPanel, findsOneWidget);
+    expect(
+      tester.getTopLeft(backtestView).dy,
+      lessThan(tester.getTopLeft(comparisonPanel).dy),
+      reason: 'Backtest controls should stay with history before ETF compare.',
+    );
     expect(
       find.byKey(const ValueKey('00631l-backtest-range-chips')),
       findsOneWidget,
