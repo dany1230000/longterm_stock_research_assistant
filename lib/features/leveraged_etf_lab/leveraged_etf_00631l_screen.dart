@@ -1065,6 +1065,16 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
     final catalogRowCount = catalog.hasData
         ? catalog.rowCount
         : widget.data.operationsStatus.etfCatalogRowCount;
+    final effectiveCatalogRowCount = _effectiveEtfCatalogRows(
+      status: widget.data.operationsStatus,
+      loadedCatalogRows: catalogRowCount,
+    );
+    final historyTotal = _etfDataCompletionTotal(
+      status: widget.data.operationsStatus,
+      catalogRows: effectiveCatalogRowCount,
+    );
+    final historyGap =
+        (historyTotal - readyHistoryCount).clamp(0, historyTotal).toInt();
     final baseItems = query.isEmpty
         ? catalog.focusItems
         : _rankedSymbolSearchItems([
@@ -1155,20 +1165,43 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               ),
             ),
             const SizedBox(height: 10),
-            _SymbolSearchDataCompletionStrip(
-              key: const ValueKey('00631l-etf-data-completion-strip'),
-              data: widget.data,
-              catalogRowCount: catalogRowCount,
-              readyHistoryCount: readyHistoryCount,
+            _StatusWrap(
+              labels: [
+                '歷史可用 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
+                '缺口 ${formatInteger(historyGap)}',
+                '清單 ${formatInteger(catalogRowCount)}',
+              ],
             ),
             const SizedBox(height: 8),
-            _SymbolSearchReadinessNotice(
-              data: widget.data,
-              catalogRowCount: catalogRowCount,
-              readyHistoryCount: readyHistoryCount,
-              visibleReadyCount: queryReadyCount,
-              visibleCatalogOnlyCount: queryCatalogOnlyCount,
-              hasQuery: query.isNotEmpty,
+            _CompactExpansionPanel(
+              key: const ValueKey('00631l-symbol-search-database-panel'),
+              title: '資料庫狀態',
+              subtitle: '展開查看 ETF 清單、歷史匯入與缺口分類。',
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 170),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _SymbolSearchDataCompletionStrip(
+                        key: const ValueKey('00631l-etf-data-completion-strip'),
+                        data: widget.data,
+                        catalogRowCount: catalogRowCount,
+                        readyHistoryCount: readyHistoryCount,
+                      ),
+                      const SizedBox(height: 8),
+                      _SymbolSearchReadinessNotice(
+                        data: widget.data,
+                        catalogRowCount: catalogRowCount,
+                        readyHistoryCount: readyHistoryCount,
+                        visibleReadyCount: queryReadyCount,
+                        visibleCatalogOnlyCount: queryCatalogOnlyCount,
+                        hasQuery: query.isNotEmpty,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 10),
             _StatusWrap(

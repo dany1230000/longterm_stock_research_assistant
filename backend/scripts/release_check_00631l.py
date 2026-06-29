@@ -541,6 +541,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v9_1_lazy_static_catalog.md",
         "docs/00631l_v9_2_search_loading_state.md",
         "docs/00631l_v9_3_static_first_load_budget.md",
+        "docs/00631l_v9_4_compact_search_status.md",
         "scripts/00631l_check_static_first_load_budget.cmd",
         "deploy/docker-compose.yml",
         "deploy/Caddyfile",

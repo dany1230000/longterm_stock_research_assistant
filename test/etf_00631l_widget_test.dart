@@ -169,6 +169,11 @@ void main() {
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
     expect(find.textContaining('可切換研究標的'), findsOneWidget);
     expect(find.text('歷史可用 15 / 16'), findsOneWidget);
+    expect(find.text('資料庫狀態'), findsOneWidget);
+    expect(find.text('資料可用性'), findsNothing);
+    await tester.tap(find.text('資料庫狀態'));
+    await tester.pumpAndSettle();
+
     expect(find.text('資料可用性'), findsOneWidget);
     expect(find.text('可回測/比較 15 / 16'), findsOneWidget);
     expect(find.text('僅清單 1'), findsOneWidget);
@@ -270,6 +275,20 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
+      find.byKey(const ValueKey('00631l-symbol-search-database-panel')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-data-completion-strip')),
+      findsNothing,
+    );
+    expect(find.text('資料庫狀態'), findsOneWidget);
+    expect(find.text('歷史可用 228 / 228'), findsOneWidget);
+    expect(find.text('缺口 0'), findsOneWidget);
+    await tester.tap(find.text('資料庫狀態'));
+    await tester.pumpAndSettle();
+
+    expect(
       find.byKey(const ValueKey('00631l-etf-data-completion-strip')),
       findsOneWidget,
     );
@@ -278,9 +297,7 @@ void main() {
     expect(find.text('資料可用性'), findsOneWidget);
     expect(find.text('目前清單 16'), findsNothing);
     expect(find.text('統計母數 228'), findsNothing);
-    expect(find.text('歷史可用 228 / 228'), findsOneWidget);
     expect(find.text('可回測/比較 228 / 228'), findsOneWidget);
-    expect(find.text('缺口 0'), findsOneWidget);
     expect(find.text('長期資料 8'), findsNothing);
     expect(find.text('近期資料 220'), findsNothing);
     await tester.tap(find.text('資料細節'));
@@ -304,8 +321,12 @@ void main() {
 
     expect(find.text('統計母數 344'), findsNothing);
     expect(find.text('歷史可用 228 / 344'), findsOneWidget);
-    expect(find.text('可回測/比較 228 / 344'), findsOneWidget);
     expect(find.text('缺口 116'), findsOneWidget);
+    expect(find.text('可回測/比較 228 / 344'), findsNothing);
+    await tester.tap(find.text('資料庫狀態'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('可回測/比較 228 / 344'), findsOneWidget);
     expect(find.text('僅清單 116'), findsOneWidget);
     await tester.tap(find.text('資料細節'));
     await tester.pumpAndSettle();
