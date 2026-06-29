@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.18 makes ETF comparison explicitly user-selected. The history/backtest
+  comparison panel now shows a custom-basket summary, and selecting one ETF no
+  longer implies that 00631L is part of the comparison set.
+
 - v9.17 moves selected-ETF price correctness into the quote header. After using
   the top-left ETF search, the header now shows the history coverage, price
   field, and split-adjustment status together.

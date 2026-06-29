@@ -6580,6 +6580,9 @@ class _EtfHistoryComparisonPanelState
       metrics: usableMetrics,
     );
     final basketContext = _comparisonBasketContext(usableMetrics);
+    final comparisonModeSummary = usableMetrics.isEmpty
+        ? '自選比較：尚未選擇 ETF；不設基準。'
+        : '自選比較：${usableMetrics.map((metric) => metric.code).join(' / ')}；以重疊區間重算百分比，不設基準。';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -6710,6 +6713,15 @@ class _EtfHistoryComparisonPanelState
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: _marketMutedTextColor(context),
                 fontWeight: FontWeight.w700,
+              ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          comparisonModeSummary,
+          key: const ValueKey('00631l-etf-comparison-mode-summary'),
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
               ),
         ),
         const SizedBox(height: 8),

@@ -1663,6 +1663,10 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-comparison-action-strip')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-mode-summary')),
+      findsOneWidget,
+    );
     expect(find.textContaining('預設只看目前 ETF'), findsWidgets);
     expect(find.textContaining('資料筆數足夠才會進入圖表'), findsOneWidget);
     expect(find.textContaining('basket'), findsNothing);
@@ -1696,6 +1700,12 @@ void main() {
 
     expect(selectedLabel().data, contains('0050'));
     expect(selectedLabel().data, isNot(contains('00631L')));
+    final modeSummaryAfter0050 = tester.widget<Text>(
+      find.byKey(const ValueKey('00631l-etf-comparison-mode-summary')),
+    );
+    expect(modeSummaryAfter0050.data, contains('自選比較'));
+    expect(modeSummaryAfter0050.data, contains('0050'));
+    expect(modeSummaryAfter0050.data, isNot(contains('00631L')));
     await tester.tap(chip0050);
     await tester.pumpAndSettle();
     expect(selectedLabel().data, isNot(contains('0050')));
