@@ -10127,7 +10127,7 @@ class _SettingsSection extends StatelessWidget {
                     action: '左上角代號按鈕可搜尋代號、名稱與分類。',
                   ),
                   const _StatusItem(
-                    label: 'ETF comparison',
+                    label: 'ETF 比較',
                     status: '可使用',
                     detail: '歷史回測頁可自選 1-5 檔 ETF，比較同一區間的歷史報酬與回撤。',
                     action: '在歷史回測頁使用同類型篩選或手動勾選比較組合。',

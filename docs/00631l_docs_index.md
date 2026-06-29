@@ -505,6 +505,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - Overview holdings digest badges: `docs\00631l_v6_98_overview_holdings_digest_badges.md`
 - Overview chart header: `docs\00631l_v6_99_overview_chart_header.md`
 - Loading skeleton labels: `docs\00631l_v7_0_loading_skeleton_labels.md`
+- Comparison status label: `docs\00631l_v7_1_comparison_status_label.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

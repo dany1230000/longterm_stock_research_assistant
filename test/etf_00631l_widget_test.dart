@@ -1955,7 +1955,7 @@ void main() {
     expect(find.text('ETF 研究室完成度'), findsNothing);
     expect(find.text('公開 PWA'), findsNothing);
     expect(find.text('catalog'), findsNothing);
-    expect(find.text('ETF comparison'), findsNothing);
+    expect(find.text('ETF 比較'), findsNothing);
     expect(find.text('ETF 資料預覽'), findsNothing);
     expect(find.text('元大台灣50正2'), findsNothing);
     expect(find.text('App 上架準備'), findsOneWidget);
@@ -1991,7 +1991,7 @@ void main() {
     expect(find.text('ETF 研究室完成度'), findsOneWidget);
     expect(find.text('公開 PWA'), findsOneWidget);
     expect(find.text('catalog'), findsWidgets);
-    expect(find.text('ETF comparison'), findsOneWidget);
+    expect(find.text('ETF 比較'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('資料模式與完整度'),

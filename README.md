@@ -2033,3 +2033,7 @@ labels before display.
 v6.92 finishes that public wording pass by cleaning the remaining first-screen
 and history/backtest labels that mixed Chinese with raw phrases such as
 `holdings history`, `official price history`, and English comparison guidance.
+
+v7.1 localizes the remaining settings-panel comparison status label. The
+advanced ETF data panel now shows `ETF 比較` instead of an internal English
+label.
