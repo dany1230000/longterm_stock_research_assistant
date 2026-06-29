@@ -422,13 +422,22 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.byKey(const ValueKey('00631l-overview-sparkline-date-mid')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-overview-sparkline-date-end')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-sparkline-date-strip')),
       findsOneWidget,
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
       findsOneWidget,
     );
+    expect(find.textContaining('點擊圖表可查看指定日期數值'), findsWidgets);
   });
 
   testWidgets(

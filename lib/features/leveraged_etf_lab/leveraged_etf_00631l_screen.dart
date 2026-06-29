@@ -4763,47 +4763,11 @@ class _SparklineChartState extends State<_SparklineChart> {
                   strokeWidth: 0.8,
                 ),
               ),
-              titlesData: FlTitlesData(
-                topTitles: const AxisTitles(),
-                rightTitles: const AxisTitles(),
-                leftTitles: const AxisTitles(),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    interval: 1,
-                    reservedSize: 32,
-                    getTitlesWidget: (value, meta) {
-                      final index = value.round();
-                      if (!_isBottomDateTick(index, spotPoints.length)) {
-                        return const SizedBox.shrink();
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: SizedBox(
-                          width: 74,
-                          child: Align(
-                            alignment: _bottomDateTickAlignment(
-                                index, spotPoints.length),
-                            child: Text(
-                              _shortChartDate(spotPoints[index].date),
-                              key: ValueKey(
-                                '00631l-overview-sparkline-date-${_bottomDateTickSlot(index, spotPoints.length)}',
-                              ),
-                              textAlign: _bottomDateTickTextAlign(
-                                  index, spotPoints.length),
-                              style: TextStyle(
-                                color: _marketMutedTextColor(context),
-                                fontSize: 10,
-                                height: 1.05,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+              titlesData: const FlTitlesData(
+                topTitles: AxisTitles(),
+                rightTitles: AxisTitles(),
+                leftTitles: AxisTitles(),
+                bottomTitles: AxisTitles(),
               ),
               lineTouchData: LineTouchData(
                 enabled: true,
@@ -4849,6 +4813,12 @@ class _SparklineChartState extends State<_SparklineChart> {
           ),
         ),
         const SizedBox(height: 6),
+        _OverviewSparklineDateStrip(
+          start: spotPoints.first.date,
+          middle: spotPoints[(spotPoints.length - 1) ~/ 2].date,
+          end: spotPoints.last.date,
+        ),
+        const SizedBox(height: 6),
         KeyedSubtree(
           key: const ValueKey('00631l-overview-sparkline-touch-detail'),
           child: _ChartTouchDetail(
@@ -4860,6 +4830,117 @@ class _SparklineChartState extends State<_SparklineChart> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _OverviewSparklineDateStrip extends StatelessWidget {
+  const _OverviewSparklineDateStrip({
+    required this.start,
+    required this.middle,
+    required this.end,
+  });
+
+  final DateTime start;
+  final DateTime middle;
+  final DateTime end;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      key: const ValueKey('00631l-overview-sparkline-date-strip'),
+      children: [
+        Expanded(
+          child: _dateCell(
+            context,
+            key: const ValueKey('00631l-overview-sparkline-date-start'),
+            label: '起',
+            date: start,
+            align: CrossAxisAlignment.start,
+            textAlign: TextAlign.left,
+          ),
+        ),
+        const SizedBox(width: 5),
+        Expanded(
+          child: _dateCell(
+            context,
+            key: const ValueKey('00631l-overview-sparkline-date-mid'),
+            label: '中',
+            date: middle,
+            align: CrossAxisAlignment.center,
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const SizedBox(width: 5),
+        Expanded(
+          child: _dateCell(
+            context,
+            key: const ValueKey('00631l-overview-sparkline-date-end'),
+            label: '迄',
+            date: end,
+            align: CrossAxisAlignment.end,
+            textAlign: TextAlign.right,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _dateCell(
+    BuildContext context, {
+    required Key key,
+    required String label,
+    required DateTime date,
+    required CrossAxisAlignment align,
+    required TextAlign textAlign,
+  }) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: key,
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(7),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Column(
+          crossAxisAlignment: align,
+          children: [
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: textAlign,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w800,
+                fontSize: 9,
+                height: 1,
+              ),
+            ),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: textAlign == TextAlign.left
+                  ? Alignment.centerLeft
+                  : textAlign == TextAlign.center
+                      ? Alignment.center
+                      : Alignment.centerRight,
+              child: Text(
+                formatTaiwanDate(date),
+                maxLines: 1,
+                textAlign: textAlign,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  fontSize: 10,
+                  height: 1.08,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -13141,47 +13222,6 @@ String _compactChartValue(double value) {
     return value.toStringAsFixed(1);
   }
   return value.toStringAsFixed(2);
-}
-
-bool _isBottomDateTick(int index, int length) {
-  if (index < 0 || index >= length) {
-    return false;
-  }
-  if (length <= 3) {
-    return true;
-  }
-  final mid = (length - 1) ~/ 2;
-  return index == 0 || index == mid || index == length - 1;
-}
-
-String _bottomDateTickSlot(int index, int length) {
-  if (index == 0) {
-    return 'start';
-  }
-  if (index == length - 1) {
-    return 'end';
-  }
-  return 'mid';
-}
-
-Alignment _bottomDateTickAlignment(int index, int length) {
-  if (index == 0) {
-    return Alignment.centerLeft;
-  }
-  if (index == length - 1) {
-    return Alignment.centerRight;
-  }
-  return Alignment.center;
-}
-
-TextAlign _bottomDateTickTextAlign(int index, int length) {
-  if (index == 0) {
-    return TextAlign.left;
-  }
-  if (index == length - 1) {
-    return TextAlign.right;
-  }
-  return TextAlign.center;
 }
 
 class _CurveChartPanel extends StatelessWidget {
