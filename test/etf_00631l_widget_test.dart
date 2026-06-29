@@ -1963,6 +1963,14 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-today-readout')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-daily-conclusion')),
+      findsOneWidget,
+    );
+    expect(find.text('當日資料判讀'), findsOneWidget);
+    expect(find.textContaining('資料時間：'), findsOneWidget);
+    expect(find.textContaining('折溢價：'), findsOneWidget);
+    expect(find.textContaining('非投資建議'), findsWidgets);
     expect(find.text('當日資料'), findsOneWidget);
     expect(find.text('價格偏離'), findsOneWidget);
     expect(find.text('結構觀察'), findsOneWidget);

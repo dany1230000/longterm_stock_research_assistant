@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.16 makes the AI tab more answer-first. The first AI card now includes a
+  dedicated daily-data interpretation with holdings date, intraday NAV time,
+  premium/discount context, history coverage, and a non-investment disclaimer.
+
 - v9.15 adds a first-screen guard for the overview chart. Phone-width tests now
   verify that the one-year chart itself remains visible in the first viewport,
   so future header/status changes cannot quietly push the main trend view too

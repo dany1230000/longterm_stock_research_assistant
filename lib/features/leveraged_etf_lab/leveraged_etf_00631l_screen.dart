@@ -9075,6 +9075,12 @@ class _AiDailyBriefingHero extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
+            _AiDailyConclusionCard(
+              data: data,
+              summary: summary,
+              premiumText: premiumText,
+            ),
+            const SizedBox(height: 10),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -9216,6 +9222,92 @@ class _AiDailyBriefingHero extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             _BulletLine(text: primaryAction, icon: Icons.task_alt_outlined),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiDailyConclusionCard extends StatelessWidget {
+  const _AiDailyConclusionCard({
+    required this.data,
+    required this.summary,
+    required this.premiumText,
+  });
+
+  final Etf00631LLabData data;
+  final EtfAiAnalysisSummary summary;
+  final String premiumText;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final price = data.priceHistory.completenessSummary();
+    final coverage = price.coverageStart == null || price.coverageEnd == null
+        ? '資料區間暫無'
+        : '${_dateOrDash(price.coverageStart)} 至 ${_dateOrDash(price.coverageEnd)}';
+    final latestMove = formatSignedNullablePercent(price.latestDailyReturnPct);
+    final dataTime = [
+      '內容物 ${_dateOrDash(data.snapshot.tradeDate)}',
+      '盤中 NAV ${_intradayDataTimeText(data.intradayNav)}',
+    ].join('，');
+
+    return DecoratedBox(
+      key: const ValueKey('00631l-ai-daily-conclusion'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '當日資料判讀',
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '資料時間：$dataTime。',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketTextColor(context),
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '折溢價：$premiumText',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketTextColor(context),
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '歷史資料：${formatInteger(price.rowCount)} 筆，區間 $coverage，最近一日 $latestMove。',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketTextColor(context),
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '目前分析來源 ${_sourceStatusBadgeLabel(summary.sourceStatusLabel)}；只解讀資料狀態與歷史變化，非投資建議。',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                height: 1.35,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ],
         ),
       ),
