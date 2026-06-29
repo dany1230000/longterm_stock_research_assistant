@@ -2021,6 +2021,18 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-daily-conclusion')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-daily-decision-strip')),
+      findsOneWidget,
+    );
+    final aiDecisionStrip =
+        find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
+    for (final label in const ['今日資料', '偏離判讀', '歷史資料', '後續操作']) {
+      expect(
+        find.descendant(of: aiDecisionStrip, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
     expect(find.text('當日資料判讀'), findsOneWidget);
     expect(find.textContaining('資料時間：'), findsOneWidget);
     expect(find.textContaining('折溢價：'), findsOneWidget);

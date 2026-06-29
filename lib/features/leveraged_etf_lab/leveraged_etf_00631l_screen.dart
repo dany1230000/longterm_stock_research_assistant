@@ -9214,6 +9214,13 @@ class _AiDailyBriefingHero extends StatelessWidget {
               premiumText: premiumText,
             ),
             const SizedBox(height: 10),
+            _AiDailyDecisionStrip(
+              data: data,
+              summary: summary,
+              premiumText: premiumText,
+              primaryAction: primaryAction,
+            ),
+            const SizedBox(height: 10),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -9438,6 +9445,123 @@ class _AiDailyConclusionCard extends StatelessWidget {
               style: theme.textTheme.bodySmall?.copyWith(
                 color: _marketMutedTextColor(context),
                 height: 1.35,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiDailyDecisionStrip extends StatelessWidget {
+  const _AiDailyDecisionStrip({
+    required this.data,
+    required this.summary,
+    required this.premiumText,
+    required this.primaryAction,
+  });
+
+  final Etf00631LLabData data;
+  final EtfAiAnalysisSummary summary;
+  final String premiumText;
+  final String primaryAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final price = data.priceHistory.completenessSummary();
+    final coverage = price.coverageStart == null || price.coverageEnd == null
+        ? '資料範圍暫無'
+        : '${_dateOrDash(price.coverageStart)} - ${_dateOrDash(price.coverageEnd)}';
+    final items = [
+      _AiDailyDecisionItem(
+        label: '今日資料',
+        value:
+            '內容物 ${_dateOrDash(data.snapshot.tradeDate)}；NAV ${_intradayDataTimeText(data.intradayNav)}',
+      ),
+      _AiDailyDecisionItem(
+        label: '偏離判讀',
+        value: premiumText,
+      ),
+      _AiDailyDecisionItem(
+        label: '歷史資料',
+        value: '${formatInteger(price.rowCount)} 筆；$coverage',
+      ),
+      _AiDailyDecisionItem(
+        label: '後續操作',
+        value: primaryAction,
+      ),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 620;
+        return Wrap(
+          key: const ValueKey('00631l-ai-daily-decision-strip'),
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final item in items)
+              SizedBox(
+                width: compact
+                    ? constraints.maxWidth
+                    : (constraints.maxWidth - 8) / 2,
+                child: _AiDailyDecisionTile(item: item),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _AiDailyDecisionItem {
+  const _AiDailyDecisionItem({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+}
+
+class _AiDailyDecisionTile extends StatelessWidget {
+  const _AiDailyDecisionTile({required this.item});
+
+  final _AiDailyDecisionItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              item.value,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketTextColor(context),
+                height: 1.3,
                 fontWeight: FontWeight.w800,
               ),
             ),

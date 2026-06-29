@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.22 makes the AI page more answer-first. The top AI briefing now includes a
+  daily decision strip for today data, deviation interpretation, history data,
+  and follow-up program action.
+
 - v9.21 clarifies history and backtest date ranges. The history page now shows
   range mode, start date, and end date as separate compact labels, and chart
   touch detail separates date from value for phone readability.
