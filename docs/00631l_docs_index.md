@@ -4,6 +4,8 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Public ETF history carry-forward v8.9: `docs\00631l_v8_9_public_etf_history_carry_forward.md`
+- ETF history source provenance v8.8: `docs\00631l_v8_8_etf_history_source_provenance.md`
 - TPEx ETF history fallback v8.7: `docs\00631l_v8_7_tpex_etf_history_fallback.md`
 - ETF completion clarity v8.6: `docs\00631l_v8_6_etf_completion_clarity.md`
 - ETF source-error retry v8.5: `docs\00631l_v8_5_etf_source_error_retry.md`

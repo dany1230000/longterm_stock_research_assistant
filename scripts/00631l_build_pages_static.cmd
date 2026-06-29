@@ -6,6 +6,7 @@ cd /d "%~dp0.."
 set "FULL_ETF_REFRESH=0"
 set "REFRESH_ETF_HISTORY=0"
 set "PROBE_MISSING=0"
+set "RESTORE_PUBLIC_HISTORY=1"
 set "RESTORE_PUBLIC_ATTEMPTS=1"
 
 :parse_args
@@ -31,13 +32,23 @@ if /I "%~1"=="--restore-public-attempts" (
     shift
     goto parse_args
 )
+if /I "%~1"=="--restore-public-history" (
+    set "RESTORE_PUBLIC_HISTORY=1"
+    shift
+    goto parse_args
+)
+if /I "%~1"=="--skip-restore-public-history" (
+    set "RESTORE_PUBLIC_HISTORY=0"
+    shift
+    goto parse_args
+)
 if /I "%~1"=="--skip-restore-public-attempts" (
     set "RESTORE_PUBLIC_ATTEMPTS=0"
     shift
     goto parse_args
 )
 echo Unknown argument: %~1
-echo Usage: scripts\00631l_build_pages_static.cmd [--refresh-etf-history] [--full-etf-refresh] [--probe-missing] [--restore-public-attempts] [--skip-restore-public-attempts]
+echo Usage: scripts\00631l_build_pages_static.cmd [--refresh-etf-history] [--full-etf-refresh] [--probe-missing] [--restore-public-history] [--skip-restore-public-history] [--restore-public-attempts] [--skip-restore-public-attempts]
 exit /b 2
 
 :after_args
@@ -67,6 +78,14 @@ if "%FULL_ETF_REFRESH%"=="1" (
 ) else (
     echo [00631L] Skipping broad all-catalog ETF recent refresh for fast Pages build.
     echo [00631L] Run scripts\00631l_build_pages_static.cmd --full-etf-refresh for scheduled/manual full refresh.
+)
+
+if "%RESTORE_PUBLIC_HISTORY%"=="1" (
+    call scripts\00631l_restore_public_etf_price_history.cmd --output-dir backend\data\etf_price_history
+    if errorlevel 1 exit /b %ERRORLEVEL%
+) else (
+    echo [00631L] Skipping public ETF history restore for this local Pages build.
+    echo [00631L] Remove --skip-restore-public-history to reuse public price-history rows.
 )
 
 if "%RESTORE_PUBLIC_ATTEMPTS%"=="1" (

@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v8.9 keeps public static ETF price histories from regressing by restoring
+  deployed `etf_price_history/*.json` rows before the next GitHub Pages export.
+  Missing official rows still remain unavailable instead of being inferred.
+
 - v8.8 shows ETF price-history source provenance in the app and static JSON.
   TWSE STOCK_DAY rows and TPEx ETF daily-history fallback rows are counted
   separately so source labels stay truthful.
