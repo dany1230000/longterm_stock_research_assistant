@@ -5114,38 +5114,32 @@ class _OverviewBriefPanel extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 9, 10, 10),
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const _MiniStatusBadge(label: 'TODAY'),
+                const _MiniStatusBadge(label: 'DATA'),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '今日快覽',
+                    _overviewAiBrief(data),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
+                      height: 1.2,
                     ),
                   ),
                 ),
+                const SizedBox(width: 6),
+                _CompactTextBadge(label: _frontendDataModeLabel),
               ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              _overviewAiBrief(data),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                height: 1.35,
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             _AtAGlanceMetricGrid(
               metrics: [
                 _AtAGlanceMetricData(
@@ -5172,15 +5166,6 @@ class _OverviewBriefPanel extends StatelessWidget {
                   value: data.operationsStatus.backendConnectionLabel,
                   caption: _frontendDataModeLabel,
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            _StatusWrap(
-              labels: [
-                _frontendDataModeLabel,
-                '資料 ${_sourceStatusBadgeLabel(data.status.label)}',
-                'NAV ${_sourceStatusBadgeLabel(nav?.status.label ?? 'unavailable')}',
-                data.aiAnalysis.disclaimer,
               ],
             ),
           ],

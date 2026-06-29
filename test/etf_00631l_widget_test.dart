@@ -49,7 +49,7 @@ void main() {
     expect(find.textContaining('預估淨值'), findsNothing);
     expect(find.textContaining('折溢價'), findsWidgets);
     expect(find.text('核心資料'), findsNothing);
-    expect(find.text('今日快覽'), findsOneWidget);
+    expect(find.text('今日快覽'), findsNothing);
     expect(find.text('資料完整度'), findsNothing);
     expect(find.text('回測'), findsNothing);
     expect(find.text('可用'), findsNothing);
@@ -73,7 +73,9 @@ void main() {
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.text('HIS'), findsNothing);
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
-    final summaryTop = tester.getTopLeft(find.text('今日快覽')).dy;
+    final summaryTop = tester
+        .getTopLeft(find.byKey(const ValueKey('00631l-overview-brief-panel')))
+        .dy;
     expect(summaryTop, lessThan(chartTitleTop));
     expect(find.text('官方 NAV'), findsNothing);
     expect(find.textContaining('Mock 預設'), findsWidgets);
@@ -363,7 +365,7 @@ void main() {
 
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.text('核心資料'), findsNothing);
-    expect(find.text('今日快覽'), findsOneWidget);
+    expect(find.text('今日快覽'), findsNothing);
     expect(find.text('資料完整度'), findsNothing);
     expect(find.text('圖表與曝險'), findsNothing);
     expect(find.text('進階資料'), findsOneWidget);
