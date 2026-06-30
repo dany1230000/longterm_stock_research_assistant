@@ -76,6 +76,13 @@ void main() {
     expect(find.text('歷史'), findsWidgets);
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.text('HIS'), findsNothing);
+    final compactQuoteHeader =
+        find.byKey(const ValueKey('00631l-main-quote-header'));
+    expect(compactQuoteHeader, findsOneWidget);
+    expect(
+      tester.getRect(compactQuoteHeader).height,
+      lessThanOrEqualTo(168),
+    );
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
     final summaryTop = tester
         .getTopLeft(find.byKey(const ValueKey('00631l-quote-readiness-strip')))

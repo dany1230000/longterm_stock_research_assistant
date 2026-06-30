@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.26 tightens the first-screen quote header. The main mobile quote card now
+  has a height guard so price, source readiness, and the one-year chart stay
+  visible without a large hero block.
+
 - v9.25 makes the overview update-time chips show source status directly. The
   TX chip now distinguishes missing live backend data from a real futures quote,
   so static public mode is less likely to be mistaken for live TX data.

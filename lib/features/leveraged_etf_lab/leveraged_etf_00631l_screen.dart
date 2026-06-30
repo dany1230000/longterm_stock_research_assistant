@@ -1484,7 +1484,8 @@ class _SymbolSearchReadinessNotice extends StatelessWidget {
             : '缺口已分類';
     final theme = Theme.of(context);
 
-    return DecoratedBox(
+    return Container(
+      key: const ValueKey('00631l-compact-quote-header'),
       decoration: BoxDecoration(
         color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
@@ -1798,7 +1799,7 @@ class _MarketSentimentStrip extends StatelessWidget {
       isStale: nav?.isStale ?? true,
     );
     final statusSummary = data.statusSummary;
-    return DecoratedBox(
+    return Container(
       decoration: BoxDecoration(
         color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
@@ -1941,14 +1942,15 @@ class _CompactQuoteHeader extends StatelessWidget {
                     ? '市價 · 盤中資料暫無'
                     : '市價 · ${_statusDisplay(quoteStatus)} ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
-    return DecoratedBox(
+    return Container(
+      key: const ValueKey('00631l-main-quote-header'),
       decoration: BoxDecoration(
         color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 7, 10, 8),
+        padding: const EdgeInsets.fromLTRB(9, 6, 9, 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -2035,9 +2037,9 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ],
               ),
             ],
-            const SizedBox(height: 5),
+            const SizedBox(height: 3),
             const _OverviewFirstGlanceStrip(),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             _QuoteReadinessStrip(data: data, selectedEtf: selectedEtf),
             if (!selectedEtf.is00631L) ...[
               const SizedBox(height: 4),
@@ -2227,7 +2229,7 @@ class _QuoteReadinessStrip extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(6),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
         child: Row(
           children: [
             for (var index = 0; index < items.length; index++) ...[
