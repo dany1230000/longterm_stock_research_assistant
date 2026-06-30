@@ -57,7 +57,7 @@ void main() {
     expect(find.text('進階資料'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-quote-readiness-strip')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-brief-panel')),
@@ -69,30 +69,9 @@ void main() {
     expect(find.text('更多資料狀態'), findsNothing);
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
     expect(find.text('內容物重點'), findsNothing);
-    final quoteReadinessStrip = find.byKey(
-      const ValueKey('00631l-quote-readiness-strip'),
-    );
-    expect(
-      find.descendant(
-        of: quoteReadinessStrip,
-        matching: find.text('價格欄位'),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: quoteReadinessStrip,
-        matching: find.text('分割調整'),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: quoteReadinessStrip,
-        matching: find.text('後端'),
-      ),
-      findsNothing,
-    );
+    expect(find.text('價格欄位'), findsNothing);
+    expect(find.text('分割調整'), findsNothing);
+    expect(find.text('後端'), findsNothing);
     expect(find.text('覆蓋型態'), findsNothing);
     expect(find.text('ETF歷史'), findsNothing);
     expect(find.text('歷史'), findsNothing);
@@ -104,13 +83,11 @@ void main() {
     expect(compactQuoteHeader, findsOneWidget);
     expect(
       tester.getRect(compactQuoteHeader).height,
-      lessThanOrEqualTo(118),
+      lessThanOrEqualTo(92),
     );
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
-    final summaryTop = tester
-        .getTopLeft(find.byKey(const ValueKey('00631l-quote-readiness-strip')))
-        .dy;
-    expect(summaryTop, lessThan(chartTitleTop));
+    expect(
+        chartTitleTop, greaterThan(tester.getRect(compactQuoteHeader).bottom));
     expect(find.text('官方 NAV'), findsNothing);
     expect(find.textContaining('Mock 預設'), findsWidgets);
     final quoteMetaStrip = find.byKey(
@@ -144,10 +121,39 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsNothing,
     );
-    await tester.ensureVisible(find.text('進階資料'));
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-overview-more-expansion')),
+    );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('進階資料'));
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-overview-more-expansion')),
+    );
     await tester.pumpAndSettle();
+    final quoteReadinessStrip = find.byKey(
+      const ValueKey('00631l-quote-readiness-strip'),
+    );
+    expect(quoteReadinessStrip, findsOneWidget);
+    expect(
+      find.descendant(
+        of: quoteReadinessStrip,
+        matching: find.text('價格欄位'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: quoteReadinessStrip,
+        matching: find.text('分割調整'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: quoteReadinessStrip,
+        matching: find.text('後端'),
+      ),
+      findsNothing,
+    );
     expect(find.text('資料正確性'), findsOneWidget);
     expect(find.text('更新時間'), findsOneWidget);
     expect(
@@ -456,7 +462,7 @@ void main() {
     final readinessStrip = find.byKey(
       const ValueKey('00631l-quote-readiness-strip'),
     );
-    expect(readinessStrip, findsOneWidget);
+    expect(readinessStrip, findsNothing);
     final firstGlanceStrip = find.byKey(
       const ValueKey('00631l-overview-first-glance-strip'),
     );
@@ -469,11 +475,15 @@ void main() {
       const ValueKey('00631l-overview-sparkline-chart'),
     );
     expect(chartFinder, findsOneWidget);
-    expect(
-      tester.getRect(readinessStrip).bottom,
-      lessThan(tester.getRect(chartFinder).top),
-    );
     expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(500));
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-overview-more-expansion')),
+    );
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-overview-more-expansion')),
+    );
+    await tester.pumpAndSettle();
+    expect(readinessStrip, findsOneWidget);
     final stripRect = tester.getRect(readinessStrip);
     for (final label in const ['內容物', '盤中 NAV', '價格欄位', '分割調整']) {
       final labelFinder = find.descendant(
@@ -671,11 +681,13 @@ void main() {
     final readinessStrip = find.byKey(
       const ValueKey('00631l-quote-readiness-strip'),
     );
-    expect(readinessStrip, findsOneWidget);
+    expect(readinessStrip, findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-brief-panel')),
       findsNothing,
     );
+    await _expandOverviewMore(tester);
+    expect(readinessStrip, findsOneWidget);
     expect(
       find.descendant(of: readinessStrip, matching: find.text('syncing')),
       findsNothing,
@@ -734,6 +746,8 @@ void main() {
     final readinessStrip = find.byKey(
       const ValueKey('00631l-quote-readiness-strip'),
     );
+    expect(readinessStrip, findsNothing);
+    await _expandOverviewMore(tester);
     expect(readinessStrip, findsOneWidget);
     expect(
       find.descendant(of: readinessStrip, matching: find.text('syncing')),
@@ -763,6 +777,8 @@ void main() {
     final readinessStrip = find.byKey(
       const ValueKey('00631l-quote-readiness-strip'),
     );
+    expect(readinessStrip, findsNothing);
+    await _expandOverviewMore(tester);
     expect(readinessStrip, findsOneWidget);
     expect(find.descendant(of: readinessStrip, matching: find.text('暫無')),
         findsWidgets);
@@ -1910,9 +1926,18 @@ void main() {
       find.byKey(const ValueKey('00631l-selected-etf-readiness-banner')),
       findsNothing,
     );
-    expect(find.textContaining('3筆'), findsWidgets);
     expect(find.textContaining('0050 元大台灣50'), findsWidgets);
     expect(find.text('0050 核心資料'), findsNothing);
+    expect(
+      find.byKey(const ValueKey('00631l-quote-readiness-strip')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-selected-etf-coverage-line')),
+      findsNothing,
+    );
+    await _expandOverviewMore(tester);
+    expect(find.textContaining('3筆'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-quote-readiness-strip')),
       findsOneWidget,
@@ -2694,6 +2719,14 @@ Future<void> _tapSection(WidgetTester tester, String sectionName) async {
   final finder = find.byKey(ValueKey('00631l-section-$sectionName'));
   await tester.ensureVisible(finder);
   await tester.tap(finder);
+}
+
+Future<void> _expandOverviewMore(WidgetTester tester) async {
+  final finder = find.byKey(const ValueKey('00631l-overview-more-expansion'));
+  await tester.ensureVisible(finder);
+  await tester.pump(const Duration(milliseconds: 250));
+  await tester.tap(finder);
+  await tester.pump(const Duration(milliseconds: 300));
 }
 
 class _PriceHistoryRepository extends Mock00631LRepository {

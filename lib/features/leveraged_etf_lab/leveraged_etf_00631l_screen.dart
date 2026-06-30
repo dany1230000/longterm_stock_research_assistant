@@ -2027,22 +2027,6 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 2),
-            _QuoteReadinessStrip(data: data, selectedEtf: selectedEtf),
-            if (!selectedEtf.is00631L) ...[
-              const SizedBox(height: 4),
-              Text(
-                '資料範圍 ${selectedEtf.historyCoverageText} · 價格欄位 ${selectedEtf.priceFieldLabel} · 分割調整 ${_priceAdjustmentConfidenceLabel(selectedEtf.code, selectedEtf.historySummary)}',
-                key: const ValueKey('00631l-selected-etf-coverage-line'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: _marketMutedTextColor(context),
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0,
-                ),
-              ),
-            ],
           ],
         ),
       ),
@@ -3182,6 +3166,7 @@ class _OverviewSection extends StatelessWidget {
           const SizedBox(height: 8),
         ],
         _CompactExpansionPanel(
+          key: const ValueKey('00631l-overview-more-expansion'),
           title: '進階資料',
           subtitle: selectedEtf.is00631L
               ? '資料來源、完整性、比較與維護細節集中在這裡。'
@@ -3192,7 +3177,7 @@ class _OverviewSection extends StatelessWidget {
                   history: history,
                   selectedEtf: selectedEtf,
                 )
-              : _SelectedEtfMorePanel(selectedEtf: selectedEtf),
+              : _SelectedEtfMorePanel(data: data, selectedEtf: selectedEtf),
         ),
       ],
     );
@@ -4041,15 +4026,34 @@ class _SelectedEtfSignalPanel extends StatelessWidget {
 }
 
 class _SelectedEtfMorePanel extends StatelessWidget {
-  const _SelectedEtfMorePanel({required this.selectedEtf});
+  const _SelectedEtfMorePanel({
+    required this.data,
+    required this.selectedEtf,
+  });
 
+  final Etf00631LLabData data;
   final _SelectedEtfViewData selectedEtf;
 
   @override
   Widget build(BuildContext context) {
     final summary = selectedEtf.priceHistory.completenessSummary();
+    final theme = Theme.of(context);
     return Column(
       children: [
+        _QuoteReadinessStrip(data: data, selectedEtf: selectedEtf),
+        const SizedBox(height: 6),
+        Text(
+          '資料範圍 ${selectedEtf.historyCoverageText} · 價格欄位 ${selectedEtf.priceFieldLabel} · 分割調整 ${_priceAdjustmentConfidenceLabel(selectedEtf.code, selectedEtf.historySummary)}',
+          key: const ValueKey('00631l-selected-etf-coverage-line'),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: _marketMutedTextColor(context),
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0,
+          ),
+        ),
+        const SizedBox(height: 8),
         _StatusList(
           items: [
             _StatusItem(
@@ -4095,6 +4099,8 @@ class _OverviewMorePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        _QuoteReadinessStrip(data: data, selectedEtf: selectedEtf),
+        const SizedBox(height: 8),
         _OverviewUpdateClockStrip(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
         _OverviewQualityRibbon(data: data, selectedEtf: selectedEtf),
