@@ -24,6 +24,7 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
             [step["name"] for step in payload["steps"]],
             [
                 "deploy_wait",
+                "public_backend_status",
                 "remote_maintenance",
                 "gap_discovery",
                 "gap_batches",
@@ -41,8 +42,8 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
                     "httpStatus": 200,
                     "payload": {
                         "items": [
-                            {"code": "0050", "name": "元大台灣50"},
-                            {"code": "009824", "name": "群益台灣精選高息"},
+                            {"code": "0050", "name": "ETF 0050"},
+                            {"code": "009824", "name": "ETF 009824"},
                         ]
                     },
                 }
@@ -53,7 +54,7 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
                         "items": [
                             {
                                 "code": "009824",
-                                "name": "群益台灣精選高息",
+                                "name": "ETF 009824",
                                 "gapReason": "not_saved",
                             }
                         ]
@@ -69,6 +70,7 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
             base_url="https://backend.example.com",
             expected_release_tag="00631l-lab-test",
             deploy_wait_runner=lambda **kwargs: _payload("PASS"),
+            backend_status_runner=lambda **kwargs: _payload("PASS"),
             maintenance_runner=lambda **kwargs: _payload("PASS"),
             batch_runner=batch_runner,
             freshness_runner=lambda **kwargs: _payload("PASS"),
@@ -90,7 +92,7 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
             if path == "/api/etf/catalog":
                 return {
                     "httpStatus": 200,
-                    "payload": {"items": [{"code": "0050", "name": "元大台灣50"}]},
+                    "payload": {"items": [{"code": "0050", "name": "ETF 0050"}]},
                 }
             if path == "/api/etf/history/gaps":
                 return {"httpStatus": 200, "payload": {"items": []}}
@@ -98,6 +100,7 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
 
         payload = run_public_post_deploy_refresh(
             deploy_wait_runner=lambda **kwargs: _payload("PASS"),
+            backend_status_runner=lambda **kwargs: _payload("PASS"),
             maintenance_runner=lambda **kwargs: _payload("PASS"),
             batch_runner=lambda **kwargs: batch_calls.append(kwargs) or _payload("PASS"),
             freshness_runner=lambda **kwargs: _payload("PASS"),
@@ -116,7 +119,7 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
                     "httpStatus": 200,
                     "payload": {
                         "items": [
-                            {"code": "009824", "name": "群益台灣精選高息"},
+                            {"code": "009824", "name": "ETF 009824"},
                         ]
                     },
                 }
@@ -127,7 +130,7 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
                         "items": [
                             {
                                 "code": "009824",
-                                "name": "群益台灣精選高息",
+                                "name": "ETF 009824",
                                 "gapReason": "not_saved",
                             }
                         ]
@@ -140,6 +143,10 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
                 **_payload("WARN"),
                 "warnings": ["initial freshness warning"],
                 "actionItems": ["run maintenance"],
+            },
+            backend_status_runner=lambda **kwargs: {
+                **_payload("WARN"),
+                "warnings": ["fresh marker warning"],
             },
             maintenance_runner=lambda **kwargs: {
                 **_payload("WARN"),
@@ -157,11 +164,41 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "PASS")
         self.assertEqual(payload["warnings"], [])
         self.assertEqual(payload["actionItems"], [])
-        self.assertEqual(len(payload["summary"]["resolvedWarnings"]), 3)
+        self.assertEqual(len(payload["summary"]["resolvedWarnings"]), 4)
+
+    def test_backend_status_failure_stops_before_writes(self) -> None:
+        maintenance_calls: list[dict] = []
+
+        payload = run_public_post_deploy_refresh(
+            deploy_wait_runner=lambda **kwargs: _payload("PASS"),
+            backend_status_runner=lambda **kwargs: {
+                **_payload("FAIL"),
+                "failures": ["storage paths are not writable"],
+            },
+            maintenance_runner=lambda **kwargs: maintenance_calls.append(kwargs)
+            or _payload("PASS"),
+            batch_runner=lambda **kwargs: _payload("PASS"),
+            freshness_runner=lambda **kwargs: _payload("PASS"),
+            requester=lambda *args: {"httpStatus": 200, "payload": {"items": []}},
+        )
+
+        self.assertEqual(payload["overallStatus"], "FAIL")
+        self.assertEqual(maintenance_calls, [])
+        self.assertTrue(
+            any(
+                item.startswith("Fix public backend storage readiness")
+                for item in payload["actionItems"]
+            )
+        )
+        self.assertEqual(
+            [step["name"] for step in payload["steps"]],
+            ["deploy_wait", "public_backend_status"],
+        )
 
     def test_gap_discovery_error_is_reported_as_warning(self) -> None:
         payload = run_public_post_deploy_refresh(
             deploy_wait_runner=lambda **kwargs: _payload("PASS"),
+            backend_status_runner=lambda **kwargs: _payload("PASS"),
             maintenance_runner=lambda **kwargs: _payload("PASS"),
             batch_runner=lambda **kwargs: _payload("PASS"),
             freshness_runner=lambda **kwargs: _payload("PASS"),

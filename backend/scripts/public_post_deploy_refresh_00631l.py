@@ -20,7 +20,10 @@ from backend.app.config import settings  # noqa: E402
 from backend.scripts.compare_public_data_freshness_00631l import (  # noqa: E402
     run_public_data_freshness_check,
 )
-from backend.scripts.public_backend_status_00631l import DEFAULT_BACKEND_URL  # noqa: E402
+from backend.scripts.public_backend_status_00631l import (  # noqa: E402
+    DEFAULT_BACKEND_URL,
+    run_public_backend_status,
+)
 from backend.scripts.remote_maintenance_00631l import run_remote_maintenance  # noqa: E402
 from backend.scripts.run_public_etf_catalog_batches_00631l import (  # noqa: E402
     run_public_etf_catalog_batches,
@@ -44,6 +47,7 @@ def run_public_post_deploy_refresh(
     max_gap_batches: int = 5,
     dry_run: bool = False,
     deploy_wait_runner: RunnerFn | None = None,
+    backend_status_runner: RunnerFn | None = None,
     maintenance_runner: RunnerFn | None = None,
     batch_runner: RunnerFn | None = None,
     freshness_runner: RunnerFn | None = None,
@@ -63,6 +67,7 @@ def run_public_post_deploy_refresh(
             dry_run=True,
             steps=[
                 _step("deploy_wait", "PASS", "planned"),
+                _step("public_backend_status", "PASS", "planned"),
                 _step("remote_maintenance", "PASS", "planned"),
                 _step("gap_discovery", "PASS", "planned"),
                 _step("gap_batches", "PASS", "planned"),
@@ -82,6 +87,38 @@ def run_public_post_deploy_refresh(
         interval_seconds=max(0, int(wait_interval_seconds or 0)),
         timeout_seconds=max(1, int(timeout_seconds or 1)),
     )
+    backend_status_payload = (backend_status_runner or run_public_backend_status)(
+        base_url=normalized_base_url,
+        timeout_seconds=max(1, int(timeout_seconds or 1)),
+    )
+    if str(backend_status_payload.get("overallStatus") or "WARN") == "FAIL":
+        return _payload(
+            checked_at=checked_at,
+            base_url=normalized_base_url,
+            dry_run=False,
+            steps=[
+                _payload_step("deploy_wait", wait_payload),
+                _payload_step("public_backend_status", backend_status_payload),
+            ],
+            summary={
+                "expectedReleaseTag": resolved_release_tag,
+                "finalFreshnessStatus": None,
+                "finalFreshnessSummary": {},
+            },
+            action_items=_dedupe(
+                [
+                    *[str(item) for item in wait_payload.get("actionItems") or []],
+                    *[
+                        str(item)
+                        for item in backend_status_payload.get("actionItems") or []
+                    ],
+                    (
+                        "Fix public backend storage readiness before running "
+                        "post-deploy data refresh."
+                    ),
+                ]
+            ),
+        )
     maintenance_payload = (maintenance_runner or run_remote_maintenance)(
         base_url=normalized_base_url,
         mode="daily",
@@ -145,6 +182,7 @@ def run_public_post_deploy_refresh(
 
     steps = [
         _payload_step("deploy_wait", wait_payload),
+        _payload_step("public_backend_status", backend_status_payload),
         _payload_step("remote_maintenance", maintenance_payload),
         _step(
             "gap_discovery",
@@ -371,7 +409,11 @@ def _dedupe(items: list[str]) -> list[str]:
 
 def _is_resolved_warning_step(step: dict[str, Any]) -> bool:
     name = str(step.get("name") or "")
-    return name in {"deploy_wait", "remote_maintenance"} or name.startswith("gap_batch_")
+    return name in {
+        "deploy_wait",
+        "public_backend_status",
+        "remote_maintenance",
+    } or name.startswith("gap_batch_")
 
 
 def _normalize_base_url(value: str) -> str:
