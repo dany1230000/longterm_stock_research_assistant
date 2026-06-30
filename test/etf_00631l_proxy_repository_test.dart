@@ -730,6 +730,32 @@ void main() {
     expect(data.priceHistory.sourceStatusLabel, 'mock');
     expect(data.aiAnalysis.sourceStatusLabel, 'mock');
   });
+
+  test('cached fast startup can race static preview before slow live proxy',
+      () async {
+    final repository = Cached00631LRepository(
+      primary: _NeverCompletingFastRepository(),
+      fallback: Static00631LRepository(
+        client: _FakeProxyHttpClient({
+          '00631l-static-data/price_preview.json':
+              jsonEncode(_staticPricePreviewPayload()),
+          '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
+          '00631l-static-data/release.json':
+              jsonEncode(_staticReleasePayload()),
+        }),
+      ),
+      fastPrimaryTimeout: const Duration(seconds: 5),
+      raceFastFallback: true,
+    );
+
+    final data = await repository
+        .fetchFastLabData()
+        .timeout(const Duration(milliseconds: 200));
+
+    expect(data.priceHistory.sourceStatusLabel, 'static_official');
+    expect(data.priceHistory.points, hasLength(2));
+    expect(data.operationsStatus.priceHistoryRows, 3);
+  });
 }
 
 class _FakeProxyHttpClient implements ProxyHttpClient {

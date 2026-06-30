@@ -192,6 +192,7 @@ final official00631LRepositoryProvider =
       fallback: fallback,
       primaryTimeout: proxyTimeout,
       fastPrimaryTimeout: const Duration(milliseconds: 1600),
+      raceFastFallback: useStaticData,
     );
   }
 

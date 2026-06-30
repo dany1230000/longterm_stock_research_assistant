@@ -8,6 +8,7 @@ class Cached00631LRepository extends Official00631LRepository {
     Official00631LRepository? fallback,
     this.fastPrimaryTimeout = const Duration(milliseconds: 900),
     this.primaryTimeout = const Duration(seconds: 4),
+    this.raceFastFallback = false,
   })  : _primary = primary,
         _fallback = fallback ?? Mock00631LRepository();
 
@@ -15,6 +16,7 @@ class Cached00631LRepository extends Official00631LRepository {
   final Official00631LRepository _fallback;
   final Duration fastPrimaryTimeout;
   final Duration primaryTimeout;
+  final bool raceFastFallback;
 
   LeveragedEtfProfile? _profileCache;
   EtfDailyHoldingSnapshot? _snapshotCache;
@@ -31,26 +33,75 @@ class Cached00631LRepository extends Official00631LRepository {
 
   @override
   Future<Etf00631LLabData> fetchFastLabData() async {
+    if (raceFastFallback) {
+      return _fetchFastLabDataWithFallbackRace();
+    }
     try {
       final primaryData =
           await _primary.fetchFastLabData().timeout(fastPrimaryTimeout);
       final data = await _mergeFastFallbackData(primaryData);
-      _profileCache = data.profile;
-      _snapshotCache = data.snapshot;
-      _intradayNavCache = data.intradayNav;
-      _futuresQuoteCache = data.futuresQuote;
-      if (_isPriceHistoryUsable(data.priceHistory)) {
-        _priceHistoryCache = data.priceHistory;
-      }
-      _operationsStatusCache = data.operationsStatus;
-      _aiAnalysisCache = data.aiAnalysis;
-      if (data.etfCatalog.items.isNotEmpty) {
-        _etfCatalogCache = data.etfCatalog;
-      }
-      return data;
+      return _rememberFastData(data);
     } catch (_) {
       return _fallback.fetchFastLabData();
     }
+  }
+
+  Future<Etf00631LLabData> _fetchFastLabDataWithFallbackRace() async {
+    final primaryFuture = _wrapFastData(
+      _primary.fetchFastLabData().timeout(fastPrimaryTimeout),
+      source: _FastDataSource.primary,
+    );
+    final fallbackFuture = _wrapFastData(
+      _fallback.fetchFastLabData(),
+      source: _FastDataSource.fallback,
+    );
+
+    final first = await Future.any([primaryFuture, fallbackFuture]);
+    if (first.data != null) {
+      final data = first.source == _FastDataSource.primary
+          ? await _mergeFastFallbackData(first.data!)
+          : first.data!;
+      return _rememberFastData(data);
+    }
+
+    final second = first.source == _FastDataSource.primary
+        ? await fallbackFuture
+        : await primaryFuture;
+    if (second.data != null) {
+      final data = second.source == _FastDataSource.primary
+          ? await _mergeFastFallbackData(second.data!)
+          : second.data!;
+      return _rememberFastData(data);
+    }
+
+    return _fallback.fetchFastLabData();
+  }
+
+  Future<_FastDataResult> _wrapFastData(
+    Future<Etf00631LLabData> future, {
+    required _FastDataSource source,
+  }) async {
+    try {
+      return _FastDataResult(source: source, data: await future);
+    } catch (error) {
+      return _FastDataResult(source: source, error: error);
+    }
+  }
+
+  Etf00631LLabData _rememberFastData(Etf00631LLabData data) {
+    _profileCache = data.profile;
+    _snapshotCache = data.snapshot;
+    _intradayNavCache = data.intradayNav;
+    _futuresQuoteCache = data.futuresQuote;
+    if (_isPriceHistoryUsable(data.priceHistory)) {
+      _priceHistoryCache = data.priceHistory;
+    }
+    _operationsStatusCache = data.operationsStatus;
+    _aiAnalysisCache = data.aiAnalysis;
+    if (data.etfCatalog.items.isNotEmpty) {
+      _etfCatalogCache = data.etfCatalog;
+    }
+    return data;
   }
 
   @override
@@ -371,6 +422,20 @@ class Cached00631LRepository extends Official00631LRepository {
       return primaryData;
     }
   }
+}
+
+enum _FastDataSource { primary, fallback }
+
+class _FastDataResult {
+  const _FastDataResult({
+    required this.source,
+    this.data,
+    this.error,
+  });
+
+  final _FastDataSource source;
+  final Etf00631LLabData? data;
+  final Object? error;
 }
 
 EtfCatalog _cachedEtfCatalog(EtfCatalog catalog) {
