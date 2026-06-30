@@ -555,6 +555,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v9_45_marker_first_pages_wait.md",
         "docs/00631l_v9_46_brief_pages_wait.md",
         "docs/00631l_v9_47_intraday_preopen_freshness.md",
+        "docs/00631l_v9_48_public_backend_drift_tag.md",
         "scripts/00631l_check_static_first_load_budget.cmd",
         "scripts/00631l_check_public_first_load_network.cmd",
         "scripts/00631l_check_public_console.cmd",

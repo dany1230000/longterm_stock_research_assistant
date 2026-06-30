@@ -30,11 +30,7 @@ def run_public_backend_deploy_drift_check(
     dry_run: bool = False,
 ) -> dict[str, Any]:
     checked_at = _now_iso()
-    resolved_expected_tag = (
-        expected_release_tag
-        or os.getenv("EXPECTED_00631L_RELEASE_TAG")
-        or settings.backend_release_tag
-    ).strip()
+    resolved_expected_tag = resolve_expected_release_tag(expected_release_tag)
     resolved_expected_sha = (
         expected_git_sha
         if expected_git_sha is not None
@@ -181,6 +177,32 @@ def _dedupe(items: list[str]) -> list[str]:
     return output
 
 
+def resolve_expected_release_tag(explicit_release_tag: str | None = None) -> str:
+    return (
+        explicit_release_tag
+        or os.getenv("EXPECTED_00631L_RELEASE_TAG")
+        or _git_exact_release_tag()
+        or settings.backend_release_tag
+    ).strip()
+
+
+def _git_exact_release_tag() -> str:
+    try:
+        result = subprocess.run(
+            ["git", "tag", "--points-at", "HEAD", "--list", "00631l-lab-v*"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return ""
+    if result.returncode != 0:
+        return ""
+    tags = sorted(item.strip() for item in result.stdout.splitlines() if item.strip())
+    return tags[-1] if tags else ""
+
+
 def _git_head_sha() -> str:
     try:
         result = subprocess.run(
@@ -216,8 +238,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--timeout-seconds", type=int, default=30)
     parser.add_argument(
         "--expected-release-tag",
-        default=os.getenv("EXPECTED_00631L_RELEASE_TAG")
-        or settings.backend_release_tag,
+        default=resolve_expected_release_tag(),
     )
     parser.add_argument(
         "--expected-git-sha",

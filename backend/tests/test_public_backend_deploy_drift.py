@@ -1,7 +1,10 @@
+import os
 import unittest
+from unittest.mock import patch
 
 from backend.scripts.check_public_deploy_drift_00631l import (
     check_public_backend_deploy_drift,
+    resolve_expected_release_tag,
 )
 
 
@@ -79,6 +82,21 @@ class PublicBackendDeployDriftTests(unittest.TestCase):
         self.assertEqual(payload["warnings"], [])
         self.assertEqual(payload["failures"], [])
         self.assertEqual(payload["summary"]["publicGitShaStatus"], "missing")
+
+    def test_expected_release_tag_prefers_exact_head_tag(self) -> None:
+        with patch.dict(
+            os.environ,
+            {"EXPECTED_00631L_RELEASE_TAG": ""},
+            clear=False,
+        ):
+            with patch(
+                "backend.scripts.check_public_deploy_drift_00631l._git_exact_release_tag",
+                return_value="00631l-lab-v9.48-public-backend-drift-tag",
+            ):
+                self.assertEqual(
+                    resolve_expected_release_tag(),
+                    "00631l-lab-v9.48-public-backend-drift-tag",
+                )
 
     def test_fails_when_public_status_check_failed(self) -> None:
         payload = check_public_backend_deploy_drift(
