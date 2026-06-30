@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Comparison compact summary v9.24: `docs\00631l_v9_24_comparison_compact_summary.md`
 - Position source chips v9.23: `docs\00631l_v9_23_position_source_chips.md`
 - AI daily decision strip v9.22: `docs\00631l_v9_22_ai_daily_decision_strip.md`
 - History range details v9.21: `docs\00631l_v9_21_history_range_details.md`

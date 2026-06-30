@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.24 makes ETF comparison easier to read on phones. The history/backtest
+  page now has a compact comparison summary strip that shows the selected ETF
+  basket, common range, row count, and that no fixed benchmark is applied.
+
 - v9.23 compacts the position page source details. The position account summary
   now uses market source, history source, and data-time chips instead of a long
   first-screen sentence.

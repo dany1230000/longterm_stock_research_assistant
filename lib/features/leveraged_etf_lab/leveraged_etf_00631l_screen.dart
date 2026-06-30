@@ -6749,7 +6749,13 @@ class _EtfHistoryComparisonPanelState
             ],
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
+        _ComparisonCompactSummaryStrip(
+          selectedMetrics: usableMetrics,
+          readyCount: availableMetrics.length,
+          candidateCount: metrics.length,
+        ),
+        const SizedBox(height: 8),
         Text(
           '預設只看目前 ETF；可選 1-5 檔 ETF 比較，資料筆數足夠才會進入圖表。',
           key: const ValueKey('00631l-etf-comparison-guidance'),
@@ -6881,6 +6887,64 @@ class _EtfHistoryComparisonPanelState
               for (final metric in availableMetrics.take(5)) metric.code,
             };
     });
+  }
+}
+
+class _ComparisonCompactSummaryStrip extends StatelessWidget {
+  const _ComparisonCompactSummaryStrip({
+    required this.selectedMetrics,
+    required this.readyCount,
+    required this.candidateCount,
+  });
+
+  final List<_EtfComparisonMetric> selectedMetrics;
+  final int readyCount;
+  final int candidateCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final codes = selectedMetrics.map((metric) => metric.code).join(' / ');
+    final commonRange = _comparisonCommonRangeText(selectedMetrics);
+    final totalRows =
+        selectedMetrics.fold<int>(0, (sum, metric) => sum + metric.rowCount);
+    final summary = selectedMetrics.isEmpty
+        ? '尚未選擇比較 ETF · 不設基準 · 可比較 ${formatInteger(readyCount)} / ${formatInteger(candidateCount)} 檔'
+        : '目前組合 $codes · 不設基準 · $commonRange · ${formatInteger(totalRows)} 筆';
+    return Container(
+      key: const ValueKey('00631l-etf-comparison-compact-summary'),
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            summary,
+            key: const ValueKey('00631l-etf-comparison-compact-summary-text'),
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: _marketTextColor(context),
+              fontWeight: FontWeight.w900,
+              height: 1.25,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _StatusWrap(
+            labels: [
+              selectedMetrics.isEmpty
+                  ? '組合 0 檔'
+                  : '組合 ${formatInteger(selectedMetrics.length)} 檔',
+              '不設基準',
+              '可比較 ${formatInteger(readyCount)} / ${formatInteger(candidateCount)}',
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -14856,6 +14920,30 @@ _EtfComparisonBasketContext _comparisonBasketContext(
         ? '目前比較組合會用共同資料區間重算百分比；這是自選比較，不把任何 ETF 設成固定基準。'
         : '目前比較組合的歷史區間沒有完整重疊；請調整 ETF 組合或確認價格歷史匯入狀態。',
   );
+}
+
+String _comparisonCommonRangeText(List<_EtfComparisonMetric> metrics) {
+  if (metrics.isEmpty) {
+    return '共同區間 --';
+  }
+  DateTime? commonStart;
+  DateTime? commonEnd;
+  for (final metric in metrics) {
+    final start = metric.coverageStart;
+    final end = metric.coverageEnd;
+    if (start != null && (commonStart == null || start.isAfter(commonStart))) {
+      commonStart = start;
+    }
+    if (end != null && (commonEnd == null || end.isBefore(commonEnd))) {
+      commonEnd = end;
+    }
+  }
+  if (commonStart == null ||
+      commonEnd == null ||
+      commonStart.isAfter(commonEnd)) {
+    return '共同區間不足';
+  }
+  return '共同區間 ${_dateOrDash(commonStart)} - ${_dateOrDash(commonEnd)}';
 }
 
 List<EtfPriceHistory> _comparisonChartHistories({
