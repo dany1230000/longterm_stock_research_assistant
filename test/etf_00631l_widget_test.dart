@@ -1857,7 +1857,7 @@ void main() {
       find.byKey(const ValueKey('00631l-selected-etf-readiness-banner')),
       findsNothing,
     );
-    expect(find.textContaining('3 筆'), findsWidgets);
+    expect(find.textContaining('3筆'), findsWidgets);
     expect(find.textContaining('0050 元大台灣50'), findsWidgets);
     expect(find.text('0050 核心資料'), findsNothing);
     expect(
@@ -1892,6 +1892,10 @@ void main() {
     );
     expect(overviewCoverageLine.data, contains('價格欄位'));
     expect(overviewCoverageLine.data, contains('分割調整'));
+    expect(
+      find.byKey(const ValueKey('00631l-quote-meta-strip')),
+      findsNothing,
+    );
     expect(find.text('回測可用'), findsWidgets);
     expect(find.text('盤中 NAV 限 00631L'), findsOneWidget);
 

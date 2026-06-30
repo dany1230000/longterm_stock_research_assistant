@@ -2007,30 +2007,6 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ),
               ],
             ),
-            if (!selectedEtf.is00631L) ...[
-              const SizedBox(height: 5),
-              _QuoteMetaStrip(
-                items: [
-                  _QuoteMetaItem(
-                    label: '預估淨值',
-                    value: _price(selectedEtf.estimatedNav),
-                  ),
-                  if (marketSession != null)
-                    _QuoteMetaItem(
-                      label: '時段',
-                      value: marketSession.phaseLabel,
-                      caption:
-                          '${marketSession.dataFreshnessLabel} · ${marketSession.ageText}',
-                    ),
-                  _QuoteMetaItem(
-                    label: '歷史資料',
-                    value: history.rowCount >= 2
-                        ? '${formatInteger(history.rowCount)} 筆'
-                        : '尚無',
-                  ),
-                ],
-              ),
-            ],
             const SizedBox(height: 2),
             _QuoteReadinessStrip(data: data, selectedEtf: selectedEtf),
             if (!selectedEtf.is00631L) ...[
@@ -2048,51 +2024,6 @@ class _CompactQuoteHeader extends StatelessWidget {
               ),
             ],
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _QuoteMetaItem {
-  const _QuoteMetaItem({
-    required this.label,
-    required this.value,
-    this.caption,
-  });
-
-  final String label;
-  final String value;
-  final String? caption;
-}
-
-class _QuoteMetaStrip extends StatelessWidget {
-  const _QuoteMetaStrip({required this.items});
-
-  final List<_QuoteMetaItem> items;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = items
-        .map((item) => '${item.label} ${item.value}')
-        .where((value) => value.trim().isNotEmpty)
-        .join('  ·  ');
-
-    return SingleChildScrollView(
-      key: const ValueKey('00631l-quote-meta-strip'),
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Text(
-          text,
-          maxLines: 1,
-          overflow: TextOverflow.visible,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0,
-              ),
         ),
       ),
     );
