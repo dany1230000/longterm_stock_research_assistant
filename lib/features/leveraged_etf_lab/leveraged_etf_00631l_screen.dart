@@ -1161,50 +1161,14 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
             const SizedBox(height: 10),
             _StatusWrap(
               labels: [
-                '歷史可用 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
-                '缺口 ${formatInteger(historyGap)}',
-                '清單 ${formatInteger(catalogRowCount)}',
-              ],
-            ),
-            const SizedBox(height: 8),
-            _CompactExpansionPanel(
-              key: const ValueKey('00631l-symbol-search-database-panel'),
-              title: '資料庫狀態',
-              subtitle: '展開查看 ETF 清單、歷史匯入與缺口分類。',
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 170),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _SymbolSearchDataCompletionStrip(
-                        key: const ValueKey('00631l-etf-data-completion-strip'),
-                        data: widget.data,
-                        catalogRowCount: catalogRowCount,
-                        readyHistoryCount: readyHistoryCount,
-                      ),
-                      const SizedBox(height: 8),
-                      _SymbolSearchReadinessNotice(
-                        data: widget.data,
-                        catalogRowCount: catalogRowCount,
-                        readyHistoryCount: readyHistoryCount,
-                        visibleReadyCount: queryReadyCount,
-                        visibleCatalogOnlyCount: queryCatalogOnlyCount,
-                        hasQuery: query.isNotEmpty,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            _StatusWrap(
-              labels: [
                 '篩選 ${_historyFilter.label}',
                 if (query.isEmpty)
                   '熱門清單'
                 else
                   'ETF ${formatInteger(items.length)} / ${formatInteger(baseItems.length)}',
+                if (query.isNotEmpty) '歷史可用 ${formatInteger(queryReadyCount)}',
+                if (query.isNotEmpty)
+                  '僅清單 ${formatInteger(queryCatalogOnlyCount)}',
                 if (query.isNotEmpty) '個股 ${stockItems.length}',
               ],
             ),
@@ -1213,12 +1177,6 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                 '00631l-symbol-filter-count-${_historyFilter.name}-${items.length}-${baseItems.length}',
               ),
               child: const SizedBox.shrink(),
-            ),
-            _StatusWrap(
-              labels: [
-                '目前結果 歷史可用 ${formatInteger(queryReadyCount)}',
-                '目前結果 未匯入歷史 ${formatInteger(queryCatalogOnlyCount)}',
-              ],
             ),
             KeyedSubtree(
               key: ValueKey(
@@ -1299,6 +1257,45 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                         return _StockSearchResultTile(stock: stock);
                       },
                     ),
+            ),
+            const SizedBox(height: 8),
+            _CompactExpansionPanel(
+              key: const ValueKey('00631l-symbol-search-database-panel'),
+              title: '資料庫狀態',
+              subtitle:
+                  '歷史可用 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}；缺口 ${formatInteger(historyGap)}。',
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 170),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _StatusWrap(
+                        labels: [
+                          '清單 ${formatInteger(catalogRowCount)}',
+                          '目前結果 未匯入歷史 ${formatInteger(queryCatalogOnlyCount)}',
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      _SymbolSearchDataCompletionStrip(
+                        key: const ValueKey('00631l-etf-data-completion-strip'),
+                        data: widget.data,
+                        catalogRowCount: catalogRowCount,
+                        readyHistoryCount: readyHistoryCount,
+                      ),
+                      const SizedBox(height: 8),
+                      _SymbolSearchReadinessNotice(
+                        data: widget.data,
+                        catalogRowCount: catalogRowCount,
+                        readyHistoryCount: readyHistoryCount,
+                        visibleReadyCount: queryReadyCount,
+                        visibleCatalogOnlyCount: queryCatalogOnlyCount,
+                        hasQuery: query.isNotEmpty,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),

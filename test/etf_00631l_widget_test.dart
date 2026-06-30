@@ -235,7 +235,7 @@ void main() {
 
     expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
     expect(find.textContaining('可切換研究標的'), findsOneWidget);
-    expect(find.text('歷史可用 15 / 16'), findsOneWidget);
+    expect(find.textContaining('歷史可用 15 / 16'), findsOneWidget);
     expect(find.text('資料庫狀態'), findsOneWidget);
     expect(find.text('資料可用性'), findsNothing);
     await tester.tap(find.text('資料庫狀態'));
@@ -355,8 +355,8 @@ void main() {
       findsNothing,
     );
     expect(find.text('資料庫狀態'), findsOneWidget);
-    expect(find.text('歷史可用 228 / 228'), findsOneWidget);
-    expect(find.text('缺口 0'), findsOneWidget);
+    expect(find.textContaining('歷史可用 228 / 228'), findsOneWidget);
+    expect(find.textContaining('缺口 0'), findsOneWidget);
     await tester.tap(find.text('資料庫狀態'));
     await tester.pumpAndSettle();
 
@@ -392,8 +392,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('統計母數 344'), findsNothing);
-    expect(find.text('歷史可用 228 / 344'), findsOneWidget);
-    expect(find.text('缺口 116'), findsOneWidget);
+    expect(find.textContaining('歷史可用 228 / 344'), findsOneWidget);
+    expect(find.textContaining('缺口 116'), findsOneWidget);
     expect(find.text('可回測/比較 228 / 344'), findsNothing);
     await tester.tap(find.text('資料庫狀態'));
     await tester.pumpAndSettle();
@@ -1227,6 +1227,20 @@ void main() {
       findsOneWidget,
     );
     expect(
+      tester
+          .getTopLeft(
+            find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
+          )
+          .dy,
+      lessThan(
+        tester
+            .getTopLeft(
+              find.byKey(const ValueKey('00631l-symbol-search-database-panel')),
+            )
+            .dy,
+      ),
+    );
+    expect(
       find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
     );
@@ -1369,8 +1383,8 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-query-catalog-only-count-1')),
       findsOneWidget,
     );
-    expect(find.text('目前結果 歷史可用 0'), findsOneWidget);
-    expect(find.text('目前結果 未匯入歷史 1'), findsOneWidget);
+    expect(find.text('歷史可用 0'), findsOneWidget);
+    expect(find.text('僅清單 1'), findsWidgets);
     expect(find.textContaining('history-ready'), findsNothing);
     expect(find.textContaining('catalog-only'), findsNothing);
     expect(
