@@ -34,6 +34,11 @@ ENDPOINTS = [
         "00631L price history status",
     ),
     PublicStatusEndpoint(
+        "catalog_status",
+        "/api/etf/catalog/status",
+        "public ETF catalog status",
+    ),
+    PublicStatusEndpoint(
         "etf_history_status",
         "/api/etf/history/status",
         "selected ETF basket history status",
@@ -69,6 +74,15 @@ def run_public_backend_status(
                     "description": endpoint.description,
                 }
                 for endpoint in ENDPOINTS
+            ]
+            + [
+                {
+                    "name": "catalog_history_alignment",
+                    "path": "/api/etf/catalog/status + /api/etf/history/status",
+                    "status": "PASS",
+                    "message": "planned",
+                    "description": "ETF catalog rows and saved history readiness alignment",
+                }
             ],
             summary={
                 "minPriceHistoryRows": max(1, int(min_price_history_rows or 2)),
@@ -107,6 +121,7 @@ def run_public_backend_status(
                     "httpStatus": None,
                 }
             )
+    steps.append(_catalog_history_alignment_step(payloads))
     return _result_payload(
         base_url=normalized_base_url,
         checked_at=checked_at,
@@ -184,6 +199,10 @@ def _assess_endpoint(
                 "00631L price history rows below minimum "
                 f"{min_price_history_rows}: {row_count}"
             )
+    elif endpoint.name == "catalog_status":
+        row_count = int(payload.get("rowCount") or 0)
+        if row_count < 1:
+            warnings.append("public ETF catalog has no rows")
     elif endpoint.name == "etf_history_status":
         ready_count = int(payload.get("readyCount") or 0)
         if ready_count < min_etf_ready_count:
@@ -206,6 +225,36 @@ def _assess_endpoint(
         "description": endpoint.description,
         "httpStatus": http_status,
         "summary": _endpoint_summary(endpoint.name, payload),
+    }
+
+
+def _catalog_history_alignment_step(
+    payloads: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    catalog = payloads.get("catalog_status", {})
+    etf_history = payloads.get("etf_history_status", {})
+    catalog_rows = int(catalog.get("rowCount") or 0)
+    ready_count = int(etf_history.get("readyCount") or 0)
+    gap_count = max(0, catalog_rows - ready_count)
+    warnings = []
+    if catalog_rows > 0 and gap_count > 0:
+        warnings.append(
+            "ETF history ready count is lower than catalog rows by "
+            f"{gap_count}"
+        )
+    status = "WARN" if warnings else "PASS"
+    return {
+        "name": "catalog_history_alignment",
+        "path": "/api/etf/catalog/status + /api/etf/history/status",
+        "status": status,
+        "message": "; ".join(warnings) if warnings else "ok",
+        "description": "ETF catalog rows and saved history readiness alignment",
+        "httpStatus": None,
+        "summary": {
+            "catalogRowCount": catalog_rows,
+            "readyCount": ready_count,
+            "gapCount": gap_count,
+        },
     }
 
 
@@ -238,6 +287,13 @@ def _endpoint_summary(name: str, payload: dict[str, Any]) -> dict[str, Any]:
             "coverageEnd": payload.get("coverageEnd"),
             "sourceStatus": payload.get("sourceStatus"),
         }
+    if name == "catalog_status":
+        return {
+            "rowCount": payload.get("rowCount"),
+            "sourceStatus": payload.get("sourceStatus"),
+            "sourceUpdatedAt": payload.get("sourceUpdatedAt"),
+            "dataTime": payload.get("dataTime"),
+        }
     if name == "etf_history_status":
         return {
             "readyCount": payload.get("readyCount"),
@@ -260,10 +316,13 @@ def _summary(
     health = payloads.get("health", {})
     release = health.get("release") if isinstance(health.get("release"), dict) else {}
     history = payloads.get("history_status", {})
+    catalog = payloads.get("catalog_status", {})
     etf_history = payloads.get("etf_history_status", {})
     ready = payloads.get("ready", {})
     marker = ready.get("persistenceMarker")
     marker = marker if isinstance(marker, dict) else {}
+    catalog_row_count = int(catalog.get("rowCount") or 0)
+    etf_ready_count = int(etf_history.get("readyCount") or 0)
     return {
         "backendVersion": health.get("appVersion") or release.get("version"),
         "releaseTag": release.get("tag"),
@@ -278,8 +337,13 @@ def _summary(
         "priceHistoryRows": int(history.get("rowCount") or 0),
         "priceHistoryCoverageStart": history.get("coverageStart"),
         "priceHistoryCoverageEnd": history.get("coverageEnd"),
-        "etfHistoryReadyCount": int(etf_history.get("readyCount") or 0),
+        "catalogRowCount": catalog_row_count,
+        "catalogSourceStatus": catalog.get("sourceStatus"),
+        "catalogSourceUpdatedAt": catalog.get("sourceUpdatedAt"),
+        "catalogDataTime": catalog.get("dataTime"),
+        "etfHistoryReadyCount": etf_ready_count,
         "etfHistoryRowCount": int(etf_history.get("rowCount") or 0),
+        "etfHistoryCatalogGapCount": max(0, catalog_row_count - etf_ready_count),
         "minPriceHistoryRows": min_price_history_rows,
         "minEtfReadyCount": min_etf_ready_count,
         "etfHistoryValidationFailureCount": int(
@@ -372,7 +436,9 @@ def main() -> int:
         f"failures={len(payload['failures'])} "
         f"version={summary.get('backendVersion') or 'unknown'} "
         f"priceRows={summary.get('priceHistoryRows') or 0} "
-        f"etfReady={summary.get('etfHistoryReadyCount') or 0}"
+        f"catalogRows={summary.get('catalogRowCount') or 0} "
+        f"etfReady={summary.get('etfHistoryReadyCount') or 0} "
+        f"catalogGap={summary.get('etfHistoryCatalogGapCount') or 0}"
     )
     return 0 if args.soft_fail or payload["overallStatus"] != "FAIL" else 1
 

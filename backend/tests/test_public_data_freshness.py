@@ -70,7 +70,9 @@ class PublicDataFreshnessTests(unittest.TestCase):
                 "priceHistoryRows": 2833,
                 "priceHistoryCoverageStart": "2014-10-31",
                 "priceHistoryCoverageEnd": "2026-06-22",
+                "catalogRowCount": 228,
                 "etfHistoryReadyCount": 228,
+                "etfHistoryCatalogGapCount": 0,
             },
         }
         status = {
@@ -89,6 +91,48 @@ class PublicDataFreshnessTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "PASS")
         self.assertEqual(payload["warnings"], [])
         self.assertEqual(payload["failures"], [])
+        self.assertEqual(payload["summary"]["publicCatalogRowCount"], 228)
+        self.assertEqual(payload["summary"]["publicEtfCatalogGapCount"], 0)
+
+    def test_warns_when_public_catalog_has_unsaved_history_rows(self) -> None:
+        public = {
+            "overallStatus": "PASS",
+            "summary": {
+                "priceHistoryRows": 2833,
+                "priceHistoryCoverageStart": "2014-10-31",
+                "priceHistoryCoverageEnd": "2026-06-22",
+                "catalogRowCount": 347,
+                "etfHistoryReadyCount": 346,
+                "etfHistoryCatalogGapCount": 1,
+            },
+        }
+        status = {
+            "rowCount": 2833,
+            "coverageStart": "2014-10-31",
+            "coverageEnd": "2026-06-22",
+            "sourceStatus": "cached",
+        }
+
+        payload = compare_public_data_freshness(
+            public_status=public,
+            local_status=status,
+            static_status={
+                **status,
+                "etfCatalogRowCount": 347,
+                "etfPriceHistoryReadyCount": 347,
+            },
+            checked_at="2026-06-22T14:00:00+00:00",
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["summary"]["publicCatalogRowCount"], 347)
+        self.assertEqual(payload["summary"]["publicEtfCatalogGapCount"], 1)
+        self.assertTrue(
+            any(
+                "/api/etf/history/gaps?fromCatalog=true" in item
+                for item in payload["actionItems"]
+            )
+        )
 
 
 if __name__ == "__main__":

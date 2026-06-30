@@ -83,7 +83,9 @@ def compare_public_data_freshness(
     public_rows = _int(public_summary.get("priceHistoryRows"))
     public_start = _str_or_none(public_summary.get("priceHistoryCoverageStart"))
     public_end = _str_or_none(public_summary.get("priceHistoryCoverageEnd"))
+    public_catalog_rows = _int(public_summary.get("catalogRowCount"))
     public_etf_ready = _int(public_summary.get("etfHistoryReadyCount"))
+    public_catalog_gap = _int(public_summary.get("etfHistoryCatalogGapCount"))
 
     local_rows = _int(local_status.get("rowCount"))
     local_start = _str_or_none(local_status.get("coverageStart"))
@@ -92,6 +94,7 @@ def compare_public_data_freshness(
     static_rows = _int(static_status.get("rowCount"))
     static_start = _str_or_none(static_status.get("coverageStart"))
     static_end = _str_or_none(static_status.get("coverageEnd"))
+    static_catalog_rows = _int(static_status.get("etfCatalogRowCount"))
     static_etf_ready = _int(static_status.get("etfPriceHistoryReadyCount"))
 
     public_lag_vs_local = _positive_day_lag(public_end, local_end)
@@ -143,6 +146,14 @@ def compare_public_data_freshness(
             "Run public ETF catalog batches: scripts\\00631l_public_etf_catalog_batches.cmd "
             "--batch-size 1 --max-batches 1 --soft-fail"
         )
+    if public_catalog_gap > 0:
+        warnings.append(
+            "public backend ETF history ready count is lower than public catalog "
+            f"by {public_catalog_gap}"
+        )
+        action_items.append(
+            "Inspect public ETF gaps: /api/etf/history/gaps?fromCatalog=true"
+        )
     if local_rows < 2:
         warnings.append("local 00631L price history has fewer than 2 rows")
         action_items.append("Run scripts\\00631l_update_price_history.cmd --status-only")
@@ -157,13 +168,16 @@ def compare_public_data_freshness(
         "publicPriceHistoryRows": public_rows,
         "publicCoverageStart": public_start,
         "publicCoverageEnd": public_end,
+        "publicCatalogRowCount": public_catalog_rows,
         "publicEtfHistoryReadyCount": public_etf_ready,
+        "publicEtfCatalogGapCount": public_catalog_gap,
         "localPriceHistoryRows": local_rows,
         "localCoverageStart": local_start,
         "localCoverageEnd": local_end,
         "staticPriceHistoryRows": static_rows,
         "staticCoverageStart": static_start,
         "staticCoverageEnd": static_end,
+        "staticCatalogRowCount": static_catalog_rows,
         "staticEtfHistoryReadyCount": static_etf_ready,
         "publicCoverageLagDaysVsLocal": public_lag_vs_local,
         "publicCoverageLagDaysVsStatic": public_lag_vs_static,
