@@ -72,6 +72,10 @@ def main() -> int:
             ["cmd", "/c", "scripts\\00631l_check_public_first_load_network.cmd"],
         ),
         _run_command(
+            "public_console",
+            ["cmd", "/c", "scripts\\00631l_check_public_console.cmd"],
+        ),
+        _run_command(
             "pages_deploy_wait_dry_run",
             ["cmd", "/c", "scripts\\00631l_wait_pages_deploy.cmd", "--dry-run"],
         ),
@@ -547,8 +551,10 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v9_3_static_first_load_budget.md",
         "docs/00631l_v9_4_compact_search_status.md",
         "docs/00631l_v9_42_defer_full_load.md",
+        "docs/00631l_v9_44_public_console_guard.md",
         "scripts/00631l_check_static_first_load_budget.cmd",
         "scripts/00631l_check_public_first_load_network.cmd",
+        "scripts/00631l_check_public_console.cmd",
         "deploy/docker-compose.yml",
         "deploy/Caddyfile",
         "deploy/nginx.example.conf",

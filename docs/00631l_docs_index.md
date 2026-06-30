@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Public console guard v9.44: `docs\00631l_v9_44_public_console_guard.md`
 - Public first-load network guard v9.43: `docs\00631l_v9_43_public_first_load_network_guard.md`
 - Defer full overview load v9.42: `docs\00631l_v9_42_defer_full_load.md`
 - Fast static first screen race v9.41: `docs\00631l_v9_41_fast_static_race.md`
