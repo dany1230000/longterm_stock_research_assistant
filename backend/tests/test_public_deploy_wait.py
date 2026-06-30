@@ -107,6 +107,54 @@ class PublicDeployWaitTests(unittest.TestCase):
         self.assertTrue(
             any("remote maintenance" in item for item in payload["actionItems"])
         )
+        self.assertTrue(
+            any("data freshness" in item for item in payload["warnings"])
+        )
+
+    def test_separates_non_data_freshness_warning_after_deploy(self) -> None:
+        payload = build_public_deploy_wait_status(
+            base_url="https://example.com",
+            checked_at="2026-06-23T04:00:00+00:00",
+            expected_release_tag="00631l-lab-v9.54-deploy-warning-classification",
+            samples=[
+                {
+                    "overallStatus": "PASS",
+                    "summary": {
+                        "publicReleaseTag": "00631l-lab-v9.54-deploy-warning-classification",
+                        "expectedReleaseTag": "00631l-lab-v9.54-deploy-warning-classification",
+                    },
+                    "warnings": [],
+                    "failures": [],
+                }
+            ],
+            freshness_status={
+                "overallStatus": "WARN",
+                "summary": {
+                    "publicCoverageEnd": "2026-06-30",
+                    "localCoverageEnd": "2026-06-30",
+                    "staticCoverageEnd": "2026-06-30",
+                    "publicCoverageLagDaysVsLocal": 0,
+                    "publicCoverageLagDaysVsStatic": 0,
+                    "publicEtfReadyLagVsStatic": 0,
+                    "publicEtfCatalogGapCount": 0,
+                },
+                "warnings": ["public backend status check returned WARN"],
+                "failures": [],
+                "actionItems": [],
+            },
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["actionItems"], [])
+        self.assertTrue(
+            any("non-data warning" in item for item in payload["warnings"])
+        )
+        self.assertFalse(
+            any(
+                "data freshness needs attention" in item
+                for item in payload["warnings"]
+            )
+        )
 
 
 if __name__ == "__main__":

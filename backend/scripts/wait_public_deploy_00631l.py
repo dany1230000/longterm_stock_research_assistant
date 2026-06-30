@@ -176,9 +176,13 @@ def build_public_deploy_wait_status(
         ]
         if freshness_overall == "FAIL" or freshness_failures:
             warnings.append("public backend freshness check failed after deploy.")
-        elif freshness_overall == "WARN":
+        elif _freshness_has_data_gap(freshness_status):
             warnings.append("public backend data freshness needs attention after deploy.")
-        action_items.extend(str(item) for item in (freshness_status.get("actionItems") or []))
+        elif freshness_overall == "WARN":
+            warnings.append("public backend returned non-data warning after deploy.")
+        action_items.extend(
+            str(item) for item in (freshness_status.get("actionItems") or [])
+        )
 
     overall_status = "PASS" if matched_release and not failures else "WARN"
     if freshness_status is not None and str(freshness_status.get("overallStatus") or "") != "PASS":
@@ -229,6 +233,27 @@ def _freshness_summary(freshness_status: dict[str, Any] | None) -> dict[str, Any
         "staticEtfHistoryReadyCount": summary.get("staticEtfHistoryReadyCount"),
         "publicEtfCatalogGapCount": summary.get("publicEtfCatalogGapCount"),
     }
+
+
+def _freshness_has_data_gap(freshness_status: dict[str, Any]) -> bool:
+    summary = (
+        freshness_status.get("summary")
+        if isinstance(freshness_status.get("summary"), dict)
+        else {}
+    )
+    numeric_fields = (
+        "publicCoverageLagDaysVsLocal",
+        "publicCoverageLagDaysVsStatic",
+        "publicEtfReadyLagVsStatic",
+        "publicEtfCatalogGapCount",
+    )
+    for field in numeric_fields:
+        try:
+            if int(summary.get(field) or 0) > 0:
+                return True
+        except (TypeError, ValueError):
+            continue
+    return bool(freshness_status.get("actionItems"))
 
 
 def _dedupe(items: list[str]) -> list[str]:

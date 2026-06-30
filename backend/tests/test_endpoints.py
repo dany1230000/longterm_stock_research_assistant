@@ -41,11 +41,11 @@ class EndpointTests(unittest.TestCase):
         self.assertEqual(payload["sourceContract"], "00631l_backend_health")
         self.assertNotEqual(payload["appVersion"], "3.4-live-backend")
         self.assertEqual(
-            payload["appVersion"], "9.53-post-deploy-freshness-wait"
+            payload["appVersion"], "9.54-deploy-warning-classification"
         )
         self.assertEqual(
             payload["release"]["tag"],
-            "00631l-lab-v9.53-post-deploy-freshness-wait",
+            "00631l-lab-v9.54-deploy-warning-classification",
         )
         self.assertEqual(payload["release"]["version"], payload["appVersion"])
         self.assertIn("tag", payload["release"])
