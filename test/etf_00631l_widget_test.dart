@@ -1477,6 +1477,10 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-result-00400A')),
     );
     await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
 
     expect(
       find.byKey(const ValueKey('00631l-selected-etf-readiness-banner')),
@@ -1614,11 +1618,15 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-result-0050')),
     );
     await tester.pumpAndSettle();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(seconds: 4));
     await tester.pumpAndSettle();
 
     expect(find.text('0050'), findsWidgets);
     expect(find.textContaining('元大台灣50'), findsWidgets);
+    expect(
+        find.byKey(const ValueKey('00631l-main-quote-header')), findsOneWidget);
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-selected-etf-history-readiness-strip')),
@@ -1794,6 +1802,10 @@ void main() {
     await tester.tap(
       find.byKey(const ValueKey('00631l-symbol-search-result-0056')),
     );
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
     final qualityExpansion =
         find.byKey(const ValueKey('00631l-history-quality-expansion'));

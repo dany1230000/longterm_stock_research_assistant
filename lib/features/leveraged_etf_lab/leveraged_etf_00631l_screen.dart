@@ -226,7 +226,7 @@ class _LeveragedEtf00631LScreenState
     }
     setState(() {
       _selectedEtfCode = normalized;
-      _section = _LabSection.historyBacktest;
+      _section = _LabSection.overview;
     });
   }
 }
