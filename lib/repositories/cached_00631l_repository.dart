@@ -393,6 +393,8 @@ class Cached00631LRepository extends Official00631LRepository {
       final fallbackOperationsUsable =
           _operationsHasPriceHistory(fallbackData.operationsStatus) ||
               _operationsHasEtfHistory(fallbackData.operationsStatus);
+      final fallbackCatalogUsable = fallbackData.etfCatalog.items.isNotEmpty &&
+          fallbackData.etfCatalog.status != EtfDataStatus.mock;
       return Etf00631LLabData(
         profile: primaryData.profile,
         snapshot: primaryData.snapshot,
@@ -413,7 +415,7 @@ class Cached00631LRepository extends Official00631LRepository {
         aiAnalysis: fallbackHistoryUsable
             ? fallbackData.aiAnalysis
             : primaryData.aiAnalysis,
-        etfCatalog: needsCatalog && fallbackData.etfCatalog.items.isNotEmpty
+        etfCatalog: needsCatalog && fallbackCatalogUsable
             ? fallbackData.etfCatalog
             : primaryData.etfCatalog,
         lastFetchedAt: primaryData.lastFetchedAt,

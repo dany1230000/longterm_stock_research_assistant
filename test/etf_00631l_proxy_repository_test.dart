@@ -710,7 +710,7 @@ void main() {
     expect(stopwatch.elapsed, lessThan(const Duration(seconds: 1)));
     expect(data.profile.status, EtfDataStatus.mock);
     expect(data.snapshot.status, EtfDataStatus.mock);
-    expect(data.priceHistory.sourceStatusLabel, 'deferred');
+    expect(data.priceHistory.sourceStatusLabel, 'mock');
   });
 
   test('cached full data falls back when primary is slow', () async {
@@ -815,7 +815,50 @@ class _NeverCompletingFastRepository extends Mock00631LRepository {
   }
 }
 
-class _FastDeferredLiveRepository extends Mock00631LRepository {}
+class _FastDeferredLiveRepository extends Mock00631LRepository {
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() async {
+    final now = DateTime(2026, 6, 8, 10, 15);
+    return Etf00631LLabData(
+      profile: await fetchProfile(),
+      snapshot: await fetchDailySnapshot(),
+      intradayNav: await fetchIntradayNav(),
+      futuresQuote: await fetchFuturesQuote(),
+      holdingsHistory: EtfHoldingsHistory.empty(
+        lastFetchedAt: now,
+        status: EtfDataStatus.cached,
+        sourceStatusLabel: 'deferred',
+      ),
+      intradayNavHistory: EtfIntradayNavHistorySummary.empty(
+        lastFetchedAt: now,
+        status: EtfDataStatus.cached,
+        sourceStatusLabel: 'deferred',
+      ),
+      priceHistory: EtfPriceHistory.empty(
+        lastFetchedAt: now,
+        status: EtfDataStatus.cached,
+        sourceStatusLabel: 'deferred',
+      ),
+      operationsStatus: EtfOperationsStatus.empty(
+        lastFetchedAt: now,
+        status: EtfDataStatus.cached,
+        sourceStatusLabel: 'deferred',
+      ),
+      analysis: EtfAnalysisSummary.fromSnapshot(
+        snapshot: await fetchDailySnapshot(),
+        intradayNav: await fetchIntradayNav(),
+        now: now,
+      ),
+      aiAnalysis: EtfAiAnalysisSummary.mockFallback(now: now).asCached(),
+      etfCatalog: EtfCatalog.empty(
+        lastFetchedAt: now,
+        status: EtfDataStatus.cached,
+        sourceStatusLabel: 'deferred',
+      ),
+      lastFetchedAt: now,
+    );
+  }
+}
 
 class _NeverCompletingRepository extends Mock00631LRepository {
   Future<T> _never<T>() => Completer<T>().future;

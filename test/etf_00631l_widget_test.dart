@@ -736,6 +736,24 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('overview defers full lab data until detail tab opens',
+      (tester) async {
+    final repository = _FastStartupRepository();
+
+    await _pumpLab(tester, repository);
+
+    expect(repository.fullRequested, isFalse);
+    expect(
+        find.byKey(const ValueKey('00631l-section-overview')), findsOneWidget);
+
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pump();
+
+    expect(repository.fullRequested, isTrue);
+    expect(find.byKey(const ValueKey('00631l-history-view')), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('fast startup shows unavailable for known holdings errors',
       (tester) async {
     final repository = _FastStartupNoUsableHoldingsRepository();
@@ -791,16 +809,21 @@ void main() {
 
   testWidgets('full data failure keeps fast first screen visible',
       (tester) async {
-    await _pumpLab(
-      tester,
-      _FastStartupRepository(completeWithError: true),
-      settle: false,
-    );
+    final repository = _FastStartupRepository(completeWithError: true);
+
+    await _pumpLab(tester, repository, settle: false);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 20));
 
     expect(find.text('核心資料'), findsNothing);
     expect(find.text('近一年走勢'), findsOneWidget);
+    expect(repository.fullRequested, isFalse);
+    expect(find.textContaining('fallback'), findsNothing);
+
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pump();
+
+    expect(repository.fullRequested, isTrue);
     expect(find.textContaining('fallback'), findsWidgets);
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     _expectNoTradingActionText();
@@ -3488,6 +3511,7 @@ class _FastStartupRepository extends Mock00631LRepository {
   _FastStartupRepository({this.completeWithError = false});
 
   final bool completeWithError;
+  bool fullRequested = false;
   final Completer<Etf00631LLabData> _fullCompleter =
       Completer<Etf00631LLabData>();
 
@@ -3498,6 +3522,7 @@ class _FastStartupRepository extends Mock00631LRepository {
 
   @override
   Future<Etf00631LLabData> fetchLabData() {
+    fullRequested = true;
     if (completeWithError) {
       throw const RepositoryFetchException('full fixture failure');
     }

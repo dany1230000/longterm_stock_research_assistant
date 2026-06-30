@@ -110,6 +110,11 @@ class Mock00631LRepository extends Official00631LRepository {
   }
 
   @override
+  Future<Etf00631LLabData> fetchFastLabData() {
+    return fetchLabData();
+  }
+
+  @override
   Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
     return fetchEtfPriceHistory('00631L', limit: limit);
   }

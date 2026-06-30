@@ -78,7 +78,9 @@ class _LeveragedEtf00631LScreenState
   @override
   Widget build(BuildContext context) {
     final fastValue = ref.watch(etf00631LFastLabProvider);
-    final fullValue = fastValue.hasValue || fastValue.hasError
+    final shouldLoadFullData =
+        (fastValue.hasValue || fastValue.hasError) && _section.needsFullData;
+    final fullValue = shouldLoadFullData
         ? ref.watch(etf00631LLabProvider)
         : const AsyncValue<Etf00631LLabData>.loading();
     final displayData = fullValue.valueOrNull ?? fastValue.valueOrNull;
@@ -93,10 +95,12 @@ class _LeveragedEtf00631LScreenState
     final gapDetailsValue = _section == _LabSection.settings
         ? ref.watch(etfPriceHistoryGapDetailsProvider)
         : null;
-    final detailsLoading = !fullValue.hasValue && fullValue.isLoading;
-    final detailsError = fullValue.hasError && !fullValue.hasValue
-        ? fullValue.error.toString()
-        : null;
+    final detailsLoading =
+        shouldLoadFullData && !fullValue.hasValue && fullValue.isLoading;
+    final detailsError =
+        shouldLoadFullData && fullValue.hasError && !fullValue.hasValue
+            ? fullValue.error.toString()
+            : null;
     return SafeArea(
       child: displayData == null
           ? _buildInitialState(fastValue, fullValue)
@@ -165,7 +169,7 @@ class _LeveragedEtf00631LScreenState
   void _refreshFastData() {
     ref.invalidate(etf00631LFastLabProvider);
     final now = DateTime.now();
-    if (_shouldRefreshFullData(now)) {
+    if (_section.needsFullData && _shouldRefreshFullData(now)) {
       ref.invalidate(etf00631LLabProvider);
       if (_selectedEtfCode != '00631L') {
         ref.invalidate(selectedEtfPriceHistoryProvider(_selectedEtfCode));
@@ -241,6 +245,18 @@ enum _LabSection {
   const _LabSection(this.label, this.icon);
   final String label;
   final IconData icon;
+
+  bool get needsFullData {
+    switch (this) {
+      case _LabSection.overview:
+      case _LabSection.position:
+        return false;
+      case _LabSection.historyBacktest:
+      case _LabSection.ai:
+      case _LabSection.settings:
+        return true;
+    }
+  }
 }
 
 const _bottomLabSections = [
