@@ -131,6 +131,9 @@ def run_public_etf_catalog_batches(
             action_items=[],
         )
 
+    preflight_status: str | None = None
+    preflight_steps: list[dict[str, Any]] = []
+    preflight_action_items: list[str] = []
     should_run_preflight = enable_preflight or preflight_checker is not None
     if should_run_preflight:
         preflight = (preflight_checker or _run_public_catalog_preflight)(
@@ -138,7 +141,28 @@ def run_public_etf_catalog_batches(
             timeout_seconds,
         )
         preflight_status = str(preflight.get("overallStatus") or "WARN")
-        if preflight_status != "PASS":
+        preflight_failures = [str(item) for item in preflight.get("failures") or []]
+        preflight_step_status = (
+            "FAIL"
+            if preflight_status == "FAIL" or preflight_failures
+            else "WARN"
+            if preflight_status == "WARN"
+            else "PASS"
+        )
+        preflight_steps.append(
+            _step(
+                "public_catalog_preflight",
+                preflight_step_status,
+                f"preflightStatus={preflight_status}",
+                summary={
+                    "warnings": preflight.get("warnings") or [],
+                    "failures": preflight.get("failures") or [],
+                },
+            ),
+        )
+        if preflight_step_status == "WARN":
+            preflight_action_items = _preflight_action_items(preflight)
+        if preflight_step_status == "FAIL":
             payload = _payload(
                 checked_at=checked_at,
                 base_url=normalized_base_url,
@@ -150,15 +174,7 @@ def run_public_etf_catalog_batches(
                         f"catalogRows={catalog_rows} sourceStatus={catalog_source_status}",
                         http_status=catalog_status.get("httpStatus"),
                     ),
-                    _step(
-                        "public_catalog_preflight",
-                        "FAIL" if preflight_status == "FAIL" else "WARN",
-                        f"preflightStatus={preflight_status}",
-                        summary={
-                            "warnings": preflight.get("warnings") or [],
-                            "failures": preflight.get("failures") or [],
-                        },
-                    ),
+                    *preflight_steps,
                 ],
                 summary={
                     "catalogRowCount": catalog_rows,
@@ -218,6 +234,7 @@ def run_public_etf_catalog_batches(
             f"catalogRows={catalog_rows} sourceStatus={catalog_source_status}",
             http_status=catalog_status.get("httpStatus"),
         ),
+        *preflight_steps,
         _step(
             "etf_history_status_initial",
             "PASS",
@@ -331,18 +348,24 @@ def run_public_etf_catalog_batches(
             "initialReadyCount": initial_ready_count,
             "plannedOffsets": planned_offsets,
             "plannedBatchCount": len(planned_offsets),
+            "preflightStatus": preflight_status,
             "nextOffset": next_offset,
             "failedOffset": failed_offsets[0] if failed_offsets else None,
             "finalReadyCount": final_ready_count,
             "finalValidationFailureCount": final_validation_failures,
             "readyCountRegression": ready_count_regression,
         },
-        action_items=_action_items(
-            final_ready_count,
-            catalog_rows,
-            next_offset=next_offset,
-            failed_offset=failed_offsets[0] if failed_offsets else None,
-            ready_count_regression=ready_count_regression,
+        action_items=_dedupe(
+            [
+                *_action_items(
+                    final_ready_count,
+                    catalog_rows,
+                    next_offset=next_offset,
+                    failed_offset=failed_offsets[0] if failed_offsets else None,
+                    ready_count_regression=ready_count_regression,
+                ),
+                *preflight_action_items,
+            ],
         ),
     )
     if persist_resume_state:

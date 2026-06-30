@@ -51,7 +51,7 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["plannedOffsets"], [0])
         self.assertEqual(payload["summary"]["plannedBatchCount"], 1)
 
-    def test_preflight_warn_blocks_remote_batch(self) -> None:
+    def test_preflight_warn_records_warning_and_runs_remote_batch(self) -> None:
         maintenance_calls: list[int] = []
 
         def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
@@ -109,11 +109,59 @@ class PublicCatalogBatchRunnerTests(unittest.TestCase):
         )
 
         self.assertEqual(payload["overallStatus"], "WARN")
-        self.assertEqual(maintenance_calls, [])
+        self.assertEqual(maintenance_calls, [0])
         self.assertEqual(payload["summary"]["preflightStatus"], "WARN")
+        self.assertTrue(
+            any(step["name"] == "public_catalog_preflight" for step in payload["steps"])
+        )
         self.assertTrue(
             any("public_history_stability" in item for item in payload["actionItems"])
         )
+
+    def test_preflight_fail_blocks_remote_batch(self) -> None:
+        maintenance_calls: list[int] = []
+
+        def requester(base_url: str, path: str, timeout_seconds: int) -> dict:
+            if path == "/api/etf/catalog/status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"sourceStatus": "static_official", "rowCount": 343},
+                }
+            raise AssertionError(path)
+
+        def preflight_checker(base_url: str, timeout_seconds: int) -> dict:
+            return {
+                "overallStatus": "FAIL",
+                "warnings": [],
+                "failures": ["deploy drift failed"],
+                "actionItems": ["Check public backend deploy drift."],
+            }
+
+        def maintenance_runner(
+            *,
+            base_url: str,
+            offset: int,
+            limit: int,
+            timeout_seconds: int,
+            retry_count: int,
+            retry_delay_seconds: float,
+        ) -> dict:
+            maintenance_calls.append(offset)
+            return {"overallStatus": "PASS", "failures": [], "warnings": []}
+
+        payload = run_public_etf_catalog_batches(
+            base_url="https://example.com",
+            batch_size=1,
+            max_batches=1,
+            requester=requester,
+            maintenance_runner=maintenance_runner,
+            preflight_checker=preflight_checker,
+        )
+
+        self.assertEqual(payload["overallStatus"], "FAIL")
+        self.assertEqual(maintenance_calls, [])
+        self.assertEqual(payload["summary"]["preflightStatus"], "FAIL")
+        self.assertTrue(payload["failures"])
 
     def test_runs_batches_and_reports_final_ready_count(self) -> None:
         maintenance_calls: list[tuple[int, int]] = []
