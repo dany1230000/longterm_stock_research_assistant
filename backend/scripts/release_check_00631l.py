@@ -552,6 +552,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v9_4_compact_search_status.md",
         "docs/00631l_v9_42_defer_full_load.md",
         "docs/00631l_v9_44_public_console_guard.md",
+        "docs/00631l_v9_45_marker_first_pages_wait.md",
         "scripts/00631l_check_static_first_load_budget.cmd",
         "scripts/00631l_check_public_first_load_network.cmd",
         "scripts/00631l_check_public_console.cmd",

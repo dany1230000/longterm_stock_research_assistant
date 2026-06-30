@@ -24,9 +24,13 @@ from backend.scripts.check_public_pages_00631l import (  # noqa: E402
     DEFAULT_ROOT_URL,
     DEFAULT_STATIC_BASE_URL,
 )
+from backend.scripts.wait_public_release_marker_00631l import (  # noqa: E402
+    run_public_release_marker_wait,
+)
 
 
 StatusChecker = Callable[..., dict[str, Any]]
+PublicChecker = Callable[..., dict[str, Any]]
 
 
 def main() -> int:
@@ -42,6 +46,7 @@ def main() -> int:
         attempts=args.attempts,
         interval_seconds=args.interval_seconds,
         dry_run=args.dry_run,
+        mode=args.mode,
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
     summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
@@ -50,6 +55,7 @@ def main() -> int:
         f"overallStatus={payload['overallStatus']} "
         f"warnings={payload['warningCount']} "
         f"failures={payload['failureCount']} "
+        f"mode={payload.get('mode') or '-'} "
         f"matched={summary.get('matchedExpectedSha')} "
         f"completed={summary.get('completedSuccessfully')} "
         f"attempts={summary.get('sampleCount')}"
@@ -69,10 +75,42 @@ def run_pages_deploy_wait(
     attempts: int = 20,
     interval_seconds: int = 15,
     dry_run: bool = False,
+    mode: str = "public-marker",
     checker: StatusChecker = run_pages_deploy_status_check,
+    public_checker: PublicChecker | None = None,
 ) -> dict[str, Any]:
     checked_at = _now_iso()
     resolved_expected_sha = (expected_sha or _git_head_sha()).strip()
+    if mode == "public-marker":
+        marker_kwargs: dict[str, Any] = {
+            "root_url": root_url,
+            "static_base_url": static_base_url,
+            "timeout": timeout,
+            "expected_sha": resolved_expected_sha,
+            "attempts": attempts,
+            "interval_seconds": interval_seconds,
+            "dry_run": dry_run,
+        }
+        if public_checker is not None:
+            marker_kwargs["checker"] = public_checker
+        marker_payload = run_public_release_marker_wait(**marker_kwargs)
+        return _build_marker_wait_payload(
+            checked_at=checked_at,
+            repo=repo,
+            workflow=workflow,
+            branch=branch,
+            expected_sha=resolved_expected_sha,
+            marker_payload=marker_payload,
+        )
+    if mode != "github-api":
+        return _build_invalid_mode_payload(
+            checked_at=checked_at,
+            repo=repo,
+            workflow=workflow,
+            branch=branch,
+            expected_sha=resolved_expected_sha,
+            mode=mode,
+        )
     if dry_run:
         sample = _planned_sample(resolved_expected_sha)
         return _build_wait_payload(
@@ -83,6 +121,7 @@ def run_pages_deploy_wait(
             expected_sha=resolved_expected_sha,
             samples=[sample],
             dry_run=True,
+            mode=mode,
         )
 
     samples: list[dict[str, Any]] = []
@@ -112,6 +151,7 @@ def run_pages_deploy_wait(
         expected_sha=resolved_expected_sha,
         samples=samples,
         dry_run=False,
+        mode=mode,
     )
 
 
@@ -124,6 +164,7 @@ def _build_wait_payload(
     expected_sha: str,
     samples: list[dict[str, Any]],
     dry_run: bool,
+    mode: str,
 ) -> dict[str, Any]:
     latest = samples[-1] if samples else {}
     latest_summary = latest.get("summary") if isinstance(latest.get("summary"), dict) else {}
@@ -156,6 +197,7 @@ def _build_wait_payload(
         "workflow": workflow,
         "branch": branch,
         "dryRun": dry_run,
+        "mode": mode,
         "overallStatus": "FAIL" if failures else "PASS" if completed else "WARN",
         "summary": {
             "expectedSha": expected_sha,
@@ -176,6 +218,88 @@ def _build_wait_payload(
         "warningCount": len(warnings),
         "failureCount": len(failures),
         "actionItems": action_items,
+    }
+
+
+def _build_marker_wait_payload(
+    *,
+    checked_at: str,
+    repo: str,
+    workflow: str,
+    branch: str,
+    expected_sha: str,
+    marker_payload: dict[str, Any],
+) -> dict[str, Any]:
+    marker_summary = (
+        marker_payload.get("summary") if isinstance(marker_payload.get("summary"), dict) else {}
+    )
+    matched = bool(marker_summary.get("matchedExpectedSha"))
+    latest_sha = marker_summary.get("latestReleaseGitSha")
+    return {
+        "sourceContract": "00631l_pages_deploy_wait",
+        "checkedAt": checked_at,
+        "repo": repo,
+        "workflow": workflow,
+        "branch": branch,
+        "dryRun": marker_payload.get("dryRun", False),
+        "mode": "public-marker",
+        "overallStatus": marker_payload.get("overallStatus", "WARN"),
+        "summary": {
+            "expectedSha": expected_sha,
+            "sampleCount": marker_summary.get("sampleCount"),
+            "matchedExpectedSha": matched,
+            "completedSuccessfully": matched,
+            "latestRunStatus": "public-marker",
+            "latestRunConclusion": "success" if matched else "waiting",
+            "latestRunHeadSha": latest_sha,
+            "latestRunUrl": None,
+            "staticRowCount": marker_summary.get("staticRowCount"),
+            "coverageStart": marker_summary.get("coverageStart"),
+            "coverageEnd": marker_summary.get("coverageEnd"),
+            "latestReleaseTag": marker_summary.get("latestReleaseTag"),
+            "latestReleaseGitSha": latest_sha,
+            "latestReleaseAppVersion": marker_summary.get("latestReleaseAppVersion"),
+        },
+        "samples": marker_payload.get("samples") or [],
+        "warnings": marker_payload.get("warnings") or [],
+        "failures": marker_payload.get("failures") or [],
+        "warningCount": marker_payload.get("warningCount", 0),
+        "failureCount": marker_payload.get("failureCount", 0),
+        "actionItems": marker_payload.get("actionItems") or [],
+    }
+
+
+def _build_invalid_mode_payload(
+    *,
+    checked_at: str,
+    repo: str,
+    workflow: str,
+    branch: str,
+    expected_sha: str,
+    mode: str,
+) -> dict[str, Any]:
+    message = f"Unsupported Pages deploy wait mode: {mode}"
+    return {
+        "sourceContract": "00631l_pages_deploy_wait",
+        "checkedAt": checked_at,
+        "repo": repo,
+        "workflow": workflow,
+        "branch": branch,
+        "dryRun": False,
+        "mode": mode,
+        "overallStatus": "FAIL",
+        "summary": {
+            "expectedSha": expected_sha,
+            "sampleCount": 0,
+            "matchedExpectedSha": False,
+            "completedSuccessfully": False,
+        },
+        "samples": [],
+        "warnings": [],
+        "failures": [message],
+        "warningCount": 0,
+        "failureCount": 1,
+        "actionItems": ["Use --mode public-marker or --mode github-api."],
     }
 
 
@@ -248,6 +372,15 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--interval-seconds", type=int, default=15)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--soft-fail", action="store_true")
+    parser.add_argument(
+        "--mode",
+        choices=["public-marker", "github-api"],
+        default=os.getenv("00631L_PAGES_DEPLOY_WAIT_MODE", "public-marker"),
+        help=(
+            "public-marker checks GitHub Pages release.json without GitHub API; "
+            "github-api keeps the older workflow API based check."
+        ),
+    )
     return parser.parse_args()
 
 
