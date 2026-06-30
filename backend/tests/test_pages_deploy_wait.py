@@ -1,6 +1,9 @@
 import unittest
 
-from backend.scripts.wait_pages_deploy_00631l import run_pages_deploy_wait
+from backend.scripts.wait_pages_deploy_00631l import (
+    compact_pages_deploy_wait_payload,
+    run_pages_deploy_wait,
+)
 
 
 class PagesDeployWaitTests(unittest.TestCase):
@@ -74,6 +77,22 @@ class PagesDeployWaitTests(unittest.TestCase):
         self.assertTrue(payload["summary"]["completedSuccessfully"])
         self.assertEqual(payload["summary"]["latestReleaseGitSha"], "abc123fff")
 
+    def test_pages_deploy_wait_compact_payload_summarizes_attempts(self) -> None:
+        payload = run_pages_deploy_wait(
+            expected_sha="new456",
+            attempts=2,
+            interval_seconds=0,
+            public_checker=_public_checker(["old123fff", "new456fff"]),
+        )
+
+        compact = compact_pages_deploy_wait_payload(payload, include_attempts=True)
+
+        self.assertNotIn("samples", compact)
+        self.assertIn("sampleSummaries", compact)
+        self.assertEqual(compact["attemptSummary"]["sampleCount"], 2)
+        self.assertEqual(compact["attemptSummary"]["releaseShaTransitionCount"], 1)
+        self.assertEqual(compact["sampleSummaries"][-1]["releaseGitSha"], "new456fff")
+
 
 def _checker(samples: list[dict]):
     def checker(**kwargs) -> dict:
@@ -112,6 +131,19 @@ def _public_pages(release_sha: str) -> dict:
         "warnings": [],
         "failures": [],
     }
+
+
+def _public_checker(release_shas: list[str]):
+    def checker(**kwargs) -> dict:
+        del kwargs
+        release_sha = release_shas.pop(0)
+        status = "PASS" if not release_shas else "WARN"
+        payload = _public_pages(release_sha)
+        payload["overallStatus"] = status
+        payload["warnings"] = [] if status == "PASS" else ["public release SHA differs"]
+        return payload
+
+    return checker
 
 
 if __name__ == "__main__":

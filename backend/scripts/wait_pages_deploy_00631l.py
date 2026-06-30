@@ -48,7 +48,12 @@ def main() -> int:
         dry_run=args.dry_run,
         mode=args.mode,
     )
-    print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+    printable_payload = (
+        compact_pages_deploy_wait_payload(payload, include_attempts=args.include_attempts)
+        if args.summary_only or args.include_attempts
+        else payload
+    )
+    print(json.dumps(printable_payload, ensure_ascii=False, indent=2, sort_keys=True))
     summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
     print(
         "[summary] "
@@ -61,6 +66,19 @@ def main() -> int:
         f"attempts={summary.get('sampleCount')}"
     )
     return 0 if args.soft_fail or payload["overallStatus"] != "FAIL" else 1
+
+
+def compact_pages_deploy_wait_payload(
+    payload: dict[str, Any],
+    *,
+    include_attempts: bool = False,
+) -> dict[str, Any]:
+    compact = {key: value for key, value in payload.items() if key != "samples"}
+    sample_summaries = _sample_summaries(payload.get("samples") or [])
+    compact["attemptSummary"] = _attempt_summary(sample_summaries)
+    if include_attempts:
+        compact["sampleSummaries"] = sample_summaries
+    return compact
 
 
 def run_pages_deploy_wait(
@@ -336,6 +354,52 @@ def _planned_sample(expected_sha: str) -> dict[str, Any]:
     }
 
 
+def _sample_summaries(samples: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    summaries: list[dict[str, Any]] = []
+    for index, sample in enumerate(samples, start=1):
+        summary = sample.get("summary") if isinstance(sample.get("summary"), dict) else {}
+        summaries.append(
+            {
+                "attempt": index,
+                "overallStatus": sample.get("overallStatus"),
+                "releaseTag": sample.get("releaseTag") or summary.get("latestReleaseTag"),
+                "releaseGitSha": (
+                    sample.get("releaseGitSha")
+                    or summary.get("latestReleaseGitSha")
+                    or summary.get("latestRunHeadSha")
+                ),
+                "releaseAppVersion": sample.get("releaseAppVersion")
+                or summary.get("latestReleaseAppVersion"),
+                "latestRunStatus": summary.get("latestRunStatus"),
+                "latestRunConclusion": summary.get("latestRunConclusion"),
+                "rowCount": sample.get("rowCount") or summary.get("staticRowCount"),
+                "coverageStart": sample.get("coverageStart") or summary.get("coverageStart"),
+                "coverageEnd": sample.get("coverageEnd") or summary.get("coverageEnd"),
+                "warningCount": len(sample.get("warnings") or []),
+                "failureCount": len(sample.get("failures") or []),
+            }
+        )
+    return summaries
+
+
+def _attempt_summary(sample_summaries: list[dict[str, Any]]) -> dict[str, Any]:
+    first = sample_summaries[0] if sample_summaries else {}
+    latest = sample_summaries[-1] if sample_summaries else {}
+    transitions = 0
+    previous_sha = ""
+    for sample in sample_summaries:
+        release_sha = str(sample.get("releaseGitSha") or "")
+        if previous_sha and release_sha != previous_sha:
+            transitions += 1
+        previous_sha = release_sha
+    return {
+        "sampleCount": len(sample_summaries),
+        "first": first,
+        "latest": latest,
+        "releaseShaTransitionCount": transitions,
+    }
+
+
 def _git_head_sha() -> str:
     try:
         result = subprocess.run(
@@ -372,6 +436,16 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--interval-seconds", type=int, default=15)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--soft-fail", action="store_true")
+    parser.add_argument(
+        "--summary-only",
+        action="store_true",
+        help="Print compact attempt summaries instead of the full sampled payloads.",
+    )
+    parser.add_argument(
+        "--include-attempts",
+        action="store_true",
+        help="Print compact attempt rows; implies compact output.",
+    )
     parser.add_argument(
         "--mode",
         choices=["public-marker", "github-api"],

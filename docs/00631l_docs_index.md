@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Brief Pages wait output v9.46: `docs\00631l_v9_46_brief_pages_wait.md`
 - Marker-first Pages wait v9.45: `docs\00631l_v9_45_marker_first_pages_wait.md`
 - Public console guard v9.44: `docs\00631l_v9_44_public_console_guard.md`
 - Public first-load network guard v9.43: `docs\00631l_v9_43_public_first_load_network_guard.md`
