@@ -81,11 +81,13 @@ if "%FULL_ETF_REFRESH%"=="1" (
 )
 
 if "%RESTORE_PUBLIC_HISTORY%"=="1" (
+    call scripts\00631l_restore_public_price_history.cmd --output-path backend\data\00631l_price_history.jsonl
+    if errorlevel 1 exit /b %ERRORLEVEL%
     call scripts\00631l_restore_public_etf_price_history.cmd --output-dir backend\data\etf_price_history
     if errorlevel 1 exit /b %ERRORLEVEL%
 ) else (
-    echo [00631L] Skipping public ETF history restore for this local Pages build.
-    echo [00631L] Remove --skip-restore-public-history to reuse public price-history rows.
+    echo [00631L] Skipping public 00631L and ETF history restore for this local Pages build.
+    echo [00631L] Remove --skip-restore-public-history to reuse public static price-history rows.
 )
 
 if "%RESTORE_PUBLIC_ATTEMPTS%"=="1" (

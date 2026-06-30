@@ -86,22 +86,16 @@ def run_static_public_regression_guard(
         if local_day is not None and remote_day is not None and local_day < remote_day:
             _add_regression(
                 failures,
-                warnings,
-                local_release_differs_from_public,
                 f"localCoverageEnd {local_end} is older than public {remote_end}",
             )
         elif local_day == remote_day and local_rows < remote_rows:
             _add_regression(
                 failures,
-                warnings,
-                local_release_differs_from_public,
                 f"local rowCount {local_rows} is lower than public {remote_rows}",
             )
         if local_etf_ready < remote_etf_ready:
             _add_regression(
                 failures,
-                warnings,
-                local_release_differs_from_public,
                 "local ETF ready count "
                 f"{local_etf_ready} is lower than public {remote_etf_ready}",
             )
@@ -132,14 +126,9 @@ def run_static_public_regression_guard(
 
 def _add_regression(
     failures: list[str],
-    warnings: list[str],
-    local_release_differs_from_public: bool,
     message: str,
 ) -> None:
-    if local_release_differs_from_public:
-        warnings.append(f"staleLocalStaticExport={message}")
-    else:
-        failures.append(message)
+    failures.append(message)
 
 
 def _release_id(release: dict[str, Any]) -> str | None:

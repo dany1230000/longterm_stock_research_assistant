@@ -40,10 +40,10 @@ class EndpointTests(unittest.TestCase):
         self.assertIn("serverTime", payload)
         self.assertEqual(payload["sourceContract"], "00631l_backend_health")
         self.assertNotEqual(payload["appVersion"], "3.4-live-backend")
-        self.assertEqual(payload["appVersion"], "9.48-public-backend-drift-tag")
+        self.assertEqual(payload["appVersion"], "9.49-strict-static-regression-guard")
         self.assertEqual(
             payload["release"]["tag"],
-            "00631l-lab-v9.48-public-backend-drift-tag",
+            "00631l-lab-v9.49-strict-static-regression-guard",
         )
         self.assertEqual(payload["release"]["version"], payload["appVersion"])
         self.assertIn("tag", payload["release"])

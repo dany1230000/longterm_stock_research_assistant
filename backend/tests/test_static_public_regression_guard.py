@@ -46,7 +46,7 @@ class StaticPublicRegressionGuardTests(unittest.TestCase):
         self.assertEqual(payload["overallStatus"], "FAIL")
         self.assertIn("local ETF ready count 230 is lower", payload["failures"][0])
 
-    def test_stale_local_release_warns_instead_of_failing(self) -> None:
+    def test_release_mismatch_still_fails_when_static_data_regresses(self) -> None:
         payload = run_static_public_regression_guard(
             local_dir="unused",
             local_status=_status(
@@ -65,17 +65,23 @@ class StaticPublicRegressionGuardTests(unittest.TestCase):
             ),
         )
 
-        self.assertEqual(payload["overallStatus"], "WARN")
-        self.assertEqual(payload["failures"], [])
+        self.assertEqual(payload["overallStatus"], "FAIL")
+        self.assertTrue(payload["failures"])
         self.assertTrue(
             any(
-                "local static export release differs from public" in warning
-                for warning in payload["warnings"]
+                "localCoverageEnd 2026-06-24 is older" in failure
+                for failure in payload["failures"]
             )
         )
         self.assertTrue(
             any(
-                "staleLocalStaticExport=localCoverageEnd" in warning
+                "local ETF ready count 230 is lower" in failure
+                for failure in payload["failures"]
+            )
+        )
+        self.assertTrue(
+            any(
+                "local static export release differs from public" in warning
                 for warning in payload["warnings"]
             )
         )

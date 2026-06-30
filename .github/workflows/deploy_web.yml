@@ -100,6 +100,11 @@ jobs:
         continue-on-error: true
         run: python backend/scripts/import_etf_price_history.py --from-catalog --catalog-path backend/data/etf_catalog.json --limit 0 --start-date 2026-06-01 --output-dir backend/data/etf_price_history --allow-partial --summary-only --progress-every 25
 
+      - name: Restore public 00631L price history
+        timeout-minutes: 2
+        continue-on-error: true
+        run: python backend/scripts/restore_public_00631l_price_history.py --output-path backend/data/00631l_price_history.jsonl --summary-only
+
       - name: Restore public ETF price-history rows
         timeout-minutes: 8
         continue-on-error: true

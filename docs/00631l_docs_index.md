@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Strict static regression guard v9.49: `docs\00631l_v9_49_strict_static_regression_guard.md`
 - Public backend drift tag v9.48: `docs\00631l_v9_48_public_backend_drift_tag.md`
 - Intraday pre-open freshness v9.47: `docs\00631l_v9_47_intraday_preopen_freshness.md`
 - Brief Pages wait output v9.46: `docs\00631l_v9_46_brief_pages_wait.md`
