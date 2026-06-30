@@ -2161,6 +2161,10 @@ class _QuoteReadinessStrip extends StatelessWidget {
     final snapshotStatus = _sourceStatusBadgeLabel(data.snapshot.status.label);
     final navStatus = _sourceStatusBadgeLabel(nav?.status.label);
     final latestSelectedPoint = price.latest;
+    final splitAdjustmentLabel = _priceAdjustmentConfidenceLabel(
+      selectedEtf.code,
+      selectedEtf.historySummary,
+    );
     final items = selectedEtf.is00631L
         ? [
             _QuoteReadinessItem(
@@ -2176,16 +2180,16 @@ class _QuoteReadinessStrip extends StatelessWidget {
               caption: navStatus,
             ),
             _QuoteReadinessItem(
-              label: '歷史',
-              value: price.rowCount >= 2
+              label: '價格欄位',
+              value: selectedEtf.priceFieldLabel,
+              caption: price.rowCount >= 2
                   ? '${formatInteger(price.rowCount)}筆'
-                  : '尚無',
-              caption: selectedEtf.historyCoverageText,
+                  : '尚無歷史',
             ),
             _QuoteReadinessItem(
-              label: '後端',
-              value: data.operationsStatus.backendConnectionLabel,
-              caption: _frontendDataModeLabel,
+              label: '分割調整',
+              value: splitAdjustmentLabel,
+              caption: selectedEtf.historyCoverageText,
             ),
           ]
         : [

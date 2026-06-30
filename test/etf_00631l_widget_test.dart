@@ -69,8 +69,30 @@ void main() {
     expect(find.text('更多資料狀態'), findsNothing);
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
     expect(find.text('內容物重點'), findsNothing);
-    expect(find.text('價格欄位'), findsNothing);
-    expect(find.text('分割調整'), findsNothing);
+    final quoteReadinessStrip = find.byKey(
+      const ValueKey('00631l-quote-readiness-strip'),
+    );
+    expect(
+      find.descendant(
+        of: quoteReadinessStrip,
+        matching: find.text('價格欄位'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: quoteReadinessStrip,
+        matching: find.text('分割調整'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: quoteReadinessStrip,
+        matching: find.text('後端'),
+      ),
+      findsNothing,
+    );
     expect(find.text('覆蓋型態'), findsNothing);
     expect(find.text('ETF歷史'), findsNothing);
     expect(find.text('歷史'), findsWidgets);
@@ -137,8 +159,8 @@ void main() {
     expect(txClockStatus.data, isNotNull);
     expect(txClockStatus.data!.trim(), isNotEmpty);
     expect(find.text('目前檔案'), findsOneWidget);
-    expect(find.text('價格欄位'), findsOneWidget);
-    expect(find.text('分割調整'), findsOneWidget);
+    expect(find.text('價格欄位'), findsWidgets);
+    expect(find.text('分割調整'), findsWidgets);
     expect(find.text('覆蓋型態'), findsOneWidget);
     expect(find.text('ETF歷史'), findsOneWidget);
     expect(
@@ -457,7 +479,7 @@ void main() {
       );
     }
     final stripRect = tester.getRect(readinessStrip);
-    for (final label in const ['內容物', '盤中 NAV', '歷史', '後端']) {
+    for (final label in const ['內容物', '盤中 NAV', '價格欄位', '分割調整']) {
       final labelFinder = find.descendant(
         of: readinessStrip,
         matching: find.text(label),

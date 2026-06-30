@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.30 makes the 00631L first-screen quote header show the price field and
+  split-adjustment status directly, so history/backtest data basis is visible
+  without opening advanced details.
+
 - v9.29 aligns the overview sparkline with the history chart. The first-screen
   chart date strip now uses full start / middle / end labels.
 

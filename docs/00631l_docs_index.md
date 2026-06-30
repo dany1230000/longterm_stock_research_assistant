@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Quote price basis v9.30: `docs\00631l_v9_30_quote_price_basis.md`
 - Overview chart axis labels v9.29: `docs\00631l_v9_29_overview_axis_labels.md`
 - Bottom navigation cleanup v9.28: `docs\00631l_v9_28_bottom_navigation_cleanup.md`
 - History chart axis labels v9.27: `docs\00631l_v9_27_history_axis_labels.md`
