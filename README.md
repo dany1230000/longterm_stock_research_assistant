@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.33 adds a stricter first-screen chart-position guard so future header
+  changes cannot push the overview chart down again.
+
 - v9.32 tightens the 00631L mobile quote header with a stricter 118px height
   guard and two-line readiness chips.
 

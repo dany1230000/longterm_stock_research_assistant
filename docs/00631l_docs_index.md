@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Chart position guard v9.33: `docs\00631l_v9_33_chart_position_guard.md`
 - Compact quote height v9.32: `docs\00631l_v9_32_compact_quote_height.md`
 - First-screen strip cleanup v9.31: `docs\00631l_v9_31_first_screen_strip_cleanup.md`
 - Quote price basis v9.30: `docs\00631l_v9_30_quote_price_basis.md`

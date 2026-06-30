@@ -472,7 +472,7 @@ void main() {
       tester.getRect(readinessStrip).bottom,
       lessThan(tester.getRect(chartFinder).top),
     );
-    expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(720));
+    expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(500));
     final stripRect = tester.getRect(readinessStrip);
     for (final label in const ['內容物', '盤中 NAV', '價格欄位', '分割調整']) {
       final labelFinder = find.descendant(
