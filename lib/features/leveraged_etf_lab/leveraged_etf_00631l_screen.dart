@@ -1944,7 +1944,7 @@ class _CompactQuoteHeader extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(9, 6, 9, 6),
+        padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1974,7 +1974,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 2),
                       Text(
                         _price(quoteValue),
                         maxLines: 1,
@@ -1986,7 +1986,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                           height: 1.0,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 1),
                       Text(
                         quoteCaptionDisplay,
                         maxLines: 1,
@@ -2031,7 +2031,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ],
               ),
             ],
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             _QuoteReadinessStrip(data: data, selectedEtf: selectedEtf),
             if (!selectedEtf.is00631L) ...[
               const SizedBox(height: 4),
@@ -2197,12 +2197,12 @@ class _QuoteReadinessStrip extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
         child: Row(
           children: [
             for (var index = 0; index < items.length; index++) ...[
               Expanded(child: _QuoteReadinessChip(item: items[index])),
-              if (index != items.length - 1) const SizedBox(width: 4),
+              if (index != items.length - 1) const SizedBox(width: 3),
             ],
           ],
         ),
@@ -2231,28 +2231,44 @@ class _QuoteReadinessChip extends StatelessWidget {
             color: _marketMutedTextColor(context),
             fontWeight: FontWeight.w800,
             letterSpacing: 0,
+            height: 1,
           ),
         ),
-        const SizedBox(height: 1),
-        Text(
-          item.value,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: _marketTextColor(context),
-            fontWeight: FontWeight.w900,
-            letterSpacing: 0,
-          ),
-        ),
-        Text(
-          item.caption,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: _marketMutedTextColor(context),
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0,
-          ),
+        const SizedBox(height: 2),
+        Row(
+          children: [
+            Expanded(
+              flex: item.caption.trim().isEmpty ? 1 : 2,
+              child: Text(
+                item.value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0,
+                  height: 1,
+                ),
+              ),
+            ),
+            if (item.caption.trim().isNotEmpty) ...[
+              const SizedBox(width: 3),
+              Expanded(
+                flex: 3,
+                child: Text(
+                  item.caption,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ],
     );
@@ -2274,15 +2290,15 @@ class _CompactPremiumBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return ConstrainedBox(
       key: const ValueKey('00631l-quote-premium-box'),
-      constraints: const BoxConstraints(minWidth: 96, maxWidth: 116),
+      constraints: const BoxConstraints(minWidth: 88, maxWidth: 108),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.14),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: color.withValues(alpha: 0.46)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -2293,7 +2309,7 @@ class _CompactPremiumBox extends StatelessWidget {
                       fontWeight: FontWeight.w900,
                     ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 value,
                 maxLines: 1,
@@ -2303,7 +2319,7 @@ class _CompactPremiumBox extends StatelessWidget {
                       fontWeight: FontWeight.w900,
                     ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 1),
               Text(
                 label,
                 maxLines: 1,

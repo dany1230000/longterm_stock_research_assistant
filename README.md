@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.32 tightens the 00631L mobile quote header with a stricter 118px height
+  guard and two-line readiness chips.
+
 - v9.31 removes the redundant first-screen `行情 / 資料 / 歷史` label strip so
   the overview moves from quote data into the chart faster on phones.
 
