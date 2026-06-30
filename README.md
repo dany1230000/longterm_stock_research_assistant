@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.27 makes the history chart date axis clearer on phones. Chart labels now
+  read start / middle / end in full wording so users can match the line chart
+  to the visible date range more quickly.
+
 - v9.26 tightens the first-screen quote header. The main mobile quote card now
   has a height guard so price, source readiness, and the one-year chart stay
   visible without a large hero block.

@@ -13788,9 +13788,9 @@ class _ChartAxisDateStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: _axisLabel(context, '起', start, TextAlign.left)),
-        Expanded(child: _axisLabel(context, '中', middle, TextAlign.center)),
-        Expanded(child: _axisLabel(context, '迄', end, TextAlign.right)),
+        Expanded(child: _axisLabel(context, '起點', start, TextAlign.left)),
+        Expanded(child: _axisLabel(context, '中段', middle, TextAlign.center)),
+        Expanded(child: _axisLabel(context, '終點', end, TextAlign.right)),
       ],
     );
   }
