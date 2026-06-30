@@ -108,8 +108,6 @@ def compare_public_data_freshness(
     public_overall = str(public_status.get("overallStatus") or "WARN")
     if public_overall == "FAIL":
         failures.append("public backend status check failed")
-    elif public_overall == "WARN":
-        warnings.append("public backend status check returned WARN")
     if public_rows < 2:
         warnings.append("public backend 00631L price history has fewer than 2 rows")
         action_items.append(
@@ -165,6 +163,7 @@ def compare_public_data_freshness(
         "publicBackendVersion": public_summary.get("backendVersion"),
         "publicReleaseTag": public_summary.get("releaseTag"),
         "publicGitSha": public_summary.get("gitSha"),
+        "publicBackendOverallStatus": public_overall,
         "publicPriceHistoryRows": public_rows,
         "publicCoverageStart": public_start,
         "publicCoverageEnd": public_end,

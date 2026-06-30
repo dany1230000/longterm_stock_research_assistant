@@ -94,6 +94,41 @@ class PublicDataFreshnessTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["publicCatalogRowCount"], 228)
         self.assertEqual(payload["summary"]["publicEtfCatalogGapCount"], 0)
 
+    def test_passes_when_only_public_backend_has_non_data_warning(self) -> None:
+        public = {
+            "overallStatus": "WARN",
+            "summary": {
+                "priceHistoryRows": 2833,
+                "priceHistoryCoverageStart": "2014-10-31",
+                "priceHistoryCoverageEnd": "2026-06-22",
+                "catalogRowCount": 228,
+                "etfHistoryReadyCount": 228,
+                "etfHistoryCatalogGapCount": 0,
+            },
+        }
+        status = {
+            "rowCount": 2833,
+            "coverageStart": "2014-10-31",
+            "coverageEnd": "2026-06-22",
+            "sourceStatus": "cached",
+        }
+
+        payload = compare_public_data_freshness(
+            public_status=public,
+            local_status=status,
+            static_status={
+                **status,
+                "etfCatalogRowCount": 228,
+                "etfPriceHistoryReadyCount": 228,
+            },
+            checked_at="2026-06-22T14:00:00+00:00",
+        )
+
+        self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertEqual(payload["warnings"], [])
+        self.assertEqual(payload["failures"], [])
+        self.assertEqual(payload["summary"]["publicBackendOverallStatus"], "WARN")
+
     def test_warns_when_public_catalog_has_unsaved_history_rows(self) -> None:
         public = {
             "overallStatus": "PASS",
