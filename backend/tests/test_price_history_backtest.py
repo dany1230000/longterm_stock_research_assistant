@@ -286,6 +286,7 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 "00631l-lab-v5.39-public-release-marker",
             )
             self.assertTrue((root / "static" / "price_history.json").exists())
+            self.assertTrue((root / "static" / "price_preview.json").exists())
             self.assertTrue((root / "static" / "performance.json").exists())
             self.assertTrue((root / "static" / "status.json").exists())
             self.assertTrue((root / "static" / "etf_catalog.json").exists())
@@ -295,6 +296,10 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 (root / "static" / "manifest.json").read_text(encoding="utf-8")
             )
             self.assertEqual(manifest["files"]["etfCatalog"], "etf_catalog.json")
+            self.assertEqual(
+                manifest["files"]["pricePreview"],
+                "price_preview.json",
+            )
             self.assertEqual(
                 manifest["files"]["etfPriceHistoryGaps"],
                 "etf_price_history_gaps.json",
@@ -308,6 +313,15 @@ class PriceHistoryAndBacktestTests(unittest.TestCase):
                 (root / "static" / "release.json").read_text(encoding="utf-8")
             )
             self.assertEqual(release["gitSha"], "abc123fff")
+            preview = json.loads(
+                (root / "static" / "price_preview.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(preview["sourceContract"], "00631l_static_price_preview")
+            self.assertEqual(preview["rowCount"], 3)
+            self.assertEqual(preview["fullRowCount"], 3)
+            self.assertEqual(preview["previewWindowDays"], 400)
             catalog = json.loads(
                 (root / "static" / "etf_catalog.json").read_text(encoding="utf-8")
             )

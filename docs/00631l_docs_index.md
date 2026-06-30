@@ -556,6 +556,7 @@ Release summaries remain available for audit history. For daily use, prefer the 
 - ETF price basis: `docs\00631l_v8_3_etf_price_basis.md`
 - TPEx ETF history fallback: `docs\00631l_v8_7_tpex_etf_history_fallback.md`
 - ETF history source provenance: `docs\00631l_v8_8_etf_history_source_provenance.md`
+- Static price preview: `docs\00631l_v9_40_static_price_preview.md`
 - ETF research room next direction: `docs\00631l_next_direction.md`
 
 ## Scope Boundary

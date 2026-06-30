@@ -19,11 +19,23 @@ class Static00631LRepository extends Mock00631LRepository {
 
   @override
   Future<Etf00631LLabData> fetchFastLabData() async {
+    return _fetchLabData(usePricePreview: true);
+  }
+
+  @override
+  Future<Etf00631LLabData> fetchLabData() {
+    return _fetchLabData(usePricePreview: false);
+  }
+
+  Future<Etf00631LLabData> _fetchLabData({
+    required bool usePricePreview,
+  }) async {
     final now = DateTime.now();
     final profileFuture = fetchProfile();
     final snapshotFuture = fetchDailySnapshot();
     final futuresQuoteFuture = fetchFuturesQuote();
-    final priceHistoryFuture = fetchPriceHistory();
+    final priceHistoryFuture =
+        usePricePreview ? _fetchPricePreview() : fetchPriceHistory();
     final operationsStatusFuture = fetchOperationsStatus();
 
     final profile = await profileFuture;
@@ -61,11 +73,6 @@ class Static00631LRepository extends Mock00631LRepository {
       etfCatalog: _deferredStaticCatalog(operationsStatus, now),
       lastFetchedAt: now,
     );
-  }
-
-  @override
-  Future<Etf00631LLabData> fetchLabData() {
-    return fetchFastLabData();
   }
 
   @override
@@ -154,6 +161,20 @@ class Static00631LRepository extends Mock00631LRepository {
     return _priceHistoryFromPayload(
       payload,
       filename: 'price_history.json',
+      fallbackCode: '00631L',
+      fallbackName: '00631L',
+      limit: limit,
+    );
+  }
+
+  Future<EtfPriceHistory> _fetchPricePreview({int limit = 5000}) async {
+    final payload = await _tryGetJson('price_preview.json');
+    if (payload == null) {
+      return fetchPriceHistory(limit: limit);
+    }
+    return _priceHistoryFromPayload(
+      payload,
+      filename: 'price_preview.json',
       fallbackCode: '00631L',
       fallbackName: '00631L',
       limit: limit,

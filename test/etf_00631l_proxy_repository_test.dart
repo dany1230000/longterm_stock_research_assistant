@@ -504,6 +504,8 @@ void main() {
 
   test('static fast lab data defers full ETF catalog files', () async {
     final client = _RecordingProxyHttpClient({
+      '00631l-static-data/price_preview.json':
+          jsonEncode(_staticPricePreviewPayload()),
       '00631l-static-data/price_history.json':
           jsonEncode(_staticPriceHistoryPayload()),
       '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
@@ -526,6 +528,42 @@ void main() {
     expect(fastData.operationsStatus.etfCatalogRowCount, 3);
     expect(fullData.etfCatalog.items, isEmpty);
     expect(fullData.operationsStatus.etfPriceHistoryReadyCount, 1);
+  });
+
+  test('static fast lab data uses price preview before full history', () async {
+    final client = _RecordingProxyHttpClient({
+      '00631l-static-data/price_preview.json':
+          jsonEncode(_staticPricePreviewPayload()),
+      '00631l-static-data/price_history.json':
+          jsonEncode(_staticPriceHistoryPayload()),
+      '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
+      '00631l-static-data/release.json': jsonEncode(_staticReleasePayload()),
+    });
+    final repository = Static00631LRepository(client: client);
+
+    final fastData = await repository.fetchFastLabData();
+
+    expect(fastData.priceHistory.points, hasLength(2));
+    expect(
+      fastData.priceHistory.sourceUrl,
+      '00631l-static-data/price_preview.json',
+    );
+    expect(
+      client.requestedPaths,
+      contains('00631l-static-data/price_preview.json'),
+    );
+    expect(
+      client.requestedPaths,
+      isNot(contains('00631l-static-data/price_history.json')),
+    );
+
+    final fullData = await repository.fetchLabData();
+
+    expect(fullData.priceHistory.points, hasLength(3));
+    expect(
+      client.requestedPaths,
+      contains('00631l-static-data/price_history.json'),
+    );
   });
 
   test('proxy repository maps AI analysis summary payload', () async {
@@ -1422,6 +1460,18 @@ Map<String, Object?> _staticPriceHistoryPayload() {
     'generatedAt': '2026-06-11T10:00:00+08:00',
     'rowCount': 3,
   };
+}
+
+Map<String, Object?> _staticPricePreviewPayload() {
+  final payload = Map<String, Object?>.from(_staticPriceHistoryPayload());
+  final points = (payload['items'] as List).take(2).toList(growable: false);
+  payload['sourceContract'] = '00631l_static_price_preview';
+  payload['sourceUrl'] = 'web/00631l-static-data/price_preview.json';
+  payload['items'] = points;
+  payload['rowCount'] = 2;
+  payload['fullRowCount'] = 3;
+  payload['previewWindowDays'] = 400;
+  return payload;
 }
 
 Map<String, Object?> _staticStatusPayload() {

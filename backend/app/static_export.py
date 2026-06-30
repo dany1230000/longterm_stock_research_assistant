@@ -15,6 +15,7 @@ from .price_history import PriceHistoryStore, utc_now_iso
 
 
 STATIC_SOURCE_CONTRACT = "00631l_static_public_data"
+PRICE_PREVIEW_WINDOW_DAYS = 400
 
 
 def export_static_00631l_data(
@@ -151,6 +152,11 @@ def export_static_00631l_data(
         "minimumRowCount": required_rows,
         "errorMessage": None if is_ready else status.get("errorMessage"),
     }
+    price_preview_payload = _price_preview_payload(
+        price_payload,
+        full_row_count=row_count,
+        preview_window_days=PRICE_PREVIEW_WINDOW_DAYS,
+    )
     performance_payload = {
         **performance,
         "sourceStatus": "static_official" if is_ready else "unavailable",
@@ -165,6 +171,7 @@ def export_static_00631l_data(
         "generatedAt": generated_at,
         "files": {
             "priceHistory": "price_history.json",
+            "pricePreview": "price_preview.json",
             "performance": "performance.json",
             "status": "status.json",
             "etfCatalog": "etf_catalog.json",
@@ -211,6 +218,7 @@ def export_static_00631l_data(
     }
 
     _write_json(output / "price_history.json", price_payload)
+    _write_json(output / "price_preview.json", price_preview_payload)
     _write_json(output / "performance.json", performance_payload)
     _write_json(output / "status.json", status_payload)
     _write_json(output / "etf_catalog.json", catalog_payload)
@@ -402,6 +410,46 @@ def static_export_status(output_dir: str | Path) -> dict[str, Any]:
         "failures": failures,
         "errorMessage": None if row_count >= 2 else status.get("errorMessage"),
     }
+
+
+def _price_preview_payload(
+    price_payload: dict[str, Any],
+    *,
+    full_row_count: int,
+    preview_window_days: int,
+) -> dict[str, Any]:
+    items = list(price_payload.get("items") or [])
+    coverage_end = _parse_iso_date(str(price_payload.get("coverageEnd") or ""))
+    if coverage_end is None and items:
+        coverage_end = _parse_iso_date(str((items[-1] or {}).get("date") or ""))
+
+    if coverage_end is None:
+        preview_items = items[-280:]
+    else:
+        cutoff = coverage_end.toordinal() - max(1, int(preview_window_days))
+        preview_items = []
+        for item in items:
+            item_date = _parse_iso_date(str((item or {}).get("date") or ""))
+            if item_date is not None and item_date.toordinal() >= cutoff:
+                preview_items.append(item)
+
+    if not preview_items and items:
+        preview_items = items[-min(len(items), 280) :]
+
+    preview = {
+        **price_payload,
+        "items": preview_items,
+        "sourceContract": "00631l_static_price_preview",
+        "rowCount": len(preview_items),
+        "fullRowCount": full_row_count,
+        "previewWindowDays": int(preview_window_days),
+    }
+    if preview_items:
+        preview["coverageStart"] = preview_items[0].get("date")
+        preview["coverageEnd"] = preview_items[-1].get("date")
+        preview["sourceUpdatedAt"] = preview_items[-1].get("date")
+        preview["dataTime"] = preview_items[-1].get("date")
+    return preview
 
 
 def _normalize_static_catalog_payload(
