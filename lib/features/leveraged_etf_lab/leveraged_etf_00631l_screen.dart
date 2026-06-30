@@ -1109,7 +1109,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '搜尋 ETF / 股票代號',
+                        '搜尋 ETF 代號',
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   color: _marketTextColor(context),
@@ -1118,7 +1118,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '輸入 ETF 代號、名稱或個股代號；ETF 可切換研究標的。',
+                        '輸入 ETF 代號或名稱；選取 ETF 後切換研究標的。股票結果會放在其他研究資料。',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: _marketMutedTextColor(context),
                               fontWeight: FontWeight.w700,
@@ -1154,7 +1154,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                         icon: const Icon(Icons.close),
                       ),
                 labelText: '輸入代號或名稱',
-                hintText: '00631L、0050、00878、2330',
+                hintText: '00631L、0050、00878',
                 border: const OutlineInputBorder(),
               ),
             ),
@@ -1242,7 +1242,9 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                             )
                   : ListView.separated(
                       shrinkWrap: true,
-                      itemCount: visibleItems.length + stockItems.length,
+                      itemCount: visibleItems.length +
+                          (stockItems.isEmpty ? 0 : 1) +
+                          stockItems.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         if (index < visibleItems.length) {
@@ -1253,7 +1255,28 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                             onSelected: widget.onEtfSelected,
                           );
                         }
-                        final stock = stockItems[index - visibleItems.length];
+                        final stockSectionIndex = index - visibleItems.length;
+                        if (stockItems.isNotEmpty && stockSectionIndex == 0) {
+                          return Padding(
+                            key: const ValueKey(
+                              '00631l-stock-search-section-label',
+                            ),
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Text(
+                              '其他研究資料',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium
+                                  ?.copyWith(
+                                    color: _marketMutedTextColor(context),
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0,
+                                  ),
+                            ),
+                          );
+                        }
+                        final stock = stockItems[
+                            stockSectionIndex - (stockItems.isEmpty ? 0 : 1)];
                         return _StockSearchResultTile(stock: stock);
                       },
                     ),

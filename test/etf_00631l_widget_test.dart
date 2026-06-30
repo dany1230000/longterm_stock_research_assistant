@@ -233,8 +233,8 @@ void main() {
     await tester.tap(symbolSearchButton);
     await tester.pumpAndSettle();
 
-    expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
-    expect(find.textContaining('可切換研究標的'), findsOneWidget);
+    expect(find.text('搜尋 ETF 代號'), findsOneWidget);
+    expect(find.textContaining('切換研究標的'), findsOneWidget);
     expect(find.textContaining('歷史可用 15 / 16'), findsOneWidget);
     expect(find.text('資料庫狀態'), findsOneWidget);
     expect(find.text('資料可用性'), findsNothing);
@@ -309,6 +309,7 @@ void main() {
       find.byKey(const ValueKey('00631l-stock-search-result-2330')),
       findsOneWidget,
     );
+    expect(find.text('其他研究資料'), findsOneWidget);
     expect(find.text('台積電'), findsWidgets);
     expect(find.textContaining('股票研究資料'), findsWidgets);
     _expectNoTradingActionText();
@@ -380,7 +381,7 @@ void main() {
     expect(find.text('近期資料 220'), findsOneWidget);
     expect(find.textContaining('TWSE'), findsOneWidget);
     expect(find.textContaining('TPEx'), findsOneWidget);
-    expect(find.text('搜尋 ETF / 股票代號'), findsOneWidget);
+    expect(find.text('搜尋 ETF 代號'), findsOneWidget);
     _expectNoTradingActionText();
   });
 
