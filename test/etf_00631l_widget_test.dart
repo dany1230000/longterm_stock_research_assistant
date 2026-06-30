@@ -487,6 +487,9 @@ void main() {
     expect(find.text('2024/06/03'), findsWidgets);
     expect(find.text('2026/06/01'), findsWidgets);
     expect(find.text('2026/06/03'), findsWidgets);
+    expect(find.text('起點'), findsWidgets);
+    expect(find.text('中段'), findsWidgets);
+    expect(find.text('終點'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-overview-sparkline-date-start')),
       findsOneWidget,

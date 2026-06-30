@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.29 aligns the overview sparkline with the history chart. The first-screen
+  chart date strip now uses full start / middle / end labels.
+
 - v9.28 locks the bottom navigation to the main app pages only. ETF search and
   switching stay in the top-left symbol button, while the bottom bar keeps
   Overview, History/Backtest, Position, AI, and My.

@@ -5004,7 +5004,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
           child: _dateCell(
             context,
             key: const ValueKey('00631l-overview-sparkline-date-start'),
-            label: '起',
+            label: '起點',
             date: start,
             align: CrossAxisAlignment.start,
             textAlign: TextAlign.left,
@@ -5015,7 +5015,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
           child: _dateCell(
             context,
             key: const ValueKey('00631l-overview-sparkline-date-mid'),
-            label: '中',
+            label: '中段',
             date: middle,
             align: CrossAxisAlignment.center,
             textAlign: TextAlign.center,
@@ -5026,7 +5026,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
           child: _dateCell(
             context,
             key: const ValueKey('00631l-overview-sparkline-date-end'),
-            label: '迄',
+            label: '終點',
             date: end,
             align: CrossAxisAlignment.end,
             textAlign: TextAlign.right,
