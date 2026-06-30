@@ -18,6 +18,9 @@ from backend.app.config import settings  # noqa: E402
 from backend.scripts.check_public_deploy_drift_00631l import (  # noqa: E402
     run_public_backend_deploy_drift_check,
 )
+from backend.scripts.compare_public_data_freshness_00631l import (  # noqa: E402
+    run_public_data_freshness_check,
+)
 from backend.scripts.public_backend_status_00631l import DEFAULT_BACKEND_URL  # noqa: E402
 
 
@@ -30,6 +33,7 @@ def run_public_deploy_wait_check(
     attempts: int = 12,
     interval_seconds: int = 10,
     dry_run: bool = False,
+    include_freshness: bool = True,
 ) -> dict[str, Any]:
     checked_at = _now_iso()
     resolved_expected_tag = (
@@ -62,6 +66,16 @@ def run_public_deploy_wait_check(
                 }
             ],
             dry_run=True,
+            freshness_status={
+                "overallStatus": "PASS",
+                "summary": {},
+                "warnings": [],
+                "failures": [],
+                "actionItems": [],
+                "dryRun": True,
+            }
+            if include_freshness
+            else None,
         )
 
     samples: list[dict[str, Any]] = []
@@ -81,12 +95,31 @@ def run_public_deploy_wait_check(
         if index < total_attempts - 1 and interval:
             time.sleep(interval)
 
+    freshness_status = None
+    if include_freshness:
+        try:
+            freshness_status = run_public_data_freshness_check(
+                base_url=base_url,
+                timeout_seconds=max(1, timeout_seconds),
+            )
+        except Exception as error:  # noqa: BLE001 - operational script summarizes.
+            freshness_status = {
+                "overallStatus": "WARN",
+                "summary": {},
+                "warnings": [f"public freshness check failed: {error}"],
+                "failures": [],
+                "actionItems": [
+                    "Rerun scripts\\00631l_compare_public_freshness.cmd."
+                ],
+            }
+
     return build_public_deploy_wait_status(
         base_url=_normalize_base_url(base_url),
         checked_at=checked_at,
         expected_release_tag=resolved_expected_tag,
         expected_git_sha=resolved_expected_sha,
         samples=samples,
+        freshness_status=freshness_status,
     )
 
 
@@ -98,6 +131,7 @@ def build_public_deploy_wait_status(
     samples: list[dict[str, Any]],
     expected_git_sha: str | None = None,
     dry_run: bool = False,
+    freshness_status: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     last_sample = samples[-1] if samples else {}
     last_summary = (
@@ -134,8 +168,21 @@ def build_public_deploy_wait_status(
         action_items.append(
             "Check public backend health before continuing public ETF history batches."
         )
+    freshness_summary = _freshness_summary(freshness_status)
+    if freshness_status is not None:
+        freshness_overall = str(freshness_status.get("overallStatus") or "WARN")
+        freshness_failures = [
+            str(item) for item in (freshness_status.get("failures") or [])
+        ]
+        if freshness_overall == "FAIL" or freshness_failures:
+            warnings.append("public backend freshness check failed after deploy.")
+        elif freshness_overall == "WARN":
+            warnings.append("public backend data freshness needs attention after deploy.")
+        action_items.extend(str(item) for item in (freshness_status.get("actionItems") or []))
 
     overall_status = "PASS" if matched_release and not failures else "WARN"
+    if freshness_status is not None and str(freshness_status.get("overallStatus") or "") != "PASS":
+        overall_status = "WARN"
     return {
         "sourceContract": "00631l_public_deploy_wait",
         "checkedAt": checked_at,
@@ -149,13 +196,38 @@ def build_public_deploy_wait_status(
             "matchedReleaseTag": matched_release,
             "sampleCount": len(samples),
             "publicReleaseTags": release_tags,
+            "freshness": freshness_summary,
         },
         "samples": samples,
+        "freshnessStatus": freshness_status,
         "warningCount": len(warnings),
         "warnings": warnings,
         "failureCount": 0,
         "failures": [],
         "actionItems": _dedupe(action_items),
+    }
+
+
+def _freshness_summary(freshness_status: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(freshness_status, dict):
+        return {}
+    summary = (
+        freshness_status.get("summary")
+        if isinstance(freshness_status.get("summary"), dict)
+        else {}
+    )
+    return {
+        "overallStatus": freshness_status.get("overallStatus"),
+        "publicCoverageEnd": summary.get("publicCoverageEnd"),
+        "localCoverageEnd": summary.get("localCoverageEnd"),
+        "staticCoverageEnd": summary.get("staticCoverageEnd"),
+        "publicCoverageLagDaysVsLocal": summary.get("publicCoverageLagDaysVsLocal"),
+        "publicCoverageLagDaysVsStatic": summary.get("publicCoverageLagDaysVsStatic"),
+        "publicCatalogRowCount": summary.get("publicCatalogRowCount"),
+        "staticCatalogRowCount": summary.get("staticCatalogRowCount"),
+        "publicEtfHistoryReadyCount": summary.get("publicEtfHistoryReadyCount"),
+        "staticEtfHistoryReadyCount": summary.get("staticEtfHistoryReadyCount"),
+        "publicEtfCatalogGapCount": summary.get("publicEtfCatalogGapCount"),
     }
 
 
@@ -192,6 +264,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--attempts", type=int, default=12)
     parser.add_argument("--interval-seconds", type=int, default=10)
     parser.add_argument(
+        "--skip-freshness",
+        action="store_true",
+        help="Only wait for release metadata; skip public/local/static freshness comparison.",
+    )
+    parser.add_argument(
         "--expected-release-tag",
         default=os.getenv("EXPECTED_00631L_RELEASE_TAG") or settings.backend_release_tag,
     )
@@ -214,6 +291,7 @@ def main() -> int:
         attempts=max(1, args.attempts),
         interval_seconds=max(0, args.interval_seconds),
         dry_run=args.dry_run,
+        include_freshness=not args.skip_freshness,
     )
     print(json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True))
     summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
@@ -224,7 +302,8 @@ def main() -> int:
         f"failures={len(payload['failures'])} "
         f"matched={summary.get('matchedReleaseTag')} "
         f"currentTag={summary.get('currentPublicReleaseTag') or 'unknown'} "
-        f"expectedTag={summary.get('expectedReleaseTag') or 'unknown'}"
+        f"expectedTag={summary.get('expectedReleaseTag') or 'unknown'} "
+        f"freshness={(summary.get('freshness') or {}).get('overallStatus') or 'skipped'}"
     )
     return 0 if args.soft_fail or payload["overallStatus"] != "FAIL" else 1
 

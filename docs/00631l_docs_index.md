@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Post-deploy freshness wait v9.53: `docs\00631l_v9_53_post_deploy_freshness_wait.md`
 - Public catalog status visibility v9.52: `docs\00631l_v9_52_public_catalog_status_visibility.md`
 - Remote catalog refresh v9.51: `docs\00631l_v9_51_remote_catalog_refresh.md`
 - Public catalog preflight WARN v9.50: `docs\00631l_v9_50_public_catalog_preflight_warn.md`
