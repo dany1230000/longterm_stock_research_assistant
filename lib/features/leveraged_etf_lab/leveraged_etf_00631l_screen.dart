@@ -6753,59 +6753,77 @@ class _EtfHistoryComparisonPanelState
         const SizedBox(height: 10),
         _ComparisonBasketContextCard(basketContext: basketContext),
         const SizedBox(height: 10),
-        if (usableMetrics.isEmpty)
-          const KeyedSubtree(
-            key: ValueKey('00631l-etf-comparison-return-chart'),
-            child: _EmptyPanel(
-              title: 'ETF 報酬比較圖暫無資料',
-              message: '請先匯入 ETF 歷史價格，或確認公開靜態資料內含 etf_price_history 檔案。',
-            ),
-          )
-        else ...[
-          _StatusWrap(
-            labels: [
-              '自選比較',
-              _filter.label,
-              '筆數 ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
-              'history comparison',
-            ],
-          ),
-          const SizedBox(height: 10),
-          _EtfComparisonReturnChart(
-            key: const ValueKey('00631l-etf-comparison-return-chart'),
-            histories: chartHistories,
-            startDate: startDate,
-            endDate: endDate,
-          ),
-          const SizedBox(height: 10),
-          _HorizontalTable(
-            columns: const [
-              '代號',
-              '名稱',
-              '區間報酬',
-              '年化',
-              '最大回撤',
-              '波動',
-              '最新收盤',
-              '筆數',
-              '狀態',
-            ],
-            rows: [
-              for (final metric in usableMetrics)
-                [
-                  metric.code,
-                  metric.name,
-                  formatSignedNullablePercent(metric.totalReturnPct),
-                  formatSignedNullablePercent(metric.annualizedReturnPct),
-                  formatSignedNullablePercent(metric.maxDrawdownPct),
-                  formatNullablePercent(metric.annualizedVolatilityPct),
-                  _price(metric.latestClose),
-                  formatInteger(metric.rowCount),
-                  metric.sourceStatusLabel,
-                ],
-            ],
-          ),
-        ],
+        _CompactExpansionPanel(
+          key: const ValueKey('00631l-etf-comparison-chart-expansion'),
+          title: '比較圖表與明細',
+          subtitle: usableMetrics.isEmpty
+              ? '尚未選擇比較 ETF；展開後顯示資料需求。'
+              : '展開顯示報酬比較圖與明細表；目前 ${formatInteger(usableMetrics.length)} 檔。',
+          child: usableMetrics.isEmpty
+              ? const KeyedSubtree(
+                  key: ValueKey('00631l-etf-comparison-return-chart'),
+                  child: _EmptyPanel(
+                    title: 'ETF 報酬比較圖暫無資料',
+                    message: '請先匯入 ETF 歷史價格，或確認公開靜態資料內含 etf_price_history 檔案。',
+                  ),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _StatusWrap(
+                      labels: [
+                        '自選比較',
+                        _filter.label,
+                        '筆數 ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
+                        'history comparison',
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    _EtfComparisonReturnChart(
+                      key: const ValueKey(
+                        '00631l-etf-comparison-return-chart',
+                      ),
+                      histories: chartHistories,
+                      startDate: startDate,
+                      endDate: endDate,
+                    ),
+                    const SizedBox(height: 10),
+                    _HorizontalTable(
+                      columns: const [
+                        '代號',
+                        '名稱',
+                        '區間報酬',
+                        '年化',
+                        '最大回撤',
+                        '波動',
+                        '最新收盤',
+                        '筆數',
+                        '狀態',
+                      ],
+                      rows: [
+                        for (final metric in usableMetrics)
+                          [
+                            metric.code,
+                            metric.name,
+                            formatSignedNullablePercent(
+                              metric.totalReturnPct,
+                            ),
+                            formatSignedNullablePercent(
+                              metric.annualizedReturnPct,
+                            ),
+                            formatSignedNullablePercent(metric.maxDrawdownPct),
+                            formatNullablePercent(
+                              metric.annualizedVolatilityPct,
+                            ),
+                            _price(metric.latestClose),
+                            formatInteger(metric.rowCount),
+                            metric.sourceStatusLabel,
+                          ],
+                      ],
+                    ),
+                  ],
+                ),
+        ),
       ],
     );
   }

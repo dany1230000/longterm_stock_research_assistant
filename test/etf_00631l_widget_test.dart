@@ -547,6 +547,20 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.etfHistoryRequests, greaterThan(overviewRequests + 1));
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-chart-expansion')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
+        findsNothing);
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-etf-comparison-chart-expansion')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-etf-comparison-chart-expansion')),
+    );
+    await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
         findsOneWidget);
     _expectNoTradingActionText();
@@ -1649,6 +1663,22 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-chart-expansion')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
+      findsNothing,
+    );
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-etf-comparison-chart-expansion')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-etf-comparison-chart-expansion')),
+    );
+    await tester.pumpAndSettle();
+    expect(
       find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
       findsOneWidget,
     );
@@ -1791,6 +1821,14 @@ void main() {
     expect(
       find.byKey(const ValueKey('00631l-etf-comparison-compact-summary')),
       findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-chart-expansion')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
+      findsNothing,
     );
     final initialCompactSummary = tester.widget<Text>(
       find.byKey(const ValueKey('00631l-etf-comparison-compact-summary-text')),
