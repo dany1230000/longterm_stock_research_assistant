@@ -95,7 +95,8 @@ void main() {
     );
     expect(find.text('覆蓋型態'), findsNothing);
     expect(find.text('ETF歷史'), findsNothing);
-    expect(find.text('歷史'), findsWidgets);
+    expect(find.text('歷史'), findsNothing);
+    expect(find.text('歷史回測'), findsWidgets);
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.text('HIS'), findsNothing);
     final compactQuoteHeader =
@@ -458,7 +459,7 @@ void main() {
     final firstGlanceStrip = find.byKey(
       const ValueKey('00631l-overview-first-glance-strip'),
     );
-    expect(firstGlanceStrip, findsOneWidget);
+    expect(firstGlanceStrip, findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-brief-panel')),
       findsNothing,
@@ -468,16 +469,10 @@ void main() {
     );
     expect(chartFinder, findsOneWidget);
     expect(
-      tester.getRect(firstGlanceStrip).bottom,
+      tester.getRect(readinessStrip).bottom,
       lessThan(tester.getRect(chartFinder).top),
     );
     expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(720));
-    for (final label in const ['行情', '資料', '歷史']) {
-      expect(
-        find.descendant(of: firstGlanceStrip, matching: find.text(label)),
-        findsOneWidget,
-      );
-    }
     final stripRect = tester.getRect(readinessStrip);
     for (final label in const ['內容物', '盤中 NAV', '價格欄位', '分割調整']) {
       final labelFinder = find.descendant(

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.31 removes the redundant first-screen `行情 / 資料 / 歷史` label strip so
+  the overview moves from quote data into the chart faster on phones.
+
 - v9.30 makes the 00631L first-screen quote header show the price field and
   split-adjustment status directly, so history/backtest data basis is visible
   without opening advanced details.
