@@ -120,6 +120,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('資料正確性'), findsOneWidget);
     expect(find.text('更新時間'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-overview-clock-chip-TX')),
+      findsOneWidget,
+    );
+    final txClockStatus = tester.widget<Text>(
+      find.byKey(const ValueKey('00631l-overview-clock-status-TX')),
+    );
+    expect(txClockStatus.data, isNotNull);
+    expect(txClockStatus.data!.trim(), isNotEmpty);
     expect(find.text('目前檔案'), findsOneWidget);
     expect(find.text('價格欄位'), findsOneWidget);
     expect(find.text('分割調整'), findsOneWidget);
@@ -158,6 +167,22 @@ void main() {
       find.descendant(of: premiumBox, matching: find.text('+0.28%')),
       findsNothing,
     );
+    _expectNoTradingActionText();
+  });
+
+  testWidgets('overview TX clock labels missing quote as backend required',
+      (tester) async {
+    await _pumpLab(tester, _NoTxQuoteRepository());
+
+    await tester.ensureVisible(find.text('進階資料'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('進階資料'));
+    await tester.pumpAndSettle();
+
+    final txClockStatus = tester.widget<Text>(
+      find.byKey(const ValueKey('00631l-overview-clock-status-TX')),
+    );
+    expect(txClockStatus.data, equals('需 live backend'));
     _expectNoTradingActionText();
   });
 
@@ -2793,6 +2818,27 @@ class _StaticHistoryOnlyRepository extends _PriceHistoryRepository {
   @override
   Future<EtfIntradayNav?> fetchIntradayNav() async {
     return null;
+  }
+}
+
+class _NoTxQuoteRepository extends _PriceHistoryRepository {
+  @override
+  Future<FuturesQuote> fetchFuturesQuote() async {
+    final now = DateTime(2026, 6, 11, 10);
+    return FuturesQuote(
+      symbol: 'TX',
+      contractMonth: '',
+      txPrice: null,
+      weightedIndex: null,
+      nightSessionChange: null,
+      status: EtfDataStatus.error,
+      lastFetchedAt: now,
+      sourceContract: 'test_no_tx_quote',
+      sourceUrl: 'local://tx-unavailable',
+      dataTime: null,
+      isStale: true,
+      errorMessage: 'TX quote unavailable in fixture.',
+    );
   }
 }
 

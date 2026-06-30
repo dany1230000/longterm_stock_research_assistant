@@ -3441,6 +3441,16 @@ String _intradaySummarySourceLabel(EtfIntradayNav? nav) {
   return nav?.status.label ?? contract;
 }
 
+String _txOverviewStatusLabel(FuturesQuote quote) {
+  if (quote.txPrice == null) {
+    return '需 live backend';
+  }
+  if (quote.isStale || quote.status == EtfDataStatus.stale) {
+    return 'stale';
+  }
+  return _sourceStatusBadgeLabel(quote.status.label);
+}
+
 class _OverviewDailySummaryItem {
   const _OverviewDailySummaryItem({
     required this.title,
@@ -3557,7 +3567,7 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
               caption: tx.txPrice == null
                   ? 'TAIFEX 資料暫無'
                   : '${tx.txSymbol ?? tx.symbol} ${_price(tx.txPrice)}',
-              status: tx.status.label,
+              status: _txOverviewStatusLabel(tx),
             ),
             _OverviewClockItem(
               badge: 'HIS',
@@ -3664,6 +3674,7 @@ class _OverviewClockChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: ValueKey('00631l-overview-clock-chip-${item.badge}'),
       width: 118,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
@@ -3710,6 +3721,17 @@ class _OverviewClockChip extends StatelessWidget {
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: _marketMutedTextColor(context),
                   fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            item.status,
+            key: ValueKey('00631l-overview-clock-status-${item.badge}'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w900,
                 ),
           ),
         ],

@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.25 makes the overview update-time chips show source status directly. The
+  TX chip now distinguishes missing live backend data from a real futures quote,
+  so static public mode is less likely to be mistaken for live TX data.
+
 - v9.24 makes ETF comparison easier to read on phones. The history/backtest
   page now has a compact comparison summary strip that shows the selected ETF
   basket, common range, row count, and that no fixed benchmark is applied.
