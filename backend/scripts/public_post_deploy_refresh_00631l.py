@@ -188,6 +188,7 @@ def run_public_post_deploy_refresh(
             "finalFreshnessSummary": freshness_payload.get("summary") or {},
         },
         action_items=action_items,
+        resolve_final_freshness_warnings=True,
     )
 
 
@@ -303,24 +304,38 @@ def _payload(
     steps: list[dict[str, Any]],
     summary: dict[str, Any],
     action_items: list[str],
+    resolve_final_freshness_warnings: bool = False,
 ) -> dict[str, Any]:
     failures = [
         f"{step['name']}: {step['message']}"
         for step in steps
         if step.get("status") == "FAIL"
     ]
+    warning_steps = [step for step in steps if step.get("status") == "WARN"]
     warnings = [
         f"{step['name']}: {step['message']}"
-        for step in steps
-        if step.get("status") == "WARN"
+        for step in warning_steps
     ]
+    resolved_warnings: list[str] = []
+    if (
+        resolve_final_freshness_warnings
+        and not failures
+        and summary.get("finalFreshnessStatus") == "PASS"
+        and all(_is_resolved_warning_step(step) for step in warning_steps)
+    ):
+        resolved_warnings = warnings
+        warnings = []
+        action_items = []
     return {
         "sourceContract": "00631l_public_post_deploy_refresh",
         "checkedAt": checked_at,
         "baseUrl": base_url,
         "dryRun": dry_run,
         "overallStatus": "FAIL" if failures else "WARN" if warnings else "PASS",
-        "summary": summary,
+        "summary": {
+            **summary,
+            **({"resolvedWarnings": resolved_warnings} if resolved_warnings else {}),
+        },
         "steps": steps,
         "warnings": warnings,
         "failures": failures,
@@ -352,6 +367,11 @@ def _dedupe(items: list[str]) -> list[str]:
         seen.add(item)
         output.append(item)
     return output
+
+
+def _is_resolved_warning_step(step: dict[str, Any]) -> bool:
+    name = str(step.get("name") or "")
+    return name in {"deploy_wait", "remote_maintenance"} or name.startswith("gap_batch_")
 
 
 def _normalize_base_url(value: str) -> str:

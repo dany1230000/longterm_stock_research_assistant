@@ -109,6 +109,56 @@ class PublicPostDeployRefreshTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["batchCount"], 0)
         self.assertEqual(batch_calls, [])
 
+    def test_resolved_initial_warnings_return_pass_when_freshness_passes(self) -> None:
+        def requester(base_url, path, timeout_seconds, query):
+            if path == "/api/etf/catalog":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "items": [
+                            {"code": "009824", "name": "群益台灣精選高息"},
+                        ]
+                    },
+                }
+            if path == "/api/etf/history/gaps":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "items": [
+                            {
+                                "code": "009824",
+                                "name": "群益台灣精選高息",
+                                "gapReason": "not_saved",
+                            }
+                        ]
+                    },
+                }
+            raise AssertionError(f"unexpected path {path}")
+
+        payload = run_public_post_deploy_refresh(
+            deploy_wait_runner=lambda **kwargs: {
+                **_payload("WARN"),
+                "warnings": ["initial freshness warning"],
+                "actionItems": ["run maintenance"],
+            },
+            maintenance_runner=lambda **kwargs: {
+                **_payload("WARN"),
+                "warnings": ["fresh persistence marker"],
+            },
+            batch_runner=lambda **kwargs: {
+                **_payload("WARN"),
+                "warnings": ["preflight warning"],
+                "summary": {"finalReadyCount": 1},
+            },
+            freshness_runner=lambda **kwargs: _payload("PASS"),
+            requester=requester,
+        )
+
+        self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertEqual(payload["warnings"], [])
+        self.assertEqual(payload["actionItems"], [])
+        self.assertEqual(len(payload["summary"]["resolvedWarnings"]), 3)
+
     def test_gap_discovery_error_is_reported_as_warning(self) -> None:
         payload = run_public_post_deploy_refresh(
             deploy_wait_runner=lambda **kwargs: _payload("PASS"),
