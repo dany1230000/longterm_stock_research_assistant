@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Public post-deploy refresh v9.56: `docs\00631l_v9_56_public_post_deploy_refresh.md`
 - Data freshness warning scope v9.55: `docs\00631l_v9_55_data_freshness_warning_scope.md`
 - Deploy warning classification v9.54: `docs\00631l_v9_54_deploy_warning_classification.md`
 - Post-deploy freshness wait v9.53: `docs\00631l_v9_53_post_deploy_freshness_wait.md`

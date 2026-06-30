@@ -124,6 +124,17 @@ class StaticPagesPipelineTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("--skip-attempted", missing_script)
 
+    def test_public_backend_maintenance_runs_post_deploy_refresh(self) -> None:
+        workflow = (
+            ROOT / ".github" / "workflows" / "00631l_backend_maintenance.yml"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("Run post-deploy refresh", workflow)
+        self.assertIn("public_post_deploy_refresh_00631l.py", workflow)
+        self.assertIn("--max-gap-batches 5", workflow)
+        self.assertIn("--soft-fail", workflow)
+        self.assertIn("steps.mode.outputs.mode == 'daily'", workflow)
+
     def test_broad_etf_price_seed_is_committed_for_pages_reproducibility(self) -> None:
         seed_dir = ROOT / "backend" / "seeds" / "etf_price_history_seed"
         seed_files = sorted(seed_dir.glob("*.jsonl"))

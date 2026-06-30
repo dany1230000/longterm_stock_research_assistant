@@ -48,3 +48,13 @@ jobs:
           python backend/scripts/remote_maintenance_00631l.py \
             --base-url "${PUBLIC_BACKEND_URL}" \
             --mode "${{ steps.mode.outputs.mode }}"
+
+      - name: Run post-deploy refresh
+        if: steps.mode.outputs.mode == 'daily' || steps.mode.outputs.mode == 'all'
+        run: |
+          python backend/scripts/public_post_deploy_refresh_00631l.py \
+            --base-url "${PUBLIC_BACKEND_URL}" \
+            --wait-attempts 1 \
+            --wait-interval-seconds 0 \
+            --max-gap-batches 5 \
+            --soft-fail
