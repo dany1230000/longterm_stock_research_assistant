@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Bottom navigation cleanup v9.28: `docs\00631l_v9_28_bottom_navigation_cleanup.md`
 - History chart axis labels v9.27: `docs\00631l_v9_27_history_axis_labels.md`
 - First-screen quote height guard v9.26: `docs\00631l_v9_26_first_screen_quote_height.md`
 - Overview live status chips v9.25: `docs\00631l_v9_25_overview_live_status_chips.md`

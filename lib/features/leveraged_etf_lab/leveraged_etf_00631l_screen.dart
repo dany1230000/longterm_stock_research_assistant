@@ -234,7 +234,6 @@ class _LeveragedEtf00631LScreenState
 enum _LabSection {
   overview('總覽', Icons.dashboard_outlined),
   historyBacktest('歷史回測', Icons.query_stats_outlined),
-  etf('ETF', Icons.dataset_outlined),
   position('持倉', Icons.account_balance_wallet_outlined),
   ai('AI', Icons.psychology_alt_outlined),
   settings('我的', Icons.manage_accounts_outlined);
@@ -395,11 +394,6 @@ class _LabContent extends StatelessWidget {
           comparisonHistoriesLoading: comparisonHistoriesLoading,
           comparisonHistoriesError: comparisonHistoriesError,
           selectedEtf: selectedEtf,
-        );
-      case _LabSection.etf:
-        return _EtfCatalogSection(
-          data: data,
-          onEtfSelected: onEtfSelected,
         );
       case _LabSection.position:
         return _PositionSection(data: data, selectedEtf: selectedEtf);
@@ -3122,6 +3116,7 @@ class _MarketBottomNav extends StatelessWidget {
             .clamp(48.0, 96.0)
             .toDouble();
         return DecoratedBox(
+          key: const ValueKey('00631l-bottom-nav'),
           decoration: BoxDecoration(
             color: _marketNavColor(context),
             border: Border(

@@ -149,6 +149,12 @@ void main() {
       find.byKey(const ValueKey('00631l-section-etf')),
       findsNothing,
     );
+    final bottomNav = find.byKey(const ValueKey('00631l-bottom-nav'));
+    expect(bottomNav, findsOneWidget);
+    expect(
+      find.descendant(of: bottomNav, matching: find.text('ETF')),
+      findsNothing,
+    );
     for (final section in const [
       'overview',
       'historyBacktest',

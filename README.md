@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.28 locks the bottom navigation to the main app pages only. ETF search and
+  switching stay in the top-left symbol button, while the bottom bar keeps
+  Overview, History/Backtest, Position, AI, and My.
+
 - v9.27 makes the history chart date axis clearer on phones. Chart labels now
   read start / middle / end in full wording so users can match the line chart
   to the visible date range more quickly.
