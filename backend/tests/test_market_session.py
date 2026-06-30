@@ -68,6 +68,20 @@ class IntradayMarketSessionTests(unittest.TestCase):
         self.assertEqual(session["dataFreshness"], "market_closed_last")
         self.assertTrue(session["isDisplayUsable"])
 
+    def test_pre_open_marks_previous_trading_day_last_data_usable(self) -> None:
+        session = intraday_market_session(
+            now_iso="2026-06-30T19:09:00+00:00",
+            data_time_iso="2026-06-30T13:31:00+08:00",
+            user_delay_ms=15000,
+        )
+
+        self.assertEqual(session["phase"], "pre_open")
+        self.assertEqual(session["phaseLabel"], "盤前等待")
+        self.assertEqual(session["dataFreshness"], "previous_trading_day_last")
+        self.assertEqual(session["dataFreshnessLabel"], "前一交易日資料")
+        self.assertTrue(session["isDisplayUsable"])
+        self.assertFalse(session["isIntradayFresh"])
+
     def test_missing_data_is_unavailable(self) -> None:
         session = intraday_market_session(
             now_iso="2026-06-16T02:00:00+00:00",

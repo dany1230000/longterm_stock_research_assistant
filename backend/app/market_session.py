@@ -59,7 +59,12 @@ def intraday_market_session(
         "dataFreshnessLabel": _freshness_label(data_freshness),
         "isIntradayFresh": data_freshness == "fresh",
         "isDisplayUsable": data_freshness
-        in {"fresh", "after_hours_last", "market_closed_last"},
+        in {
+            "fresh",
+            "after_hours_last",
+            "market_closed_last",
+            "previous_trading_day_last",
+        },
         "nextRefreshSeconds": expected_refresh_seconds,
         "note": "TWSE intraday NAV is refreshed during regular hours; Yuanta holdings are daily snapshots.",
     }
@@ -129,7 +134,13 @@ def _data_freshness(
         if data_time.date() == now.date() and data_time.time() >= REGULAR_SESSION_START:
             return "after_hours_last"
         return "stale"
-    if phase in {"pre_open", "after_close"}:
+    if phase == "pre_open":
+        if data_time.date() != now.date():
+            return "previous_trading_day_last"
+        if data_time.time() >= REGULAR_SESSION_START:
+            return "after_hours_last"
+        return "stale"
+    if phase == "after_close":
         if data_time.date() == now.date() and data_time.time() >= REGULAR_SESSION_START:
             return "after_hours_last"
         return "stale"
@@ -151,6 +162,7 @@ def _freshness_label(freshness: str) -> str:
         "fresh": "即時資料新鮮",
         "after_hours_last": "盤後最後資料",
         "market_closed_last": "休市最後資料",
+        "previous_trading_day_last": "前一交易日資料",
         "stale": "資料可能過期",
         "unavailable": "即時資料不可用",
     }.get(freshness, "資料狀態未知")
