@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Remote catalog refresh v9.51: `docs\00631l_v9_51_remote_catalog_refresh.md`
 - Public catalog preflight WARN v9.50: `docs\00631l_v9_50_public_catalog_preflight_warn.md`
 - Strict static regression guard v9.49: `docs\00631l_v9_49_strict_static_regression_guard.md`
 - Public backend drift tag v9.48: `docs\00631l_v9_48_public_backend_drift_tag.md`

@@ -49,6 +49,13 @@ ENDPOINTS = [
         description="official Yuanta daily holdings snapshot",
     ),
     MaintenanceEndpoint(
+        name="catalog_import",
+        method="POST",
+        path="/api/etf/catalog/import",
+        mode="daily",
+        description="TWSE ETF catalog refresh for ETF universe maintenance",
+    ),
+    MaintenanceEndpoint(
         name="intraday_nav",
         method="GET",
         path="/api/etf/00631l/intraday-nav",
@@ -278,6 +285,12 @@ def _assess_response(
             warnings.append(
                 f"price history post-check returned transient HTTP {post_check_status}"
             )
+    elif endpoint.name == "catalog_import":
+        source_status = str(payload.get("sourceStatus") or "")
+        if source_status in {"unavailable", "error"}:
+            warnings.append("ETF catalog import did not return official data")
+        if int(payload.get("rowCount") or 0) < 1:
+            warnings.append("ETF catalog import has no rows")
     elif endpoint.name == "etf_history_update":
         source_status = str(payload.get("sourceStatus") or "")
         if source_status in {"unavailable", "error"}:
@@ -360,6 +373,14 @@ def _payload_summary(name: str, payload: dict[str, Any]) -> dict[str, Any]:
             "coverageEnd": payload.get("coverageEnd"),
             "postCheckHttpStatus": payload.get("postCheckHttpStatus"),
             "postCheckRetryAttempts": payload.get("postCheckRetryAttempts"),
+        }
+    if name == "catalog_import":
+        return {
+            "sourceStatus": payload.get("sourceStatus"),
+            "rowCount": payload.get("rowCount"),
+            "sourceUpdatedAt": payload.get("sourceUpdatedAt"),
+            "dataTime": payload.get("dataTime"),
+            "outputPath": payload.get("outputPath"),
         }
     if name == "history_status":
         return {

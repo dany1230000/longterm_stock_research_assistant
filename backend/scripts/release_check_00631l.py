@@ -558,6 +558,7 @@ def _required_files_check() -> dict[str, Any]:
         "docs/00631l_v9_48_public_backend_drift_tag.md",
         "docs/00631l_v9_49_strict_static_regression_guard.md",
         "docs/00631l_v9_50_public_catalog_preflight_warn.md",
+        "docs/00631l_v9_51_remote_catalog_refresh.md",
         "scripts/00631l_check_static_first_load_budget.cmd",
         "scripts/00631l_check_public_first_load_network.cmd",
         "scripts/00631l_check_public_console.cmd",

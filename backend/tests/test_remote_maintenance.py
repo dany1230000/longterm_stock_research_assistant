@@ -25,6 +25,7 @@ class RemoteMaintenanceTests(unittest.TestCase):
         self.assertIn("health", names)
         self.assertIn("intraday_nav", names)
         self.assertIn("history_update", names)
+        self.assertIn("catalog_import", names)
         self.assertIn("etf_history_update", names)
         self.assertIn("etf_history_status", names)
         self.assertEqual(payload["baseUrl"], "https://example.com")
@@ -42,6 +43,11 @@ class RemoteMaintenanceTests(unittest.TestCase):
                 return {"httpStatus": 200, "payload": {"overallStatus": "PASS"}}
             if endpoint.name == "history_status":
                 return {"httpStatus": 200, "payload": {"rowCount": 2800}}
+            if endpoint.name == "catalog_import":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"sourceStatus": "official", "rowCount": 343},
+                }
             if endpoint.name == "etf_history_update":
                 return {
                     "httpStatus": 200,
@@ -70,8 +76,46 @@ class RemoteMaintenanceTests(unittest.TestCase):
         )
 
         self.assertEqual(payload["overallStatus"], "PASS")
+        self.assertIn("catalog_import", called)
         self.assertIn("etf_history_update", called)
         self.assertIn("etf_history_status", called)
+
+    def test_daily_warns_when_catalog_import_has_no_rows(self) -> None:
+        def requester(
+            base_url: str,
+            endpoint: MaintenanceEndpoint,
+            timeout_seconds: int,
+        ) -> dict:
+            if endpoint.name == "ready":
+                return {"httpStatus": 200, "payload": {"overallStatus": "PASS"}}
+            if endpoint.name == "catalog_import":
+                return {
+                    "httpStatus": 200,
+                    "payload": {"sourceStatus": "unavailable", "rowCount": 0},
+                }
+            if endpoint.name == "history_status":
+                return {"httpStatus": 200, "payload": {"rowCount": 2800}}
+            if endpoint.name == "etf_history_status":
+                return {
+                    "httpStatus": 200,
+                    "payload": {
+                        "sourceStatus": "cached",
+                        "readyCount": 15,
+                        "rowCount": 15,
+                        "validationFailureCount": 0,
+                    },
+                }
+            return {"httpStatus": 200, "payload": {"sourceStatus": "official"}}
+
+        payload = run_remote_maintenance(
+            base_url="https://example.com",
+            mode="daily",
+            requester=requester,
+        )
+
+        self.assertEqual(payload["overallStatus"], "WARN")
+        self.assertEqual(payload["failures"], [])
+        self.assertTrue(any("catalog_import" in item for item in payload["warnings"]))
 
     def test_remote_etf_history_update_can_request_catalog_batch(self) -> None:
         requested_paths: list[str] = []
