@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.79 clarifies ETF comparison charts: the comparison basket stays
+  user-selected, date labels are visible under the chart, and the touch detail
+  panel uses actual data dates.
+
 - v9.78 trims the AI first screen by keeping the conclusion and program action
   visible first, while longer readouts and fact cards move into an expandable
   `AI 資料細節` panel.

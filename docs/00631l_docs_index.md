@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- ETF comparison chart date detail v9.79: `docs\00631l_v9_79_comparison_chart_date_detail.md`
 - AI first screen trim v9.78: `docs\00631l_v9_78_ai_first_screen_trim.md`
 - Selected ETF overview digest v9.77: `docs\00631l_v9_77_selected_etf_overview_digest.md`
 - History range panel v9.76: `docs\00631l_v9_76_history_range_panel.md`

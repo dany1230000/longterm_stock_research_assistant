@@ -7581,18 +7581,22 @@ class _EtfComparisonReturnChartState extends State<_EtfComparisonReturnChart> {
                       if (spots == null || spots.isEmpty) {
                         return;
                       }
-                      final touchedX = spots.first.x.round();
-                      final touchedDate =
-                          widget.startDate.add(Duration(days: touchedX));
                       final values = [
                         for (final spot in spots)
                           if (spot.barIndex >= 0 &&
-                              spot.barIndex < series.length)
+                              spot.barIndex < series.length &&
+                              spot.spotIndex >= 0 &&
+                              spot.spotIndex <
+                                  series[spot.barIndex].points.length)
                             _TouchedComparisonValue(
                               code: series[spot.barIndex].code,
                               value: spot.y,
+                              date:
+                                  series[spot.barIndex].points[spot.spotIndex],
                             ),
                       ];
+                      final touchedDate =
+                          values.isEmpty ? null : values.first.date;
                       setState(() {
                         _touchedDate = touchedDate;
                         _touchedValues = values;
@@ -7665,6 +7669,12 @@ class _EtfComparisonReturnChartState extends State<_EtfComparisonReturnChart> {
               ),
             ),
             const SizedBox(height: 8),
+            _ChartAxisDateStrip(
+              start: widget.startDate,
+              middle: widget.startDate.add(Duration(days: maxDays ~/ 2)),
+              end: widget.endDate,
+            ),
+            const SizedBox(height: 8),
             _ComparisonTouchDetail(
               date: _touchedDate,
               values: _touchedValues,
@@ -7728,31 +7738,57 @@ class _ComparisonTouchDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final content = <Widget>[];
     if (date == null || values.isEmpty) {
-      return Text(
-        '點擊圖表可查看指定日期附近的 ETF 區間報酬。',
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: _marketMutedTextColor(context),
-          fontWeight: FontWeight.w800,
+      content.add(
+        Text(
+          '點擊圖表可查看指定資料日與各 ETF 區間報酬。',
+          key: const ValueKey('00631l-comparison-touch-empty'),
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: _marketMutedTextColor(context),
+            fontWeight: FontWeight.w800,
+          ),
         ),
       );
-    }
-    return Wrap(
-      spacing: 8,
-      runSpacing: 6,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
+    } else {
+      content.addAll([
         Text(
-          formatTaiwanDate(date!),
+          '選取資料日 ${formatTaiwanDate(date!)}',
+          key: const ValueKey('00631l-comparison-touch-date'),
           style: theme.textTheme.labelMedium?.copyWith(
+            color: _marketTextColor(context),
             fontWeight: FontWeight.w900,
           ),
         ),
-        for (final item in values)
-          _StatusPill(
-            label: '${item.code} ${formatSignedNullablePercent(item.value)}',
-          ),
-      ],
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (final item in values)
+              _StatusPill(
+                label: '${item.code} ${formatSignedNullablePercent(item.value)}'
+                    '${_isSameDay(item.date, date!) ? '' : ' · ${formatTaiwanDate(item.date)}'}',
+              ),
+          ],
+        ),
+      ]);
+    }
+    return DecoratedBox(
+      key: const ValueKey('00631l-comparison-touch-detail'),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: content,
+        ),
+      ),
     );
   }
 }
@@ -7763,22 +7799,26 @@ class _EtfComparisonChartSeries {
     required this.name,
     required this.color,
     required this.spots,
+    required this.points,
   });
 
   final String code;
   final String name;
   final Color color;
   final List<FlSpot> spots;
+  final List<DateTime> points;
 }
 
 class _TouchedComparisonValue {
   const _TouchedComparisonValue({
     required this.code,
     required this.value,
+    required this.date,
   });
 
   final String code;
   final double value;
+  final DateTime date;
 }
 
 class _BacktestQuickResultStrip extends StatelessWidget {
@@ -15321,11 +15361,17 @@ List<_EtfComparisonChartSeries> _buildComparisonChartSeries({
         name: _historyDisplayName(history),
         color: palette[index],
         spots: spots,
+        points: [
+          for (final point in points) point.date,
+        ],
       ),
     );
   }
   return series;
 }
+
+bool _isSameDay(DateTime a, DateTime b) =>
+    a.year == b.year && a.month == b.month && a.day == b.day;
 
 String? _knownEtfName(String code) {
   switch (code.trim().toUpperCase()) {
