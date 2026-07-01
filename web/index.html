@@ -257,6 +257,33 @@
       }
     });
   </script>
+  <script>
+    (function () {
+      if (!('serviceWorker' in navigator) || !window.sessionStorage) {
+        return;
+      }
+      var reloadKey = '00631l-sw-refresh-v1';
+      if (sessionStorage.getItem(reloadKey) === 'done') {
+        return;
+      }
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        var scoped = registrations.filter(function (registration) {
+          return registration.scope.indexOf('/longterm_stock_research_assistant/') !== -1;
+        });
+        if (scoped.length === 0) {
+          return;
+        }
+        return Promise.all(scoped.map(function (registration) {
+          return registration.unregister();
+        })).then(function () {
+          sessionStorage.setItem(reloadKey, 'done');
+          window.location.reload();
+        });
+      }).catch(function () {
+        // Keep normal startup if service worker cleanup is unavailable.
+      });
+    })();
+  </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader

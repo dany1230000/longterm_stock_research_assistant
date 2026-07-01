@@ -28,6 +28,8 @@ void main() {
     expect(index, contains('歷史回測'));
     expect(index, contains('AI 分析'));
     expect(index, contains('flutter-first-frame'));
+    expect(index, contains('serviceWorker.getRegistrations'));
+    expect(index, contains('registration.unregister'));
     expect(index, contains('公開靜態資料'));
     expect(index,
         contains('name="application-name" content="ETF 研究室 · 00631L 正二研究室"'));

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.69 clears stale Flutter service worker registrations for this Pages app
+  and reloads once, reducing cases where phones keep an old bundle after deploy.
+
 - v9.68 adds short live-core retries after a static fallback first screen, so
   public Pages can recover from a slow Render response without waiting for the
   normal 15-second refresh interval.
