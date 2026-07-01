@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v10.6 cleans up the left-top ETF search sheet: result rows now focus on ETF
+  name, price, and history readiness, while price-basis, split-adjustment, and
+  gap details move under `更多資料`.
+
 - v10.5 compresses the history/backtest first screen: the large repeated
   history card is replaced by a compact heading, the top strip now shows latest
   date/close, row count, source, and adjustment status, and date controls remain

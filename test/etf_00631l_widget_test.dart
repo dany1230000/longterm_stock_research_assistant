@@ -1624,7 +1624,7 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-symbol-gap-reason-00400A')),
-      findsOneWidget,
+      findsNothing,
     );
     await tester.ensureVisible(
       find.byKey(const ValueKey('00631l-symbol-result-details-00400A')),
@@ -1639,6 +1639,10 @@ void main() {
     );
     expect(catalogOnlyCapabilitySummary.data, contains('目前僅清單資料'));
     expect(catalogOnlyCapabilitySummary.data, contains('需先匯入'));
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-gap-reason-00400A')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('00631l-symbol-capability-00400A-catalog')),
       findsOneWidget,
@@ -1796,7 +1800,7 @@ void main() {
     expect(find.text('recent · 12 筆'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-price-basis-00701')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-symbol-catalog-only-00701')),
@@ -1810,6 +1814,10 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-result-details-00701')),
     );
     await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-price-basis-00701')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('00631l-symbol-capability-00701-history')),
       findsOneWidget,

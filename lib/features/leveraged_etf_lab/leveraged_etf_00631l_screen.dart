@@ -1763,6 +1763,18 @@ class _SymbolSearchResultTile extends StatelessWidget {
       item,
       readiness,
     );
+    final detailBadges = [
+      if (priceBasisLabel.isNotEmpty)
+        _SymbolSearchDetailBadge(
+          key: ValueKey('00631l-symbol-price-basis-${item.code}'),
+          label: priceBasisLabel,
+        ),
+      if (missingReasonLabel.isNotEmpty)
+        _SymbolSearchDetailBadge(
+          key: ValueKey('00631l-symbol-gap-reason-${item.code}'),
+          label: missingReasonLabel,
+        ),
+    ];
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
       borderRadius: BorderRadius.circular(12),
@@ -1830,22 +1842,6 @@ class _SymbolSearchResultTile extends StatelessWidget {
                         ),
                         if (historyMetadataLabel.isNotEmpty)
                           _CompactTextBadge(label: historyMetadataLabel),
-                        if (priceBasisLabel.isNotEmpty)
-                          KeyedSubtree(
-                            key: ValueKey(
-                              '00631l-symbol-price-basis-${item.code}',
-                            ),
-                            child: _CompactTextBadge(label: priceBasisLabel),
-                          ),
-                        if (missingReasonLabel.isNotEmpty)
-                          KeyedSubtree(
-                            key: ValueKey(
-                              '00631l-symbol-gap-reason-${item.code}',
-                            ),
-                            child: _CompactTextBadge(
-                              label: missingReasonLabel,
-                            ),
-                          ),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -1853,6 +1849,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
                       code: item.code,
                       capabilitySummary: capabilitySummary,
                       dataSummary: dataSummary,
+                      detailBadges: detailBadges,
                       capabilities: readiness.capabilities,
                     ),
                   ],
@@ -1891,12 +1888,14 @@ class _SymbolSearchResultDetails extends StatefulWidget {
     required this.code,
     required this.capabilitySummary,
     required this.dataSummary,
+    required this.detailBadges,
     required this.capabilities,
   });
 
   final String code;
   final String capabilitySummary;
   final String dataSummary;
+  final List<_SymbolSearchDetailBadge> detailBadges;
   final List<_SymbolSearchCapability> capabilities;
 
   @override
@@ -1963,6 +1962,20 @@ class _SymbolSearchResultDetailsState
               letterSpacing: 0,
             ),
           ),
+          if (widget.detailBadges.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 5,
+              runSpacing: 5,
+              children: [
+                for (final badge in widget.detailBadges)
+                  KeyedSubtree(
+                    key: badge.key,
+                    child: _CompactTextBadge(label: badge.label),
+                  ),
+              ],
+            ),
+          ],
           const SizedBox(height: 6),
           Wrap(
             spacing: 5,
@@ -1981,6 +1994,16 @@ class _SymbolSearchResultDetailsState
       ],
     );
   }
+}
+
+class _SymbolSearchDetailBadge {
+  const _SymbolSearchDetailBadge({
+    required this.key,
+    required this.label,
+  });
+
+  final Key key;
+  final String label;
 }
 
 class _CompactTextBadge extends StatelessWidget {

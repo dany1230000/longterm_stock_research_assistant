@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- ETF search result cleanup v10.6: `docs\00631l_v10_6_search_result_cleanup.md`
 - History/backtest first-screen density v10.5: `docs\00631l_v10_5_history_backtest_first_screen.md`
 - Overview mode label cleanup v10.4: `docs\00631l_v10_4_overview_mode_label_cleanup.md`
 - Settings advanced grouping v10.3: `docs\00631l_v10_3_settings_advanced_grouping.md`
