@@ -2759,7 +2759,7 @@ String _statusDisplay(String? rawStatus) {
     case 'cached':
       return '快取';
     case 'mock':
-      return 'Mock';
+      return '示範';
     case 'error':
       return '錯誤';
     case 'stale':
@@ -2778,9 +2778,9 @@ String _statusDisplay(String? rawStatus) {
     case 'deferred':
       return '待載入';
     case 'live_proxy':
-      return 'Live 後端';
+      return '即時後端';
     case 'mock_default':
-      return 'Mock 預設';
+      return '示範預設';
     case 'backend disconnected':
     case '後端未連線':
       return '後端未連線';

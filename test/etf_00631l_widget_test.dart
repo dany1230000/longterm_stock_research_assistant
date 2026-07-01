@@ -503,6 +503,8 @@ void main() {
         findsNothing,
       );
     }
+    expect(find.text('Mock'), findsNothing);
+    expect(find.text('示範'), findsWidgets);
     expect(find.text('00631L'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);

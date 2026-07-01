@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.62 localizes the first-screen fallback and live-proxy status chips so the
+  overview no longer exposes raw `Mock` text in the quote card.
+
 - v9.61 changes the day/night control to action labels: `切換夜間` in light
   mode and `切換日間` in dark mode.
 

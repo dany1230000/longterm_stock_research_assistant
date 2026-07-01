@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Status label polish v9.62: `docs\00631l_v9_62_status_label_polish.md`
 - Theme toggle clarity v9.61: `docs\00631l_v9_61_theme_toggle_clarity.md`
 - Public loading shell polish v9.60: `docs\00631l_v9_60_public_loading_shell.md`
 - Mobile design hierarchy v9.59: `docs\00631l_v9_59_mobile_design_hierarchy.md`
