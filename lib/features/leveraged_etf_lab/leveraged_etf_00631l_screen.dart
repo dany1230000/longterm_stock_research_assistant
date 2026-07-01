@@ -4738,14 +4738,11 @@ class _OverviewSparklineBlock extends StatelessWidget {
   const _OverviewSparklineBlock({required this.points});
 
   final List<EtfPriceHistoryPoint> points;
-  static const _defaultWindowSize = 252;
 
   @override
   Widget build(BuildContext context) {
     final ordered = [...points]..sort((a, b) => a.date.compareTo(b.date));
-    final recent = ordered.length > _defaultWindowSize
-        ? ordered.sublist(ordered.length - _defaultWindowSize)
-        : ordered;
+    final recent = _overviewSparklineWindow(ordered);
     final latest = recent.isEmpty ? null : recent.last;
     final first = recent.isEmpty ? null : recent.first;
     final changePct =
@@ -4807,6 +4804,26 @@ class _OverviewSparklineBlock extends StatelessWidget {
       ],
     );
   }
+}
+
+List<EtfPriceHistoryPoint> _overviewSparklineWindow(
+  List<EtfPriceHistoryPoint> ordered,
+) {
+  if (ordered.length <= 2) {
+    return ordered;
+  }
+  final latestDate = ordered.last.date;
+  final startDate = DateTime(
+    latestDate.year - 1,
+    latestDate.month,
+    latestDate.day,
+  );
+  final recent =
+      ordered.where((point) => !point.date.isBefore(startDate)).toList();
+  if (recent.length >= 2) {
+    return recent;
+  }
+  return ordered.sublist(ordered.length - 2);
 }
 
 class _SparklineChart extends StatefulWidget {

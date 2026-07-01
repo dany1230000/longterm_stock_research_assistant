@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.63 makes the overview `近一年走勢` chart actually use the latest one-year
+  price-history window instead of showing older axis dates.
+
 - v9.62 localizes the first-screen fallback and live-proxy status chips so the
   overview no longer exposes raw `Mock` text in the quote card.
 
