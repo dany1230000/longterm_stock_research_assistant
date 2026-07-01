@@ -314,6 +314,10 @@ void main() {
         find.byKey(const ValueKey('00631l-symbol-search-button'));
     await tester.ensureVisible(symbolSearchButton);
     await tester.pumpAndSettle();
+    expect(
+      find.descendant(of: symbolSearchButton, matching: find.text('搜尋')),
+      findsOneWidget,
+    );
     await tester.tap(symbolSearchButton);
     await tester.pumpAndSettle();
 

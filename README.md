@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.74 makes the top-left ETF code pill more obviously searchable by adding a
+  short search label and down-arrow while preserving the existing ETF/stock
+  search sheet.
+
 - v9.73 removes the duplicated mobile exposure row from the overview chart
   panel, leaving official holdings exposure in the nearby holdings digest while
   keeping the one-year chart expanded.

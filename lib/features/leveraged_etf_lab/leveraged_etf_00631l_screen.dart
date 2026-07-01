@@ -943,7 +943,7 @@ class _MarketTopBar extends StatelessWidget {
             ? '$normalizedCode ETF 研究室'
             : selectedEtfName.trim();
     return SizedBox(
-      height: 52,
+      height: 56,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 500;
@@ -972,7 +972,7 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: _marketTextColor(context),
-                        fontSize: 19,
+                        fontSize: 20,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0,
                         height: 1.08,
@@ -1036,7 +1036,7 @@ class _MarketIndexPill extends StatelessWidget {
             border: Border.all(color: const Color(0xFF67C58B)),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -1044,12 +1044,22 @@ class _MarketIndexPill extends StatelessWidget {
                   label,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 15,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(width: 5),
-                const Icon(Icons.search, color: Colors.white, size: 16),
+                const Icon(Icons.search, color: Colors.white, size: 15),
+                const SizedBox(width: 3),
+                const Text(
+                  '搜尋',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const Icon(Icons.expand_more, color: Colors.white, size: 16),
               ],
             ),
           ),
