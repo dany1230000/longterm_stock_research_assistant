@@ -559,6 +559,10 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-market-stack')),
+      findsOneWidget,
+    );
     final summaryRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
     );
@@ -579,7 +583,7 @@ void main() {
       const ValueKey('00631l-overview-sparkline-chart'),
     );
     expect(chartFinder, findsOneWidget);
-    expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(520));
+    expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(500));
     expect(
       find.byKey(const ValueKey('00631l-overview-exposure-compact-row')),
       findsNothing,

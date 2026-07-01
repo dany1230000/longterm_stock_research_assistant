@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.90 combines the quote header, daily source summary, and one-year chart into
+  one mobile market stack so the public overview first screen reads faster.
+
 - v9.89 makes the overview chart touch detail a single compact row while
   keeping exact date and value feedback.
 

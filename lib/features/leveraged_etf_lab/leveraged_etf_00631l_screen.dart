@@ -2015,10 +2015,12 @@ class _CompactQuoteHeader extends StatelessWidget {
   const _CompactQuoteHeader({
     required this.data,
     required this.selectedEtf,
+    this.embedded = false,
   });
 
   final Etf00631LLabData data;
   final _SelectedEtfViewData selectedEtf;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
@@ -2071,6 +2073,81 @@ class _CompactQuoteHeader extends StatelessWidget {
                     ? '市價 · 盤中資料暫無'
                     : '市價 · ${_statusDisplay(quoteStatus)} ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
+    final content = Padding(
+      padding: EdgeInsets.fromLTRB(8, embedded ? 1 : 5, 8, embedded ? 1 : 5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${selectedEtf.code} $quoteName',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: _marketMutedTextColor(context),
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0,
+                            ),
+                          ),
+                        ),
+                        _CompactTextBadge(
+                          label: quoteStatusDisplay,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _price(quoteValue),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0,
+                        height: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      quoteCaptionDisplay,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: _marketMutedTextColor(context),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              _CompactPremiumBox(
+                value: formatSignedNullablePercent(quotePremiumDiscountPct),
+                label: _premiumLabel(premiumAssessment),
+                color: premiumColor,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    if (embedded) {
+      return KeyedSubtree(
+        key: const ValueKey('00631l-main-quote-header'),
+        child: content,
+      );
+    }
+
     return Container(
       key: const ValueKey('00631l-main-quote-header'),
       decoration: BoxDecoration(
@@ -2078,73 +2155,7 @@ class _CompactQuoteHeader extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _marketBorderColor(context)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '${selectedEtf.code} $quoteName',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: _marketMutedTextColor(context),
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0,
-                              ),
-                            ),
-                          ),
-                          _CompactTextBadge(
-                            label: quoteStatusDisplay,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _price(quoteValue),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: _marketTextColor(context),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0,
-                          height: 1.0,
-                        ),
-                      ),
-                      const SizedBox(height: 1),
-                      Text(
-                        quoteCaptionDisplay,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: _marketMutedTextColor(context),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                _CompactPremiumBox(
-                  value: formatSignedNullablePercent(quotePremiumDiscountPct),
-                  label: _premiumLabel(premiumAssessment),
-                  color: premiumColor,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+      child: content,
     );
   }
 }
@@ -3371,22 +3382,24 @@ class _OverviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
-        const SizedBox(height: 8),
         if (selectedEtf.is00631L)
-          _OverviewDailySummaryStrip(data: data, detailsLoading: false)
-        else
+          _OverviewMarketStack(data: data, selectedEtf: selectedEtf)
+        else ...[
+          _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
+          const SizedBox(height: 8),
           _SelectedEtfOverviewDigest(selectedEtf: selectedEtf),
+        ],
         const SizedBox(height: 8),
-        _AlwaysExpandedPanel(
-          title: selectedEtf.is00631L ? '價格與曝險' : '價格走勢',
-          subtitle: selectedEtf.is00631L
-              ? '近一年收盤與官方每日曝險。'
-              : '${selectedEtf.code} 近一年收盤與歷史資料狀態。',
-          child: selectedEtf.is00631L
-              ? _OverviewSignalPanel(data: data)
-              : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
-        ),
+        if (!selectedEtf.is00631L)
+          _AlwaysExpandedPanel(
+            title: selectedEtf.is00631L ? '價格與曝險' : '價格走勢',
+            subtitle: selectedEtf.is00631L
+                ? '近一年收盤與官方每日曝險。'
+                : '${selectedEtf.code} 近一年收盤與歷史資料狀態。',
+            child: selectedEtf.is00631L
+                ? _OverviewSignalPanel(data: data)
+                : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
+          ),
         const SizedBox(height: 8),
         if (selectedEtf.is00631L) ...[
           _OverviewHoldingsDigestPanel(data: data),
@@ -3411,15 +3424,76 @@ class _OverviewSection extends StatelessWidget {
   }
 }
 
+class _OverviewMarketStack extends StatelessWidget {
+  const _OverviewMarketStack({
+    required this.data,
+    required this.selectedEtf,
+  });
+
+  final Etf00631LLabData data;
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      key: const ValueKey('00631l-overview-market-stack'),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(6, 7, 6, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _CompactQuoteHeader(
+              data: data,
+              selectedEtf: selectedEtf,
+              embedded: true,
+            ),
+            const SizedBox(height: 6),
+            const _MarketStackDivider(),
+            const SizedBox(height: 5),
+            _OverviewDailySummaryStrip(
+              data: data,
+              detailsLoading: false,
+              embedded: true,
+            ),
+            const SizedBox(height: 5),
+            const _MarketStackDivider(),
+            const SizedBox(height: 6),
+            _OverviewSignalPanel(data: data, embedded: true),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MarketStackDivider extends StatelessWidget {
+  const _MarketStackDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 1,
+      color: _marketBorderColor(context),
+    );
+  }
+}
+
 // ignore: unused_element
 class _OverviewDailySummaryStrip extends StatelessWidget {
   const _OverviewDailySummaryStrip({
     required this.data,
     required this.detailsLoading,
+    this.embedded = false,
   });
 
   final Etf00631LLabData data;
   final bool detailsLoading;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
@@ -3488,39 +3562,46 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
       ),
     ];
 
-    return KeyedSubtree(
-      key: const ValueKey('00631l-overview-daily-summary-strip'),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: _marketPanelColor(context),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _marketBorderColor(context)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: SingleChildScrollView(
-            key: const ValueKey('00631l-overview-daily-summary-grid'),
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: Row(
-              children: [
-                for (var index = 0; index < items.length; index++) ...[
-                  _OverviewDailyTickerItem(item: items[index]),
-                  if (index != items.length - 1) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 1,
-                      height: 26,
-                      color: _marketBorderColor(context),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                ],
+    final content = Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: embedded ? 2 : 8,
+        vertical: embedded ? 2 : 6,
+      ),
+      child: SingleChildScrollView(
+        key: const ValueKey('00631l-overview-daily-summary-grid'),
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          children: [
+            for (var index = 0; index < items.length; index++) ...[
+              _OverviewDailyTickerItem(item: items[index]),
+              if (index != items.length - 1) ...[
+                const SizedBox(width: 8),
+                Container(
+                  width: 1,
+                  height: 26,
+                  color: _marketBorderColor(context),
+                ),
+                const SizedBox(width: 8),
               ],
-            ),
-          ),
+            ],
+          ],
         ),
       ),
+    );
+
+    return KeyedSubtree(
+      key: const ValueKey('00631l-overview-daily-summary-strip'),
+      child: embedded
+          ? content
+          : DecoratedBox(
+              decoration: BoxDecoration(
+                color: _marketPanelColor(context),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: _marketBorderColor(context)),
+              ),
+              child: content,
+            ),
     );
   }
 }
@@ -4879,47 +4960,57 @@ class _ReadinessPill extends StatelessWidget {
 }
 
 class _OverviewSignalPanel extends StatelessWidget {
-  const _OverviewSignalPanel({required this.data});
+  const _OverviewSignalPanel({
+    required this.data,
+    this.embedded = false,
+  });
 
   final Etf00631LLabData data;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
+    final content = Padding(
+      padding: EdgeInsets.all(embedded ? 2 : 10),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final wide = constraints.maxWidth >= 680;
+          final hasUsableExposure = _hasUsableHoldingsSnapshot(data.snapshot);
+          final priceBlock = _OverviewSparklineBlock(
+            points: data.priceHistory.points,
+          );
+          final exposureBlock = _OverviewExposureBlock(
+            snapshot: data.snapshot,
+          );
+          if (wide) {
+            if (!hasUsableExposure) {
+              return priceBlock;
+            }
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: priceBlock),
+                const SizedBox(width: 10),
+                Expanded(child: exposureBlock),
+              ],
+            );
+          }
+          return priceBlock;
+        },
+      ),
+    );
+
+    if (embedded) {
+      return content;
+    }
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _marketBorderColor(context)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final wide = constraints.maxWidth >= 680;
-            final hasUsableExposure = _hasUsableHoldingsSnapshot(data.snapshot);
-            final priceBlock = _OverviewSparklineBlock(
-              points: data.priceHistory.points,
-            );
-            final exposureBlock = _OverviewExposureBlock(
-              snapshot: data.snapshot,
-            );
-            if (wide) {
-              if (!hasUsableExposure) {
-                return priceBlock;
-              }
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: priceBlock),
-                  const SizedBox(width: 10),
-                  Expanded(child: exposureBlock),
-                ],
-              );
-            }
-            return priceBlock;
-          },
-        ),
-      ),
+      child: content,
     );
   }
 }
@@ -5074,7 +5165,7 @@ class _SparklineChartState extends State<_SparklineChart> {
       children: [
         SizedBox(
           key: const ValueKey('00631l-overview-sparkline-chart'),
-          height: 104,
+          height: 96,
           child: LineChart(
             LineChartData(
               minX: -edgePaddingX,
