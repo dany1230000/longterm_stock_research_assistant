@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.72 derives intraday premium/discount from TWSE market price and estimated
+  NAV when the TWSE premium field is blank, so the public app does not show an
+  unavailable state while official price/NAV fields are present.
+
 - v9.71 extends the live-core warm-up retry window so the public app can replace
   static fallback quote/holdings data sooner after a cold backend response.
 

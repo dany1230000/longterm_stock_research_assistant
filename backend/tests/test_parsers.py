@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import unittest
 
 from backend.app.parsers import parse_holdings, parse_intraday_nav, parse_profile, parse_yuanta_intraday_nav
@@ -77,6 +78,26 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(nav["sourceContract"], "twse_a_k_json")
         self.assertEqual(nav["code"], "00631L")
         self.assertEqual(nav["premiumDiscountPct"], 0.44)
+
+    def test_intraday_nav_parser_derives_premium_when_twse_g_is_blank(self) -> None:
+        source = (FIXTURES / "00631l_twse_intraday_nav_fixture.json").read_text(encoding="utf-8")
+        payload = json.loads(source)
+        for item in payload["msgArray"]:
+            if item["a"] == "00631L":
+                item["e"] = "39.60"
+                item["f"] = "39.48"
+                item["g"] = ""
+        nav = parse_intraday_nav(
+            json.dumps(payload),
+            source_url="fixture://twse/nav",
+            fetched_at="2026-06-08T10:15:00+00:00",
+            source_status="mock",
+        )
+
+        self.assertEqual(nav["marketPrice"], 39.60)
+        self.assertEqual(nav["estimatedNav"], 39.48)
+        self.assertEqual(nav["premiumDiscountPct"], 0.30)
+        self.assertEqual(nav["estimatedPremiumDiscountPct"], 0.30)
 
     def test_intraday_nav_parser_maps_twse_aggregated_a_to_k_feed(self) -> None:
         source = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(encoding="utf-8")

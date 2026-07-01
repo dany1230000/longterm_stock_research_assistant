@@ -166,7 +166,14 @@ def parse_intraday_nav(
     user_delay_ms = _parse_int(str(issuer_meta.get("userDelay") or decoded.get("userDelay") or "")) or 15000
     previous_nav_text = str(item.get("h") or "")
     previous_nav = _parse_float(previous_nav_text)
+    market_price = _parse_float(str(item.get("e") or ""))
+    estimated_nav = _parse_float(str(item.get("f") or ""))
     premium = _parse_float(str(item.get("g") or ""))
+    premium = _resolve_premium_discount_pct(
+        premium,
+        market_price=market_price,
+        estimated_nav=estimated_nav,
+    )
 
     return {
         "code": str(item.get("a") or ""),
@@ -174,8 +181,8 @@ def parse_intraday_nav(
         "name": str(item.get("b") or ""),
         "outstandingUnits": _parse_int(str(item.get("c") or "")),
         "outstandingUnitsDelta": _parse_int(str(item.get("d") or "")),
-        "marketPrice": _parse_float(str(item.get("e") or "")),
-        "estimatedNav": _parse_float(str(item.get("f") or "")),
+        "marketPrice": market_price,
+        "estimatedNav": estimated_nav,
         "premiumDiscountPct": premium,
         "estimatedPremiumDiscountPct": premium,
         "previousNav": previous_nav,
@@ -243,9 +250,11 @@ def parse_yuanta_intraday_nav(
     estimated_nav = _parse_float(str(item.get("NOW_NAV") or ""))
     previous_nav_text = str(item.get("NAV") or item.get("YEST_NAV") or "")
     previous_nav = _parse_float(previous_nav_text)
-    premium = None
-    if market_price is not None and estimated_nav not in (None, 0):
-        premium = round((market_price - estimated_nav) / estimated_nav * 100, 2)
+    premium = _resolve_premium_discount_pct(
+        None,
+        market_price=market_price,
+        estimated_nav=estimated_nav,
+    )
     update_time = _yuanta_update_time(str(item.get("UPDATE_T") or ""))
     data_date = update_time[:10] if update_time else _compact_date(str(item.get("NAV_DATE") or ""))
 
@@ -344,6 +353,19 @@ def _yuanta_update_time(value: str) -> str | None:
         return None
     year, month, day, hour, minute, second = match.groups()
     return f"{year}-{month}-{day}T{int(hour):02d}:{minute}:{second}+08:00"
+
+
+def _resolve_premium_discount_pct(
+    value: float | None,
+    *,
+    market_price: float | None,
+    estimated_nav: float | None,
+) -> float | None:
+    if value is not None:
+        return value
+    if market_price is None or estimated_nav is None or estimated_nav <= 0:
+        return None
+    return round((market_price / estimated_nav - 1) * 100, 2)
 
 
 def empty_holdings_response(

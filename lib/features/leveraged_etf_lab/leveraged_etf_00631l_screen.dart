@@ -536,8 +536,8 @@ class _SelectedEtfViewData {
         ? nav?.marketPrice ?? summary.latest?.close ?? catalogItem?.marketPrice
         : catalogItem?.marketPrice ?? summary.latest?.close;
     final estimatedNav = nav?.estimatedNav ?? catalogItem?.estimatedNav;
-    final premiumDiscountPct =
-        nav?.estimatedPremiumDiscountPct ?? catalogItem?.premiumDiscountPct;
+    final premiumDiscountPct = nav?.resolvedPremiumDiscountPct ??
+        catalogItem?.resolvedPremiumDiscountPct;
     final previousNav = nav?.previousBusinessDayNav ?? catalogItem?.previousNav;
     final dataTime = is00631L
         ? nav?.dataTime ?? summary.latest?.date ?? catalogItem?.dataTime
@@ -1882,7 +1882,7 @@ class _MarketSentimentStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final nav = data.intradayNav;
     final premiumAssessment = PremiumDiscountAssessment.evaluate(
-      premiumDiscountPct: nav?.estimatedPremiumDiscountPct,
+      premiumDiscountPct: nav?.resolvedPremiumDiscountPct,
       sourceStatus: nav?.status ?? EtfDataStatus.error,
       isStale: nav?.isStale ?? true,
     );
@@ -1983,7 +1983,7 @@ class _CompactQuoteHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final quotePremiumDiscountPct = selectedEtf.is00631L
-        ? data.intradayNav?.estimatedPremiumDiscountPct
+        ? data.intradayNav?.resolvedPremiumDiscountPct
         : selectedEtf.premiumDiscountPct;
     final premiumAssessment = PremiumDiscountAssessment.evaluate(
       premiumDiscountPct: quotePremiumDiscountPct,
@@ -2412,7 +2412,7 @@ class _QuoteHeader extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final nav = data.intradayNav;
     final premiumAssessment = PremiumDiscountAssessment.evaluate(
-      premiumDiscountPct: nav?.estimatedPremiumDiscountPct,
+      premiumDiscountPct: nav?.resolvedPremiumDiscountPct,
       sourceStatus: nav?.status ?? EtfDataStatus.error,
       isStale: nav?.isStale ?? true,
     );
@@ -2598,7 +2598,7 @@ class _QuoteHeader extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             formatSignedNullablePercent(
-                              nav?.estimatedPremiumDiscountPct,
+                              nav?.resolvedPremiumDiscountPct,
                             ),
                             style: theme.textTheme.titleLarge?.copyWith(
                               color: headerForeground,
@@ -5501,7 +5501,7 @@ class _OverviewComparisonPanel extends StatelessWidget {
                   _ComparisonRowData(
                     label: '折溢價',
                     value: formatSignedNullablePercent(
-                      nav?.estimatedPremiumDiscountPct,
+                      nav?.resolvedPremiumDiscountPct,
                     ),
                     caption: '價格偏離提示',
                   ),
@@ -5607,11 +5607,11 @@ class _OverviewModeCards extends StatelessWidget {
           title: '盤中 NAV',
           primary: _price(nav?.marketPrice),
           secondary:
-              '折溢價 ${formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct)}',
+              '折溢價 ${formatSignedNullablePercent(nav?.resolvedPremiumDiscountPct)}',
           caption: '公開後端可連線時更新；靜態模式不提供盤中資料',
-          progressValue: nav?.estimatedPremiumDiscountPct == null
+          progressValue: nav?.resolvedPremiumDiscountPct == null
               ? null
-              : (nav!.estimatedPremiumDiscountPct!.abs() / 1.5)
+              : (nav!.resolvedPremiumDiscountPct!.abs() / 1.5)
                   .clamp(0, 1)
                   .toDouble(),
         ),
@@ -9569,7 +9569,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
                   _AiDailyBriefingFact(
                     label: '盤中 NAV',
                     value: formatSignedNullablePercent(
-                      nav?.estimatedPremiumDiscountPct,
+                      nav?.resolvedPremiumDiscountPct,
                     ),
                     detail: _intradayDataTimeText(nav),
                   ),
@@ -10658,7 +10658,7 @@ class _AiSignalGrid extends StatelessWidget {
         ),
         _MetricCard(
           label: '折溢價',
-          value: formatSignedNullablePercent(nav?.estimatedPremiumDiscountPct),
+          value: formatSignedNullablePercent(nav?.resolvedPremiumDiscountPct),
           caption: nav?.premiumDiscountAssessment.label ?? '資料不足',
           icon: Icons.price_change_outlined,
         ),
@@ -11218,7 +11218,7 @@ class _EtfComparisonPreview extends StatelessWidget {
                 item.displayName,
                 _price(item.marketPrice),
                 _price(item.estimatedNav),
-                formatSignedNullablePercent(item.premiumDiscountPct),
+                formatSignedNullablePercent(item.resolvedPremiumDiscountPct),
                 _price(item.previousNav),
                 _dateTimeOrDash(item.dataTime),
               ],
@@ -11337,7 +11337,8 @@ class _EtfCatalogItemTile extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    formatSignedNullablePercent(item.premiumDiscountPct),
+                    formatSignedNullablePercent(
+                        item.resolvedPremiumDiscountPct),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: _marketMutedTextColor(context),
                     ),

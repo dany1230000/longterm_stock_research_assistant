@@ -58,6 +58,26 @@ void main() {
     expect(nav.status, EtfDataStatus.proxy);
   });
 
+  test('proxy intraday NAV derives premium when backend premium is null',
+      () async {
+    final payload = _intradayPayload()
+      ..['marketPrice'] = 39.60
+      ..['estimatedNav'] = 39.48
+      ..['estimatedPremiumDiscountPct'] = null;
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/00631l/intraday-nav': jsonEncode(payload),
+      }),
+    );
+
+    final nav = await repository.fetchIntradayNav();
+
+    expect(nav, isNotNull);
+    expect(nav!.estimatedPremiumDiscountPct, isNull);
+    expect(nav.resolvedPremiumDiscountPct, closeTo(0.30, 0.001));
+    expect(nav.premiumDiscountAssessment.level, PremiumDiscountLevel.watch);
+  });
+
   test('proxy unavailable intraday NAV returns null instead of crashing',
       () async {
     final repository = Proxy00631LRepository(
@@ -291,6 +311,29 @@ void main() {
     expect(catalog.focusItems.first.displayName, '元大台灣50正2');
     expect(catalog.focusItems.first.marketPrice, 34.83);
     expect(catalog.focusItems.first.premiumDiscountPct, -0.4);
+    expect(catalog.focusItems.first.resolvedPremiumDiscountPct, -0.4);
+  });
+
+  test('ETF catalog item derives premium when payload premium is null',
+      () async {
+    final payload =
+        jsonDecode(jsonEncode(_etfCatalogPayload())) as Map<String, dynamic>;
+    final items = payload['items'] as List<dynamic>;
+    final first = items[0] as Map<String, dynamic>;
+    first['marketPrice'] = 39.60;
+    first['estimatedNav'] = 39.48;
+    first['premiumDiscountPct'] = null;
+    final repository = Proxy00631LRepository(
+      client: _FakeProxyHttpClient({
+        '/api/etf/catalog': jsonEncode(payload),
+      }),
+    );
+
+    final catalog = await repository.fetchEtfCatalog();
+
+    expect(catalog.focusItems.first.premiumDiscountPct, isNull);
+    expect(catalog.focusItems.first.resolvedPremiumDiscountPct,
+        closeTo(0.30, 0.001));
   });
 
   test('proxy repository maps ETF gap detail payload', () async {

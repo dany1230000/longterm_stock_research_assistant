@@ -1,3 +1,4 @@
+import json
 import unittest
 from pathlib import Path
 
@@ -31,6 +32,27 @@ class EtfCatalogTests(unittest.TestCase):
         self.assertEqual(item["marketPrice"], 33.8)
         self.assertEqual(item["estimatedNav"], 33.55)
         self.assertEqual(item["premiumDiscountPct"], 0.75)
+
+    def test_parse_twse_all_etf_catalog_derives_blank_premium(self) -> None:
+        fixture = (FIXTURES / "00631l_twse_all_etf_fixture.json").read_text(
+            encoding="utf-8"
+        )
+        payload = json.loads(fixture)
+        for group in payload["a1"]:
+            for item in group["msgArray"]:
+                if item["a"] == "00631L":
+                    item["e"] = 39.60
+                    item["f"] = 39.48
+                    item["g"] = ""
+
+        parsed = parse_twse_etf_catalog(
+            json.dumps(payload),
+            source_url="fixture://twse/all_etf",
+            fetched_at="2026-06-12T05:31:20+00:00",
+        )
+
+        item = next(row for row in parsed["items"] if row["code"] == "00631L")
+        self.assertEqual(item["premiumDiscountPct"], 0.30)
 
     def test_catalog_store_load_and_status(self) -> None:
         import tempfile

@@ -4,7 +4,14 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .parsers import _combine_date_time, _compact_date, _parse_float, _parse_int, _twse_intraday_rows
+from .parsers import (
+    _combine_date_time,
+    _compact_date,
+    _parse_float,
+    _parse_int,
+    _resolve_premium_discount_pct,
+    _twse_intraday_rows,
+)
 
 
 def parse_twse_etf_catalog(source: str, *, source_url: str, fetched_at: str) -> dict[str, Any]:
@@ -24,15 +31,21 @@ def parse_twse_etf_catalog(source: str, *, source_url: str, fetched_at: str) -> 
             continue
         data_date = _compact_date(str(row.get("i") or ""))
         data_time = _combine_date_time(data_date, str(row.get("j") or ""))
-        premium = _parse_float(str(row.get("g") or ""))
+        market_price = _parse_float(str(row.get("e") or ""))
+        estimated_nav = _parse_float(str(row.get("f") or ""))
+        premium = _resolve_premium_discount_pct(
+            _parse_float(str(row.get("g") or "")),
+            market_price=market_price,
+            estimated_nav=estimated_nav,
+        )
         items.append(
             {
                 "code": code,
                 "name": str(row.get("b") or "").strip(),
                 "outstandingUnits": _parse_int(str(row.get("c") or "")),
                 "outstandingUnitsDelta": _parse_int(str(row.get("d") or "")),
-                "marketPrice": _parse_float(str(row.get("e") or "")),
-                "estimatedNav": _parse_float(str(row.get("f") or "")),
+                "marketPrice": market_price,
+                "estimatedNav": estimated_nav,
                 "premiumDiscountPct": premium,
                 "previousNav": _parse_float(str(row.get("h") or "")),
                 "dataDate": data_date,

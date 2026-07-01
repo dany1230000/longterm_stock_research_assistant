@@ -28,6 +28,21 @@ extension EtfDataStatusLabel on EtfDataStatus {
   }
 }
 
+double? resolvePremiumDiscountPct({
+  required double? premiumDiscountPct,
+  required double? marketPrice,
+  required double? estimatedNav,
+}) {
+  if (premiumDiscountPct != null) {
+    return premiumDiscountPct;
+  }
+  if (marketPrice == null || estimatedNav == null || estimatedNav <= 0) {
+    return null;
+  }
+  final pct = (marketPrice / estimatedNav - 1) * 100;
+  return (pct * 100).roundToDouble() / 100;
+}
+
 enum IntradayMarketPhase {
   preOpen,
   regular,
@@ -856,9 +871,15 @@ class EtfIntradayNav {
   final EtfDataStatus status;
   final DateTime lastFetchedAt;
 
+  double? get resolvedPremiumDiscountPct => resolvePremiumDiscountPct(
+        premiumDiscountPct: estimatedPremiumDiscountPct,
+        marketPrice: marketPrice,
+        estimatedNav: estimatedNav,
+      );
+
   PremiumDiscountAssessment get premiumDiscountAssessment {
     return PremiumDiscountAssessment.evaluate(
-      premiumDiscountPct: estimatedPremiumDiscountPct,
+      premiumDiscountPct: resolvedPremiumDiscountPct,
       sourceStatus: status,
       isStale: isStale,
     );
@@ -1036,7 +1057,7 @@ class EtfAnalysisSummary {
     final topFuture = snapshot.futuresHoldings.isEmpty
         ? null
         : snapshot.futuresHoldings.first;
-    final premium = intradayNav?.estimatedPremiumDiscountPct;
+    final premium = intradayNav?.resolvedPremiumDiscountPct;
     final stale = snapshot.isStale(now);
     final premiumLabel = _premiumDiscountLabel(premium);
     final lines = <String>[
@@ -1107,7 +1128,7 @@ class EtfStatusSummary {
       if (intradayNav == null)
         '即時淨值資料不可用，暫時只能檢視官方每日內容物與已保存的歷史資料。'
       else
-        '即時淨值來源 ${intradayNav.sourceContract ?? 'unavailable'}，折溢價 ${_nullableSignedPercentText(intradayNav.estimatedPremiumDiscountPct)}，狀態 ${premiumAssessment.label}。',
+        '即時淨值來源 ${intradayNav.sourceContract ?? 'unavailable'}，折溢價 ${_nullableSignedPercentText(intradayNav.resolvedPremiumDiscountPct)}，狀態 ${premiumAssessment.label}。',
       '內容物變化狀態 ${holdingsChangeAssessment.statusLabel}，history sourceStatus ${holdingsHistory.sourceStatusLabel}。',
       if (intradayNavHistory.hasData)
         '盤中折溢價歷史 ${intradayNavHistory.sampleCount} 筆，平均 ${_nullableSignedPercentText(intradayNavHistory.averagePremiumDiscountPct)}。'
@@ -2634,6 +2655,11 @@ class EtfCatalogItem {
   final int priceHistoryAdjustmentEventCount;
 
   String get displayName => name.trim().isEmpty ? code : name;
+  double? get resolvedPremiumDiscountPct => resolvePremiumDiscountPct(
+        premiumDiscountPct: premiumDiscountPct,
+        marketPrice: marketPrice,
+        estimatedNav: estimatedNav,
+      );
   bool get hasPriceHistory => priceHistoryRowCount >= 2;
 }
 

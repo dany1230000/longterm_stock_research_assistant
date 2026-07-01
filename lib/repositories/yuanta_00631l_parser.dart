@@ -120,15 +120,22 @@ class Yuanta00631LParser {
     final dataDate = _parseCompactDate(_stringValue(item['i']));
     final dataTime = _parseDataTime(dataDate, _stringValue(item['j']));
     final previousNavText = _stringValue(item['h']) ?? '';
+    final marketPrice = _parseDouble(_stringValue(item['e']));
+    final estimatedNav = _parseDouble(_stringValue(item['f']));
+    final premiumDiscountPct = resolvePremiumDiscountPct(
+      premiumDiscountPct: _parseDouble(_stringValue(item['g'])),
+      marketPrice: marketPrice,
+      estimatedNav: estimatedNav,
+    );
 
     return EtfIntradayNav(
       symbol: _stringValue(item['a']) ?? '',
       name: _stringValue(item['b']) ?? '',
       outstandingUnits: _parseInt(_stringValue(item['c'])),
       outstandingUnitsDelta: _parseInt(_stringValue(item['d'])),
-      marketPrice: _parseDouble(_stringValue(item['e'])),
-      estimatedNav: _parseDouble(_stringValue(item['f'])),
-      estimatedPremiumDiscountPct: _parseDouble(_stringValue(item['g'])),
+      marketPrice: marketPrice,
+      estimatedNav: estimatedNav,
+      estimatedPremiumDiscountPct: premiumDiscountPct,
       previousBusinessDayNav: _parseDouble(previousNavText),
       previousBusinessDayNavText: previousNavText,
       dataDate: dataDate,
