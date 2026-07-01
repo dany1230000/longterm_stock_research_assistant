@@ -78,8 +78,11 @@ class _LeveragedEtf00631LScreenState
   @override
   Widget build(BuildContext context) {
     final fastValue = ref.watch(etf00631LFastLabProvider);
-    final shouldLoadFullData =
-        (fastValue.hasValue || fastValue.hasError) && _section.needsFullData;
+    final shouldLoadFullData = shouldLoad00631LFullData(
+      fastReadyOrError: fastValue.hasValue || fastValue.hasError,
+      sectionNeedsFullData: _section.needsFullData,
+      liveProxyEnabled: _use00631LLiveProxy,
+    );
     final fullValue = shouldLoadFullData
         ? ref.watch(etf00631LLabProvider)
         : const AsyncValue<Etf00631LLabData>.loading();
@@ -169,7 +172,8 @@ class _LeveragedEtf00631LScreenState
   void _refreshFastData() {
     ref.invalidate(etf00631LFastLabProvider);
     final now = DateTime.now();
-    if (_section.needsFullData && _shouldRefreshFullData(now)) {
+    if ((_section.needsFullData || _use00631LLiveProxy) &&
+        _shouldRefreshFullData(now)) {
       ref.invalidate(etf00631LLabProvider);
       if (_selectedEtfCode != '00631L') {
         ref.invalidate(selectedEtfPriceHistoryProvider(_selectedEtfCode));
@@ -423,6 +427,14 @@ class _LabContent extends StatelessWidget {
         );
     }
   }
+}
+
+bool shouldLoad00631LFullData({
+  required bool fastReadyOrError,
+  required bool sectionNeedsFullData,
+  required bool liveProxyEnabled,
+}) {
+  return fastReadyOrError && (sectionNeedsFullData || liveProxyEnabled);
 }
 
 class _SelectedEtfViewData {

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.66 makes live-proxy public builds refresh full backend data on the overview
+  page after the fast static first screen renders.
+
 - v9.65 makes Pages builds default to the public Render backend
   (`https://longterm-stock-research-assistant.onrender.com`) with static public
   data as fallback.

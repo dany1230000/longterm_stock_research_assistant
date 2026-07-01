@@ -12,6 +12,41 @@ import 'package:longterm_stock_research_assistant/repositories/repository_provid
 import 'package:longterm_stock_research_assistant/services/app_theme_controller.dart';
 
 void main() {
+  test('live proxy mode loads full data even on overview after fast data', () {
+    expect(
+      shouldLoad00631LFullData(
+        fastReadyOrError: false,
+        sectionNeedsFullData: false,
+        liveProxyEnabled: true,
+      ),
+      isFalse,
+    );
+    expect(
+      shouldLoad00631LFullData(
+        fastReadyOrError: true,
+        sectionNeedsFullData: false,
+        liveProxyEnabled: false,
+      ),
+      isFalse,
+    );
+    expect(
+      shouldLoad00631LFullData(
+        fastReadyOrError: true,
+        sectionNeedsFullData: true,
+        liveProxyEnabled: false,
+      ),
+      isTrue,
+    );
+    expect(
+      shouldLoad00631LFullData(
+        fastReadyOrError: true,
+        sectionNeedsFullData: false,
+        liveProxyEnabled: true,
+      ),
+      isTrue,
+    );
+  });
+
   test('live backend warmup display only applies while live details load', () {
     expect(
       shouldShow00631LLiveBackendWarmup(
