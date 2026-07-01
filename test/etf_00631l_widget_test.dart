@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1272,10 +1272,21 @@ void main() {
     );
     final sourceExpansion =
         find.byKey(const ValueKey('00631l-position-source-expansion'));
+    final sourceSummary =
+        find.byKey(const ValueKey('00631l-position-source-summary-chips'));
     final sourceStrip =
         find.byKey(const ValueKey('00631l-position-source-chip-strip'));
     expect(sourceExpansion, findsOneWidget);
+    expect(sourceSummary, findsOneWidget);
     expect(sourceStrip, findsNothing);
+    expect(
+      find.descendant(of: sourceSummary, matching: find.textContaining('行情')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: sourceSummary, matching: find.textContaining('時間')),
+      findsOneWidget,
+    );
     await tester.tap(sourceExpansion);
     await tester.pumpAndSettle();
     expect(sourceStrip, findsOneWidget);
@@ -1344,9 +1355,9 @@ void main() {
       find.byKey(const ValueKey('00631l-position-field-fee')),
       findsOneWidget,
     );
+    expect(find.textContaining('成本'), findsWidgets);
     expect(find.text('估算細節'), findsOneWidget);
-    expect(find.textContaining('不需登入'), findsOneWidget);
-    expect(find.textContaining('不會上傳'), findsOneWidget);
+    expect(find.textContaining('資料只留在本機'), findsWidgets);
     expect(find.text('市價'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-position-action-save')),

@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v10.1 tightens the position first screen: market value, unrealized P/L, cost,
+  position weight, source status, and data time now sit in one compact account
+  card before optional input details.
+
 - v10.0 renames the overview technical disclosure to `更多資料`, keeping quote,
   NAV, premium/discount, and the one-year chart as the first read.
 

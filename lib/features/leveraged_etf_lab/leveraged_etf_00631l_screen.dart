@@ -9384,6 +9384,11 @@ class _PositionAccountStrip extends StatelessWidget {
         separator: ' ',
       ),
       _RangeContextItem(
+        label: '成本',
+        value: formatNtdAmount(summary.cost),
+        separator: ' ',
+      ),
+      _RangeContextItem(
         label: '部位比例',
         value: assetWeightText,
         separator: ' ',
@@ -9418,9 +9423,7 @@ class _PositionAccountStrip extends StatelessWidget {
             ),
             const SizedBox(height: 3),
             Text(
-              input.hasPosition
-                  ? '本機已輸入；估算依目前可用行情與資料時間。'
-                  : '不需登入、不會上傳；先填股數與成本。',
+              input.hasPosition ? '本機資料；數值依目前可用行情估算。' : '填股數與平均成本；資料只留在本機。',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelSmall?.copyWith(
@@ -9434,9 +9437,14 @@ class _PositionAccountStrip extends StatelessWidget {
               items: items,
             ),
             const SizedBox(height: 8),
+            _PositionSourceSummaryChips(
+              selectedEtf: selectedEtf,
+              dataTime: dataTime,
+            ),
+            const SizedBox(height: 8),
             _CompactExpansionPanel(
               key: const ValueKey('00631l-position-source-expansion'),
-              title: '資料來源',
+              title: '更多資料來源',
               subtitle: '行情來源、歷史來源與資料時間；需要核對時展開。',
               child: _PositionSourceChipStrip(
                 selectedEtf: selectedEtf,
@@ -9445,6 +9453,29 @@ class _PositionAccountStrip extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PositionSourceSummaryChips extends StatelessWidget {
+  const _PositionSourceSummaryChips({
+    required this.selectedEtf,
+    required this.dataTime,
+  });
+
+  final _SelectedEtfViewData selectedEtf;
+  final String dataTime;
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyedSubtree(
+      key: const ValueKey('00631l-position-source-summary-chips'),
+      child: _StatusWrap(
+        labels: [
+          '行情 ${_sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel)}',
+          '時間 $dataTime',
+        ],
       ),
     );
   }
