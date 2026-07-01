@@ -3448,7 +3448,7 @@ class _OverviewMarketStack extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(6, 7, 6, 8),
+        padding: const EdgeInsets.fromLTRB(6, 6, 6, 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -3457,17 +3457,15 @@ class _OverviewMarketStack extends StatelessWidget {
               selectedEtf: selectedEtf,
               embedded: true,
             ),
-            const SizedBox(height: 6),
-            const _MarketStackDivider(),
-            const SizedBox(height: 5),
+            const SizedBox(height: 4),
             _OverviewDailySummaryStrip(
               data: data,
               detailsLoading: false,
               embedded: true,
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 4),
             const _MarketStackDivider(),
-            const SizedBox(height: 6),
+            const SizedBox(height: 5),
             _OverviewSignalPanel(data: data, embedded: true),
           ],
         ),
@@ -3570,7 +3568,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
     final content = Padding(
       padding: EdgeInsets.symmetric(
         horizontal: embedded ? 2 : 8,
-        vertical: embedded ? 2 : 6,
+        vertical: embedded ? 0 : 6,
       ),
       child: SingleChildScrollView(
         key: const ValueKey('00631l-overview-daily-summary-grid'),
@@ -3581,13 +3579,13 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
             for (var index = 0; index < items.length; index++) ...[
               _OverviewDailyTickerItem(item: items[index]),
               if (index != items.length - 1) ...[
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Container(
                   width: 1,
-                  height: 26,
+                  height: 22,
                   color: _marketBorderColor(context),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
               ],
             ],
           ],
@@ -3695,7 +3693,7 @@ class _OverviewDailyTickerItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ConstrainedBox(
-      constraints: const BoxConstraints(minWidth: 112, maxWidth: 142),
+      constraints: const BoxConstraints(minWidth: 92, maxWidth: 118),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,

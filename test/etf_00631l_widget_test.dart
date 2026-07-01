@@ -198,6 +198,14 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsOneWidget,
     );
+    expect(
+      tester
+          .getRect(
+            find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
+          )
+          .height,
+      lessThanOrEqualTo(34),
+    );
     await tester.ensureVisible(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),
     );

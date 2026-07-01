@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.96 tightens the overview daily-data ticker so the one-year chart appears
+  sooner on mobile.
+
 - v9.95 keeps the position page first screen focused on local position numbers
   by moving source chips into a `資料來源` expansion.
 
