@@ -1135,6 +1135,19 @@ void main() {
     await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
 
+    final topStrip =
+        find.byKey(const ValueKey('00631l-history-backtest-top-strip'));
+    expect(topStrip, findsOneWidget);
+    expect(tester.getRect(topStrip).height, lessThanOrEqualTo(56));
+    expect(
+      find.byKey(const ValueKey('00631l-history-top-strip-source-badge')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-top-strip-contract-badge')),
+      findsNothing,
+    );
+
     final rangeContext =
         find.byKey(const ValueKey('00631l-history-range-context'));
     expect(rangeContext, findsOneWidget);

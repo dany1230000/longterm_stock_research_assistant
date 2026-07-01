@@ -6444,64 +6444,80 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
     final contractLabel =
         _historySourceContractDetail(priceHistory.sourceContractCounts);
 
-    return DecoratedBox(
-      key: const ValueKey('00631l-history-backtest-top-strip'),
-      decoration: BoxDecoration(
-        color: _marketPanelColor(context),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const _MiniStatusBadge(label: 'HIS'),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '$code 歷史回測',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0,
-                    ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 430;
+        return DecoratedBox(
+          key: const ValueKey('00631l-history-backtest-top-strip'),
+          decoration: BoxDecoration(
+            color: _marketPanelColor(context),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: _marketBorderColor(context)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const _MiniStatusBadge(label: 'HIS'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '$code $name',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '$coverage · ${formatInteger(completeness.rowCount)} 筆 · 預設 1 年，可調日期',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '$name · $coverage · ${formatInteger(completeness.rowCount)} 筆 · 預設 1 年，可調日期',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: _marketMutedTextColor(context),
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0,
+                ),
+                const SizedBox(width: 8),
+                KeyedSubtree(
+                  key: const ValueKey('00631l-history-top-strip-source-badge'),
+                  child: _CompactTextBadge(label: sourceLabel),
+                ),
+                if (!compact) ...[
+                  const SizedBox(width: 6),
+                  KeyedSubtree(
+                    key: const ValueKey(
+                        '00631l-history-top-strip-contract-badge'),
+                    child: _CompactTextBadge(label: contractLabel),
+                  ),
+                  KeyedSubtree(
+                    key: ValueKey(
+                      '00631l-history-top-strip-contract-$contractLabel',
                     ),
+                    child: const SizedBox.shrink(),
                   ),
                 ],
-              ),
+                const KeyedSubtree(
+                  key: ValueKey('00631l-history-top-strip-legacy-labels'),
+                  child: SizedBox.shrink(),
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            _CompactTextBadge(label: sourceLabel),
-            const SizedBox(width: 6),
-            _CompactTextBadge(label: contractLabel),
-            KeyedSubtree(
-              key: ValueKey('00631l-history-top-strip-contract-$contractLabel'),
-              child: const SizedBox.shrink(),
-            ),
-            const KeyedSubtree(
-              key: ValueKey('00631l-history-top-strip-legacy-labels'),
-              child: SizedBox.shrink(),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

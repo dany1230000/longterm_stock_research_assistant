@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.92 tightens the history/backtest top strip on mobile, keeping the source
+  status visible while hiding lower-priority contract detail on narrow screens.
+
 - v9.91 shortens the bottom navigation history/backtest label and lowers the
   bottom bar height for a tighter phone app feel.
 
