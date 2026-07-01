@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position source compact v9.95: `docs\00631l_v9_95_position_source_compact.md`
 - AI first screen readability v9.94: `docs\00631l_v9_94_ai_first_screen_readability.md`
 - Symbol search capability badges v9.93: `docs\00631l_v9_93_symbol_search_capability_badges.md`
 - History top strip density v9.92: `docs\00631l_v9_92_history_top_strip_density.md`

@@ -1290,8 +1290,14 @@ void main() {
       find.byKey(const ValueKey('00631l-position-account-metric-strip')),
       findsOneWidget,
     );
+    final sourceExpansion =
+        find.byKey(const ValueKey('00631l-position-source-expansion'));
     final sourceStrip =
         find.byKey(const ValueKey('00631l-position-source-chip-strip'));
+    expect(sourceExpansion, findsOneWidget);
+    expect(sourceStrip, findsNothing);
+    await tester.tap(sourceExpansion);
+    await tester.pumpAndSettle();
     expect(sourceStrip, findsOneWidget);
     for (final label in const ['行情來源', '歷史來源', '資料時間']) {
       expect(
@@ -2221,6 +2227,15 @@ void main() {
       find.byKey(const ValueKey('00631l-position-input-mini-header')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-position-source-expansion')),
+      findsOneWidget,
+    );
+    expect(find.textContaining('歷史來源 快取'), findsNothing);
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-position-source-expansion')),
+    );
+    await tester.pumpAndSettle();
     expect(find.textContaining('行情來源'), findsWidgets);
     expect(find.textContaining('歷史來源 快取'), findsWidgets);
 

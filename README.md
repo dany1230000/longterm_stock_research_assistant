@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.95 keeps the position page first screen focused on local position numbers
+  by moving source chips into a `資料來源` expansion.
+
 - v9.94 makes the AI page first screen answer-first: today's conclusion,
   data-time facts, and the primary program action appear before detailed AI
   panels.
