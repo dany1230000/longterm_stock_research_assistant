@@ -974,13 +974,13 @@ void main() {
       find.byKey(const ValueKey('00631l-history-date-settings-expansion')),
       findsNothing,
     );
-    expect(find.text('自訂日期'), findsOneWidget);
+    expect(find.text('日期區間'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-history-date-controls-visible')),
       findsOneWidget,
     );
     expect(
-      tester.getTopLeft(find.text('自訂日期')).dy,
+      tester.getTopLeft(find.text('日期區間')).dy,
       lessThan(tester.getTopLeft(find.text('收盤價').first).dy),
     );
     expect(
@@ -1028,7 +1028,7 @@ void main() {
       findsWidgets,
     );
     expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsWidgets);
-    expect(find.textContaining('圖表與指標套用同一段日期'), findsWidgets);
+    expect(find.textContaining('圖表、指標與下方回測快覽'), findsWidgets);
     expect(find.text('起點 2025/06/03'), findsWidgets);
     expect(find.text('中段 2026/06/01'), findsWidgets);
     expect(find.text('終點 2026/06/03'), findsWidgets);
@@ -1144,7 +1144,7 @@ void main() {
     expect(find.text('回測快覽'), findsOneWidget);
     expect(find.textContaining('回測不代表未來表現'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
-    expect(find.text('自訂日期'), findsOneWidget);
+    expect(find.text('日期區間'), findsOneWidget);
     expect(find.text('開始日期'), findsWidgets);
     expect(find.text('結束日期'), findsWidgets);
     expect(find.textContaining('回測區間'), findsOneWidget);
@@ -1172,7 +1172,7 @@ void main() {
       find.byKey(const ValueKey('00631l-date-range-summary')),
       findsWidgets,
     );
-    expect(find.text('回測設定摘要'), findsOneWidget);
+    expect(find.text('日期與設定'), findsOneWidget);
     expect(find.text('金額與成本參數'), findsOneWidget);
     expect(find.text('初始金額'), findsNothing);
     final backtestAllRange =

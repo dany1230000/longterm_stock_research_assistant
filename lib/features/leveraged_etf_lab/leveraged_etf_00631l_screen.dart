@@ -6298,48 +6298,13 @@ class _FilterablePriceHistoryBlockState
     final fullSummary = fullHistory.completenessSummary();
     final firstDate = _historyFirstDate(fullHistory);
     final lastDate = _historyLastDate(fullHistory);
-    final activePreset = _activeDateRangePreset(
-      startDate: _startDate,
-      endDate: _endDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
-    );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        KeyedSubtree(
-          key: const ValueKey('00631l-history-range-chips'),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _RangeActionChip(
-                key: const ValueKey('00631l-history-range-1y'),
-                label: '最近 1 年',
-                selected: activePreset == _DateRangePreset.oneYear,
-                onTap: () => _setTrailingYears(1),
-              ),
-              _RangeActionChip(
-                key: const ValueKey('00631l-history-range-3y'),
-                label: '最近 3 年',
-                selected: activePreset == _DateRangePreset.threeYears,
-                onTap: () => _setTrailingYears(3),
-              ),
-              _RangeActionChip(
-                key: const ValueKey('00631l-history-range-all'),
-                label: '全部資料',
-                selected: activePreset == _DateRangePreset.all,
-                onTap: _setAllRange,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        _RangeContextStrip(
+        _DateRangeControlPanel(
           key: const ValueKey('00631l-history-range-context'),
-          title: '目前圖表區間',
-          subtitle: '預設最近 1 年；日期設定可展開調整。',
+          title: '日期區間',
+          subtitle: '預設最近 1 年；圖表、指標與下方回測快覽都套用同一段日期。',
           items: [
             _RangeContextItem(
               label: '目前區間',
@@ -6361,33 +6326,21 @@ class _FilterablePriceHistoryBlockState
               value: _dateOrDash(selectedSummary.coverageEnd),
             ),
           ],
-        ),
-        const SizedBox(height: 8),
-        KeyedSubtree(
-          key: const ValueKey('00631l-history-date-controls-visible'),
-          child: _RangeContextStrip(
-            title: '自訂日期',
-            subtitle: '圖表與指標套用同一段日期；預設最近 1 年。',
-            items: [
-              _RangeContextItem(
-                label: '目前區間',
-                value:
-                    '${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}',
-              ),
-              _RangeContextItem(
-                label: '最新資料',
-                value: _dateOrDash(selectedSummary.coverageEnd),
-              ),
-            ],
-            child: _BacktestDateRangeControls(
-              startDate: _startDate,
-              endDate: _endDate,
-              firstDate: firstDate,
-              lastDate: lastDate,
-              onStartTap: _selectStartDate,
-              onEndTap: _selectEndDate,
-            ),
-          ),
+          startDate: _startDate,
+          endDate: _endDate,
+          firstDate: firstDate,
+          lastDate: lastDate,
+          onStartTap: _selectStartDate,
+          onEndTap: _selectEndDate,
+          onOneYearTap: () => _setTrailingYears(1),
+          onThreeYearsTap: () => _setTrailingYears(3),
+          onAllTap: _setAllRange,
+          chipsKey: const ValueKey('00631l-history-range-chips'),
+          oneYearKey: const ValueKey('00631l-history-range-1y'),
+          threeYearsKey: const ValueKey('00631l-history-range-3y'),
+          allKey: const ValueKey('00631l-history-range-all'),
+          dateControlsKey:
+              const ValueKey('00631l-history-date-controls-visible'),
         ),
         const SizedBox(height: 8),
         _PriceTrendCharts(priceHistory: filteredHistory),
@@ -6585,6 +6538,106 @@ class _RangeActionChip extends StatelessWidget {
       ),
       visualDensity: VisualDensity.compact,
       onSelected: (_) => onTap(),
+    );
+  }
+}
+
+class _DateRangeControlPanel extends StatelessWidget {
+  const _DateRangeControlPanel({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.items,
+    required this.startDate,
+    required this.endDate,
+    required this.firstDate,
+    required this.lastDate,
+    required this.onStartTap,
+    required this.onEndTap,
+    required this.onOneYearTap,
+    required this.onThreeYearsTap,
+    required this.onAllTap,
+    required this.chipsKey,
+    required this.oneYearKey,
+    required this.threeYearsKey,
+    required this.allKey,
+    this.dateControlsKey,
+  });
+
+  final String title;
+  final String subtitle;
+  final List<_RangeContextItem> items;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
+  final VoidCallback onStartTap;
+  final VoidCallback onEndTap;
+  final VoidCallback onOneYearTap;
+  final VoidCallback onThreeYearsTap;
+  final VoidCallback onAllTap;
+  final Key chipsKey;
+  final Key oneYearKey;
+  final Key threeYearsKey;
+  final Key allKey;
+  final Key? dateControlsKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final activePreset = _activeDateRangePreset(
+      startDate: startDate,
+      endDate: endDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
+    return _RangeContextStrip(
+      title: title,
+      subtitle: subtitle,
+      items: items,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          KeyedSubtree(
+            key: chipsKey,
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _RangeActionChip(
+                  key: oneYearKey,
+                  label: '最近 1 年',
+                  selected: activePreset == _DateRangePreset.oneYear,
+                  onTap: onOneYearTap,
+                ),
+                _RangeActionChip(
+                  key: threeYearsKey,
+                  label: '最近 3 年',
+                  selected: activePreset == _DateRangePreset.threeYears,
+                  onTap: onThreeYearsTap,
+                ),
+                _RangeActionChip(
+                  key: allKey,
+                  label: '全部資料',
+                  selected: activePreset == _DateRangePreset.all,
+                  onTap: onAllTap,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          KeyedSubtree(
+            key: dateControlsKey,
+            child: _BacktestDateRangeControls(
+              startDate: startDate,
+              endDate: endDate,
+              firstDate: firstDate,
+              lastDate: lastDate,
+              onStartTap: onStartTap,
+              onEndTap: onEndTap,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -7783,12 +7836,6 @@ class _BacktestSectionState extends State<_BacktestSection> {
     final history = widget.priceHistory;
     final firstDate = _historyFirstDate(history);
     final lastDate = _historyLastDate(history);
-    final activePreset = _activeDateRangePreset(
-      startDate: _startDate,
-      endDate: _endDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
-    );
     final result = const EtfBacktestEngine().run(
       request: EtfBacktestRequest(
         strategy: _strategy,
@@ -7843,48 +7890,10 @@ class _BacktestSectionState extends State<_BacktestSection> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    _BacktestDateRangeControls(
-                      startDate: _startDate,
-                      endDate: _endDate,
-                      firstDate: firstDate,
-                      lastDate: lastDate,
-                      onStartTap: _selectStartDate,
-                      onEndTap: _selectEndDate,
-                    ),
-                    const SizedBox(height: 8),
-                    KeyedSubtree(
-                      key: const ValueKey('00631l-backtest-range-chips'),
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          _RangeActionChip(
-                            key: const ValueKey('00631l-backtest-range-1y'),
-                            label: '最近 1 年',
-                            selected: activePreset == _DateRangePreset.oneYear,
-                            onTap: () => _setTrailingYears(1),
-                          ),
-                          _RangeActionChip(
-                            key: const ValueKey('00631l-backtest-range-3y'),
-                            label: '最近 3 年',
-                            selected:
-                                activePreset == _DateRangePreset.threeYears,
-                            onTap: () => _setTrailingYears(3),
-                          ),
-                          _RangeActionChip(
-                            key: const ValueKey('00631l-backtest-range-all'),
-                            label: '全部資料',
-                            selected: activePreset == _DateRangePreset.all,
-                            onTap: _setAllRange,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    _RangeContextStrip(
+                    _DateRangeControlPanel(
                       key: const ValueKey('00631l-backtest-range-context'),
-                      title: '回測設定摘要',
-                      subtitle: '結果只套用目前日期區間與下方參數。',
+                      title: '日期與設定',
+                      subtitle: '預設最近 1 年；結果只套用目前日期區間與下方參數。',
                       items: [
                         _RangeContextItem(
                           label: '回測區間',
@@ -7911,6 +7920,19 @@ class _BacktestSectionState extends State<_BacktestSection> {
                           separator: ' ',
                         ),
                       ],
+                      startDate: _startDate,
+                      endDate: _endDate,
+                      firstDate: firstDate,
+                      lastDate: lastDate,
+                      onStartTap: _selectStartDate,
+                      onEndTap: _selectEndDate,
+                      onOneYearTap: () => _setTrailingYears(1),
+                      onThreeYearsTap: () => _setTrailingYears(3),
+                      onAllTap: _setAllRange,
+                      chipsKey: const ValueKey('00631l-backtest-range-chips'),
+                      oneYearKey: const ValueKey('00631l-backtest-range-1y'),
+                      threeYearsKey: const ValueKey('00631l-backtest-range-3y'),
+                      allKey: const ValueKey('00631l-backtest-range-all'),
                     ),
                     const SizedBox(height: 12),
                     _CompactExpansionPanel(
@@ -8307,7 +8329,6 @@ class _RangeContextItem {
 
 class _RangeContextStrip extends StatelessWidget {
   const _RangeContextStrip({
-    super.key,
     required this.title,
     required this.subtitle,
     required this.items,

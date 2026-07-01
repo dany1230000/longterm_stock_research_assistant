@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.76 merges history/backtest range chips, range summary, and start/end date
+  buttons into one compact mobile panel. History and backtest still default to
+  the latest one-year window, with direct date adjustment visible.
+
 - v9.75 keeps the top-left search pill compact enough for the `ETF 研究室`
   title to fit on phone width while preserving the search and down-arrow icons.
 

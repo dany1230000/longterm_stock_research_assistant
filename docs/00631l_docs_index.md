@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History range panel v9.76: `docs\00631l_v9_76_history_range_panel.md`
 - Header fit fix v9.75: `docs\00631l_v9_75_header_fit_fix.md`
 - Symbol search affordance v9.74: `docs\00631l_v9_74_symbol_search_affordance.md`
 - Overview signal cleanup v9.73: `docs\00631l_v9_73_overview_signal_cleanup.md`
