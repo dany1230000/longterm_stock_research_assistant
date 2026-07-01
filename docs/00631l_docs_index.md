@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position first screen density v9.86: `docs\00631l_v9_86_position_first_screen_density.md`
 - History top compact v9.85: `docs\00631l_v9_85_history_top_compact.md`
 - Overview ticker density v9.84: `docs\00631l_v9_84_overview_ticker_density.md`
 - Symbol search readability v9.83: `docs\00631l_v9_83_symbol_search_readability.md`

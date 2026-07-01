@@ -8757,13 +8757,9 @@ class _PositionSectionState extends State<_PositionSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (!_loaded) const LinearProgressIndicator(),
-        _StatusWrap(
-          labels: [
-            input.hasPosition ? '持倉資料已輸入' : '尚未輸入持倉',
-            '本機保存',
-            '目前標的 ${widget.selectedEtf.code}',
-            '行情來源 ${_sourceStatusBadgeLabel(widget.selectedEtf.sourceStatusLabel)}',
-          ],
+        _PositionInputMiniHeader(
+          input: input,
+          selectedEtf: widget.selectedEtf,
         ),
         const SizedBox(height: 8),
         if (!input.hasPosition) ...[
@@ -8872,7 +8868,7 @@ class _PositionSectionState extends State<_PositionSection> {
                 )
               : _SectionBlock(
                   title: '輸入持倉資料',
-                  subtitle: '本機保存，資料留在本機瀏覽器；清除資料後不會保留副本。',
+                  subtitle: '本機保存；先填股數與平均成本即可估算。',
                   child: inputForm,
                 ),
         ),
@@ -8932,6 +8928,51 @@ class _PositionSectionState extends State<_PositionSection> {
       'feeAndTax': input.feeAndTax,
       'note': input.note,
     });
+  }
+}
+
+class _PositionInputMiniHeader extends StatelessWidget {
+  const _PositionInputMiniHeader({
+    required this.input,
+    required this.selectedEtf,
+  });
+
+  final EtfPositionInput input;
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final statusText = input.hasPosition ? '已輸入' : '未輸入';
+    return DecoratedBox(
+      key: const ValueKey('00631l-position-input-mini-header'),
+      decoration: BoxDecoration(
+        color:
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.38),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          children: [
+            _MiniStatusBadge(label: statusText),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '${selectedEtf.code} · 本機保存 · 行情 ${_sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel)}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -9012,7 +9053,7 @@ class _PositionEmptyHintStrip extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                '輸入股數與平均成本後，即可顯示市值、損益與部位比例；資料只保存在本機。',
+                '填股數與平均成本，立即估算市值、損益與部位比例；資料留在本機。',
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: theme.colorScheme.onSurface,
                   fontWeight: FontWeight.w800,
@@ -9124,12 +9165,10 @@ class _PositionAccountStrip extends StatelessWidget {
     final unrealizedPctText = summary.unrealizedPnlPct == null
         ? '尚無比例'
         : formatSignedNullablePercent(summary.unrealizedPnlPct);
+    final assetWeightText = summary.assetWeightPct == null
+        ? '未設定'
+        : formatNullablePercent(summary.assetWeightPct);
     final items = [
-      _RangeContextItem(
-        label: '目前標的',
-        value: selectedEtf.code,
-        separator: ' ',
-      ),
       _RangeContextItem(
         label: '市值',
         value: formatNtdAmount(summary.marketValue),
@@ -9141,8 +9180,8 @@ class _PositionAccountStrip extends StatelessWidget {
         separator: ' ',
       ),
       _RangeContextItem(
-        label: '資料',
-        value: input.hasPosition ? '本機已輸入' : '尚未輸入',
+        label: '部位比例',
+        value: assetWeightText,
         separator: ' ',
       ),
     ];
@@ -9162,7 +9201,7 @@ class _PositionAccountStrip extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '持倉帳戶摘要',
+                    '${selectedEtf.code} 持倉',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall?.copyWith(
@@ -9175,8 +9214,10 @@ class _PositionAccountStrip extends StatelessWidget {
             ),
             const SizedBox(height: 3),
             Text(
-              '不需登入、不會上傳；估算依目前可用行情與資料時間。',
-              maxLines: 2,
+              input.hasPosition
+                  ? '本機已輸入；估算依目前可用行情與資料時間。'
+                  : '不需登入、不會上傳；先填股數與成本。',
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,

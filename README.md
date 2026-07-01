@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.86 tightens the position page first screen. The selected ETF now appears
+  in the position card title, and the main row focuses on market value,
+  unrealized P/L, and position weight.
+
 - v9.85 compacts the history/backtest top context card so date controls and
   charts appear sooner on mobile.
 

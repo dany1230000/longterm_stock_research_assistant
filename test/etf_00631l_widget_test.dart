@@ -1251,7 +1251,7 @@ void main() {
 
     expect(find.text('本機持倉'), findsNothing);
     expect(find.text('持倉狀態'), findsNothing);
-    expect(find.text('持倉帳戶摘要'), findsOneWidget);
+    expect(find.text('00631L 持倉'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-position-account-strip')),
       findsOneWidget,
@@ -1270,6 +1270,10 @@ void main() {
       );
     }
     expect(
+      find.byKey(const ValueKey('00631l-position-input-mini-header')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-position-primary-actions')),
       findsOneWidget,
     );
@@ -1282,7 +1286,7 @@ void main() {
       lessThan(tester.getTopLeft(positionActions).dy),
       reason: 'Empty position flow should show inputs before actions.',
     );
-    expect(find.text('尚未輸入持倉'), findsWidgets);
+    expect(find.text('未輸入'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-position-empty-hint-strip')),
       findsOneWidget,
@@ -1362,10 +1366,9 @@ void main() {
     expect(strip, findsOneWidget);
     final stripRect = tester.getRect(strip);
     for (final label in const [
-      '目前標的',
       '市值',
       '未實現損益',
-      '資料',
+      '部位比例',
     ]) {
       final tileText = find.textContaining(label);
       expect(tileText, findsWidgets);
@@ -2173,7 +2176,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('0050'), findsWidgets);
     expect(find.textContaining('本機保存'), findsWidgets);
-    expect(find.text('目前標的 0050'), findsWidgets);
+    expect(find.text('0050 持倉'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-position-input-mini-header')),
+      findsOneWidget,
+    );
     expect(find.textContaining('行情來源'), findsWidgets);
     expect(find.textContaining('歷史來源 快取'), findsWidgets);
 
