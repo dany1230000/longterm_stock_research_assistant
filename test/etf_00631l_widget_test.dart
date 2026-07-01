@@ -2416,6 +2416,14 @@ void main() {
         findsOneWidget,
       );
     }
+    final primaryActionBlock =
+        find.byKey(const ValueKey('00631l-ai-primary-action-block'));
+    expect(primaryActionBlock, findsOneWidget);
+    expect(
+      tester.getTopLeft(primaryActionBlock).dy,
+      lessThan(tester.getTopLeft(detailExpansion).dy),
+      reason: 'The primary program action should appear before AI details.',
+    );
     expect(find.text('當日資料判讀'), findsOneWidget);
     expect(find.textContaining('資料時間：'), findsOneWidget);
     expect(find.textContaining('折溢價：'), findsOneWidget);

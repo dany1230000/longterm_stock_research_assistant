@@ -9736,6 +9736,27 @@ class _AiDailyBriefingHero extends StatelessWidget {
               primaryAction: primaryAction,
             ),
             const SizedBox(height: 10),
+            KeyedSubtree(
+              key: const ValueKey('00631l-ai-primary-action-block'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '程式操作',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  _BulletLine(
+                    text: primaryAction,
+                    icon: Icons.task_alt_outlined,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
             _CompactExpansionPanel(
               key: const ValueKey('00631l-ai-daily-detail-expansion'),
               title: 'AI 資料細節',
@@ -9883,16 +9904,6 @@ class _AiDailyBriefingHero extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 10),
-            Text(
-              '程式操作',
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: _marketTextColor(context),
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const SizedBox(height: 6),
-            _BulletLine(text: primaryAction, icon: Icons.task_alt_outlined),
           ],
         ),
       ),
@@ -10027,7 +10038,13 @@ class _AiDailyDecisionStrip extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 620;
+        final oneColumn = constraints.maxWidth < 340;
+        final twoColumns = constraints.maxWidth < 620;
+        final tileWidth = oneColumn
+            ? constraints.maxWidth
+            : twoColumns
+                ? (constraints.maxWidth - 8) / 2
+                : (constraints.maxWidth - 8) / 2;
         return Wrap(
           key: const ValueKey('00631l-ai-daily-decision-strip'),
           spacing: 8,
@@ -10035,9 +10052,7 @@ class _AiDailyDecisionStrip extends StatelessWidget {
           children: [
             for (final item in items)
               SizedBox(
-                width: compact
-                    ? constraints.maxWidth
-                    : (constraints.maxWidth - 8) / 2,
+                width: tileWidth,
                 child: _AiDailyDecisionTile(item: item),
               ),
           ],

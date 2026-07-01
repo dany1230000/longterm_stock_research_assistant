@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.87 moves the AI page's primary program action above the detail expansion
+  and makes the daily AI decision tiles denser on mobile.
+
 - v9.86 tightens the position page first screen. The selected ETF now appears
   in the position card title, and the main row focuses on market value,
   unrealized P/L, and position weight.
