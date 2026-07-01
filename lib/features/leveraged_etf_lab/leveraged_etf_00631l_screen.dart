@@ -178,7 +178,8 @@ class _LeveragedEtf00631LScreenState
     final current = ref.read(etf00631LFastLabProvider).valueOrNull;
     if (has00631LLiveCoreData(current)) {
       _liveCoreRetryCount = 0;
-    } else if (_use00631LLiveProxy && _liveCoreRetryCount < 3) {
+    } else if (_use00631LLiveProxy &&
+        _liveCoreRetryCount < liveCoreWarmupRetryLimit) {
       _liveCoreRetryCount += 1;
     }
     ref.invalidate(etf00631LFastLabProvider);
@@ -255,6 +256,8 @@ class _LeveragedEtf00631LScreenState
     });
   }
 }
+
+const liveCoreWarmupRetryLimit = 15;
 
 enum _LabSection {
   overview('總覽', Icons.dashboard_outlined),
@@ -459,7 +462,9 @@ bool shouldUse00631LShortLiveRetry({
   required bool hasLiveCoreData,
   required int retryCount,
 }) {
-  return liveProxyEnabled && !hasLiveCoreData && retryCount < 3;
+  return liveProxyEnabled &&
+      !hasLiveCoreData &&
+      retryCount < liveCoreWarmupRetryLimit;
 }
 
 bool has00631LLiveCoreData(Etf00631LLabData? data) {

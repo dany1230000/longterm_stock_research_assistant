@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.71 extends the live-core warm-up retry window so the public app can replace
+  static fallback quote/holdings data sooner after a cold backend response.
+
 - v9.70 tightens the mobile overview: the chart stays visible, official exposure
   becomes a compact row, and the holdings digest uses shorter app-style copy.
 

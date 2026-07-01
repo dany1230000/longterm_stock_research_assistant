@@ -60,7 +60,7 @@ void main() {
       shouldUse00631LShortLiveRetry(
         liveProxyEnabled: true,
         hasLiveCoreData: false,
-        retryCount: 2,
+        retryCount: liveCoreWarmupRetryLimit - 1,
       ),
       isTrue,
     );
@@ -68,7 +68,7 @@ void main() {
       shouldUse00631LShortLiveRetry(
         liveProxyEnabled: true,
         hasLiveCoreData: false,
-        retryCount: 3,
+        retryCount: liveCoreWarmupRetryLimit,
       ),
       isFalse,
     );
