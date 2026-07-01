@@ -261,7 +261,7 @@ const liveCoreWarmupRetryLimit = 15;
 
 enum _LabSection {
   overview('總覽', Icons.dashboard_outlined),
-  historyBacktest('歷史回測', Icons.query_stats_outlined),
+  historyBacktest('歷史', Icons.query_stats_outlined),
   position('持倉', Icons.account_balance_wallet_outlined),
   ai('AI', Icons.psychology_alt_outlined),
   settings('我的', Icons.manage_accounts_outlined);
@@ -3284,7 +3284,7 @@ class _MarketBottomNav extends StatelessWidget {
           child: SafeArea(
             top: false,
             child: SizedBox(
-              height: 72,
+              height: 66,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -3334,17 +3334,17 @@ class _MarketBottomNavItem extends StatelessWidget {
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 160),
-                width: selected ? 34 : 24,
-                height: 28,
+                width: selected ? 32 : 24,
+                height: 26,
                 decoration: BoxDecoration(
                   color: selected
                       ? _marketBlue.withValues(alpha: 0.16)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: Icon(section.icon, color: color, size: 21),
+                child: Icon(section.icon, color: color, size: 20),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 2),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
@@ -3352,6 +3352,7 @@ class _MarketBottomNavItem extends StatelessWidget {
                   maxLines: 1,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: color,
+                        fontSize: 11,
                         fontWeight:
                             selected ? FontWeight.w900 : FontWeight.w700,
                         letterSpacing: 0,

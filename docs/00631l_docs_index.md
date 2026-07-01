@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Bottom navigation density v9.91: `docs\00631l_v9_91_bottom_nav_density.md`
 - Public mobile first screen v9.90: `docs\00631l_v9_90_public_mobile_first_screen.md`
 - Overview chart touch detail v9.89: `docs\00631l_v9_89_overview_chart_touch_detail.md`
 - Settings daily-use ordering v9.88: `docs\00631l_v9_88_settings_daily_order.md`

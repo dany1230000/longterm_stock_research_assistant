@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.91 shortens the bottom navigation history/backtest label and lowers the
+  bottom bar height for a tighter phone app feel.
+
 - v9.90 combines the quote header, daily source summary, and one-year chart into
   one mobile market stack so the public overview first screen reads faster.
 
