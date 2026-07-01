@@ -2453,9 +2453,14 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-first-screen-facts')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-first-screen-bullets')),
+      findsOneWidget,
+    );
     for (final label in const ['今日結論', 'DAY', 'LIVE', 'HIS']) {
       expect(find.text(label), findsOneWidget);
     }
+    expect(find.text('今日重點'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-ai-daily-conclusion')),
       findsNothing,

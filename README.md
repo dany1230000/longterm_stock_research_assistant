@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v10.2 makes the AI page answer sooner by showing the rule-based `今日重點`
+  bullets on the first screen while keeping matrices and full diagnostics
+  behind details.
+
 - v10.1 tightens the position first screen: market value, unrealized P/L, cost,
   position weight, source status, and data time now sit in one compact account
   card before optional input details.

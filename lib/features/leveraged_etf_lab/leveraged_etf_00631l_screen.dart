@@ -9961,6 +9961,10 @@ class _AiDailyBriefingHero extends StatelessWidget {
               premiumText: premiumText,
               primaryAction: primaryAction,
             ),
+            if (briefingBullets.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              _AiFirstScreenBulletList(bullets: briefingBullets),
+            ],
             const SizedBox(height: 10),
             _CompactExpansionPanel(
               key: const ValueKey('00631l-ai-daily-detail-expansion'),
@@ -10122,6 +10126,49 @@ class _AiDailyBriefingHero extends StatelessWidget {
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiFirstScreenBulletList extends StatelessWidget {
+  const _AiFirstScreenBulletList({required this.bullets});
+
+  final List<String> bullets;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-ai-first-screen-bullets'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '今日重點',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 6),
+            for (final bullet in bullets)
+              _BulletLine(
+                text: bullet,
+                icon: Icons.analytics_outlined,
+              ),
           ],
         ),
       ),

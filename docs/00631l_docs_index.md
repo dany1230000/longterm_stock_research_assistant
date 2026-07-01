@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- AI first-screen bullets v10.2: `docs\00631l_v10_2_ai_first_screen_bullets.md`
 - Position account compact v10.1: `docs\00631l_v10_1_position_account_compact.md`
 - Overview language cleanup v10.0: `docs\00631l_v10_0_overview_language_cleanup.md`
 - Search sheet hierarchy v9.99: `docs\00631l_v9_99_search_sheet_hierarchy.md`
