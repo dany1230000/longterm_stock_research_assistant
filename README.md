@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v10.3 cleans up the `我的` page: daily account, appearance, ETF, position,
+  and ETF data controls stay first; data diagnostics and App Store planning move
+  into `進階設定`.
+
 - v10.2 makes the AI page answer sooner by showing the rule-based `今日重點`
   bullets on the first screen while keeping matrices and full diagnostics
   behind details.

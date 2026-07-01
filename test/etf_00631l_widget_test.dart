@@ -2608,31 +2608,20 @@ void main() {
     expect(find.text('ETF 比較'), findsNothing);
     expect(find.text('ETF 資料預覽'), findsNothing);
     expect(find.text('元大台灣50正2'), findsNothing);
-    expect(find.text('App 上架準備'), findsOneWidget);
+    expect(find.text('App 上架準備'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-settings-app-store-panel')),
-      findsOneWidget,
+      findsNothing,
     );
-    expect(find.text('資料模式與完整度'), findsOneWidget);
-    expect(find.text('進階維護診斷'), findsOneWidget);
+    expect(find.text('資料模式與完整度'), findsNothing);
+    expect(find.text('進階維護診斷'), findsNothing);
+    expect(find.text('進階設定'), findsOneWidget);
     expect(find.text('Android'), findsNothing);
     expect(find.text('iOS'), findsNothing);
     expect(find.text('隱私與支援'), findsNothing);
     expect(find.text('內容物歷史'), findsNothing);
     expect(find.text('盤中 NAV / 折溢價'), findsNothing);
     expect(find.text('台指期即時'), findsNothing);
-
-    await tester.scrollUntilVisible(
-      find.text('App 上架準備'),
-      220,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('App 上架準備'));
-    await tester.pumpAndSettle();
-    expect(find.text('Android'), findsOneWidget);
-    expect(find.text('iOS'), findsOneWidget);
-    expect(find.text('隱私與支援'), findsOneWidget);
 
     await tester.ensureVisible(find.text('ETF 資料與比較能力'));
     await tester.pumpAndSettle();
@@ -2646,6 +2635,30 @@ void main() {
     expect(find.text('公開 PWA'), findsOneWidget);
     expect(find.text('ETF 清單'), findsWidgets);
     expect(find.text('ETF 比較'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('進階設定'),
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('進階設定'));
+    await tester.pumpAndSettle();
+    expect(find.text('資料模式與完整度'), findsOneWidget);
+    expect(find.text('進階維護診斷'), findsOneWidget);
+    expect(find.text('App 上架準備'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('App 上架準備'),
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('App 上架準備'));
+    await tester.pumpAndSettle();
+    expect(find.text('Android'), findsOneWidget);
+    expect(find.text('iOS'), findsOneWidget);
+    expect(find.text('隱私與支援'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('資料模式與完整度'),
@@ -2712,21 +2725,14 @@ void main() {
     );
     expect(find.textContaining('目前 00631L'), findsWidgets);
     expect(find.text('進階檢查'), findsWidgets);
+    expect(find.text('進階設定'), findsOneWidget);
+    expect(find.text('資料模式與完整度'), findsNothing);
+    expect(find.text('進階維護診斷'), findsNothing);
+    expect(find.text('App 上架準備'), findsNothing);
     expect(
       tester.getTopLeft(find.text('ETF 資料與比較能力')).dy,
-      lessThan(tester.getTopLeft(find.text('App 上架準備')).dy),
+      lessThan(tester.getTopLeft(find.text('進階設定')).dy),
       reason: 'Daily data settings should appear before app store planning.',
-    );
-    expect(
-      tester.getTopLeft(find.text('資料模式與完整度')).dy,
-      lessThan(tester.getTopLeft(find.text('App 上架準備')).dy),
-      reason: 'Data mode should appear before app store planning.',
-    );
-    expect(
-      tester.getTopLeft(find.text('進階維護診斷')).dy,
-      lessThan(tester.getTopLeft(find.text('App 上架準備')).dy),
-      reason:
-          'Maintenance diagnostics should appear before app store planning.',
     );
     expect(find.text('需要處理'), findsNothing);
     expect(find.text('data path not writable'), findsNothing);
@@ -2768,6 +2774,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('version drift'), findsNothing);
+    await tester.ensureVisible(find.text('進階設定'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('進階設定'));
+    await tester.pumpAndSettle();
     final advancedPanel = find
         .byKey(const ValueKey('00631l-settings-advanced-maintenance-panel'));
     await tester.ensureVisible(advancedPanel);
@@ -3021,7 +3031,8 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
     expect(find.text('我的'), findsWidgets);
-    expect(find.text('進階維護診斷'), findsOneWidget);
+    expect(find.text('進階設定'), findsOneWidget);
+    expect(find.text('進階維護診斷'), findsNothing);
     expect(find.textContaining('示範'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });

@@ -11809,124 +11809,136 @@ class _SettingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         _CompactExpansionPanel(
-          title: '資料模式與完整度',
-          subtitle: '公開靜態歷史資料、即時後端與內容物狀態需要時再看。',
-          child: _StatusList(items: _dataCoverageItems(data)),
-        ),
-        const SizedBox(height: 10),
-        _CompactExpansionPanel(
-          key: const ValueKey('00631l-settings-advanced-maintenance-panel'),
-          title: '進階維護診斷',
-          subtitle: '後端、歷史、日報、匯出、備份與部署設定。',
-          child: _StatusList(
-            items: [
-              _StatusItem(
-                label: '後端連線',
-                status: status.sourceStatusLabel,
-                detail: status.backendConnectionCaption,
-                action:
-                    status.backendDisconnected ? '請啟動後端或檢查公開後端 URL。' : '後端可連線。',
+          key: const ValueKey('00631l-settings-advanced-settings-panel'),
+          title: '進階設定',
+          subtitle: '資料完整度、維護診斷與上架準備；日常使用通常不用打開。',
+          child: Column(
+            children: [
+              _CompactExpansionPanel(
+                title: '資料模式與完整度',
+                subtitle: '公開靜態歷史資料、即時後端與內容物狀態需要時再看。',
+                child: _StatusList(items: _dataCoverageItems(data)),
               ),
-              _StatusItem(
-                label: '後端版本',
-                status: status.backendAppVersion.isEmpty
-                    ? '未知'
-                    : status.backendAppVersion,
-                detail: status.backendReleaseLabel,
-                action: status.backendGitSha.isEmpty
-                    ? '部署時設定 00631L_BACKEND_GIT_SHA，方便追蹤後端版本。'
-                    : 'git ${status.backendGitSha}',
-              ),
-              if (status.sourceStatusLabel == 'static_public_data' ||
-                  status.staticReleaseGitSha.isNotEmpty)
-                _StatusItem(
-                  label: '公開靜態版本',
-                  status: status.staticReleaseAppVersion.isEmpty
-                      ? '未載入'
-                      : status.staticReleaseAppVersion,
-                  detail: status.staticReleaseLabel,
-                  action: status.staticReleaseGitSha.isEmpty
-                      ? 'Pages 建置前請執行 scripts\\00631l_export_static_data.cmd --update。'
-                      : 'git ${_shortGitSha(status.staticReleaseGitSha)}; build ${_dateTimeOrDash(status.staticReleaseBuildTime)}',
+              const SizedBox(height: 10),
+              _CompactExpansionPanel(
+                key: const ValueKey(
+                    '00631l-settings-advanced-maintenance-panel'),
+                title: '進階維護診斷',
+                subtitle: '後端、歷史、日報、匯出、備份與部署設定。',
+                child: _StatusList(
+                  items: [
+                    _StatusItem(
+                      label: '後端連線',
+                      status: status.sourceStatusLabel,
+                      detail: status.backendConnectionCaption,
+                      action: status.backendDisconnected
+                          ? '請啟動後端或檢查公開後端 URL。'
+                          : '後端可連線。',
+                    ),
+                    _StatusItem(
+                      label: '後端版本',
+                      status: status.backendAppVersion.isEmpty
+                          ? '未知'
+                          : status.backendAppVersion,
+                      detail: status.backendReleaseLabel,
+                      action: status.backendGitSha.isEmpty
+                          ? '部署時設定 00631L_BACKEND_GIT_SHA，方便追蹤後端版本。'
+                          : 'git ${status.backendGitSha}',
+                    ),
+                    if (status.sourceStatusLabel == 'static_public_data' ||
+                        status.staticReleaseGitSha.isNotEmpty)
+                      _StatusItem(
+                        label: '公開靜態版本',
+                        status: status.staticReleaseAppVersion.isEmpty
+                            ? '未載入'
+                            : status.staticReleaseAppVersion,
+                        detail: status.staticReleaseLabel,
+                        action: status.staticReleaseGitSha.isEmpty
+                            ? 'Pages 建置前請執行 scripts\\00631l_export_static_data.cmd --update。'
+                            : 'git ${_shortGitSha(status.staticReleaseGitSha)}; build ${_dateTimeOrDash(status.staticReleaseBuildTime)}',
+                      ),
+                    _StatusItem(
+                      label: '部署同步',
+                      status: status.publicDeploymentSyncLabel,
+                      detail: status.publicDeploymentSyncCaption,
+                      action: status.publicDeploymentSyncAction,
+                    ),
+                    _StatusItem(
+                      label: '官方每日內容物',
+                      status: status.holdingsHistoryStatus,
+                      detail:
+                          '歷史筆數 ${status.holdingsHistoryItemCount}，最新 ${_dateOrDash(status.latestHoldingTradeDate)}。',
+                      action: status.holdingsHistoryItemCount == 0
+                          ? '請執行 scripts\\00631l_daily_cycle.cmd。'
+                          : '每日資料已累積。',
+                    ),
+                    _StatusItem(
+                      label: '盤中 NAV',
+                      status: status.intradayHistoryStatus,
+                      detail:
+                          '樣本 ${status.intradaySampleCount}，最新 ${status.latestIntradayDataTime == null ? '暫無' : formatTaiwanDateTimeSeconds(status.latestIntradayDataTime!)}。',
+                      action: status.intradaySampleCount == 0
+                          ? '請確認 TWSE URL、後端服務與交易時段。'
+                          : '盤中估算資料已保存。',
+                    ),
+                    _StatusItem(
+                      label: '歷史價格',
+                      status: status.priceHistoryStatus,
+                      detail:
+                          '筆數 ${status.priceHistoryRows}，範圍 ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}，產生時間 ${_dateTimeOrDash(status.latestExportUpdatedAt)}。',
+                      action: status.priceHistoryRows < 2
+                          ? '請執行 scripts\\00631l_update_price_history.cmd；GitHub Pages 請執行 scripts\\00631l_export_static_data.cmd --update。'
+                          : '歷史價格可供回測。',
+                    ),
+                    _StatusItem(
+                      label: '回測',
+                      status: status.backtestStatus,
+                      detail: status.backtestAvailable ? '價格歷史可用' : '價格歷史不足',
+                      action:
+                          status.backtestAvailable ? '可在回測區使用。' : '請先更新歷史價格。',
+                    ),
+                    _StatusItem(
+                      label: '本機持倉資料',
+                      status: status.positionStatus,
+                      detail: '持倉資料保存在瀏覽器本機。',
+                      action: '可在持倉區保存、匯出或清除。',
+                    ),
+                    _StatusItem(
+                      label: '日常流程',
+                      status: status.dailyCycleStatus,
+                      detail:
+                          '提醒 ${status.dailyCycleWarningCount}，失敗 ${status.dailyCycleFailureCount}。',
+                      action: status.dailyCycleStatus == 'PASS'
+                          ? '最近日常流程可讀。'
+                          : '請執行 scripts\\00631l_daily_cycle.cmd。',
+                    ),
+                    _StatusItem(
+                      label: '報告 / 匯出 / 備份',
+                      status:
+                          '${_sourceStatusBadgeLabel(status.reportOverallStatus)} / '
+                          '${status.exportAvailable ? '已就緒' : '缺少'} / '
+                          '${status.backupAvailable ? '已就緒' : '缺少'}',
+                      detail:
+                          '報告 ${status.latestReportPath ?? '缺少'}，匯出 ${status.latestExportPath ?? '缺少'}，備份 ${status.latestBackupPath ?? '缺少'}。',
+                      action: '必要時執行日報、匯出、備份腳本。',
+                    ),
+                    _StatusItem(
+                      label: '公開部署設定',
+                      status: status.dataPersistenceLabel,
+                      detail:
+                          'API ${status.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : status.publicApiBaseUrl}，origins ${status.allowedOrigins.isEmpty ? 'local/LAN' : status.allowedOrigins.join(', ')}。',
+                      action: status.dataPathPersistent
+                          ? '持久化資料目錄可用。'
+                          : '公開部署需設定 persistent volume。',
+                    ),
+                  ],
                 ),
-              _StatusItem(
-                label: '部署同步',
-                status: status.publicDeploymentSyncLabel,
-                detail: status.publicDeploymentSyncCaption,
-                action: status.publicDeploymentSyncAction,
               ),
-              _StatusItem(
-                label: '官方每日內容物',
-                status: status.holdingsHistoryStatus,
-                detail:
-                    '歷史筆數 ${status.holdingsHistoryItemCount}，最新 ${_dateOrDash(status.latestHoldingTradeDate)}。',
-                action: status.holdingsHistoryItemCount == 0
-                    ? '請執行 scripts\\00631l_daily_cycle.cmd。'
-                    : '每日資料已累積。',
-              ),
-              _StatusItem(
-                label: '盤中 NAV',
-                status: status.intradayHistoryStatus,
-                detail:
-                    '樣本 ${status.intradaySampleCount}，最新 ${status.latestIntradayDataTime == null ? '暫無' : formatTaiwanDateTimeSeconds(status.latestIntradayDataTime!)}。',
-                action: status.intradaySampleCount == 0
-                    ? '請確認 TWSE URL、後端服務與交易時段。'
-                    : '盤中估算資料已保存。',
-              ),
-              _StatusItem(
-                label: '歷史價格',
-                status: status.priceHistoryStatus,
-                detail:
-                    '筆數 ${status.priceHistoryRows}，範圍 ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}，產生時間 ${_dateTimeOrDash(status.latestExportUpdatedAt)}。',
-                action: status.priceHistoryRows < 2
-                    ? '請執行 scripts\\00631l_update_price_history.cmd；GitHub Pages 請執行 scripts\\00631l_export_static_data.cmd --update。'
-                    : '歷史價格可供回測。',
-              ),
-              _StatusItem(
-                label: '回測',
-                status: status.backtestStatus,
-                detail: status.backtestAvailable ? '價格歷史可用' : '價格歷史不足',
-                action: status.backtestAvailable ? '可在回測區使用。' : '請先更新歷史價格。',
-              ),
-              _StatusItem(
-                label: '本機持倉資料',
-                status: status.positionStatus,
-                detail: '持倉資料保存在瀏覽器本機。',
-                action: '可在持倉區保存、匯出或清除。',
-              ),
-              _StatusItem(
-                label: '日常流程',
-                status: status.dailyCycleStatus,
-                detail:
-                    '提醒 ${status.dailyCycleWarningCount}，失敗 ${status.dailyCycleFailureCount}。',
-                action: status.dailyCycleStatus == 'PASS'
-                    ? '最近日常流程可讀。'
-                    : '請執行 scripts\\00631l_daily_cycle.cmd。',
-              ),
-              _StatusItem(
-                label: '報告 / 匯出 / 備份',
-                status:
-                    '${_sourceStatusBadgeLabel(status.reportOverallStatus)} / '
-                    '${status.exportAvailable ? '已就緒' : '缺少'} / '
-                    '${status.backupAvailable ? '已就緒' : '缺少'}',
-                detail:
-                    '報告 ${status.latestReportPath ?? '缺少'}，匯出 ${status.latestExportPath ?? '缺少'}，備份 ${status.latestBackupPath ?? '缺少'}。',
-                action: '必要時執行日報、匯出、備份腳本。',
-              ),
-              _StatusItem(
-                label: '公開部署設定',
-                status: status.dataPersistenceLabel,
-                detail:
-                    'API ${status.publicApiBaseUrl.isEmpty ? _proxyBaseUrl00631l : status.publicApiBaseUrl}，origins ${status.allowedOrigins.isEmpty ? 'local/LAN' : status.allowedOrigins.join(', ')}。',
-                action: status.dataPathPersistent
-                    ? '持久化資料目錄可用。'
-                    : '公開部署需設定 persistent volume。',
-              ),
+              const SizedBox(height: 10),
+              const _AppStorePreparationPanel(),
             ],
           ),
         ),
-        const SizedBox(height: 10),
-        const _AppStorePreparationPanel(),
       ],
     );
   }
