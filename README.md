@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.70 tightens the mobile overview: the chart stays visible, official exposure
+  becomes a compact row, and the holdings digest uses shorter app-style copy.
+
 - v9.69 clears stale Flutter service worker registrations for this Pages app
   and reloads once, reducing cases where phones keep an old bundle after deploy.
 

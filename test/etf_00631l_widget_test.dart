@@ -557,7 +557,11 @@ void main() {
       const ValueKey('00631l-overview-sparkline-chart'),
     );
     expect(chartFinder, findsOneWidget);
-    expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(560));
+    expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(540));
+    expect(
+      find.byKey(const ValueKey('00631l-overview-exposure-compact-row')),
+      findsOneWidget,
+    );
     await tester.ensureVisible(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),
     );

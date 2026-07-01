@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Mobile overview density v9.70: `docs\00631l_v9_70_mobile_overview_density.md`
 - PWA cache refresh v9.69: `docs\00631l_v9_69_pwa_cache_refresh.md`
 - Live fallback retry v9.68: `docs\00631l_v9_68_live_core_retry.md`
 - Live-first startup v9.67: `docs\00631l_v9_67_live_first_startup.md`
