@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Live fallback retry v9.68: `docs\00631l_v9_68_live_core_retry.md`
 - Live-first startup v9.67: `docs\00631l_v9_67_live_first_startup.md`
 - Live overview refresh v9.66: `docs\00631l_v9_66_live_overview_refresh.md`
 - Pages live-backend default v9.65: `docs\00631l_v9_65_pages_live_backend_default.md`

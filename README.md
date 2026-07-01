@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.68 adds short live-core retries after a static fallback first screen, so
+  public Pages can recover from a slow Render response without waiting for the
+  normal 15-second refresh interval.
+
 - v9.67 makes fast public startup prefer the live backend when it responds
   inside the short startup timeout; static public data remains the fallback.
 

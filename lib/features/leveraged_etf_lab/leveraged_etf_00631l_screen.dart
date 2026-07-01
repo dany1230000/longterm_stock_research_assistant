@@ -59,6 +59,7 @@ class _LeveragedEtf00631LScreenState
     extends ConsumerState<LeveragedEtf00631LScreen> {
   Timer? _refreshTimer;
   int? _scheduledRefreshSeconds;
+  int _liveCoreRetryCount = 0;
   DateTime? _lastFullRefreshAt;
   _LabSection _section = _LabSection.overview;
   String _selectedEtfCode = '00631L';
@@ -111,6 +112,9 @@ class _LeveragedEtf00631LScreenState
               builder: (context) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (mounted) {
+                    if (has00631LLiveCoreData(displayData)) {
+                      _liveCoreRetryCount = 0;
+                    }
                     _scheduleRefreshTimer(data: displayData);
                   }
                 });
@@ -165,11 +169,18 @@ class _LeveragedEtf00631LScreenState
     ref.invalidate(etf00631LLabProvider);
     ref.invalidate(selectedEtfPriceHistoryProvider(_selectedEtfCode));
     ref.invalidate(etfPriceHistoryGapDetailsProvider);
+    _liveCoreRetryCount = 0;
     _lastFullRefreshAt = DateTime.now();
     _scheduleRefreshTimer(force: true);
   }
 
   void _refreshFastData() {
+    final current = ref.read(etf00631LFastLabProvider).valueOrNull;
+    if (has00631LLiveCoreData(current)) {
+      _liveCoreRetryCount = 0;
+    } else if (_use00631LLiveProxy && _liveCoreRetryCount < 3) {
+      _liveCoreRetryCount += 1;
+    }
     ref.invalidate(etf00631LFastLabProvider);
     final now = DateTime.now();
     if (_section.needsFullData && _shouldRefreshFullData(now)) {
@@ -218,6 +229,13 @@ class _LeveragedEtf00631LScreenState
   Duration _refreshInterval(Etf00631LLabData? data) {
     if (!_use00631LLiveProxy) {
       return const Duration(minutes: 5);
+    }
+    if (shouldUse00631LShortLiveRetry(
+      liveProxyEnabled: _use00631LLiveProxy,
+      hasLiveCoreData: has00631LLiveCoreData(data),
+      retryCount: _liveCoreRetryCount,
+    )) {
+      return const Duration(seconds: 2);
     }
     final nav = data?.intradayNav;
     final session = nav?.marketSession() ??
@@ -434,6 +452,30 @@ bool shouldLoad00631LFullData({
   required bool liveProxyEnabled,
 }) {
   return fastReadyOrError && sectionNeedsFullData;
+}
+
+bool shouldUse00631LShortLiveRetry({
+  required bool liveProxyEnabled,
+  required bool hasLiveCoreData,
+  required int retryCount,
+}) {
+  return liveProxyEnabled && !hasLiveCoreData && retryCount < 3;
+}
+
+bool has00631LLiveCoreData(Etf00631LLabData? data) {
+  if (data == null) {
+    return false;
+  }
+  final snapshotStatus = data.snapshot.status;
+  final hasSnapshot = _hasUsableHoldingsSnapshot(data.snapshot) &&
+      snapshotStatus != EtfDataStatus.mock &&
+      snapshotStatus != EtfDataStatus.error;
+  final nav = data.intradayNav;
+  final hasNav = nav != null &&
+      nav.status != EtfDataStatus.mock &&
+      nav.status != EtfDataStatus.error &&
+      (nav.marketPrice != null || nav.estimatedNav != null);
+  return hasSnapshot && hasNav;
 }
 
 class _SelectedEtfViewData {

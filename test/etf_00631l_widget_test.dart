@@ -47,6 +47,49 @@ void main() {
     );
   });
 
+  test('live core fallback uses only limited short retries', () {
+    expect(
+      shouldUse00631LShortLiveRetry(
+        liveProxyEnabled: true,
+        hasLiveCoreData: false,
+        retryCount: 0,
+      ),
+      isTrue,
+    );
+    expect(
+      shouldUse00631LShortLiveRetry(
+        liveProxyEnabled: true,
+        hasLiveCoreData: false,
+        retryCount: 2,
+      ),
+      isTrue,
+    );
+    expect(
+      shouldUse00631LShortLiveRetry(
+        liveProxyEnabled: true,
+        hasLiveCoreData: false,
+        retryCount: 3,
+      ),
+      isFalse,
+    );
+    expect(
+      shouldUse00631LShortLiveRetry(
+        liveProxyEnabled: true,
+        hasLiveCoreData: true,
+        retryCount: 0,
+      ),
+      isFalse,
+    );
+    expect(
+      shouldUse00631LShortLiveRetry(
+        liveProxyEnabled: false,
+        hasLiveCoreData: false,
+        retryCount: 0,
+      ),
+      isFalse,
+    );
+  });
+
   test('live backend warmup display only applies while live details load', () {
     expect(
       shouldShow00631LLiveBackendWarmup(
