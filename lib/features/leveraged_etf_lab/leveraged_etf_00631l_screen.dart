@@ -3214,7 +3214,6 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final nav = data.intradayNav;
     final priceSummary = data.priceHistory.completenessSummary();
     final hasUsableSnapshot = _hasUsableHoldingsSnapshot(data.snapshot);
@@ -3289,38 +3288,16 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
           border: Border.all(color: _marketBorderColor(context)),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+          child: Row(
+            key: const ValueKey('00631l-overview-daily-summary-grid'),
             children: [
-              Row(
-                children: [
-                  Text(
-                    '今日摘要',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                  const Spacer(),
-                  _CompactTextBadge(
-                    label: _frontendDataModeLabel,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 7),
-              Row(
-                key: const ValueKey('00631l-overview-daily-summary-grid'),
-                children: [
-                  for (var index = 0; index < items.length; index++) ...[
-                    Expanded(
-                      child: _OverviewDailySummaryChip(item: items[index]),
-                    ),
-                    if (index != items.length - 1) const SizedBox(width: 6),
-                  ],
-                ],
-              ),
+              for (var index = 0; index < items.length; index++) ...[
+                Expanded(
+                  child: _OverviewDailySummaryChip(item: items[index]),
+                ),
+                if (index != items.length - 1) const SizedBox(width: 6),
+              ],
             ],
           ),
         ),
@@ -3347,7 +3324,7 @@ String _summaryCoverageCompactYears(
   final start = summary.coverageStart;
   final end = summary.coverageEnd;
   if (start == null || end == null) {
-    return '資料區間';
+    return '資料不足';
   }
   if (start.year == end.year) {
     return '${start.year}';
@@ -3371,7 +3348,7 @@ String _summaryTimeMinute(DateTime dateTime) {
 String _intradaySummarySourceLabel(EtfIntradayNav? nav) {
   final contract = nav?.sourceContract?.trim().toLowerCase();
   if (contract == null || contract.isEmpty) {
-    return nav?.status.label ?? '需要後端';
+    return nav?.status.label ?? '資料狀態';
   }
   if (contract.contains('twse')) {
     return 'TWSE';

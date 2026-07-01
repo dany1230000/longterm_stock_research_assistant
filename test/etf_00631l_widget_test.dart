@@ -459,6 +459,10 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsOneWidget,
     );
+    final summaryRect = tester.getRect(
+      find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
+    );
+    expect(summaryRect.height, lessThanOrEqualTo(86));
     final readinessStrip = find.byKey(
       const ValueKey('00631l-quote-readiness-strip'),
     );

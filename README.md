@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.64 compresses the overview daily summary strip by removing the duplicate
+  header row, keeping the first screen focused on quote, chart, and exposure.
+
 - v9.63 makes the overview `近一年走勢` chart actually use the latest one-year
   price-history window instead of showing older axis dates.
 

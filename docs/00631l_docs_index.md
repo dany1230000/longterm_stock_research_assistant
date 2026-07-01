@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Compact daily summary v9.64: `docs\00631l_v9_64_compact_daily_summary.md`
 - Overview one-year chart window v9.63: `docs\00631l_v9_63_overview_one_year_window.md`
 - Status label polish v9.62: `docs\00631l_v9_62_status_label_polish.md`
 - Theme toggle clarity v9.61: `docs\00631l_v9_61_theme_toggle_clarity.md`
