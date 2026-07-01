@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.60 polishes the public HTML loading shell so the very first GitHub Pages
+  frame uses Chinese app labels instead of English debug-style placeholders.
+
 - v9.59 restores a compact first-screen daily summary, shows official exposure
   next to the overview trend on phones, and moves history date controls above
   the chart so the range is adjustable without opening an advanced panel.

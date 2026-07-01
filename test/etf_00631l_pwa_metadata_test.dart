@@ -21,12 +21,24 @@ void main() {
     expect(index, contains('class="loading-shell"'));
     expect(index, contains('class="loading-nav"'));
     expect(index, contains('00631L 正二研究室'));
+    expect(index, contains('ETF 研究室'));
+    expect(index, contains('資料載入中'));
+    expect(index, contains('盤中 NAV'));
+    expect(index, contains('官方內容物'));
+    expect(index, contains('歷史回測'));
+    expect(index, contains('AI 分析'));
     expect(index, contains('flutter-first-frame'));
-    expect(index, contains('static public data'));
+    expect(index, contains('公開靜態資料'));
     expect(index,
         contains('name="application-name" content="ETF 研究室 · 00631L 正二研究室"'));
     expect(
         index, contains('name="apple-mobile-web-app-title" content="ETF研究室"'));
     expect(index, isNot(contains('LongTerm Stock Research Assistant')));
+    expect(index, isNot(contains('ETF Research Room')));
+    expect(index, isNot(contains('loading data')));
+    expect(index, isNot(contains('static public data')));
+    expect(index, isNot(contains('LIVE')));
+    expect(index, isNot(contains('DAY')));
+    expect(index, isNot(contains('HIS')));
   });
 }

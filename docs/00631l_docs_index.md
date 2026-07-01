@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Public loading shell polish v9.60: `docs\00631l_v9_60_public_loading_shell.md`
 - Mobile design hierarchy v9.59: `docs\00631l_v9_59_mobile_design_hierarchy.md`
 - Post-deploy storage gate v9.58: `docs\00631l_v9_58_post_deploy_storage_gate.md`
 - Post-deploy resolved warnings v9.57: `docs\00631l_v9_57_post_deploy_resolved_warnings.md`
