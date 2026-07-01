@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Selected ETF overview digest v9.77: `docs\00631l_v9_77_selected_etf_overview_digest.md`
 - History range panel v9.76: `docs\00631l_v9_76_history_range_panel.md`
 - Header fit fix v9.75: `docs\00631l_v9_75_header_fit_fix.md`
 - Symbol search affordance v9.74: `docs\00631l_v9_74_symbol_search_affordance.md`

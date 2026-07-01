@@ -2069,6 +2069,12 @@ void main() {
     expect(find.textContaining('0050 元大台灣50'), findsWidgets);
     expect(find.text('0050 核心資料'), findsNothing);
     expect(
+      find.byKey(const ValueKey('00631l-selected-etf-overview-digest')),
+      findsOneWidget,
+    );
+    expect(find.text('0050 資料完整度'), findsOneWidget);
+    expect(find.text('官方內容物'), findsNothing);
+    expect(
       find.byKey(const ValueKey('00631l-quote-readiness-strip')),
       findsNothing,
     );

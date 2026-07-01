@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.77 makes the overview ETF-aware after symbol search. 00631L keeps the
+  official holdings/NAV summary, while other ETFs show a data completeness
+  digest instead of 00631L-specific live fields.
+
 - v9.76 merges history/backtest range chips, range summary, and start/end date
   buttons into one compact mobile panel. History and backtest still default to
   the latest one-year window, with direct date adjustment visible.

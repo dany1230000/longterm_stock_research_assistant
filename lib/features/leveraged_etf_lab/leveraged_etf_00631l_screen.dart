@@ -2222,6 +2222,109 @@ class _QuoteReadinessStrip extends StatelessWidget {
   }
 }
 
+class _SelectedEtfOverviewDigest extends StatelessWidget {
+  const _SelectedEtfOverviewDigest({required this.selectedEtf});
+
+  final _SelectedEtfViewData selectedEtf;
+
+  @override
+  Widget build(BuildContext context) {
+    final history = selectedEtf.historySummary;
+    final latest = history.latest;
+    final splitAdjustmentLabel = _priceAdjustmentConfidenceLabel(
+      selectedEtf.code,
+      history,
+    );
+    final items = [
+      _QuoteReadinessItem(
+        label: '最新',
+        value: _price(latest?.performanceClose ?? selectedEtf.marketPrice),
+        caption: latest == null
+            ? _sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel)
+            : _summaryMonthDay(latest.date),
+      ),
+      _QuoteReadinessItem(
+        label: '歷史',
+        value: history.rowCount >= 2
+            ? '${formatInteger(history.rowCount)}筆'
+            : '尚無',
+        caption: _summaryCoverageCompactYears(history),
+      ),
+      _QuoteReadinessItem(
+        label: '價格基礎',
+        value: selectedEtf.priceFieldLabel,
+        caption: splitAdjustmentLabel,
+      ),
+      _QuoteReadinessItem(
+        label: '回測',
+        value: selectedEtf.backtestReadinessLabel,
+        caption: selectedEtf.hasImportedHistory ? '可選日期' : '缺歷史',
+      ),
+    ];
+
+    return DecoratedBox(
+      key: const ValueKey('00631l-selected-etf-overview-digest'),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                _MiniStatusBadge(
+                  label: selectedEtf.hasImportedHistory ? 'READY' : 'DATA',
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${selectedEtf.code} 資料完整度',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                        ),
+                  ),
+                ),
+                _CompactTextBadge(
+                  label: _sourceStatusBadgeLabel(
+                    selectedEtf.priceHistory.sourceStatusLabel,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 7),
+            Row(
+              children: [
+                for (var index = 0; index < items.length; index++) ...[
+                  Expanded(child: _QuoteReadinessChip(item: items[index])),
+                  if (index != items.length - 1) const SizedBox(width: 3),
+                ],
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '內容物與盤中 NAV 目前仍以 00631L 為主；此檔先使用可驗證價格歷史。',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    fontWeight: FontWeight.w800,
+                    height: 1.25,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _QuoteReadinessChip extends StatelessWidget {
   const _QuoteReadinessChip({required this.item});
 
@@ -3227,7 +3330,10 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
-        _OverviewDailySummaryStrip(data: data, detailsLoading: false),
+        if (selectedEtf.is00631L)
+          _OverviewDailySummaryStrip(data: data, detailsLoading: false)
+        else
+          _SelectedEtfOverviewDigest(selectedEtf: selectedEtf),
         const SizedBox(height: 8),
         _AlwaysExpandedPanel(
           title: selectedEtf.is00631L ? '價格與曝險' : '價格走勢',
