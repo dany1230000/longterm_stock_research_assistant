@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v10.7 tightens the overview market stack again by shortening the embedded
+  quote padding and daily data ticker item widths, keeping the one-year chart
+  visible sooner on phone screens.
+
 - v10.6 cleans up the left-top ETF search sheet: result rows now focus on ETF
   name, price, and history readiness, while price-basis, split-adjustment, and
   gap details move under `更多資料`.

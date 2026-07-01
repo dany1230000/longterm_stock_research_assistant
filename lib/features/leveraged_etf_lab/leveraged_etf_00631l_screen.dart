@@ -2196,7 +2196,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                     : '市價 · ${_statusDisplay(quoteStatus)} ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
     final content = Padding(
-      padding: EdgeInsets.fromLTRB(8, embedded ? 1 : 5, 8, embedded ? 1 : 5),
+      padding: EdgeInsets.fromLTRB(7, embedded ? 0 : 5, 7, embedded ? 0 : 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -3700,7 +3700,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
                 const SizedBox(width: 6),
                 Container(
                   width: 1,
-                  height: 22,
+                  height: 18,
                   color: _marketBorderColor(context),
                 ),
                 const SizedBox(width: 6),
@@ -3811,7 +3811,7 @@ class _OverviewDailyTickerItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ConstrainedBox(
-      constraints: const BoxConstraints(minWidth: 92, maxWidth: 118),
+      constraints: const BoxConstraints(minWidth: 82, maxWidth: 104),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
