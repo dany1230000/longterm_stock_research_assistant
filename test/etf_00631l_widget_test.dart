@@ -999,6 +999,7 @@ void main() {
     expect(find.text('static_official'), findsNothing);
     expect(find.textContaining('static_official'), findsNothing);
     expect(find.text('價格歷史'), findsOneWidget);
+    expect(find.textContaining('可調日期，圖表與回測快覽'), findsOneWidget);
     expect(
       tester.getTopLeft(find.text('價格歷史')).dy,
       lessThan(tester.getTopLeft(find.text('資料品質')).dy),

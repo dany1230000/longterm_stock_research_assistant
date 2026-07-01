@@ -6172,7 +6172,7 @@ class _HistorySection extends StatelessWidget {
         _SectionBlock(
           title: '價格歷史',
           subtitle: priceHistory.hasData
-              ? '完整資料範圍 ${_dateOrDash(priceHistory.coverageStart)} - ${_dateOrDash(priceHistory.coverageEnd)}；圖表預設最近 1 年。'
+              ? '預設最近 1 年；可調日期，圖表與回測快覽同步更新。'
               : '尚無官方價格歷史，請執行 scripts\\00631l_update_price_history.cmd。',
           child: priceHistory.hasData
               ? _FilterablePriceHistoryBlock(priceHistory: priceHistory)
@@ -6621,7 +6621,6 @@ class _FilterablePriceHistoryBlockState
             'split-adjusted close',
           ],
         ),
-        const SizedBox(height: 8),
         const SizedBox(height: 8),
         _ResponsiveMetricGrid(
           cards: [

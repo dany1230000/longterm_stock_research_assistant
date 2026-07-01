@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History copy density v9.97: `docs\00631l_v9_97_history_copy_density.md`
 - Overview ticker density v9.96: `docs\00631l_v9_96_overview_ticker_density.md`
 - Position source compact v9.95: `docs\00631l_v9_95_position_source_compact.md`
 - AI first screen readability v9.94: `docs\00631l_v9_94_ai_first_screen_readability.md`

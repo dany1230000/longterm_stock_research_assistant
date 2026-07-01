@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.97 shortens the history/backtest first-screen copy so the date range,
+  chart, and metrics read faster.
+
 - v9.96 tightens the overview daily-data ticker so the one-year chart appears
   sooner on mobile.
 
