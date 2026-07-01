@@ -56,22 +56,15 @@ class Cached00631LRepository extends Official00631LRepository {
       source: _FastDataSource.fallback,
     );
 
-    final first = await Future.any([primaryFuture, fallbackFuture]);
-    if (first.data != null) {
-      final data = first.source == _FastDataSource.primary
-          ? await _mergeFastFallbackData(first.data!)
-          : first.data!;
+    final primary = await primaryFuture;
+    if (primary.data != null) {
+      final data = await _mergeFastFallbackData(primary.data!);
       return _rememberFastData(data);
     }
 
-    final second = first.source == _FastDataSource.primary
-        ? await fallbackFuture
-        : await primaryFuture;
-    if (second.data != null) {
-      final data = second.source == _FastDataSource.primary
-          ? await _mergeFastFallbackData(second.data!)
-          : second.data!;
-      return _rememberFastData(data);
+    final fallback = await fallbackFuture;
+    if (fallback.data != null) {
+      return _rememberFastData(fallback.data!);
     }
 
     return _fallback.fetchFastLabData();

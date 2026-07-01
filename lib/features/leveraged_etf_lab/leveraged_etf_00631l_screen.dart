@@ -172,8 +172,7 @@ class _LeveragedEtf00631LScreenState
   void _refreshFastData() {
     ref.invalidate(etf00631LFastLabProvider);
     final now = DateTime.now();
-    if ((_section.needsFullData || _use00631LLiveProxy) &&
-        _shouldRefreshFullData(now)) {
+    if (_section.needsFullData && _shouldRefreshFullData(now)) {
       ref.invalidate(etf00631LLabProvider);
       if (_selectedEtfCode != '00631L') {
         ref.invalidate(selectedEtfPriceHistoryProvider(_selectedEtfCode));
@@ -434,7 +433,7 @@ bool shouldLoad00631LFullData({
   required bool sectionNeedsFullData,
   required bool liveProxyEnabled,
 }) {
-  return fastReadyOrError && (sectionNeedsFullData || liveProxyEnabled);
+  return fastReadyOrError && sectionNeedsFullData;
 }
 
 class _SelectedEtfViewData {

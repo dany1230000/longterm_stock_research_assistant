@@ -12,7 +12,7 @@ import 'package:longterm_stock_research_assistant/repositories/repository_provid
 import 'package:longterm_stock_research_assistant/services/app_theme_controller.dart';
 
 void main() {
-  test('live proxy mode loads full data even on overview after fast data', () {
+  test('overview stays on fast data even in live proxy mode', () {
     expect(
       shouldLoad00631LFullData(
         fastReadyOrError: false,
@@ -43,7 +43,7 @@ void main() {
         sectionNeedsFullData: false,
         liveProxyEnabled: true,
       ),
-      isTrue,
+      isFalse,
     );
   });
 

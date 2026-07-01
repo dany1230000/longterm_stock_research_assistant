@@ -731,7 +731,33 @@ void main() {
     expect(data.aiAnalysis.sourceStatusLabel, 'mock');
   });
 
-  test('cached fast startup can race static preview before slow live proxy',
+  test('cached fast startup prefers live primary inside short timeout',
+      () async {
+    final repository = Cached00631LRepository(
+      primary: _DelayedFastLiveRepository(const Duration(milliseconds: 20)),
+      fallback: Static00631LRepository(
+        client: _FakeProxyHttpClient({
+          '00631l-static-data/price_preview.json':
+              jsonEncode(_staticPricePreviewPayload()),
+          '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
+          '00631l-static-data/release.json':
+              jsonEncode(_staticReleasePayload()),
+        }),
+      ),
+      fastPrimaryTimeout: const Duration(milliseconds: 200),
+      raceFastFallback: true,
+    );
+
+    final data = await repository.fetchFastLabData();
+
+    expect(data.snapshot.status, isNot(EtfDataStatus.error));
+    expect(data.intradayNav?.status, isNot(EtfDataStatus.error));
+    expect(data.priceHistory.sourceStatusLabel, 'static_official');
+    expect(data.priceHistory.points, hasLength(2));
+    expect(data.operationsStatus.priceHistoryRows, 3);
+  });
+
+  test('cached fast startup uses static preview when live primary times out',
       () async {
     final repository = Cached00631LRepository(
       primary: _NeverCompletingFastRepository(),
@@ -744,14 +770,13 @@ void main() {
               jsonEncode(_staticReleasePayload()),
         }),
       ),
-      fastPrimaryTimeout: const Duration(seconds: 5),
+      fastPrimaryTimeout: const Duration(milliseconds: 20),
       raceFastFallback: true,
     );
 
-    final data = await repository
-        .fetchFastLabData()
-        .timeout(const Duration(milliseconds: 200));
+    final data = await repository.fetchFastLabData();
 
+    expect(data.snapshot.status, EtfDataStatus.error);
     expect(data.priceHistory.sourceStatusLabel, 'static_official');
     expect(data.priceHistory.points, hasLength(2));
     expect(data.operationsStatus.priceHistoryRows, 3);
@@ -857,6 +882,18 @@ class _FastDeferredLiveRepository extends Mock00631LRepository {
       ),
       lastFetchedAt: now,
     );
+  }
+}
+
+class _DelayedFastLiveRepository extends _FastDeferredLiveRepository {
+  _DelayedFastLiveRepository(this.delay);
+
+  final Duration delay;
+
+  @override
+  Future<Etf00631LLabData> fetchFastLabData() async {
+    await Future<void>.delayed(delay);
+    return super.fetchFastLabData();
   }
 }
 

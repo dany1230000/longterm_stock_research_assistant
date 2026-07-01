@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.67 makes fast public startup prefer the live backend when it responds
+  inside the short startup timeout; static public data remains the fallback.
+
 - v9.66 makes live-proxy public builds refresh full backend data on the overview
   page after the fast static first screen renders.
 
