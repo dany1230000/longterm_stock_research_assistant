@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings daily-use ordering v9.88: `docs\00631l_v9_88_settings_daily_order.md`
 - AI first screen action density v9.87: `docs\00631l_v9_87_ai_action_density.md`
 - Position first screen density v9.86: `docs\00631l_v9_86_position_first_screen_density.md`
 - History top compact v9.85: `docs\00631l_v9_85_history_top_compact.md`

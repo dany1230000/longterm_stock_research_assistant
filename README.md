@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.88 keeps the `我的` page more daily-use oriented by placing ETF data
+  capability and data-mode sections before app-store planning details.
+
 - v9.87 moves the AI page's primary program action above the detail expansion
   and makes the daily AI decision tiles denser on mobile.
 

@@ -2614,6 +2614,11 @@ void main() {
     );
     expect(find.textContaining('目前 00631L'), findsWidgets);
     expect(find.text('進階檢查'), findsWidgets);
+    expect(
+      tester.getTopLeft(find.text('ETF 資料與比較能力')).dy,
+      lessThan(tester.getTopLeft(find.text('App 上架準備')).dy),
+      reason: 'Daily data settings should appear before app store planning.',
+    );
     expect(find.text('需要處理'), findsNothing);
     expect(find.text('data path not writable'), findsNothing);
     _expectNoTradingActionText();
