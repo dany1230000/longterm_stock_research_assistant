@@ -11641,49 +11641,6 @@ class _SettingsSection extends StatelessWidget {
           child: _StatusList(items: _dataCoverageItems(data)),
         ),
         const SizedBox(height: 10),
-        const _CompactExpansionPanel(
-          title: 'App 上架準備',
-          subtitle: 'PWA 已可用；原生 Android / iOS 的上架資料先收在這裡。',
-          child: _StatusList(
-            items: [
-              _StatusItem(
-                label: 'PWA',
-                status: '可用',
-                detail:
-                    '公開 GitHub Pages root 可直接開啟 ETF 研究室，並保留 static history fallback。',
-                action: '可先用 PWA 日常使用與收集 store 截圖素材。',
-              ),
-              _StatusItem(
-                label: 'Android',
-                status: '規劃中',
-                detail:
-                    '目前 repo 尚未加入 Android 原生 scaffold 與 release signing 設定。',
-                action: '下一階段建立 Android shell、app id、icon、簽章與 store build 流程。',
-              ),
-              _StatusItem(
-                label: 'iOS',
-                status: '規劃中',
-                detail:
-                    'iOS 上架需要 macOS、Xcode、Apple Developer 與 App Store Connect。',
-                action: '下一階段準備 bundle id、簽章、隱私資訊與 TestFlight 流程。',
-              ),
-              _StatusItem(
-                label: '隱私與支援',
-                status: '待準備',
-                detail:
-                    '正式商店頁需要 privacy policy、support URL、app icon、截圖與資料使用說明。',
-                action: '先整理 policy 草稿與上架素材清單；不把任何 key 放進 repo。',
-              ),
-              _StatusItem(
-                label: '公開後端',
-                status: '範本就緒',
-                detail: '公開後端已有 Docker / Render / CORS / 持久化資料設計。',
-                action: '正式上架前確認後端可用性、persistent volume 與公開 API URL。',
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
         _CompactExpansionPanel(
           key: const ValueKey('00631l-settings-advanced-maintenance-panel'),
           title: '進階維護診斷',
@@ -11795,7 +11752,57 @@ class _SettingsSection extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(height: 10),
+        const _AppStorePreparationPanel(),
       ],
+    );
+  }
+}
+
+class _AppStorePreparationPanel extends StatelessWidget {
+  const _AppStorePreparationPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _CompactExpansionPanel(
+      key: ValueKey('00631l-settings-app-store-panel'),
+      title: 'App 上架準備',
+      subtitle: 'PWA 已可用；原生 Android / iOS 的上架資料先收在這裡。',
+      child: _StatusList(
+        items: [
+          _StatusItem(
+            label: 'PWA',
+            status: '可用',
+            detail:
+                '公開 GitHub Pages root 可直接開啟 ETF 研究室，並保留 static history fallback。',
+            action: '可先用 PWA 日常使用與收集 store 截圖素材。',
+          ),
+          _StatusItem(
+            label: 'Android',
+            status: '規劃中',
+            detail: '目前 repo 尚未加入 Android 原生 scaffold 與 release signing 設定。',
+            action: '下一階段建立 Android shell、app id、icon、簽章與 store build 流程。',
+          ),
+          _StatusItem(
+            label: 'iOS',
+            status: '規劃中',
+            detail: 'iOS 上架需要 macOS、Xcode、Apple Developer 與 App Store Connect。',
+            action: '下一階段準備 bundle id、簽章、隱私資訊與 TestFlight 流程。',
+          ),
+          _StatusItem(
+            label: '隱私與支援',
+            status: '待準備',
+            detail: '正式商店頁需要 privacy policy、support URL、app icon、截圖與資料使用說明。',
+            action: '先整理 policy 草稿與上架素材清單；不把任何 key 放進 repo。',
+          ),
+          _StatusItem(
+            label: '公開後端',
+            status: '範本就緒',
+            detail: '公開後端已有 Docker / Render / CORS / 持久化資料設計。',
+            action: '正式上架前確認後端可用性、persistent volume 與公開 API URL。',
+          ),
+        ],
+      ),
     );
   }
 }

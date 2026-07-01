@@ -2598,6 +2598,10 @@ void main() {
     expect(find.text('ETF 資料預覽'), findsNothing);
     expect(find.text('元大台灣50正2'), findsNothing);
     expect(find.text('App 上架準備'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-settings-app-store-panel')),
+      findsOneWidget,
+    );
     expect(find.text('資料模式與完整度'), findsOneWidget);
     expect(find.text('進階維護診斷'), findsOneWidget);
     expect(find.text('Android'), findsNothing);
@@ -2701,6 +2705,17 @@ void main() {
       tester.getTopLeft(find.text('ETF 資料與比較能力')).dy,
       lessThan(tester.getTopLeft(find.text('App 上架準備')).dy),
       reason: 'Daily data settings should appear before app store planning.',
+    );
+    expect(
+      tester.getTopLeft(find.text('資料模式與完整度')).dy,
+      lessThan(tester.getTopLeft(find.text('App 上架準備')).dy),
+      reason: 'Data mode should appear before app store planning.',
+    );
+    expect(
+      tester.getTopLeft(find.text('進階維護診斷')).dy,
+      lessThan(tester.getTopLeft(find.text('App 上架準備')).dy),
+      reason:
+          'Maintenance diagnostics should appear before app store planning.',
     );
     expect(find.text('需要處理'), findsNothing);
     expect(find.text('data path not writable'), findsNothing);

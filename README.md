@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.98 moves App Store planning to the bottom of `我的`, keeping daily account,
+  appearance, ETF, position, and data controls first.
+
 - v9.97 shortens the history/backtest first-screen copy so the date range,
   chart, and metrics read faster.
 
