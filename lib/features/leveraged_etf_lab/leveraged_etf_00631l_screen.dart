@@ -3425,7 +3425,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
     final historyIsAvailable = priceSummary.rowCount >= 2;
     final items = [
       _OverviewDailySummaryItem(
-        title: '官方內容物',
+        title: '內容物',
         value: dayValue,
         caption: dayCaption,
       ),
@@ -3454,7 +3454,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
           border: Border.all(color: _marketBorderColor(context)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
           child: Row(
             key: const ValueKey('00631l-overview-daily-summary-grid'),
             children: [
@@ -3462,7 +3462,7 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
                 Expanded(
                   child: _OverviewDailySummaryChip(item: items[index]),
                 ),
-                if (index != items.length - 1) const SizedBox(width: 6),
+                if (index != items.length - 1) const SizedBox(width: 4),
               ],
             ],
           ),
@@ -3562,7 +3562,7 @@ class _OverviewDailySummaryChip extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -3577,7 +3577,7 @@ class _OverviewDailySummaryChip extends StatelessWidget {
                 letterSpacing: 0,
               ),
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
@@ -3591,7 +3591,7 @@ class _OverviewDailySummaryChip extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 1),
+            const SizedBox(height: 0),
             Text(
               item.caption,
               maxLines: 1,

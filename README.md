@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.81 tightens the overview first screen so the daily status strip is shorter
+  and the main chart appears earlier on mobile.
+
 - v9.80 trims the bottom-right `我的` page into a user-facing account/settings
   first screen, with deployment diagnostics kept behind advanced expansion.
 

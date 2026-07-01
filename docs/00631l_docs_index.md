@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview first screen density v9.81: `docs\00631l_v9_81_overview_first_screen_density.md`
 - Settings first screen trim v9.80: `docs\00631l_v9_80_settings_first_screen_trim.md`
 - ETF comparison chart date detail v9.79: `docs\00631l_v9_79_comparison_chart_date_detail.md`
 - AI first screen trim v9.78: `docs\00631l_v9_78_ai_first_screen_trim.md`
