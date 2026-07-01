@@ -3040,7 +3040,7 @@ String get _frontendDataModeDisplay {
   if (_use00631LStaticData) {
     return '公開靜態';
   }
-  return 'Mock 預設';
+  return '示範';
 }
 
 String _coreDataStatusLabel(Etf00631LLabData data) {

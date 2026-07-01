@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v10.4 reduces overview status noise by replacing the technical `Mock 預設`
+  top badge with the shorter `示範` label while preserving truthful data mode
+  status elsewhere.
+
 - v10.3 cleans up the `我的` page: daily account, appearance, ETF, position,
   and ETF data controls stay first; data diagnostics and App Store planning move
   into `進階設定`.

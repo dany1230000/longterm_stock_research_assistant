@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview mode label cleanup v10.4: `docs\00631l_v10_4_overview_mode_label_cleanup.md`
 - Settings advanced grouping v10.3: `docs\00631l_v10_3_settings_advanced_grouping.md`
 - AI first-screen bullets v10.2: `docs\00631l_v10_2_ai_first_screen_bullets.md`
 - Position account compact v10.1: `docs\00631l_v10_1_position_account_compact.md`

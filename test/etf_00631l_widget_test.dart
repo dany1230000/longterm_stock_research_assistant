@@ -166,7 +166,8 @@ void main() {
     expect(
         chartTitleTop, greaterThan(tester.getRect(compactQuoteHeader).bottom));
     expect(find.text('官方 NAV'), findsNothing);
-    expect(find.textContaining('Mock 預設'), findsWidgets);
+    expect(find.text('示範'), findsWidgets);
+    expect(find.textContaining('Mock 預設'), findsNothing);
     final quoteMetaStrip = find.byKey(
       const ValueKey('00631l-quote-meta-strip'),
     );
