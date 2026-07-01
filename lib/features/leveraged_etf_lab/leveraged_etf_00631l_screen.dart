@@ -2989,7 +2989,7 @@ class _ThemeToggleButton extends StatelessWidget {
       builder: (context, mode, _) {
         final isDark = mode == ThemeMode.dark;
         final nextMode = isDark ? ThemeMode.light : ThemeMode.dark;
-        final label = isDark ? '夜間模式' : '日間模式';
+        final label = isDark ? '切換日間' : '切換夜間';
         return Tooltip(
           message: isDark ? '切換到日間模式' : '切換到夜間模式',
           child: InkWell(
@@ -3011,7 +3011,7 @@ class _ThemeToggleButton extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      isDark ? Icons.dark_mode : Icons.light_mode_outlined,
+                      isDark ? Icons.light_mode_outlined : Icons.dark_mode,
                       size: 17,
                       color: _marketTextColor(context),
                     ),

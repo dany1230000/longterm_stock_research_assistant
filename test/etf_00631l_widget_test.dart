@@ -2706,7 +2706,8 @@ void main() {
     final initialBox =
         tester.widget<DecoratedBox>(find.byType(DecoratedBox).first);
     final initialColor = (initialBox.decoration as BoxDecoration).color;
-    expect(find.text('日間模式'), findsOneWidget);
+    expect(find.text('切換夜間'), findsOneWidget);
+    expect(find.text('日間模式'), findsNothing);
     await tester.tap(find.byKey(const ValueKey('00631l-theme-toggle')));
     await tester.pumpAndSettle();
 
@@ -2714,7 +2715,8 @@ void main() {
         tester.widget<DecoratedBox>(find.byType(DecoratedBox).first);
     final changedColor = (changedBox.decoration as BoxDecoration).color;
     expect(changedColor, isNot(initialColor));
-    expect(find.text('夜間模式'), findsOneWidget);
+    expect(find.text('切換日間'), findsOneWidget);
+    expect(find.text('夜間模式'), findsNothing);
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(tester.takeException(), isNull);
   });

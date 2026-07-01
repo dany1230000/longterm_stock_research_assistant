@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.61 changes the day/night control to action labels: `切換夜間` in light
+  mode and `切換日間` in dark mode.
+
 - v9.60 polishes the public HTML loading shell so the very first GitHub Pages
   frame uses Chinese app labels instead of English debug-style placeholders.
 
