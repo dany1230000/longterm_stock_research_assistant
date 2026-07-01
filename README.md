@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.99 makes the left-top ETF search sheet more app-like: current target first,
+  compact result rows, and detailed data capability behind `更多資料`.
+
 - v9.98 moves App Store planning to the bottom of `我的`, keeping daily account,
   appearance, ETF, position, and data controls first.
 

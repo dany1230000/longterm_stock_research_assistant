@@ -347,6 +347,10 @@ void main() {
 
     expect(find.text('搜尋 ETF 代號'), findsOneWidget);
     expect(find.textContaining('切換研究標的'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-current-selection-panel')),
+      findsOneWidget,
+    );
     expect(find.textContaining('歷史可用 15 / 16'), findsWidgets);
     expect(find.text('資料庫狀態'), findsOneWidget);
     expect(find.text('資料可用性'), findsNothing);
@@ -357,6 +361,8 @@ void main() {
     expect(find.text('可回測/比較 15 / 16'), findsOneWidget);
     expect(find.text('僅清單 1'), findsOneWidget);
     expect(find.text('資料細節'), findsOneWidget);
+    await tester.tap(find.text('資料庫狀態'));
+    await tester.pumpAndSettle();
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
       findsOneWidget,
@@ -376,46 +382,11 @@ void main() {
       findsOneWidget,
     );
     expect(find.textContaining('歷史可用'), findsWidgets);
-    expect(find.text('本次可用 1'), findsOneWidget);
-    expect(find.text('本次僅清單 0'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
     );
-    final symbolDataSummary0050 = tester.widget<Text>(
-      find.byKey(const ValueKey('00631l-symbol-data-summary-0050')),
-    );
-    expect(symbolDataSummary0050.data, contains('歷史'));
-    expect(symbolDataSummary0050.data, contains('資料基礎'));
-    final symbolCapabilitySummary0050 = tester.widget<Text>(
-      find.byKey(const ValueKey('00631l-symbol-capability-summary-0050')),
-    );
-    expect(symbolCapabilitySummary0050.data, contains('歷史、回測、比較'));
-    expect(symbolCapabilitySummary0050.data, contains('盤中 NAV 限 00631L'));
     expect(find.text('歷史/回測可用'), findsWidgets);
-    expect(
-      find.byKey(const ValueKey('00631l-symbol-capability-0050-history')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('00631l-symbol-capability-0050-backtest')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('00631l-symbol-capability-0050-compare')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('00631l-symbol-capability-0050-ai-context')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(
-        const ValueKey('00631l-symbol-capability-0050-live-nav-scope'),
-      ),
-      findsOneWidget,
-    );
-    expect(find.text('盤中 NAV 限 00631L'), findsWidgets);
 
     await tester.enterText(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
@@ -1469,9 +1440,17 @@ void main() {
     final result0050 =
         find.byKey(const ValueKey('00631l-symbol-search-result-0050'));
     expect(
-      find.descendant(of: result0050, matching: find.text('歷史可用')),
+      find.descendant(of: result0050, matching: find.text('歷史/回測可用')),
       findsOneWidget,
     );
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-symbol-result-details-0050')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-symbol-result-details-0050')),
+    );
+    await tester.pumpAndSettle();
     expect(
       find.descendant(of: result0050, matching: find.text('回測可用')),
       findsOneWidget,
@@ -1627,6 +1606,14 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-gap-reason-00400A')),
       findsOneWidget,
     );
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-symbol-result-details-00400A')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-symbol-result-details-00400A')),
+    );
+    await tester.pumpAndSettle();
     final catalogOnlyCapabilitySummary = tester.widget<Text>(
       find.byKey(const ValueKey('00631l-symbol-capability-summary-00400A')),
     );
@@ -1795,6 +1782,14 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-catalog-only-00701')),
       findsNothing,
     );
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-symbol-result-details-00701')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-symbol-result-details-00701')),
+    );
+    await tester.pumpAndSettle();
     expect(
       find.byKey(const ValueKey('00631l-symbol-capability-00701-history')),
       findsOneWidget,

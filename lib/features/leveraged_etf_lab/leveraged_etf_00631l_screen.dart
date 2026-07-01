@@ -1128,6 +1128,8 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
     final catalog = loadedCatalog?.hasData == true
         ? loadedCatalog!
         : widget.data.etfCatalog;
+    final selectedCatalogItem =
+        _catalogItemByCode(catalog, widget.selectedEtfCode);
     final catalogLoading = catalogAsync.isLoading && !catalog.hasData;
     final catalogError = catalogAsync.hasError && !catalog.hasData;
     final stocksAsync = ref.watch(watchlistProvider);
@@ -1211,6 +1213,11 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               ],
             ),
             const SizedBox(height: 12),
+            _SymbolSearchCurrentSelectionPanel(
+              code: widget.selectedEtfCode,
+              catalogItem: selectedCatalogItem,
+            ),
+            const SizedBox(height: 10),
             TextField(
               key: const ValueKey('00631l-symbol-search-field'),
               controller: _controller,
@@ -1435,6 +1442,55 @@ class _SymbolSearchLoadingPanel extends StatelessWidget {
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SymbolSearchCurrentSelectionPanel extends StatelessWidget {
+  const _SymbolSearchCurrentSelectionPanel({
+    required this.code,
+    required this.catalogItem,
+  });
+
+  final String code;
+  final EtfCatalogItem? catalogItem;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final normalizedCode = code.trim().toUpperCase();
+    final item = catalogItem;
+    final readiness = item == null ? null : _etfHistoryReadiness(item);
+    return DecoratedBox(
+      key: const ValueKey('00631l-symbol-current-selection-panel'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        child: Row(
+          children: [
+            _MiniStatusBadge(label: normalizedCode),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '目前 ${item?.displayName ?? '$normalizedCode ETF 研究室'}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            _CompactTextBadge(label: readiness?.badgeLabel ?? '搜尋可用'),
           ],
         ),
       ),
@@ -1707,14 +1763,6 @@ class _SymbolSearchResultTile extends StatelessWidget {
       item,
       readiness,
     );
-    final visibleCapabilityKeys = <String>{
-      'history',
-      'backtest',
-      'history-missing',
-      'backtest-unavailable',
-      'live-nav',
-      'live-nav-scope',
-    };
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
       borderRadius: BorderRadius.circular(12),
@@ -1801,62 +1849,12 @@ class _SymbolSearchResultTile extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      capabilitySummary,
-                      key: ValueKey(
-                        '00631l-symbol-capability-summary-${item.code}',
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _marketTextColor(context),
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0,
-                        height: 1.2,
-                      ),
+                    _SymbolSearchResultDetails(
+                      code: item.code,
+                      capabilitySummary: capabilitySummary,
+                      dataSummary: dataSummary,
+                      capabilities: readiness.capabilities,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      dataSummary,
-                      key: ValueKey('00631l-symbol-data-summary-${item.code}'),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _marketMutedTextColor(context),
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0,
-                      ),
-                    ),
-                    if (readiness.capabilities.any(
-                      (capability) =>
-                          visibleCapabilityKeys.contains(capability.key),
-                    )) ...[
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 5,
-                        runSpacing: 5,
-                        children: [
-                          for (final capability in readiness.capabilities)
-                            if (visibleCapabilityKeys.contains(capability.key))
-                              KeyedSubtree(
-                                key: ValueKey(
-                                  '00631l-symbol-capability-${item.code}-${capability.key}',
-                                ),
-                                child: _CompactTextBadge(
-                                  label: capability.label,
-                                ),
-                              ),
-                        ],
-                      ),
-                    ],
-                    for (final capability in readiness.capabilities)
-                      if (!visibleCapabilityKeys.contains(capability.key))
-                        KeyedSubtree(
-                          key: ValueKey(
-                            '00631l-symbol-capability-${item.code}-${capability.key}',
-                          ),
-                          child: const SizedBox.shrink(),
-                        ),
                   ],
                 ),
               ),
@@ -1884,6 +1882,103 @@ class _SymbolSearchResultTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SymbolSearchResultDetails extends StatefulWidget {
+  const _SymbolSearchResultDetails({
+    required this.code,
+    required this.capabilitySummary,
+    required this.dataSummary,
+    required this.capabilities,
+  });
+
+  final String code;
+  final String capabilitySummary;
+  final String dataSummary;
+  final List<_SymbolSearchCapability> capabilities;
+
+  @override
+  State<_SymbolSearchResultDetails> createState() =>
+      _SymbolSearchResultDetailsState();
+}
+
+class _SymbolSearchResultDetailsState
+    extends State<_SymbolSearchResultDetails> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          key: ValueKey('00631l-symbol-result-details-${widget.code}'),
+          behavior: HitTestBehavior.opaque,
+          onTap: () => setState(() => _expanded = !_expanded),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _expanded ? '收合資料' : '更多資料',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ),
+                Icon(
+                  _expanded ? Icons.expand_less : Icons.expand_more,
+                  size: 16,
+                  color: _marketMutedTextColor(context),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_expanded) ...[
+          const SizedBox(height: 2),
+          Text(
+            widget.capabilitySummary,
+            key: ValueKey('00631l-symbol-capability-summary-${widget.code}'),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: _marketTextColor(context),
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0,
+              height: 1.25,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            widget.dataSummary,
+            key: ValueKey('00631l-symbol-data-summary-${widget.code}'),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: _marketMutedTextColor(context),
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 5,
+            runSpacing: 5,
+            children: [
+              for (final capability in widget.capabilities)
+                KeyedSubtree(
+                  key: ValueKey(
+                    '00631l-symbol-capability-${widget.code}-${capability.key}',
+                  ),
+                  child: _CompactTextBadge(label: capability.label),
+                ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 }

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Search sheet hierarchy v9.99: `docs\00631l_v9_99_search_sheet_hierarchy.md`
 - Settings daily hierarchy v9.98: `docs\00631l_v9_98_settings_daily_hierarchy.md`
 - History copy density v9.97: `docs\00631l_v9_97_history_copy_density.md`
 - Overview ticker density v9.96: `docs\00631l_v9_96_overview_ticker_density.md`
