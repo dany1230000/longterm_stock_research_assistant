@@ -3575,16 +3575,16 @@ class _OverviewMarketStack extends StatelessWidget {
               selectedEtf: selectedEtf,
               embedded: true,
             ),
+            const SizedBox(height: 3),
+            _OverviewSignalPanel(data: data, embedded: true),
             const SizedBox(height: 4),
+            const _MarketStackDivider(),
+            const SizedBox(height: 3),
             _OverviewDailySummaryStrip(
               data: data,
               detailsLoading: false,
               embedded: true,
             ),
-            const SizedBox(height: 4),
-            const _MarketStackDivider(),
-            const SizedBox(height: 5),
-            _OverviewSignalPanel(data: data, embedded: true),
           ],
         ),
       ),
@@ -5092,7 +5092,9 @@ class _OverviewSignalPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = Padding(
-      padding: EdgeInsets.all(embedded ? 2 : 10),
+      padding: embedded
+          ? const EdgeInsets.fromLTRB(2, 0, 2, 2)
+          : const EdgeInsets.all(10),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final wide = constraints.maxWidth >= 680;
@@ -5286,7 +5288,7 @@ class _SparklineChartState extends State<_SparklineChart> {
       children: [
         SizedBox(
           key: const ValueKey('00631l-overview-sparkline-chart'),
-          height: 96,
+          height: 88,
           child: LineChart(
             LineChartData(
               minX: -edgePaddingX,

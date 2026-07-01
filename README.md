@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v10.9 moves the overview one-year chart directly under the quote header and
+  pushes the daily data ticker below the chart, so the first screen reads like
+  a market page instead of a status dashboard.
+
 - v10.8 shortens the ETF comparison first screen by moving the basket consistency
   explanation behind `組合檢查`, leaving selection chips, current basket, data
   readiness, and chart expansion as the primary flow.

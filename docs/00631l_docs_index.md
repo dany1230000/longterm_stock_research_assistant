@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview chart priority v10.9: `docs\00631l_v10_9_overview_chart_priority.md`
 - ETF comparison first-screen cleanup v10.8: `docs\00631l_v10_8_comparison_first_screen.md`
 - Overview ticker compact v10.7: `docs\00631l_v10_7_overview_ticker_compact.md`
 - ETF search result cleanup v10.6: `docs\00631l_v10_6_search_result_cleanup.md`
