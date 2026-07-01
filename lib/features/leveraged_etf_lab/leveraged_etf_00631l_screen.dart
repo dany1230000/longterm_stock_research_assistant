@@ -1708,6 +1708,10 @@ class _SymbolSearchResultTile extends StatelessWidget {
       readiness,
     );
     final visibleCapabilityKeys = <String>{
+      'history',
+      'backtest',
+      'history-missing',
+      'backtest-unavailable',
       'live-nav',
       'live-nav-scope',
     };

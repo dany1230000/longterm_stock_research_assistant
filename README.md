@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.93 makes ETF search results show history and backtest capability badges
+  directly, so switching symbols is easier to verify on mobile.
+
 - v9.92 tightens the history/backtest top strip on mobile, keeping the source
   status visible while hiding lower-priority contract detail on narrow screens.
 

@@ -1451,6 +1451,16 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-history-ready-0050')),
       findsOneWidget,
     );
+    final result0050 =
+        find.byKey(const ValueKey('00631l-symbol-search-result-0050'));
+    expect(
+      find.descendant(of: result0050, matching: find.text('歷史可用')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: result0050, matching: find.text('回測可用')),
+      findsOneWidget,
+    );
     expect(find.byKey(const ValueKey('00631l-symbol-search-result-00631L')),
         findsNothing);
     _expectNoTradingActionText();

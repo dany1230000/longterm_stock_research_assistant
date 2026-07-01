@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Symbol search capability badges v9.93: `docs\00631l_v9_93_symbol_search_capability_badges.md`
 - History top strip density v9.92: `docs\00631l_v9_92_history_top_strip_density.md`
 - Bottom navigation density v9.91: `docs\00631l_v9_91_bottom_nav_density.md`
 - Public mobile first screen v9.90: `docs\00631l_v9_90_public_mobile_first_screen.md`
