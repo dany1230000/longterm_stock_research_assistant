@@ -2416,6 +2416,25 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.byKey(const ValueKey('00631l-ai-first-screen-headline')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-first-screen-facts')),
+      findsOneWidget,
+    );
+    for (final label in const ['今日結論', 'DAY', 'LIVE', 'HIS']) {
+      expect(find.text(label), findsOneWidget);
+    }
+    expect(
+      find.byKey(const ValueKey('00631l-ai-daily-conclusion')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-daily-decision-strip')),
+      findsNothing,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-ai-daily-briefing-bullets')),
       findsNothing,
     );

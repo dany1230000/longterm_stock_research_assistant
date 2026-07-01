@@ -9827,46 +9827,11 @@ class _AiDailyBriefingHero extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            _StatusWrap(
-              labels: [
-                '內容物 ${_dateOrDash(snapshot.tradeDate)}',
-                'NAV ${_intradayDataTimeText(nav)}',
-                '來源 ${_sourceStatusBadgeLabel(summary.sourceStatusLabel)}',
-              ],
-            ),
-            const SizedBox(height: 10),
-            _AiDailyConclusionCard(
-              data: data,
-              summary: summary,
-              premiumText: premiumText,
-            ),
-            const SizedBox(height: 10),
-            _AiDailyDecisionStrip(
+            _AiDailyHeadlinePanel(
               data: data,
               summary: summary,
               premiumText: premiumText,
               primaryAction: primaryAction,
-            ),
-            const SizedBox(height: 10),
-            KeyedSubtree(
-              key: const ValueKey('00631l-ai-primary-action-block'),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '程式操作',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  _BulletLine(
-                    text: primaryAction,
-                    icon: Icons.task_alt_outlined,
-                  ),
-                ],
-              ),
             ),
             const SizedBox(height: 10),
             _CompactExpansionPanel(
@@ -9876,6 +9841,19 @@ class _AiDailyBriefingHero extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  _AiDailyConclusionCard(
+                    data: data,
+                    summary: summary,
+                    premiumText: premiumText,
+                  ),
+                  const SizedBox(height: 10),
+                  _AiDailyDecisionStrip(
+                    data: data,
+                    summary: summary,
+                    premiumText: premiumText,
+                    primaryAction: primaryAction,
+                  ),
+                  const SizedBox(height: 10),
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -10014,6 +9992,255 @@ class _AiDailyBriefingHero extends StatelessWidget {
                     },
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiDailyHeadlinePanel extends StatelessWidget {
+  const _AiDailyHeadlinePanel({
+    required this.data,
+    required this.summary,
+    required this.premiumText,
+    required this.primaryAction,
+  });
+
+  final Etf00631LLabData data;
+  final EtfAiAnalysisSummary summary;
+  final String premiumText;
+  final String primaryAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final snapshot = data.snapshot;
+    final nav = data.intradayNav;
+    final price = data.priceHistory.completenessSummary();
+    final statusColor = _aiStatusColor(
+      context,
+      summary,
+      nav?.premiumDiscountAssessment,
+    );
+    final coverage = price.coverageStart == null || price.coverageEnd == null
+        ? '資料區間暫無'
+        : '${_dateOrDash(price.coverageStart)}-${_dateOrDash(price.coverageEnd)}';
+    final headline =
+        '${summary.readinessLabel}；$premiumText 歷史資料 ${formatInteger(price.rowCount)} 筆。';
+    final factItems = [
+      _AiInlineFactItem(
+        label: 'DAY',
+        value: _dateOrDash(snapshot.tradeDate),
+        detail: '官方內容物',
+      ),
+      _AiInlineFactItem(
+        label: 'LIVE',
+        value: _intradayDataTimeText(nav),
+        detail: '盤中 NAV',
+      ),
+      _AiInlineFactItem(
+        label: 'HIS',
+        value: formatInteger(price.rowCount),
+        detail: coverage,
+      ),
+    ];
+
+    return DecoratedBox(
+      key: const ValueKey('00631l-ai-first-screen-headline'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: statusColor,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '今日結論',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        headline,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: _marketTextColor(context),
+                          height: 1.3,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final compact = constraints.maxWidth < 380;
+                final itemWidth = compact
+                    ? (constraints.maxWidth - 8) / 2
+                    : (constraints.maxWidth - 16) / 3;
+                return Wrap(
+                  key: const ValueKey('00631l-ai-first-screen-facts'),
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final item in factItems)
+                      SizedBox(
+                        width:
+                            itemWidth.clamp(0, constraints.maxWidth).toDouble(),
+                        child: _AiInlineFactPill(item: item),
+                      ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            Container(
+              key: const ValueKey('00631l-ai-primary-action-block'),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: statusColor.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: statusColor.withValues(alpha: 0.35)),
+              ),
+              padding: const EdgeInsets.all(9),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.task_alt_outlined,
+                    size: 17,
+                    color: statusColor,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '程式操作',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: _marketMutedTextColor(context),
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          primaryAction,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: _marketTextColor(context),
+                            height: 1.3,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiInlineFactItem {
+  const _AiInlineFactItem({
+    required this.label,
+    required this.value,
+    required this.detail,
+  });
+
+  final String label;
+  final String value;
+  final String detail;
+}
+
+class _AiInlineFactPill extends StatelessWidget {
+  const _AiInlineFactPill({required this.item});
+
+  final _AiInlineFactItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              item.value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              item.detail,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0,
               ),
             ),
           ],

@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.94 makes the AI page first screen answer-first: today's conclusion,
+  data-time facts, and the primary program action appear before detailed AI
+  panels.
+
 - v9.93 makes ETF search results show history and backtest capability badges
   directly, so switching symbols is easier to verify on mobile.
 
