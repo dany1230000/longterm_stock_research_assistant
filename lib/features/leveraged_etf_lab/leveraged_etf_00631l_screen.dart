@@ -9990,16 +9990,17 @@ class _AiDailyBriefingHero extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
-            Text(
-              '依據官方每日內容物、盤中 NAV、歷史資料與維護狀態產生摘要。非買賣建議。',
+            KeyedSubtree(
               key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                height: 1.35,
-                fontWeight: FontWeight.w700,
+              child: _StatusWrap(
+                labels: [
+                  _statusDisplay(summary.source),
+                  summary.readinessLabel,
+                  summary.disclaimer,
+                ],
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             _AiDailyHeadlinePanel(
               data: data,
               summary: summary,

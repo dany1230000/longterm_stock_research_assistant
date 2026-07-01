@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- AI first-screen badge summary v11.1: `docs\00631l_v11_1_ai_badge_summary.md`
 - Position/settings density v11.0: `docs\00631l_v11_0_position_settings_density.md`
 - Overview chart priority v10.9: `docs\00631l_v10_9_overview_chart_priority.md`
 - ETF comparison first-screen cleanup v10.8: `docs\00631l_v10_8_comparison_first_screen.md`

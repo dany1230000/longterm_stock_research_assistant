@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v11.1 compacts the AI first screen by replacing the paragraph-style source
+  note with source/readiness/disclaimer badges.
+
 - v11.0 starts the next density pass: position source detail is no longer
   duplicated on the first screen, position actions are narrower, and settings
   cards use tighter mobile proportions.
