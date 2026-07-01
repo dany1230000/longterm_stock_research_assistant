@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.82 makes the left-top ETF search sheet show history coverage and pending
+  data counts before opening advanced database details.
+
 - v9.81 tightens the overview first screen so the daily status strip is shorter
   and the main chart appears earlier on mobile.
 

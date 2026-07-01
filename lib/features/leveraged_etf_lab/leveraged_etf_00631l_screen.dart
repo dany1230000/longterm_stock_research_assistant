@@ -1242,6 +1242,8 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                   '熱門清單'
                 else
                   'ETF ${formatInteger(items.length)} / ${formatInteger(baseItems.length)}',
+                '歷史可用 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
+                if (historyGap > 0) '待補 ${formatInteger(historyGap)}',
                 if (query.isNotEmpty) '歷史可用 ${formatInteger(queryReadyCount)}',
                 if (query.isNotEmpty)
                   '僅清單 ${formatInteger(queryCatalogOnlyCount)}',
