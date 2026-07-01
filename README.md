@@ -4,6 +4,11 @@
 
 Latest mobile UI polish:
 
+- v10.5 compresses the history/backtest first screen: the large repeated
+  history card is replaced by a compact heading, the top strip now shows latest
+  date/close, row count, source, and adjustment status, and date controls remain
+  directly above charts and backtest context.
+
 - v10.4 reduces overview status noise by replacing the technical `Mock 預設`
   top badge with the shorter `示範` label while preserving truthful data mode
   status elsewhere.

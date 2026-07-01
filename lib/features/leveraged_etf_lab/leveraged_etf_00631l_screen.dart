@@ -6264,18 +6264,25 @@ class _HistorySection extends StatelessWidget {
           completeness: completeness,
         ),
         const SizedBox(height: 8),
-        _SectionBlock(
-          title: '價格歷史',
-          subtitle: priceHistory.hasData
-              ? '預設最近 1 年；可調日期，圖表與回測快覽同步更新。'
-              : '尚無官方價格歷史，請執行 scripts\\00631l_update_price_history.cmd。',
-          child: priceHistory.hasData
-              ? _FilterablePriceHistoryBlock(priceHistory: priceHistory)
-              : const _EmptyPanel(
-                  title: '尚無官方價格歷史',
-                  message: '價格歷史需要官方、快取或公開靜態資料；不會用模擬資料當成官方資料。',
-                ),
-        ),
+        if (priceHistory.hasData) ...[
+          const _CompactSectionHeading(
+            key: ValueKey('00631l-history-primary-heading'),
+            title: '價格歷史',
+            subtitle: '預設最近 1 年，日期控制、圖表與回測快覽同步。',
+            labels: ['預設 1 年', '可調日期'],
+          ),
+          const SizedBox(height: 8),
+          _FilterablePriceHistoryBlock(priceHistory: priceHistory),
+        ] else
+          const _SectionBlock(
+            title: '尚無官方價格歷史',
+            subtitle:
+                '請執行 scripts\\00631l_update_price_history.cmd，或確認公開靜態資料是否存在。',
+            child: _EmptyPanel(
+              title: '尚無官方價格歷史',
+              message: '價格歷史需要官方、快取或公開靜態資料；不會用模擬資料當成官方資料。',
+            ),
+          ),
         const SizedBox(height: 8),
         _CompactExpansionPanel(
           key: const ValueKey('00631l-history-quality-expansion'),
@@ -6540,6 +6547,14 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
     final sourceLabel = _sourceStatusBadgeLabel(priceHistory.sourceStatusLabel);
     final contractLabel =
         _historySourceContractDetail(priceHistory.sourceContractCounts);
+    final latest = completeness.latest;
+    final latestDate = latest == null ? '尚無' : _dateOrDash(latest.date);
+    final latestClose = _price(latest?.performanceClose);
+    final adjustmentLabel = completeness.hasNonUnitAdjustment
+        ? '分割調整'
+        : completeness.hasAdjustedClose
+            ? '調整價'
+            : '未調整';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -6553,59 +6568,85 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const _MiniStatusBadge(label: 'HIS'),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const _MiniStatusBadge(label: 'HIS'),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '$code $name',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: _marketTextColor(context),
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '$coverage · 預設 1 年，可調日期',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: _marketMutedTextColor(context),
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    KeyedSubtree(
+                      key: const ValueKey(
+                          '00631l-history-top-strip-source-badge'),
+                      child: _CompactTextBadge(label: sourceLabel),
+                    ),
+                    if (!compact) ...[
+                      const SizedBox(width: 6),
+                      KeyedSubtree(
+                        key: const ValueKey(
+                            '00631l-history-top-strip-contract-badge'),
+                        child: _CompactTextBadge(label: contractLabel),
+                      ),
+                      KeyedSubtree(
+                        key: ValueKey(
+                          '00631l-history-top-strip-contract-$contractLabel',
+                        ),
+                        child: const SizedBox.shrink(),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 7),
+                SingleChildScrollView(
+                  key: const ValueKey('00631l-history-top-strip-metrics'),
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: Row(
                     children: [
-                      Text(
-                        '$code $name',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: _marketTextColor(context),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0,
-                        ),
+                      _InlineQualityPill(
+                        label: '最新',
+                        value: '$latestDate / $latestClose',
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '$coverage · ${formatInteger(completeness.rowCount)} 筆 · 預設 1 年，可調日期',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: _marketMutedTextColor(context),
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0,
-                        ),
+                      _InlineQualityPill(
+                        label: '筆數',
+                        value: formatInteger(completeness.rowCount),
                       ),
+                      _InlineQualityPill(label: '來源', value: sourceLabel),
+                      _InlineQualityPill(label: '價格', value: adjustmentLabel),
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                KeyedSubtree(
-                  key: const ValueKey('00631l-history-top-strip-source-badge'),
-                  child: _CompactTextBadge(label: sourceLabel),
-                ),
-                if (!compact) ...[
-                  const SizedBox(width: 6),
-                  KeyedSubtree(
-                    key: const ValueKey(
-                        '00631l-history-top-strip-contract-badge'),
-                    child: _CompactTextBadge(label: contractLabel),
-                  ),
-                  KeyedSubtree(
-                    key: ValueKey(
-                      '00631l-history-top-strip-contract-$contractLabel',
-                    ),
-                    child: const SizedBox.shrink(),
-                  ),
-                ],
                 const KeyedSubtree(
                   key: ValueKey('00631l-history-top-strip-legacy-labels'),
                   child: SizedBox.shrink(),
@@ -14367,6 +14408,66 @@ class _SectionBlock extends StatelessWidget {
             child,
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CompactSectionHeading extends StatelessWidget {
+  const _CompactSectionHeading({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.labels,
+  });
+
+  final String title;
+  final String subtitle;
+  final List<String> labels;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ),
+              for (final label in labels.take(2)) ...[
+                const SizedBox(width: 6),
+                _CompactTextBadge(label: label),
+              ],
+            ],
+          ),
+          const SizedBox(height: 3),
+          Text(
+            subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
+              height: 1.2,
+            ),
+          ),
+          if (labels.length > 2) ...[
+            const SizedBox(height: 6),
+            _StatusWrap(labels: labels.skip(2).toList()),
+          ],
+        ],
       ),
     );
   }

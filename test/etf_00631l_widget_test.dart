@@ -961,7 +961,11 @@ void main() {
             find.byKey(const ValueKey('00631l-history-backtest-top-strip')),
           )
           .height,
-      lessThanOrEqualTo(56),
+      lessThanOrEqualTo(92),
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-top-strip-metrics')),
+      findsOneWidget,
     );
     expect(
       find.byKey(const ValueKey('00631l-history-quality-expansion')),
@@ -971,7 +975,7 @@ void main() {
     expect(find.text('static_official'), findsNothing);
     expect(find.textContaining('static_official'), findsNothing);
     expect(find.text('價格歷史'), findsOneWidget);
-    expect(find.textContaining('可調日期，圖表與回測快覽'), findsOneWidget);
+    expect(find.textContaining('日期控制、圖表與回測快覽'), findsOneWidget);
     expect(
       tester.getTopLeft(find.text('價格歷史')).dy,
       lessThan(tester.getTopLeft(find.text('資料品質')).dy),
@@ -1119,7 +1123,11 @@ void main() {
     final topStrip =
         find.byKey(const ValueKey('00631l-history-backtest-top-strip'));
     expect(topStrip, findsOneWidget);
-    expect(tester.getRect(topStrip).height, lessThanOrEqualTo(56));
+    expect(tester.getRect(topStrip).height, lessThanOrEqualTo(92));
+    expect(
+      find.byKey(const ValueKey('00631l-history-top-strip-metrics')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('00631l-history-top-strip-source-badge')),
       findsOneWidget,
