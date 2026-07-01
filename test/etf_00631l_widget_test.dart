@@ -315,7 +315,15 @@ void main() {
     await tester.ensureVisible(symbolSearchButton);
     await tester.pumpAndSettle();
     expect(
-      find.descendant(of: symbolSearchButton, matching: find.text('搜尋')),
+      find.descendant(
+          of: symbolSearchButton, matching: find.byIcon(Icons.search)),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: symbolSearchButton,
+        matching: find.byIcon(Icons.expand_more),
+      ),
       findsOneWidget,
     );
     await tester.tap(symbolSearchButton);

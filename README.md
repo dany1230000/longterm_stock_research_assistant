@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.75 keeps the top-left search pill compact enough for the `ETF 研究室`
+  title to fit on phone width while preserving the search and down-arrow icons.
+
 - v9.74 makes the top-left ETF code pill more obviously searchable by adding a
   short search label and down-arrow while preserving the existing ETF/stock
   search sheet.

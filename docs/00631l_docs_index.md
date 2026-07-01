@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Header fit fix v9.75: `docs\00631l_v9_75_header_fit_fix.md`
 - Symbol search affordance v9.74: `docs\00631l_v9_74_symbol_search_affordance.md`
 - Overview signal cleanup v9.73: `docs\00631l_v9_73_overview_signal_cleanup.md`
 - Intraday premium fallback v9.72: `docs\00631l_v9_72_intraday_premium_fallback.md`

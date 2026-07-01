@@ -1051,14 +1051,6 @@ class _MarketIndexPill extends StatelessWidget {
                 const SizedBox(width: 5),
                 const Icon(Icons.search, color: Colors.white, size: 15),
                 const SizedBox(width: 3),
-                const Text(
-                  '搜尋',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
                 const Icon(Icons.expand_more, color: Colors.white, size: 16),
               ],
             ),
