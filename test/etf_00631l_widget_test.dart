@@ -119,7 +119,7 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
-      findsNothing,
+      findsOneWidget,
     );
     await tester.ensureVisible(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),
@@ -385,7 +385,7 @@ void main() {
     expect(find.text('統計母數 228'), findsOneWidget);
     expect(find.text('長期資料 8'), findsOneWidget);
     expect(find.text('近期資料 220'), findsOneWidget);
-    expect(find.textContaining('TWSE'), findsOneWidget);
+    expect(find.textContaining('TWSE'), findsWidgets);
     expect(find.textContaining('TPEx'), findsOneWidget);
     expect(find.text('搜尋 ETF 代號'), findsOneWidget);
     _expectNoTradingActionText();
@@ -450,14 +450,14 @@ void main() {
     expect(find.text('資料正確性'), findsNothing);
     expect(find.text('目前檔案'), findsNothing);
     expect(find.text('近一年走勢'), findsOneWidget);
-    expect(find.textContaining('官方曝險'), findsNothing);
+    expect(find.textContaining('官方曝險'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-overview-core-metric-strip')),
       findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
-      findsNothing,
+      findsOneWidget,
     );
     final readinessStrip = find.byKey(
       const ValueKey('00631l-quote-readiness-strip'),
@@ -475,10 +475,11 @@ void main() {
       const ValueKey('00631l-overview-sparkline-chart'),
     );
     expect(chartFinder, findsOneWidget);
-    expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(500));
+    expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(560));
     await tester.ensureVisible(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),
     );
+    await tester.pumpAndSettle();
     await tester.tap(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),
     );
@@ -867,12 +868,16 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-history-date-settings-expansion')),
+      findsNothing,
+    );
+    expect(find.text('自訂日期'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-history-date-controls-visible')),
       findsOneWidget,
     );
-    expect(find.text('日期設定'), findsOneWidget);
     expect(
-      tester.getTopLeft(find.text('收盤價').first).dy,
-      lessThan(tester.getTopLeft(find.text('日期設定')).dy),
+      tester.getTopLeft(find.text('自訂日期')).dy,
+      lessThan(tester.getTopLeft(find.text('收盤價').first).dy),
     );
     expect(
       find.byKey(const ValueKey('00631l-date-range-summary')),
@@ -918,8 +923,8 @@ void main() {
       find.textContaining('最新資料 2026/06/03'),
       findsWidgets,
     );
-    expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsOneWidget);
-    expect(find.textContaining('2025/06/03 - 2026/06/03；點擊圖表'), findsWidgets);
+    expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsWidgets);
+    expect(find.textContaining('圖表與指標套用同一段日期'), findsWidgets);
     expect(find.text('起點 2025/06/03'), findsWidgets);
     expect(find.text('中段 2026/06/01'), findsWidgets);
     expect(find.text('終點 2026/06/03'), findsWidgets);
@@ -931,10 +936,6 @@ void main() {
     expect(find.text('回測工具'), findsNothing);
     expect(find.text('開始日期'), findsWidgets);
     expect(find.text('結束日期'), findsWidgets);
-    await tester.ensureVisible(find.text('日期設定'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('日期設定'));
-    await tester.pumpAndSettle();
     final historyView = find.byKey(const ValueKey('00631l-history-view'));
     final startCenter = tester.getCenter(
       find.descendant(
@@ -1039,7 +1040,7 @@ void main() {
     expect(find.text('回測快覽'), findsOneWidget);
     expect(find.textContaining('回測不代表未來表現'), findsWidgets);
     expect(find.text('歷史回測'), findsWidgets);
-    expect(find.text('日期設定'), findsOneWidget);
+    expect(find.text('自訂日期'), findsOneWidget);
     expect(find.text('開始日期'), findsWidgets);
     expect(find.text('結束日期'), findsWidgets);
     expect(find.textContaining('回測區間'), findsOneWidget);

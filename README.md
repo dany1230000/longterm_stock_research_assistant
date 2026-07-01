@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.59 restores a compact first-screen daily summary, shows official exposure
+  next to the overview trend on phones, and moves history date controls above
+  the chart so the range is adjustable without opening an advanced panel.
+
 - v9.33 adds a stricter first-screen chart-position guard so future header
   changes cannot push the overview chart down again.
 

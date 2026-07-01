@@ -3167,6 +3167,8 @@ class _OverviewSection extends StatelessWidget {
       children: [
         _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
         const SizedBox(height: 8),
+        _OverviewDailySummaryStrip(data: data, detailsLoading: false),
+        const SizedBox(height: 8),
         _AlwaysExpandedPanel(
           title: selectedEtf.is00631L ? '價格與曝險' : '價格走勢',
           subtitle: selectedEtf.is00631L
@@ -4716,8 +4718,13 @@ class _OverviewSignalPanel extends StatelessWidget {
               );
             }
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 priceBlock,
+                if (hasUsableExposure) ...[
+                  const SizedBox(height: 10),
+                  exposureBlock,
+                ],
               ],
             );
           },
@@ -6198,6 +6205,33 @@ class _FilterablePriceHistoryBlockState
           ],
         ),
         const SizedBox(height: 8),
+        KeyedSubtree(
+          key: const ValueKey('00631l-history-date-controls-visible'),
+          child: _RangeContextStrip(
+            title: '自訂日期',
+            subtitle: '圖表與指標套用同一段日期；預設最近 1 年。',
+            items: [
+              _RangeContextItem(
+                label: '目前區間',
+                value:
+                    '${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}',
+              ),
+              _RangeContextItem(
+                label: '最新資料',
+                value: _dateOrDash(selectedSummary.coverageEnd),
+              ),
+            ],
+            child: _BacktestDateRangeControls(
+              startDate: _startDate,
+              endDate: _endDate,
+              firstDate: firstDate,
+              lastDate: lastDate,
+              onStartTap: _selectStartDate,
+              onEndTap: _selectEndDate,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
         _PriceTrendCharts(priceHistory: filteredHistory),
         const SizedBox(height: 8),
         const _StatusWrap(
@@ -6207,35 +6241,7 @@ class _FilterablePriceHistoryBlockState
           ],
         ),
         const SizedBox(height: 8),
-        _CompactExpansionPanel(
-          key: const ValueKey('00631l-history-date-settings-expansion'),
-          title: '日期設定',
-          subtitle:
-              '${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}；點擊圖表可查看完整日期與數值。',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _BacktestDateRangeControls(
-                startDate: _startDate,
-                endDate: _endDate,
-                firstDate: firstDate,
-                lastDate: lastDate,
-                onStartTap: _selectStartDate,
-                onEndTap: _selectEndDate,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '圖表區間 ${_dateOrDash(selectedSummary.coverageStart)} - ${_dateOrDash(selectedSummary.coverageEnd)}；橫軸顯示起點 / 中點 / 終點。',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: _marketMutedTextColor(context),
-                      fontWeight: FontWeight.w800,
-                      height: 1.35,
-                    ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _ResponsiveMetricGrid(
           cards: [
             _MetricCard(
@@ -8147,11 +8153,13 @@ class _RangeContextStrip extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.items,
+    this.child,
   });
 
   final String title;
   final String subtitle;
   final List<_RangeContextItem> items;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -8197,6 +8205,10 @@ class _RangeContextStrip extends StatelessWidget {
             _RangeContextMetricStrip(
               items: items,
             ),
+            if (child != null) ...[
+              const SizedBox(height: 8),
+              child!,
+            ],
           ],
         ),
       ),
