@@ -562,7 +562,7 @@ void main() {
     final summaryRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
     );
-    expect(summaryRect.height, lessThanOrEqualTo(74));
+    expect(summaryRect.height, lessThanOrEqualTo(48));
     final readinessStrip = find.byKey(
       const ValueKey('00631l-quote-readiness-strip'),
     );

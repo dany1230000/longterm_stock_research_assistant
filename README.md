@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.84 compresses the overview daily data-status row into a mobile ticker so
+  the one-year chart appears sooner on the first screen.
+
 - v9.83 makes the left-top ETF search results easier to scan on mobile. Each
   result now shows one capability summary and keeps the live NAV scope visible.
 

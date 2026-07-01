@@ -3497,17 +3497,27 @@ class _OverviewDailySummaryStrip extends StatelessWidget {
           border: Border.all(color: _marketBorderColor(context)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
-          child: Row(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: SingleChildScrollView(
             key: const ValueKey('00631l-overview-daily-summary-grid'),
-            children: [
-              for (var index = 0; index < items.length; index++) ...[
-                Expanded(
-                  child: _OverviewDailySummaryChip(item: items[index]),
-                ),
-                if (index != items.length - 1) const SizedBox(width: 4),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: [
+                for (var index = 0; index < items.length; index++) ...[
+                  _OverviewDailyTickerItem(item: items[index]),
+                  if (index != items.length - 1) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 1,
+                      height: 26,
+                      color: _marketBorderColor(context),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -3590,63 +3600,65 @@ class _OverviewDailySummaryItem {
   final String caption;
 }
 
-class _OverviewDailySummaryChip extends StatelessWidget {
-  const _OverviewDailySummaryChip({required this.item});
+class _OverviewDailyTickerItem extends StatelessWidget {
+  const _OverviewDailyTickerItem({required this.item});
 
   final _OverviewDailySummaryItem item;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelAltColor(context),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              item.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0,
-              ),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 112, maxWidth: 142),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            item.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: _marketMutedTextColor(context),
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0,
+              height: 1,
             ),
-            const SizedBox(height: 2),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(
-                item.value,
-                maxLines: 1,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: _marketTextColor(context),
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0,
+          ),
+          const SizedBox(height: 2),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  item.value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: _marketTextColor(context),
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
+                    height: 1,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 0),
-            Text(
-              item.caption,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0,
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  item.caption,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0,
+                    height: 1,
+                  ),
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
