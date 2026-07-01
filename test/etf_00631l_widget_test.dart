@@ -371,6 +371,11 @@ void main() {
     );
     expect(symbolDataSummary0050.data, contains('歷史'));
     expect(symbolDataSummary0050.data, contains('資料基礎'));
+    final symbolCapabilitySummary0050 = tester.widget<Text>(
+      find.byKey(const ValueKey('00631l-symbol-capability-summary-0050')),
+    );
+    expect(symbolCapabilitySummary0050.data, contains('歷史、回測、比較'));
+    expect(symbolCapabilitySummary0050.data, contains('盤中 NAV 限 00631L'));
     expect(find.text('歷史/回測可用'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-symbol-capability-0050-history')),
@@ -1556,6 +1561,11 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-gap-reason-00400A')),
       findsOneWidget,
     );
+    final catalogOnlyCapabilitySummary = tester.widget<Text>(
+      find.byKey(const ValueKey('00631l-symbol-capability-summary-00400A')),
+    );
+    expect(catalogOnlyCapabilitySummary.data, contains('目前僅清單資料'));
+    expect(catalogOnlyCapabilitySummary.data, contains('需先匯入'));
     expect(
       find.byKey(const ValueKey('00631l-symbol-capability-00400A-catalog')),
       findsOneWidget,
@@ -1755,6 +1765,10 @@ void main() {
     expect(find.textContaining('元大台灣50'), findsWidgets);
     expect(
         find.byKey(const ValueKey('00631l-main-quote-header')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-selected-etf-usable-scope-line')),
+      findsOneWidget,
+    );
     await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);

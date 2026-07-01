@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.83 makes the left-top ETF search results easier to scan on mobile. Each
+  result now shows one capability summary and keeps the live NAV scope visible.
+
 - v9.82 makes the left-top ETF search sheet show history coverage and pending
   data counts before opening advanced database details.
 

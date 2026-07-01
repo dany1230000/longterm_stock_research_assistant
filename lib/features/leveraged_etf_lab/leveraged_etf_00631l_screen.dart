@@ -1703,6 +1703,14 @@ class _SymbolSearchResultTile extends StatelessWidget {
     final missingReasonLabel = _etfHistoryMissingReasonLabel(item);
     final priceBasisLabel = _etfHistoryPriceBasisLabel(item);
     final dataSummary = _symbolSearchDataSummary(item);
+    final capabilitySummary = _symbolSearchCapabilitySummary(
+      item,
+      readiness,
+    );
+    final visibleCapabilityKeys = <String>{
+      'live-nav',
+      'live-nav-scope',
+    };
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
       borderRadius: BorderRadius.circular(12),
@@ -1790,6 +1798,21 @@ class _SymbolSearchResultTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
+                      capabilitySummary,
+                      key: ValueKey(
+                        '00631l-symbol-capability-summary-${item.code}',
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
                       dataSummary,
                       key: ValueKey('00631l-symbol-data-summary-${item.code}'),
                       maxLines: 1,
@@ -1800,22 +1823,36 @@ class _SymbolSearchResultTile extends StatelessWidget {
                         letterSpacing: 0,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 5,
-                      runSpacing: 5,
-                      children: [
-                        for (final capability in readiness.capabilities)
-                          KeyedSubtree(
-                            key: ValueKey(
-                              '00631l-symbol-capability-${item.code}-${capability.key}',
-                            ),
-                            child: _CompactTextBadge(
-                              label: capability.label,
-                            ),
+                    if (readiness.capabilities.any(
+                      (capability) =>
+                          visibleCapabilityKeys.contains(capability.key),
+                    )) ...[
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 5,
+                        runSpacing: 5,
+                        children: [
+                          for (final capability in readiness.capabilities)
+                            if (visibleCapabilityKeys.contains(capability.key))
+                              KeyedSubtree(
+                                key: ValueKey(
+                                  '00631l-symbol-capability-${item.code}-${capability.key}',
+                                ),
+                                child: _CompactTextBadge(
+                                  label: capability.label,
+                                ),
+                              ),
+                        ],
+                      ),
+                    ],
+                    for (final capability in readiness.capabilities)
+                      if (!visibleCapabilityKeys.contains(capability.key))
+                        KeyedSubtree(
+                          key: ValueKey(
+                            '00631l-symbol-capability-${item.code}-${capability.key}',
                           ),
-                      ],
-                    ),
+                          child: const SizedBox.shrink(),
+                        ),
                   ],
                 ),
               ),
@@ -2237,6 +2274,9 @@ class _SelectedEtfOverviewDigest extends StatelessWidget {
       selectedEtf.code,
       history,
     );
+    final readinessText = selectedEtf.hasImportedHistory
+        ? '${selectedEtf.code} 可用於歷史、回測、比較與 AI context；${selectedEtf.liveNavScopeLabel}。'
+        : '${selectedEtf.code} 目前僅清單資料；歷史、回測與比較需先匯入價格歷史。';
     final items = [
       _QuoteReadinessItem(
         label: '最新',
@@ -2311,7 +2351,8 @@ class _SelectedEtfOverviewDigest extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              '內容物與盤中 NAV 目前仍以 00631L 為主；此檔先使用可驗證價格歷史。',
+              readinessText,
+              key: const ValueKey('00631l-selected-etf-usable-scope-line'),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -14867,6 +14908,18 @@ _EtfHistoryReadiness _etfHistoryReadiness(EtfCatalogItem item) {
         ),
     ],
   );
+}
+
+String _symbolSearchCapabilitySummary(
+  EtfCatalogItem item,
+  _EtfHistoryReadiness readiness,
+) {
+  final code = item.code.trim().toUpperCase();
+  final liveNavLabel = code == '00631L' ? '盤中 NAV 可用' : '盤中 NAV 限 00631L';
+  if (readiness.hasHistory) {
+    return '歷史、回測、比較與 AI context 可用；$liveNavLabel。';
+  }
+  return '目前僅清單資料；歷史、回測與比較需先匯入，$liveNavLabel。';
 }
 
 bool _symbolSearchFilterIncludes(

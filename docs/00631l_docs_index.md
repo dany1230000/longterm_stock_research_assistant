@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Symbol search readability v9.83: `docs\00631l_v9_83_symbol_search_readability.md`
 - Symbol search data readiness v9.82: `docs\00631l_v9_82_symbol_search_data_readiness.md`
 - Overview first screen density v9.81: `docs\00631l_v9_81_overview_first_screen_density.md`
 - Settings first screen trim v9.80: `docs\00631l_v9_80_settings_first_screen_trim.md`
