@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v10.8 shortens the ETF comparison first screen by moving the basket consistency
+  explanation behind `組合檢查`, leaving selection chips, current basket, data
+  readiness, and chart expansion as the primary flow.
+
 - v10.7 tightens the overview market stack again by shortening the embedded
   quote padding and daily data ticker item widths, keeping the one-year chart
   visible sooner on phone screens.

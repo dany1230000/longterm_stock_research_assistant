@@ -1967,6 +1967,18 @@ void main() {
     expect(find.text('代表'), findsWidgets);
     expect(find.text('高股息'), findsOneWidget);
     expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-basket-expansion')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-basket-context')),
+      findsNothing,
+    );
+    await tester.tap(
+      find.byKey(const ValueKey('00631l-etf-comparison-basket-expansion')),
+    );
+    await tester.pumpAndSettle();
+    expect(
       find.byKey(const ValueKey('00631l-etf-comparison-basket-context')),
       findsOneWidget,
     );

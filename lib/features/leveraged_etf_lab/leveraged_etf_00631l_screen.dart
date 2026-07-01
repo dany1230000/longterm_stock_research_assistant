@@ -7417,9 +7417,16 @@ class _EtfHistoryComparisonPanelState
           readyCount: availableMetrics.length,
           skippedMetrics: skippedMetrics,
         ),
-        const SizedBox(height: 10),
-        _ComparisonBasketContextCard(basketContext: basketContext),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
+        _CompactExpansionPanel(
+          key: const ValueKey('00631l-etf-comparison-basket-expansion'),
+          title: '組合檢查',
+          subtitle: usableMetrics.isEmpty
+              ? '尚未選擇 ETF；展開查看資料需求。'
+              : '共同區間與基準設定；平常先看目前組合與圖表。',
+          child: _ComparisonBasketContextCard(basketContext: basketContext),
+        ),
+        const SizedBox(height: 8),
         _CompactExpansionPanel(
           key: const ValueKey('00631l-etf-comparison-chart-expansion'),
           title: '比較圖表與明細',

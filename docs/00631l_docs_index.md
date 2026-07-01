@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- ETF comparison first-screen cleanup v10.8: `docs\00631l_v10_8_comparison_first_screen.md`
 - Overview ticker compact v10.7: `docs\00631l_v10_7_overview_ticker_compact.md`
 - ETF search result cleanup v10.6: `docs\00631l_v10_6_search_result_cleanup.md`
 - History/backtest first-screen density v10.5: `docs\00631l_v10_5_history_backtest_first_screen.md`
