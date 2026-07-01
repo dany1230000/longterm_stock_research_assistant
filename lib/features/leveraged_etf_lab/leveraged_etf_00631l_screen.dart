@@ -3507,9 +3507,9 @@ class _OverviewSection extends StatelessWidget {
         ],
         _CompactExpansionPanel(
           key: const ValueKey('00631l-overview-more-expansion'),
-          title: '進階資料',
+          title: '更多資料',
           subtitle: selectedEtf.is00631L
-              ? '資料來源、完整性、比較與維護細節集中在這裡。'
+              ? '資料來源、完整性、比較與維護細節；平常先看上方行情與圖表。'
               : '${selectedEtf.code} 的資料來源、資料範圍與目前限制。',
           child: selectedEtf.is00631L
               ? _OverviewMorePanel(

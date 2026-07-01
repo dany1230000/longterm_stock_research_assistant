@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:longterm_stock_research_assistant/app.dart';
@@ -96,6 +96,6 @@ void main() {
 
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.textContaining('市價'), findsWidgets);
-    expect(find.text('進階資料'), findsOneWidget);
+    expect(find.text('更多資料'), findsOneWidget);
   });
 }

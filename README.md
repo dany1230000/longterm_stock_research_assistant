@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v10.0 renames the overview technical disclosure to `更多資料`, keeping quote,
+  NAV, premium/discount, and the one-year chart as the first read.
+
 - v9.99 makes the left-top ETF search sheet more app-like: current target first,
   compact result rows, and detailed data capability behind `更多資料`.
 
