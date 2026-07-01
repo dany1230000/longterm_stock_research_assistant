@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Pages live-backend default v9.65: `docs\00631l_v9_65_pages_live_backend_default.md`
 - Compact daily summary v9.64: `docs\00631l_v9_64_compact_daily_summary.md`
 - Overview one-year chart window v9.63: `docs\00631l_v9_63_overview_one_year_window.md`
 - Status label polish v9.62: `docs\00631l_v9_62_status_label_polish.md`

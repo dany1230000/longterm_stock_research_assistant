@@ -41,4 +41,26 @@ void main() {
     expect(index, isNot(contains('DAY')));
     expect(index, isNot(contains('HIS')));
   });
+
+  test('Pages build defaults to the public Render backend with static fallback',
+      () {
+    final workflow =
+        File('.github/workflows/deploy_web.yml').readAsStringSync();
+    final script =
+        File('scripts/00631l_build_pages_static.cmd').readAsStringSync();
+
+    expect(
+      workflow,
+      contains('https://longterm-stock-research-assistant.onrender.com'),
+    );
+    expect(workflow, contains('USE_00631L_LIVE_PROXY=true'));
+    expect(workflow, contains('USE_00631L_STATIC_DATA=true'));
+
+    expect(
+      script,
+      contains('https://longterm-stock-research-assistant.onrender.com'),
+    );
+    expect(script, contains('--dart-define=USE_00631L_LIVE_PROXY=true'));
+    expect(script, contains('--dart-define=USE_00631L_STATIC_DATA=true'));
+  });
 }

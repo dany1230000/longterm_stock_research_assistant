@@ -8,6 +8,8 @@ set "REFRESH_ETF_HISTORY=0"
 set "PROBE_MISSING=0"
 set "RESTORE_PUBLIC_HISTORY=1"
 set "RESTORE_PUBLIC_ATTEMPTS=1"
+if "%PUBLIC_BACKEND_URL%"=="" set "PUBLIC_BACKEND_URL=https://longterm-stock-research-assistant.onrender.com"
+if "%PUBLIC_PROXY_TIMEOUT_MS%"=="" set "PUBLIC_PROXY_TIMEOUT_MS=8000"
 
 :parse_args
 if "%~1"=="" goto after_args
@@ -130,5 +132,5 @@ if errorlevel 1 exit /b %ERRORLEVEL%
 call scripts\00631l_guard_static_public_regression.cmd --local-dir web\00631l-static-data
 if errorlevel 1 exit /b %ERRORLEVEL%
 
-flutter build web --base-href="/longterm_stock_research_assistant/" --dart-define=USE_00631L_STATIC_DATA=true --dart-define=00631L_STATIC_DATA_BASE_URL=00631l-static-data
+flutter build web --base-href="/longterm_stock_research_assistant/" --dart-define=USE_00631L_LIVE_PROXY=true --dart-define=00631L_PROXY_BASE_URL=%PUBLIC_BACKEND_URL% --dart-define=00631L_PROXY_TIMEOUT_MS=%PUBLIC_PROXY_TIMEOUT_MS% --dart-define=USE_00631L_STATIC_DATA=true --dart-define=00631L_STATIC_DATA_BASE_URL=00631l-static-data
 exit /b %ERRORLEVEL%

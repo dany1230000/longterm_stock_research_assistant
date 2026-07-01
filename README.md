@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.65 makes Pages builds default to the public Render backend
+  (`https://longterm-stock-research-assistant.onrender.com`) with static public
+  data as fallback.
+
 - v9.64 compresses the overview daily summary strip by removing the duplicate
   header row, keeping the first screen focused on quote, chart, and exposure.
 
