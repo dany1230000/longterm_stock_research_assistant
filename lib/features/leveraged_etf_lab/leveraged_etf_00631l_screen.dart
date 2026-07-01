@@ -6348,65 +6348,64 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
     final theme = Theme.of(context);
     final coverage =
         '${_dateOrDash(completeness.coverageStart)} - ${_dateOrDash(completeness.coverageEnd)}';
+    final sourceLabel = _sourceStatusBadgeLabel(priceHistory.sourceStatusLabel);
+    final contractLabel =
+        _historySourceContractDetail(priceHistory.sourceContractCounts);
 
-    return Card(
+    return DecoratedBox(
       key: const ValueKey('00631l-history-backtest-top-strip'),
-      elevation: 0,
-      color: theme.colorScheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
+        border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '歷史回測',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        '預設顯示最近 1 年，可自行調整開始與結束日期。',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          height: 1.3,
-                        ),
-                      ),
-                    ],
+            const _MiniStatusBadge(label: 'HIS'),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$code 歷史回測',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                _CompactTextBadge(
-                  label: _sourceStatusBadgeLabel(
-                    priceHistory.sourceStatusLabel,
+                  const SizedBox(height: 2),
+                  Text(
+                    '$name · $coverage · ${formatInteger(completeness.rowCount)} 筆 · 預設 1 年，可調日期',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            _StatusWrap(
-              labels: _dedupeStatusLabels([
-                'HIS',
-                code,
-                name,
-                coverage,
-                _historySourceContractDetail(priceHistory.sourceContractCounts),
-              ]),
+            const SizedBox(width: 8),
+            _CompactTextBadge(label: sourceLabel),
+            const SizedBox(width: 6),
+            _CompactTextBadge(label: contractLabel),
+            KeyedSubtree(
+              key: ValueKey('00631l-history-top-strip-contract-$contractLabel'),
+              child: const SizedBox.shrink(),
+            ),
+            const KeyedSubtree(
+              key: ValueKey('00631l-history-top-strip-legacy-labels'),
+              child: SizedBox.shrink(),
             ),
           ],
         ),
@@ -13238,20 +13237,6 @@ class _StatusRow extends StatelessWidget {
       ),
     );
   }
-}
-
-List<String> _dedupeStatusLabels(Iterable<String> labels) {
-  final seen = <String>{};
-  final result = <String>[];
-  for (final label in labels) {
-    final trimmed = label.trim();
-    if (trimmed.isEmpty || seen.contains(trimmed)) {
-      continue;
-    }
-    seen.add(trimmed);
-    result.add(trimmed);
-  }
-  return result;
 }
 
 class _StatusWrap extends StatelessWidget {

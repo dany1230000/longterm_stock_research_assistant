@@ -949,10 +949,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('歷史回測'), findsWidgets);
-    expect(find.textContaining('預設顯示最近 1 年'), findsOneWidget);
+    expect(find.textContaining('預設 1 年，可調日期'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-history-backtest-top-strip')),
       findsOneWidget,
+    );
+    expect(
+      tester
+          .getRect(
+            find.byKey(const ValueKey('00631l-history-backtest-top-strip')),
+          )
+          .height,
+      lessThanOrEqualTo(56),
     );
     expect(
       find.byKey(const ValueKey('00631l-history-quality-expansion')),

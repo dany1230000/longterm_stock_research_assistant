@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.85 compacts the history/backtest top context card so date controls and
+  charts appear sooner on mobile.
+
 - v9.84 compresses the overview daily data-status row into a mobile ticker so
   the one-year chart appears sooner on the first screen.
 
