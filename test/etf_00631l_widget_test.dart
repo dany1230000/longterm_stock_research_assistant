@@ -528,7 +528,10 @@ void main() {
     expect(find.text('資料正確性'), findsNothing);
     expect(find.text('目前檔案'), findsNothing);
     expect(find.text('近一年走勢'), findsOneWidget);
-    expect(find.textContaining('官方曝險'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('00631l-overview-core-metric-strip')),
       findsNothing,
@@ -560,7 +563,7 @@ void main() {
     expect(tester.getRect(chartFinder).bottom, lessThanOrEqualTo(540));
     expect(
       find.byKey(const ValueKey('00631l-overview-exposure-compact-row')),
-      findsOneWidget,
+      findsNothing,
     );
     await tester.ensureVisible(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),

@@ -4753,16 +4753,7 @@ class _OverviewSignalPanel extends StatelessWidget {
                 ],
               );
             }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                priceBlock,
-                if (hasUsableExposure) ...[
-                  const SizedBox(height: 8),
-                  exposureBlock,
-                ],
-              ],
-            );
+            return priceBlock;
           },
         ),
       ),

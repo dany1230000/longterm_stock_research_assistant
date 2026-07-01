@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.73 removes the duplicated mobile exposure row from the overview chart
+  panel, leaving official holdings exposure in the nearby holdings digest while
+  keeping the one-year chart expanded.
+
 - v9.72 derives intraday premium/discount from TWSE market price and estimated
   NAV when the TWSE premium field is blank, so the public app does not show an
   unavailable state while official price/NAV fields are present.

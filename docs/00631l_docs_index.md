@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview signal cleanup v9.73: `docs\00631l_v9_73_overview_signal_cleanup.md`
 - Intraday premium fallback v9.72: `docs\00631l_v9_72_intraday_premium_fallback.md`
 - Live warm-up retry v9.71: `docs\00631l_v9_71_live_warmup_retry.md`
 - Mobile overview density v9.70: `docs\00631l_v9_70_mobile_overview_density.md`
