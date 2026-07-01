@@ -1289,15 +1289,15 @@ void main() {
     final sourceStrip =
         find.byKey(const ValueKey('00631l-position-source-chip-strip'));
     expect(sourceExpansion, findsOneWidget);
-    expect(sourceSummary, findsOneWidget);
+    expect(sourceSummary, findsNothing);
     expect(sourceStrip, findsNothing);
     expect(
       find.descendant(of: sourceSummary, matching: find.textContaining('行情')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.descendant(of: sourceSummary, matching: find.textContaining('時間')),
-      findsOneWidget,
+      findsNothing,
     );
     await tester.tap(sourceExpansion);
     await tester.pumpAndSettle();

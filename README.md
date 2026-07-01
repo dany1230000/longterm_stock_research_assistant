@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v11.0 starts the next density pass: position source detail is no longer
+  duplicated on the first screen, position actions are narrower, and settings
+  cards use tighter mobile proportions.
+
 - v10.9 moves the overview one-year chart directly under the quote header and
   pushes the daily data ticker below the chart, so the first screen reads like
   a market page instead of a status dashboard.

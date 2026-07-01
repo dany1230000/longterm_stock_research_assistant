@@ -9380,9 +9380,9 @@ class _PositionQuickAction extends StatelessWidget {
           border: Border.all(color: theme.colorScheme.outlineVariant),
         ),
         child: SizedBox(
-          width: 96,
+          width: 86,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
             child: Row(
               children: [
                 Icon(icon, size: 16, color: foreground),
@@ -9510,11 +9510,6 @@ class _PositionAccountStrip extends StatelessWidget {
               items: items,
             ),
             const SizedBox(height: 8),
-            _PositionSourceSummaryChips(
-              selectedEtf: selectedEtf,
-              dataTime: dataTime,
-            ),
-            const SizedBox(height: 8),
             _CompactExpansionPanel(
               key: const ValueKey('00631l-position-source-expansion'),
               title: '更多資料來源',
@@ -9526,29 +9521,6 @@ class _PositionAccountStrip extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _PositionSourceSummaryChips extends StatelessWidget {
-  const _PositionSourceSummaryChips({
-    required this.selectedEtf,
-    required this.dataTime,
-  });
-
-  final _SelectedEtfViewData selectedEtf;
-  final String dataTime;
-
-  @override
-  Widget build(BuildContext context) {
-    return KeyedSubtree(
-      key: const ValueKey('00631l-position-source-summary-chips'),
-      child: _StatusWrap(
-        labels: [
-          '行情 ${_sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel)}',
-          '時間 $dataTime',
-        ],
       ),
     );
   }
@@ -12278,7 +12250,7 @@ class _SettingsPreferenceGrid extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
-            childAspectRatio: veryNarrow ? 2.6 : 1.34,
+            childAspectRatio: veryNarrow ? 3.0 : 1.55,
             children: [
               for (final item in items)
                 _SettingsPreferenceCard(
@@ -12344,18 +12316,7 @@ class _SettingsPreferenceCard extends StatelessWidget {
                 fontWeight: FontWeight.w900,
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              item.detail,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                height: 1.25,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const Spacer(),
+            const SizedBox(height: 3),
             Text(
               item.action,
               maxLines: 1,
@@ -12392,7 +12353,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
       key: const ValueKey('00631l-settings-quick-summary-compact'),
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
