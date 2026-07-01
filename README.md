@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v9.78 trims the AI first screen by keeping the conclusion and program action
+  visible first, while longer readouts and fact cards move into an expandable
+  `AI 資料細節` panel.
+
 - v9.77 makes the overview ETF-aware after symbol search. 00631L keeps the
   official holdings/NAV summary, while other ETFs show a data completeness
   digest instead of 00631L-specific live fields.

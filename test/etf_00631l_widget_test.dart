@@ -2319,6 +2319,27 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.byKey(const ValueKey('00631l-ai-daily-detail-expansion')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-daily-briefing-bullets')),
+      findsNothing,
+    );
+    final detailExpansion =
+        find.byKey(const ValueKey('00631l-ai-daily-detail-expansion'));
+    await tester.scrollUntilVisible(
+      detailExpansion,
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(detailExpansion);
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -140));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('AI 資料細節'));
+    await tester.pumpAndSettle();
+    expect(
       find.byKey(const ValueKey('00631l-ai-daily-briefing-bullets')),
       findsOneWidget,
     );
@@ -2586,6 +2607,20 @@ void main() {
     await _pumpLab(tester, Mock00631LRepository());
 
     await _tapSection(tester, 'ai');
+    await tester.pumpAndSettle();
+
+    final detailExpansion =
+        find.byKey(const ValueKey('00631l-ai-daily-detail-expansion'));
+    await tester.scrollUntilVisible(
+      detailExpansion,
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(detailExpansion);
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -140));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('AI 資料細節'));
     await tester.pumpAndSettle();
 
     final factRow = find.byKey(const ValueKey('00631l-ai-daily-fact-row'));
