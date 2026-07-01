@@ -11095,10 +11095,6 @@ class _SettingsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SettingsHeaderStrip(
-          selectedEtfCode: selectedEtf.code,
-        ),
-        const SizedBox(height: 10),
         _SettingsQuickSummaryGrid(
           data: data,
           selectedEtf: selectedEtf,
@@ -11238,6 +11234,7 @@ class _SettingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         _CompactExpansionPanel(
+          key: const ValueKey('00631l-settings-advanced-maintenance-panel'),
           title: '進階維護診斷',
           subtitle: '後端、歷史、日報、匯出、備份與部署設定。',
           child: _StatusList(
@@ -11529,71 +11526,6 @@ class _EtfCatalogItemTile extends StatelessWidget {
   }
 }
 
-class _SettingsHeaderStrip extends StatelessWidget {
-  const _SettingsHeaderStrip({
-    required this.selectedEtfCode,
-  });
-
-  final String selectedEtfCode;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const _MiniStatusBadge(label: 'APP'),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '我的',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-                const _CompactTextBadge(label: '本機保存'),
-              ],
-            ),
-            const SizedBox(height: 7),
-            Text(
-              '帳戶、外觀、上架準備與本機資料放在前面；資料診斷需要時再展開。',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                height: 1.35,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            _StatusWrap(
-              labels: [
-                '本機保存',
-                '目前 $selectedEtfCode',
-                _frontendDataModeLabel,
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _SettingsPreferenceItem {
   const _SettingsPreferenceItem({
     required this.keySuffix,
@@ -11738,9 +11670,6 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = data.operationsStatus;
-    final releaseLabel = status.staticReleaseAppVersion.isEmpty
-        ? '版本未載入'
-        : '版本 ${status.staticReleaseAppVersion}';
     final readinessStatus = readinessLabel == '就緒' ? '就緒' : '進階檢查';
     final theme = Theme.of(context);
     return KeyedSubtree(
@@ -11755,7 +11684,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      '我的總覽',
+                      '我的',
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
@@ -11766,7 +11695,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '帳戶、目前 ETF、資料模式與版本放在這裡；細節往下展開。',
+                '帳戶、外觀、目前 ETF 與本機資料；維護細節需要時再展開。',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                   height: 1.35,
@@ -11776,13 +11705,11 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
               _StatusWrap(
                 labels: [
                   '免登入',
+                  '本機保存',
                   '目前 ${selectedEtf.code}',
                   _sourceStatusBadgeLabel(
                     selectedEtf.priceHistory.sourceStatusLabel,
                   ),
-                  releaseLabel,
-                  status.publicDeploymentSyncLabel,
-                  '日常狀態',
                   readinessStatus,
                 ],
               ),

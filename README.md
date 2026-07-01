@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.80 trims the bottom-right `我的` page into a user-facing account/settings
+  first screen, with deployment diagnostics kept behind advanced expansion.
+
 - v9.79 clarifies ETF comparison charts: the comparison basket stays
   user-selected, date labels are visible under the chart, and the touch detail
   panel uses actual data dates.

@@ -2465,7 +2465,7 @@ void main() {
       findsNothing,
     );
     expect(find.text('我的'), findsWidgets);
-    expect(find.text('我的總覽'), findsOneWidget);
+    expect(find.text('我的總覽'), findsNothing);
     expect(find.text('帳戶與偏好'), findsOneWidget);
     expect(find.text('免登入'), findsOneWidget);
     expect(find.text('ETF 資料與比較能力'), findsOneWidget);
@@ -2614,6 +2614,13 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
+    expect(find.text('version drift'), findsNothing);
+    final advancedPanel = find
+        .byKey(const ValueKey('00631l-settings-advanced-maintenance-panel'));
+    await tester.ensureVisible(advancedPanel);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('進階維護診斷'));
+    await tester.pumpAndSettle();
     expect(find.text('version drift'), findsWidgets);
     _expectNoTradingActionText();
   });
