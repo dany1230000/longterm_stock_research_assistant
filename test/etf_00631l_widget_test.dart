@@ -650,6 +650,15 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
       findsOneWidget,
     );
+    expect(
+      tester
+          .getRect(
+            find.byKey(
+                const ValueKey('00631l-overview-sparkline-touch-detail')),
+          )
+          .height,
+      lessThanOrEqualTo(44),
+    );
     expect(find.textContaining('點擊圖表可查看指定日期數值'), findsWidgets);
   });
 
@@ -1038,10 +1047,6 @@ void main() {
       findsOneWidget,
     );
     expect(find.textContaining('點擊圖表可查看指定日期數值'), findsWidgets);
-    expect(
-      find.textContaining('最新資料 2026/06/03'),
-      findsWidgets,
-    );
     expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsWidgets);
     expect(find.textContaining('圖表、指標與下方回測快覽'), findsWidgets);
     expect(find.text('起點 2025/06/03'), findsWidgets);

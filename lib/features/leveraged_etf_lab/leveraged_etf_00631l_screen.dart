@@ -14218,9 +14218,7 @@ class _ChartTouchDetail extends StatelessWidget {
             ? '點擊圖表可查看完整日期與數值'
             : '圖表區間 ${formatTaiwanDate(rangeStart!)} - ${formatTaiwanDate(rangeEnd!)}'
         : '$label ${formatTaiwanDate(point!.date)} · ${_compactChartValue(value!)}';
-    final secondary = isManualSelection ? '再次點擊圖表可切換日期' : '點擊圖表可查看指定日期數值';
-    final secondaryDetail =
-        point == null || value == null ? secondary : '$primary · $secondary';
+    final secondary = isManualSelection ? '點擊可切換日期' : '點擊圖表可查看指定日期數值';
     return DecoratedBox(
       key: const ValueKey('00631l-line-chart-touch-detail'),
       decoration: BoxDecoration(
@@ -14229,25 +14227,44 @@ class _ChartTouchDetail extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (point != null && value != null)
-              Wrap(
+              Row(
                 key: const ValueKey('00631l-line-chart-touch-primary'),
-                spacing: 6,
-                runSpacing: 4,
                 children: [
-                  _ChartTouchInfoPill(
-                    key: const ValueKey('00631l-line-chart-touch-date'),
-                    label: '日期',
-                    value: formatTaiwanDate(point!.date),
+                  Flexible(
+                    flex: 5,
+                    child: _ChartTouchInfoPill(
+                      key: const ValueKey('00631l-line-chart-touch-date'),
+                      label: '日',
+                      value: formatTaiwanDate(point!.date),
+                    ),
                   ),
-                  _ChartTouchInfoPill(
-                    key: const ValueKey('00631l-line-chart-touch-value'),
-                    label: '數值',
-                    value: _compactChartValue(value!),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    flex: 4,
+                    child: _ChartTouchInfoPill(
+                      key: const ValueKey('00631l-line-chart-touch-value'),
+                      label: '值',
+                      value: _compactChartValue(value!),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    flex: 5,
+                    child: Text(
+                      secondary,
+                      key: const ValueKey('00631l-line-chart-touch-secondary'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: _marketMutedTextColor(context),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ],
               )
@@ -14262,17 +14279,19 @@ class _ChartTouchDetail extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                 ),
               ),
-            const SizedBox(height: 3),
-            Text(
-              secondaryDetail,
-              key: const ValueKey('00631l-line-chart-touch-secondary'),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w700,
+            if (point == null || value == null) ...[
+              const SizedBox(height: 2),
+              Text(
+                secondary,
+                key: const ValueKey('00631l-line-chart-touch-secondary'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),
@@ -14300,9 +14319,8 @@ class _ChartTouchInfoPill extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               label,
@@ -14312,11 +14330,15 @@ class _ChartTouchInfoPill extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            Text(
-              value,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w900,
+            Expanded(
+              child: Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
           ],

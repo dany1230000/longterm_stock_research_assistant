@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v9.89 makes the overview chart touch detail a single compact row while
+  keeping exact date and value feedback.
+
 - v9.88 keeps the `我的` page more daily-use oriented by placing ETF data
   capability and data-mode sections before app-store planning details.
 
