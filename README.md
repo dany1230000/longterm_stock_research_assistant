@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v12.7 cleans up the left-top ETF search results. Result rows now keep only
+  code, name, type, ready state, and price; coverage metadata moves under
+  `更多資料`.
+
 - v12.6 tightens the `我的` page preference grid. Account, appearance, current
   ETF, and local-position cards use a flatter 2x2 phone layout while advanced
   diagnostics stay behind details.

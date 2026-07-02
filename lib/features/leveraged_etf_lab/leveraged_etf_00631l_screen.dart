@@ -1771,6 +1771,11 @@ class _SymbolSearchResultTile extends StatelessWidget {
           key: ValueKey('00631l-symbol-price-basis-${item.code}'),
           label: priceBasisLabel,
         ),
+      if (historyMetadataLabel.isNotEmpty)
+        _SymbolSearchDetailBadge(
+          key: ValueKey('00631l-symbol-history-metadata-${item.code}'),
+          label: historyMetadataLabel,
+        ),
       if (missingReasonLabel.isNotEmpty)
         _SymbolSearchDetailBadge(
           key: ValueKey('00631l-symbol-gap-reason-${item.code}'),
@@ -1842,8 +1847,6 @@ class _SymbolSearchResultTile extends StatelessWidget {
                             label: readiness.badgeLabel,
                           ),
                         ),
-                        if (historyMetadataLabel.isNotEmpty)
-                          _CompactTextBadge(label: historyMetadataLabel),
                       ],
                     ),
                     const SizedBox(height: 6),

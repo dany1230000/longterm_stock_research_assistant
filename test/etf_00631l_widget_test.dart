@@ -1577,6 +1577,15 @@ void main() {
       find.descendant(of: result0050, matching: find.text('歷史/回測可用')),
       findsOneWidget,
     );
+    expect(
+      find.descendant(
+        of: result0050,
+        matching: find.byKey(
+          const ValueKey('00631l-symbol-history-metadata-0050'),
+        ),
+      ),
+      findsNothing,
+    );
     await tester.ensureVisible(
       find.byKey(const ValueKey('00631l-symbol-result-details-0050')),
     );
@@ -1911,7 +1920,11 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-history-ready-00701')),
       findsOneWidget,
     );
-    expect(find.text('recent · 12 筆'), findsOneWidget);
+    expect(find.text('recent · 12 筆'), findsNothing);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-history-metadata-00701')),
+      findsNothing,
+    );
     expect(
       find.byKey(const ValueKey('00631l-symbol-price-basis-00701')),
       findsNothing,
@@ -1928,6 +1941,11 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-result-details-00701')),
     );
     await tester.pumpAndSettle();
+    expect(find.text('recent · 12 筆'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-history-metadata-00701')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('00631l-symbol-price-basis-00701')),
       findsOneWidget,
