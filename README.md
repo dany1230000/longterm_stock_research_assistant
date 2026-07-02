@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.4 tightens the backtest quick result strip on phones. Technical source
+  badges move out of the compact result row while strategy and non-advice
+  context remain visible.
+
 - v15.3 tightens the settings first screen on phones. The account-style summary
   now keeps only essential mode badges and one data-mode line before the
   preference cards.

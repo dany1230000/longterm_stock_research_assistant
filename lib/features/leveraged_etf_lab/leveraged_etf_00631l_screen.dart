@@ -8772,6 +8772,7 @@ class _BacktestQuickResultStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final items = [
       _InlineQualityPill(
         label: '期末',
@@ -8836,12 +8837,17 @@ class _BacktestQuickResultStrip extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             _StatusWrap(
-              labels: [
-                strategyLabel,
-                'source $sourceStatusLabel',
-                '回測不代表未來表現',
-                '非買賣建議',
-              ],
+              labels: compact
+                  ? [
+                      strategyLabel,
+                      '非買賣建議',
+                    ]
+                  : [
+                      strategyLabel,
+                      'source $sourceStatusLabel',
+                      '回測不代表未來表現',
+                      '非買賣建議',
+                    ],
             ),
           ],
         ),

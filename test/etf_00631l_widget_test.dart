@@ -1694,6 +1694,41 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('backtest quick result stays compact on phone width',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _PriceHistoryRepository());
+
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
+
+    final quickResultStrip =
+        find.byKey(const ValueKey('00631l-backtest-quick-result-strip'));
+    await tester.scrollUntilVisible(
+      quickResultStrip,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(quickResultStrip, findsOneWidget);
+    expect(tester.getRect(quickResultStrip).height, lessThanOrEqualTo(118));
+    expect(
+      find.descendant(
+        of: quickResultStrip,
+        matching: find.textContaining('source'),
+      ),
+      findsNothing,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('top symbol search renders catalog result list', (tester) async {
     await _pumpLab(tester, Mock00631LRepository());
 
