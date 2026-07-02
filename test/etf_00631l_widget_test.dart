@@ -199,11 +199,11 @@ void main() {
     );
     final topBar = find.byKey(const ValueKey('00631l-market-top-bar'));
     expect(topBar, findsOneWidget);
-    expect(tester.getRect(topBar).height, equals(60));
+    expect(tester.getRect(topBar).height, equals(54));
     final symbolButton =
         find.byKey(const ValueKey('00631l-symbol-search-button'));
-    expect(tester.getRect(symbolButton).height, greaterThanOrEqualTo(38));
-    expect(tester.getRect(symbolButton).height, lessThanOrEqualTo(46));
+    expect(tester.getRect(symbolButton).height, greaterThanOrEqualTo(34));
+    expect(tester.getRect(symbolButton).height, lessThanOrEqualTo(42));
     expect(
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsOneWidget,
@@ -596,7 +596,7 @@ void main() {
     );
     expect(chartFinder, findsOneWidget);
     final chartRect = tester.getRect(chartFinder);
-    expect(chartRect.height, lessThanOrEqualTo(62));
+    expect(chartRect.height, lessThanOrEqualTo(56));
     expect(chartRect.bottom, lessThanOrEqualTo(440));
     expect(chartRect.top, lessThan(ribbonRect.top));
     expect(ribbonRect.top, greaterThan(chartRect.bottom));

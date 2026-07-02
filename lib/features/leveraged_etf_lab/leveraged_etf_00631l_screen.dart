@@ -945,10 +945,10 @@ class _MarketTopBar extends StatelessWidget {
             : selectedEtfName.trim();
     return SizedBox(
       key: const ValueKey('00631l-market-top-bar'),
-      height: 60,
+      height: 54,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final showModeBadge = constraints.maxWidth >= 500;
+          final showModeBadge = constraints.maxWidth >= 560;
           return Row(
             children: [
               _MarketIndexPill(
@@ -962,7 +962,7 @@ class _MarketTopBar extends StatelessWidget {
                           onEtfSelected: onEtfSelected,
                         ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -974,7 +974,7 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: _marketTextColor(context),
-                        fontSize: 21,
+                        fontSize: 19,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0,
                         height: 1.08,
@@ -987,7 +987,7 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: _marketMutedTextColor(context),
-                        fontSize: 11.5,
+                        fontSize: 11,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0,
                         height: 1.08,
@@ -1004,8 +1004,13 @@ class _MarketTopBar extends StatelessWidget {
                 tooltip: '重新整理',
                 onPressed: onRefresh,
                 color: _marketTextColor(context),
+                constraints: const BoxConstraints.tightFor(
+                  width: 34,
+                  height: 34,
+                ),
+                padding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
-                icon: const Icon(Icons.refresh, size: 21),
+                icon: const Icon(Icons.refresh, size: 20),
               ),
               const _ThemeToggleButton(compact: true),
             ],
@@ -1038,7 +1043,7 @@ class _MarketIndexPill extends StatelessWidget {
             border: Border.all(color: const Color(0xFF67C58B)),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -1046,14 +1051,14 @@ class _MarketIndexPill extends StatelessWidget {
                   label,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(width: 5),
-                const Icon(Icons.search, color: Colors.white, size: 16),
+                const Icon(Icons.search, color: Colors.white, size: 15),
                 const SizedBox(width: 3),
-                const Icon(Icons.expand_more, color: Colors.white, size: 17),
+                const Icon(Icons.expand_more, color: Colors.white, size: 16),
               ],
             ),
           ),
@@ -2597,7 +2602,7 @@ class _CompactPremiumBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return ConstrainedBox(
       key: const ValueKey('00631l-quote-premium-box'),
-      constraints: const BoxConstraints(minWidth: 88, maxWidth: 108),
+      constraints: const BoxConstraints(minWidth: 82, maxWidth: 98),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.14),
@@ -2605,7 +2610,7 @@ class _CompactPremiumBox extends StatelessWidget {
           border: Border.all(color: color.withValues(alpha: 0.46)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -2621,7 +2626,7 @@ class _CompactPremiumBox extends StatelessWidget {
                 value,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
                     ),
@@ -3593,7 +3598,8 @@ class _OverviewMarketStack extends StatelessWidget {
             border: Border.all(color: _marketBorderColor(context)),
           ),
           child: Padding(
-            padding: EdgeInsets.fromLTRB(5, 5, 5, compact ? 3 : 6),
+            padding:
+                EdgeInsets.fromLTRB(5, compact ? 4 : 5, 5, compact ? 3 : 6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -3602,11 +3608,11 @@ class _OverviewMarketStack extends StatelessWidget {
                   selectedEtf: selectedEtf,
                   embedded: true,
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: compact ? 1 : 2),
                 _OverviewSignalPanel(data: data, embedded: true),
-                const SizedBox(height: 3),
-                const _MarketStackDivider(),
                 SizedBox(height: compact ? 2 : 3),
+                const _MarketStackDivider(),
+                SizedBox(height: compact ? 1 : 3),
                 if (compact)
                   _OverviewCompactDataRibbon(data: data)
                 else ...[
@@ -3796,7 +3802,8 @@ class _OverviewAiGlancePanel extends StatelessWidget {
             border: Border.all(color: _marketBorderColor(context)),
           ),
           child: Padding(
-            padding: EdgeInsets.fromLTRB(10, compact ? 6 : 7, 10, 7),
+            padding:
+                EdgeInsets.fromLTRB(9, compact ? 5 : 7, 9, compact ? 6 : 7),
             child: compact
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -5674,9 +5681,9 @@ class _SparklineChartState extends State<_SparklineChart> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final chartHeight = compact ? 60.0 : 88.0;
-    final emptyHeight = compact ? 48.0 : 72.0;
-    final verticalGap = compact ? 2.0 : 5.0;
+    final chartHeight = compact ? 54.0 : 88.0;
+    final emptyHeight = compact ? 44.0 : 72.0;
+    final verticalGap = compact ? 1.0 : 5.0;
     final spots = <FlSpot>[];
     final spotPoints = <EtfPriceHistoryPoint>[];
     for (var index = 0; index < widget.points.length; index += 1) {
@@ -5887,7 +5894,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: compact ? 5 : 6,
-          vertical: compact ? 2 : 4,
+          vertical: compact ? 1 : 4,
         ),
         child: Column(
           crossAxisAlignment: align,
