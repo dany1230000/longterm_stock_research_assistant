@@ -3060,6 +3060,15 @@ void main() {
       find.byKey(const ValueKey('00631l-settings-quick-summary-compact')),
       findsOneWidget,
     );
+    expect(
+      tester
+          .getRect(
+            find.byKey(const ValueKey('00631l-settings-quick-summary-compact')),
+          )
+          .height,
+      lessThanOrEqualTo(132),
+      reason: 'Settings should open with a compact account-style summary.',
+    );
     final preferenceGrid =
         find.byKey(const ValueKey('00631l-settings-preference-grid'));
     final accountCard =

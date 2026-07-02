@@ -13230,11 +13230,12 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
     final status = data.operationsStatus;
     final readinessStatus = readinessLabel == '就緒' ? '就緒' : '進階檢查';
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     return KeyedSubtree(
       key: const ValueKey('00631l-settings-quick-summary-compact'),
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -13243,7 +13244,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                   Expanded(
                     child: Text(
                       '我的',
-                      style: theme.textTheme.titleLarge?.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -13251,31 +13252,45 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                   _StatusPill(label: _frontendDataModeLabel),
                 ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                '帳戶、外觀、目前 ETF 與本機資料；維護細節需要時再展開。',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  height: 1.35,
-                ),
-              ),
-              const SizedBox(height: 10),
-              _StatusWrap(
-                labels: [
-                  '免登入',
-                  '本機保存',
-                  '目前 ${selectedEtf.code}',
-                  _sourceStatusBadgeLabel(
-                    selectedEtf.priceHistory.sourceStatusLabel,
+              if (!compact) ...[
+                const SizedBox(height: 3),
+                Text(
+                  '帳戶、外觀、目前 ETF 與本機資料；維護細節需要時再展開。',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.25,
                   ),
-                  readinessStatus,
-                ],
-              ),
+                ),
+              ],
               const SizedBox(height: 8),
+              _StatusWrap(
+                labels: compact
+                    ? [
+                        '免登入',
+                        '本機保存',
+                        '目前 ${selectedEtf.code}',
+                        readinessStatus,
+                      ]
+                    : [
+                        '免登入',
+                        '本機保存',
+                        '目前 ${selectedEtf.code}',
+                        _sourceStatusBadgeLabel(
+                          selectedEtf.priceHistory.sourceStatusLabel,
+                        ),
+                        readinessStatus,
+                      ],
+              ),
+              const SizedBox(height: 6),
               Text(
                 _settingsDataModeCaption(status),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],

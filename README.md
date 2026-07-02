@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.3 tightens the settings first screen on phones. The account-style summary
+  now keeps only essential mode badges and one data-mode line before the
+  preference cards.
+
 - v15.2 tightens the overview chart touch detail on phones. Date and value
   remain visible after tapping the chart, but the detail row uses a smaller
   market-app style footprint.
