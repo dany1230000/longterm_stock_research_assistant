@@ -236,7 +236,7 @@ class _LeveragedEtf00631LScreenState
       hasLiveCoreData: has00631LLiveCoreData(data),
       retryCount: _liveCoreRetryCount,
     )) {
-      return const Duration(seconds: 2);
+      return liveCoreWarmupRetryInterval;
     }
     final nav = data?.intradayNav;
     final session = nav?.marketSession() ??
@@ -257,7 +257,8 @@ class _LeveragedEtf00631LScreenState
   }
 }
 
-const liveCoreWarmupRetryLimit = 15;
+const liveCoreWarmupRetryLimit = 2;
+const liveCoreWarmupRetryInterval = Duration(seconds: 8);
 
 enum _LabSection {
   overview('總覽', Icons.dashboard_outlined),

@@ -48,6 +48,8 @@ void main() {
   });
 
   test('live core fallback uses only limited short retries', () {
+    expect(liveCoreWarmupRetryLimit, 2);
+    expect(liveCoreWarmupRetryInterval, const Duration(seconds: 8));
     expect(
       shouldUse00631LShortLiveRetry(
         liveProxyEnabled: true,

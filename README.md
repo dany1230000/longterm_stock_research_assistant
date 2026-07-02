@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v11.2 reduces public first-load refresh pressure. Live-core warmup now makes
+  only two short attempts before returning to the normal market-session refresh
+  interval, so static/public fallback pages do not keep reloading heavy data.
+
 - v11.1 compacts the AI first screen by replacing the paragraph-style source
   note with source/readiness/disclaimer badges.
 
