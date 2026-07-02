@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v12.1 adds a compact overview AI glance card, using the lower phone first
+  screen for one short interpretation line and one program action without
+  turning the overview into the full AI page.
+
 - v12.0 folds the official holdings digest into the overview market stack, so
   quote, one-year chart, data time, and daily holdings context read as one
   compact first-screen block.

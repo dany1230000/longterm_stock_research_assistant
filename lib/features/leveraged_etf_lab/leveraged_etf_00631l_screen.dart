@@ -3518,6 +3518,10 @@ class _OverviewSection extends StatelessWidget {
               _SelectedEtfOverviewDigest(selectedEtf: selectedEtf),
             ],
             const SizedBox(height: 8),
+            if (selectedEtf.is00631L) ...[
+              _OverviewAiGlancePanel(data: data),
+              const SizedBox(height: 8),
+            ],
             if (!selectedEtf.is00631L)
               _AlwaysExpandedPanel(
                 title: selectedEtf.is00631L ? '價格與曝險' : '價格走勢',
@@ -3609,6 +3613,161 @@ class _MarketStackDivider extends StatelessWidget {
     return Container(
       height: 1,
       color: _marketBorderColor(context),
+    );
+  }
+}
+
+class _OverviewAiGlancePanel extends StatelessWidget {
+  const _OverviewAiGlancePanel({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final summary = data.aiAnalysis;
+    final isMockSummary = summary.sourceStatusLabel.toLowerCase() == 'mock' ||
+        summary.sourceStatuses.values.any(
+          (status) => status.toLowerCase() == 'mock',
+        );
+    final rawBullets = isMockSummary
+        ? const ['目前為示範資料，請以 live 或 static 資料來源為準。']
+        : summary.bullets;
+    final bullets = rawBullets
+        .take(1)
+        .map(_aiDisplayText)
+        .where((text) => text.trim().isNotEmpty)
+        .toList(growable: false);
+    final action = isMockSummary
+        ? '檢查資料模式或啟動 live backend'
+        : summary.actionItems.isEmpty
+            ? null
+            : _aiDisplayText(summary.actionItems.first);
+    final generatedAt = summary.dataTime ?? summary.generatedAt;
+
+    return DecoratedBox(
+      key: const ValueKey('00631l-overview-ai-glance-card'),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'AI'),
+                const SizedBox(width: 7),
+                Expanded(
+                  child: Text(
+                    'AI 今日摘要',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                        ),
+                  ),
+                ),
+                _CompactTextBadge(
+                    label: _sourceStatusBadgeLabel(summary.source)),
+              ],
+            ),
+            const SizedBox(height: 6),
+            for (final bullet in bullets) ...[
+              _OverviewAiGlanceLine(text: bullet),
+              const SizedBox(height: 3),
+            ],
+            if (action != null && action.trim().isNotEmpty)
+              _OverviewAiActionLine(text: action),
+            const SizedBox(height: 5),
+            Text(
+              '${formatTimeSeconds(generatedAt)} · ${summary.disclaimer}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    fontWeight: FontWeight.w800,
+                    height: 1.2,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewAiGlanceLine extends StatelessWidget {
+  const _OverviewAiGlanceLine({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: Container(
+            width: 5,
+            height: 5,
+            decoration: BoxDecoration(
+              color: _marketBlue,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+        ),
+        const SizedBox(width: 7),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w800,
+                  height: 1.2,
+                ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _OverviewAiActionLine extends StatelessWidget {
+  const _OverviewAiActionLine({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          '程式操作',
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+              ),
+        ),
+        const SizedBox(width: 7),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+        ),
+      ],
     );
   }
 }

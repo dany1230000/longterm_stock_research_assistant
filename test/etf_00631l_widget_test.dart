@@ -606,6 +606,18 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-exposure-compact-row')),
       findsNothing,
     );
+    final aiGlance = find.byKey(
+      const ValueKey('00631l-overview-ai-glance-card'),
+    );
+    expect(aiGlance, findsOneWidget);
+    final aiRect = tester.getRect(aiGlance);
+    final bottomNavRect = tester.getRect(
+      find.byKey(const ValueKey('00631l-bottom-nav')),
+    );
+    expect(aiRect.top, lessThan(bottomNavRect.top));
+    expect(aiRect.height, lessThanOrEqualTo(112));
+    expect(find.text('AI 今日摘要'), findsOneWidget);
+    expect(find.text('程式操作'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),
       findsNothing,
