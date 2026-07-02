@@ -7724,100 +7724,115 @@ class _EtfHistoryComparisonPanelState
           ),
           const SizedBox(height: 10),
         ],
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              for (final filter in _EtfComparisonFilter.values) ...[
-                ChoiceChip(
-                  key: ValueKey('00631l-etf-comparison-filter-${filter.name}'),
-                  label: Text(filter.label),
-                  selected: _filter == filter,
-                  onSelected: (_) =>
-                      _applyComparisonFilter(filter, availableMetrics),
-                ),
-                const SizedBox(width: 8),
-              ],
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        _ComparisonSelectionChips(
-          metrics: availableMetrics,
-          selectedCodes: selectedCodes,
-          onChanged: (code, selected) {
-            setState(() {
-              final next = {...selectedCodes};
-              if (selected) {
-                if (next.length < 5) {
-                  next.add(code);
-                }
-              } else {
-                next.remove(code);
-              }
-              _selectedComparisonCodes = next;
-            });
-          },
-        ),
-        const SizedBox(height: 8),
-        SingleChildScrollView(
-          key: const ValueKey('00631l-etf-comparison-action-strip'),
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              OutlinedButton.icon(
-                key: const ValueKey('00631l-etf-comparison-clear'),
-                onPressed: selectedCodes.isEmpty
-                    ? null
-                    : () {
-                        setState(() {
-                          _selectedComparisonCodes = <String>{};
-                        });
-                      },
-                icon: const Icon(Icons.remove_circle_outline, size: 16),
-                label: const Text('清空組合'),
-              ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                key: const ValueKey('00631l-etf-comparison-apply-peer'),
-                onPressed: () {
-                  setState(() {
-                    _filter = _defaultComparisonFilterForCode(
-                        widget.selectedHistory.code);
-                    final preset = _presetComparisonCodes(
-                      _filter,
-                      availableMetrics,
-                    );
-                    _selectedComparisonCodes = preset.take(5).toSet();
-                  });
-                },
-                icon: const Icon(Icons.group_work_outlined, size: 16),
-                label: const Text('套用同類型'),
-              ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                key: const ValueKey('00631l-etf-comparison-selected-only'),
-                onPressed: () {
-                  setState(() {
-                    final selectedCode =
-                        widget.selectedHistory.code.trim().toUpperCase();
-                    _selectedComparisonCodes = availableMetrics
-                            .any((metric) => metric.code == selectedCode)
-                        ? {selectedCode}
-                        : <String>{};
-                  });
-                },
-                icon: const Icon(Icons.adjust_outlined, size: 16),
-                label: const Text('只看目前 ETF'),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
         _ComparisonCompactSummaryStrip(
           selectedMetrics: usableMetrics,
           readyCount: availableMetrics.length,
           candidateCount: metrics.length,
+        ),
+        const SizedBox(height: 8),
+        _CompactExpansionPanel(
+          key: const ValueKey('00631l-etf-comparison-selection-panel'),
+          title: '選擇比較 ETF',
+          subtitle: usableMetrics.isEmpty
+              ? '目前未選擇；可手動勾選 1-5 檔或快速帶入同類型。'
+              : '目前 ${usableMetrics.map((metric) => metric.code).join(' / ')}；可調整 1-5 檔。',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (final filter in _EtfComparisonFilter.values) ...[
+                      ChoiceChip(
+                        key: ValueKey(
+                          '00631l-etf-comparison-filter-${filter.name}',
+                        ),
+                        label: Text(filter.label),
+                        selected: _filter == filter,
+                        onSelected: (_) =>
+                            _applyComparisonFilter(filter, availableMetrics),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              _ComparisonSelectionChips(
+                metrics: availableMetrics,
+                selectedCodes: selectedCodes,
+                onChanged: (code, selected) {
+                  setState(() {
+                    final next = {...selectedCodes};
+                    if (selected) {
+                      if (next.length < 5) {
+                        next.add(code);
+                      }
+                    } else {
+                      next.remove(code);
+                    }
+                    _selectedComparisonCodes = next;
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              SingleChildScrollView(
+                key: const ValueKey('00631l-etf-comparison-action-strip'),
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    OutlinedButton.icon(
+                      key: const ValueKey('00631l-etf-comparison-clear'),
+                      onPressed: selectedCodes.isEmpty
+                          ? null
+                          : () {
+                              setState(() {
+                                _selectedComparisonCodes = <String>{};
+                              });
+                            },
+                      icon: const Icon(Icons.remove_circle_outline, size: 16),
+                      label: const Text('清空組合'),
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      key: const ValueKey('00631l-etf-comparison-apply-peer'),
+                      onPressed: () {
+                        setState(() {
+                          _filter = _defaultComparisonFilterForCode(
+                              widget.selectedHistory.code);
+                          final preset = _presetComparisonCodes(
+                            _filter,
+                            availableMetrics,
+                          );
+                          _selectedComparisonCodes = preset.take(5).toSet();
+                        });
+                      },
+                      icon: const Icon(Icons.group_work_outlined, size: 16),
+                      label: const Text('套用同類型'),
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      key:
+                          const ValueKey('00631l-etf-comparison-selected-only'),
+                      onPressed: () {
+                        setState(() {
+                          final selectedCode =
+                              widget.selectedHistory.code.trim().toUpperCase();
+                          _selectedComparisonCodes = availableMetrics
+                                  .any((metric) => metric.code == selectedCode)
+                              ? {selectedCode}
+                              : <String>{};
+                        });
+                      },
+                      icon: const Icon(Icons.adjust_outlined, size: 16),
+                      label: const Text('只看目前 ETF'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 8),
         Text(

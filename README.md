@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v13.9 tightens the history/backtest ETF comparison area. The first screen now
+  shows the selected-basket summary and chart entry first; filter chips, manual
+  ETF selection, and quick actions live under `選擇比較 ETF`.
+
 - v13.8 tightens the `我的` page first screen. Account, appearance, selected
   ETF, and local-position preferences stay visible; ETF database readiness,
   comparison details, and maintenance diagnostics move under `進階設定`.

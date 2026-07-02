@@ -2162,8 +2162,11 @@ void main() {
     expect(find.text('ETF 歷史比較'), findsOneWidget);
     expect(find.text('最近 1 年'), findsWidgets);
     expect(find.text('比較檔數'), findsOneWidget);
-    expect(find.text('代表'), findsWidgets);
-    expect(find.text('高股息'), findsOneWidget);
+    final selectionPanel =
+        find.byKey(const ValueKey('00631l-etf-comparison-selection-panel'));
+    expect(selectionPanel, findsOneWidget);
+    expect(find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
+        findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-etf-comparison-basket-expansion')),
       findsOneWidget,
@@ -2192,6 +2195,12 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-comparison-selected-codes')),
       findsOneWidget,
     );
+    await tester.ensureVisible(selectionPanel);
+    await tester.pumpAndSettle();
+    await tester.tap(selectionPanel);
+    await tester.pumpAndSettle();
+    expect(find.text('代表'), findsWidgets);
+    expect(find.text('高股息'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
       findsOneWidget,
@@ -2305,7 +2314,7 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-etf-comparison-action-strip')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-etf-comparison-mode-summary')),
@@ -2330,6 +2339,21 @@ void main() {
     expect(find.textContaining('預設只看目前 ETF'), findsWidgets);
     expect(find.textContaining('資料筆數足夠才會進入圖表'), findsOneWidget);
     expect(find.textContaining('basket'), findsNothing);
+    final selectionPanel =
+        find.byKey(const ValueKey('00631l-etf-comparison-selection-panel'));
+    expect(selectionPanel, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
+      findsNothing,
+    );
+    await tester.ensureVisible(selectionPanel);
+    await tester.pumpAndSettle();
+    await tester.tap(selectionPanel);
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-action-strip')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
       findsOneWidget,
