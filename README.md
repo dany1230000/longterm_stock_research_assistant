@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v12.9 replaces the separate phone daily-summary and holdings-digest rows with
+  one compact data ribbon. The overview first screen now prioritizes quote,
+  chart, DAY, NAV, TX, 2330, and history row count in one market stack.
+
 - v12.8 tightens the overview AI glance card. It keeps the same short summary
   and program action, but uses less vertical space on the phone first screen.
 

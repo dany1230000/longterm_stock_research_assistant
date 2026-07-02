@@ -546,16 +546,7 @@ void main() {
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: find.byKey(const ValueKey('00631l-overview-market-stack')),
-        matching: find.byKey(
-          const ValueKey('00631l-overview-holdings-digest-strip'),
-        ),
-      ),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-core-metric-strip')),
@@ -563,16 +554,23 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
-      findsOneWidget,
+      findsNothing,
     );
+    final compactRibbon = find.byKey(
+      const ValueKey('00631l-overview-compact-data-ribbon'),
+    );
+    expect(compactRibbon, findsOneWidget);
+    expect(find.text('DAY'), findsOneWidget);
+    expect(find.text('NAV'), findsOneWidget);
+    expect(find.text('TX'), findsWidgets);
+    expect(find.text('2330'), findsWidgets);
+    expect(find.text('HIS'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-overview-market-stack')),
       findsOneWidget,
     );
-    final summaryRect = tester.getRect(
-      find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
-    );
-    expect(summaryRect.height, lessThanOrEqualTo(48));
+    final ribbonRect = tester.getRect(compactRibbon);
+    expect(ribbonRect.height, lessThanOrEqualTo(28));
     final readinessStrip = find.byKey(
       const ValueKey('00631l-quote-readiness-strip'),
     );
@@ -591,9 +589,9 @@ void main() {
     expect(chartFinder, findsOneWidget);
     final chartRect = tester.getRect(chartFinder);
     expect(chartRect.height, lessThanOrEqualTo(70));
-    expect(chartRect.bottom, lessThanOrEqualTo(455));
-    expect(chartRect.top, lessThan(summaryRect.top));
-    expect(summaryRect.top, greaterThan(chartRect.bottom));
+    expect(chartRect.bottom, lessThanOrEqualTo(440));
+    expect(chartRect.top, lessThan(ribbonRect.top));
+    expect(ribbonRect.top, greaterThan(chartRect.bottom));
     final dateStripRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-sparkline-date-strip')),
     );
@@ -2472,7 +2470,7 @@ void main() {
     _expectNoTradingActionText();
   });
 
-  testWidgets('overview includes official holdings digest on phone',
+  testWidgets('overview includes official holdings context on phone',
       (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -2488,53 +2486,42 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-update-clock-strip')),
       findsNothing,
     );
-    expect(find.text('更新時間'), findsNothing);
     expect(
       find.byKey(
         const ValueKey('00631l-overview-holdings-digest-unavailable'),
       ),
       findsNothing,
     );
-    expect(find.text('期貨'), findsWidgets);
-    expect(find.text('台積電'), findsWidgets);
-    expect(find.text('曝險結構'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-exposure-summary-strip')),
       findsNothing,
     );
-    final holdingsDigest = find.byKey(
-      const ValueKey('00631l-overview-holdings-digest-strip'),
+
+    final compactRibbon = find.byKey(
+      const ValueKey('00631l-overview-compact-data-ribbon'),
     );
-    final digestRect = tester.getRect(holdingsDigest);
-    for (final label in const ['期貨', '台積電', '曝險結構']) {
+    expect(compactRibbon, findsOneWidget);
+    final ribbonRect = tester.getRect(compactRibbon);
+    expect(ribbonRect.height, lessThanOrEqualTo(28));
+    for (final label in const ['DAY', 'NAV', 'TX', '2330', 'HIS']) {
       final labelFinder = find.descendant(
-        of: holdingsDigest,
+        of: compactRibbon,
         matching: find.text(label),
       );
       expect(labelFinder, findsWidgets);
       expect(
         tester.getRect(labelFinder.first).right,
-        lessThanOrEqualTo(digestRect.right),
+        lessThanOrEqualTo(ribbonRect.right),
       );
     }
-    for (final label in const ['TX', '2330', 'MIX']) {
-      expect(
-        find.descendant(of: holdingsDigest, matching: find.text(label)),
-        findsNothing,
-      );
-    }
-    expect(find.byType(DataTable), findsNothing);
+
     expect(find.byType(DataTable), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),
-      findsNothing,
-    );
-    expect(
-      find.byKey(const ValueKey('00631l-overview-update-clock-strip')),
       findsNothing,
     );
     for (final section in const [
@@ -2549,7 +2536,7 @@ void main() {
     _expectNoTradingActionText();
   });
 
-  testWidgets('overview hides holdings digest when snapshot is unavailable',
+  testWidgets('overview shows compact unavailable holdings context on phone',
       (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -2568,18 +2555,23 @@ void main() {
       find.byKey(
         const ValueKey('00631l-overview-holdings-digest-unavailable'),
       ),
+      findsNothing,
+    );
+    final compactRibbon = find.byKey(
+      const ValueKey('00631l-overview-compact-data-ribbon'),
+    );
+    expect(compactRibbon, findsOneWidget);
+    expect(
+      find.descendant(of: compactRibbon, matching: find.text('TX')),
       findsOneWidget,
     );
-    expect(find.text('官方內容物暫不可用'), findsOneWidget);
-    expect(find.text('資料來源尚未回傳可用快照；已隱藏 0 值內容物。'), findsOneWidget);
     expect(
-      find.descendant(
-        of: find.byKey(
-          const ValueKey('00631l-overview-holdings-digest-unavailable'),
-        ),
-        matching: find.text('資料來源尚未回傳可用快照；未顯示 0 值內容物。'),
-      ),
+      find.descendant(of: compactRibbon, matching: find.text('2330')),
       findsOneWidget,
+    );
+    expect(
+      find.descendant(of: compactRibbon, matching: find.text('unavailable')),
+      findsWidgets,
     );
     expect(find.text('2026/06/28'), findsNothing);
     expect(

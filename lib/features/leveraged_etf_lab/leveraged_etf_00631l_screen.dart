@@ -3570,40 +3570,49 @@ class _OverviewMarketStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      key: const ValueKey('00631l-overview-market-stack'),
-      decoration: BoxDecoration(
-        color: _marketPanelColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(6, 6, 6, 6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _CompactQuoteHeader(
-              data: data,
-              selectedEtf: selectedEtf,
-              embedded: true,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 430;
+        return DecoratedBox(
+          key: const ValueKey('00631l-overview-market-stack'),
+          decoration: BoxDecoration(
+            color: _marketPanelColor(context),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: _marketBorderColor(context)),
+          ),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(6, 6, 6, compact ? 4 : 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _CompactQuoteHeader(
+                  data: data,
+                  selectedEtf: selectedEtf,
+                  embedded: true,
+                ),
+                const SizedBox(height: 3),
+                _OverviewSignalPanel(data: data, embedded: true),
+                const SizedBox(height: 4),
+                const _MarketStackDivider(),
+                SizedBox(height: compact ? 3 : 3),
+                if (compact)
+                  _OverviewCompactDataRibbon(data: data)
+                else ...[
+                  _OverviewDailySummaryStrip(
+                    data: data,
+                    detailsLoading: false,
+                    embedded: true,
+                  ),
+                  const SizedBox(height: 3),
+                  const _MarketStackDivider(),
+                  const SizedBox(height: 3),
+                  _OverviewHoldingsDigestPanel(data: data, embedded: true),
+                ],
+              ],
             ),
-            const SizedBox(height: 3),
-            _OverviewSignalPanel(data: data, embedded: true),
-            const SizedBox(height: 4),
-            const _MarketStackDivider(),
-            const SizedBox(height: 3),
-            _OverviewDailySummaryStrip(
-              data: data,
-              detailsLoading: false,
-              embedded: true,
-            ),
-            const SizedBox(height: 3),
-            const _MarketStackDivider(),
-            const SizedBox(height: 3),
-            _OverviewHoldingsDigestPanel(data: data, embedded: true),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -3616,6 +3625,123 @@ class _MarketStackDivider extends StatelessWidget {
     return Container(
       height: 1,
       color: _marketBorderColor(context),
+    );
+  }
+}
+
+class _OverviewCompactDataRibbon extends StatelessWidget {
+  const _OverviewCompactDataRibbon({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final snapshot = data.snapshot;
+    final nav = data.intradayNav;
+    final priceSummary = data.priceHistory.completenessSummary();
+    final hasUsableHoldings = _hasUsableHoldingsSnapshot(snapshot);
+    final txLine = _primaryFuturesLine(snapshot);
+    final tsmcLine = _stockHoldingByCode(snapshot, '2330');
+    final items = [
+      _OverviewCompactRibbonItem(
+        label: 'DAY',
+        value: hasUsableHoldings
+            ? _summaryMonthDay(snapshot.tradeDate)
+            : _sourceStatusBadgeLabel(snapshot.status.label),
+      ),
+      _OverviewCompactRibbonItem(
+        label: 'NAV',
+        value: nav?.dataTime == null
+            ? _sourceStatusBadgeLabel(nav?.status.label)
+            : _summaryTimeMinute(nav!.dataTime!),
+      ),
+      _OverviewCompactRibbonItem(
+        label: 'TX',
+        value: hasUsableHoldings
+            ? formatNullablePercent(txLine?.weightPct)
+            : 'unavailable',
+      ),
+      _OverviewCompactRibbonItem(
+        label: '2330',
+        value: hasUsableHoldings
+            ? formatNullablePercent(tsmcLine?.weightPct)
+            : 'unavailable',
+      ),
+      _OverviewCompactRibbonItem(
+        label: 'HIS',
+        value: formatInteger(priceSummary.rowCount),
+      ),
+    ];
+
+    return Row(
+      key: const ValueKey('00631l-overview-compact-data-ribbon'),
+      children: [
+        for (var index = 0; index < items.length; index++) ...[
+          Expanded(child: _OverviewCompactRibbonChip(item: items[index])),
+          if (index != items.length - 1) const SizedBox(width: 3),
+        ],
+      ],
+    );
+  }
+}
+
+class _OverviewCompactRibbonItem {
+  const _OverviewCompactRibbonItem({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+}
+
+class _OverviewCompactRibbonChip extends StatelessWidget {
+  const _OverviewCompactRibbonChip({required this.item});
+
+  final _OverviewCompactRibbonItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+        child: Row(
+          children: [
+            Text(
+              item.label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+                fontSize: 8.5,
+                height: 1,
+              ),
+            ),
+            const SizedBox(width: 3),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  item.value,
+                  maxLines: 1,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: _marketTextColor(context),
+                    fontWeight: FontWeight.w900,
+                    fontSize: 10,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
