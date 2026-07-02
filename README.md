@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v14.7 improves the loading state. The public app now shows a market-stack
+  skeleton with quote, premium/discount, chart, date chips, and data ribbon
+  placeholders while repositories are still loading.
+
 - v14.6 tightens the overview top density. The top market bar, symbol search
   pill, premium/discount box, one-year chart, and overview AI glance use less
   vertical space on phone screens while keeping the chart visible.

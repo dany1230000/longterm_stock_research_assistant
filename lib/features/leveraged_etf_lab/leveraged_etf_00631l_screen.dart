@@ -837,24 +837,154 @@ class _LoadingQuoteCard extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: const Padding(
-        padding: EdgeInsets.all(9),
+        padding: EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _LoadingBar(width: 86, height: 16),
-            SizedBox(height: 8),
-            _LoadingBar(width: 132, height: 30),
-            SizedBox(height: 8),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
+            Row(
               children: [
-                _LoadingBar(width: 82, height: 24),
-                _LoadingBar(width: 82, height: 24),
-                _LoadingBar(width: 94, height: 24),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _LoadingBar(width: 86, height: 14),
+                      SizedBox(height: 6),
+                      _LoadingBar(width: 118, height: 26),
+                      SizedBox(height: 5),
+                      _LoadingBar(width: 158, height: 14),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 8),
+                _LoadingPremiumSkeleton(),
+              ],
+            ),
+            SizedBox(height: 8),
+            _LoadingChartSkeleton(),
+            SizedBox(height: 5),
+            Row(
+              children: [
+                Expanded(child: _LoadingMiniTile(width: 74)),
+                SizedBox(width: 4),
+                Expanded(child: _LoadingMiniTile(width: 74)),
+                SizedBox(width: 4),
+                Expanded(child: _LoadingMiniTile(width: 74)),
+              ],
+            ),
+            SizedBox(height: 5),
+            Row(
+              children: [
+                Expanded(child: _LoadingMiniTile(width: 42, compact: true)),
+                SizedBox(width: 3),
+                Expanded(child: _LoadingMiniTile(width: 42, compact: true)),
+                SizedBox(width: 3),
+                Expanded(child: _LoadingMiniTile(width: 42, compact: true)),
+                SizedBox(width: 3),
+                Expanded(child: _LoadingMiniTile(width: 42, compact: true)),
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingPremiumSkeleton extends StatelessWidget {
+  const _LoadingPremiumSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      key: const ValueKey('00631l-loading-premium-box'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 7, vertical: 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _LoadingBar(width: 48, height: 10),
+            SizedBox(height: 6),
+            _LoadingBar(width: 70, height: 18),
+            SizedBox(height: 4),
+            _LoadingBar(width: 54, height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingChartSkeleton extends StatelessWidget {
+  const _LoadingChartSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      key: const ValueKey('00631l-loading-chart-skeleton'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const _LoadingBar(width: 86, height: 10),
+            const SizedBox(height: 8),
+            Container(
+              height: 28,
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: _marketBorderColor(context)),
+                ),
+              ),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: _LoadingBar(
+                  width: MediaQuery.sizeOf(context).width,
+                  height: 3,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingMiniTile extends StatelessWidget {
+  const _LoadingMiniTile({
+    required this.width,
+    this.compact = false,
+  });
+
+  final double width;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(compact ? 7 : 8),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 5 : 6,
+          vertical: compact ? 4 : 5,
+        ),
+        child: _LoadingBar(
+          width: width,
+          height: compact ? 9 : 10,
         ),
       ),
     );

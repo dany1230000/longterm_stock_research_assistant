@@ -808,7 +808,15 @@ void main() {
       tester
           .getRect(find.byKey(const ValueKey('00631l-loading-quote-card')))
           .height,
-      lessThanOrEqualTo(105),
+      lessThanOrEqualTo(210),
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-loading-premium-box')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-loading-chart-skeleton')),
+      findsOneWidget,
     );
     expect(
       find.byKey(const ValueKey('00631l-loading-metric-grid')),
