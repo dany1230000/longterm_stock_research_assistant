@@ -549,6 +549,15 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-overview-market-stack')),
+        matching: find.byKey(
+          const ValueKey('00631l-overview-holdings-digest-strip'),
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-overview-core-metric-strip')),
       findsNothing,
     );

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview holdings inline v12.0: `docs\00631l_v12_0_overview_holdings_inline.md`
 - Header symbol density v11.9: `docs\00631l_v11_9_header_symbol_density.md`
 - AI today-first summary v11.8: `docs\00631l_v11_8_ai_today_first.md`
 - Position mobile entry v11.7: `docs\00631l_v11_7_position_mobile_entry.md`

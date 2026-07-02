@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v12.0 folds the official holdings digest into the overview market stack, so
+  quote, one-year chart, data time, and daily holdings context read as one
+  compact first-screen block.
+
 - v11.9 makes the top-left ETF selector and app title proportion clearer on
   phones. The selector is easier to tap and remains the single place to switch
   ETF symbols.

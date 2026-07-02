@@ -3529,10 +3529,6 @@ class _OverviewSection extends StatelessWidget {
                     : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
               ),
             const SizedBox(height: 8),
-            if (selectedEtf.is00631L) ...[
-              _OverviewHoldingsDigestPanel(data: data),
-              const SizedBox(height: 8),
-            ],
             if (showSecondaryDetails)
               _CompactExpansionPanel(
                 key: const ValueKey('00631l-overview-more-expansion'),
@@ -3594,6 +3590,10 @@ class _OverviewMarketStack extends StatelessWidget {
               detailsLoading: false,
               embedded: true,
             ),
+            const SizedBox(height: 3),
+            const _MarketStackDivider(),
+            const SizedBox(height: 3),
+            _OverviewHoldingsDigestPanel(data: data, embedded: true),
           ],
         ),
       ),
@@ -4665,9 +4665,13 @@ class _OverviewDataQualityPanel extends StatelessWidget {
 }
 
 class _OverviewHoldingsDigestPanel extends StatelessWidget {
-  const _OverviewHoldingsDigestPanel({required this.data});
+  const _OverviewHoldingsDigestPanel({
+    required this.data,
+    this.embedded = false,
+  });
 
   final Etf00631LLabData data;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
@@ -4679,17 +4683,14 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
     final subtitleText =
         hasUsableHoldings ? '每日快照 · 盤中看 NAV' : '資料來源尚未回傳可用快照；已隱藏 0 值內容物。';
     final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    final content = Padding(
+      padding: embedded
+          ? const EdgeInsets.fromLTRB(2, 2, 2, 2)
+          : const EdgeInsets.fromLTRB(9, 8, 9, 9),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!embedded || !hasUsableHoldings) ...[
             Row(
               children: [
                 Expanded(
@@ -4722,58 +4723,92 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 7),
-            hasUsableHoldings
-                ? _HoldingDigestStrip(
-                    items: [
-                      _HoldingDigestItem(
-                        title: '期貨',
-                        value: txLine == null
-                            ? 'unavailable'
-                            : formatNullablePercent(txLine.weightPct),
-                        caption: txLine == null
-                            ? '官方快照未列 TX'
-                            : '${txLine.code} / ${txLine.contractMonth}',
-                      ),
-                      _HoldingDigestItem(
-                        title: '台積電',
-                        value: tsmcLine == null
-                            ? 'unavailable'
-                            : formatNullablePercent(tsmcLine.weightPct),
-                        caption: tsmcLine == null
-                            ? '官方快照未列 2330'
-                            : '${formatInteger(tsmcLine.quantity)} 股',
-                      ),
-                      _HoldingDigestItem(
-                        title: '曝險結構',
-                        value: '三項比例',
-                        caption: '股票 / 期貨 / 現金',
-                        metrics: [
-                          _HoldingDigestMetric(
-                            label: '股',
-                            value: formatNullablePercent(
-                              snapshot.stockExposureWeightPct,
-                            ),
-                          ),
-                          _HoldingDigestMetric(
-                            label: '期',
-                            value: formatNullablePercent(
-                              snapshot.futuresExposureWeightPct,
-                            ),
-                          ),
-                          _HoldingDigestMetric(
-                            label: '現',
-                            value: formatNullablePercent(
-                              snapshot.cashAndMarginWeightPct,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                : _HoldingDigestUnavailable(snapshot: snapshot),
           ],
-        ),
+          if (embedded && hasUsableHoldings) ...[
+            Row(
+              children: [
+                const _MiniStatusBadge(label: 'DAY'),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    titleText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                _CompactTextBadge(label: _summaryMonthDay(snapshot.tradeDate)),
+              ],
+            ),
+            const SizedBox(height: 5),
+          ],
+          hasUsableHoldings
+              ? _HoldingDigestStrip(
+                  items: [
+                    _HoldingDigestItem(
+                      title: '期貨',
+                      value: txLine == null
+                          ? 'unavailable'
+                          : formatNullablePercent(txLine.weightPct),
+                      caption: txLine == null
+                          ? '官方快照未列 TX'
+                          : '${txLine.code} / ${txLine.contractMonth}',
+                    ),
+                    _HoldingDigestItem(
+                      title: '台積電',
+                      value: tsmcLine == null
+                          ? 'unavailable'
+                          : formatNullablePercent(tsmcLine.weightPct),
+                      caption: tsmcLine == null
+                          ? '官方快照未列 2330'
+                          : '${formatInteger(tsmcLine.quantity)} 股',
+                    ),
+                    _HoldingDigestItem(
+                      title: '曝險結構',
+                      value: '三項比例',
+                      caption: '股票 / 期貨 / 現金',
+                      metrics: [
+                        _HoldingDigestMetric(
+                          label: '股',
+                          value: formatNullablePercent(
+                            snapshot.stockExposureWeightPct,
+                          ),
+                        ),
+                        _HoldingDigestMetric(
+                          label: '期',
+                          value: formatNullablePercent(
+                            snapshot.futuresExposureWeightPct,
+                          ),
+                        ),
+                        _HoldingDigestMetric(
+                          label: '現',
+                          value: formatNullablePercent(
+                            snapshot.cashAndMarginWeightPct,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              : _HoldingDigestUnavailable(snapshot: snapshot),
+        ],
       ),
+    );
+
+    if (embedded) {
+      return content;
+    }
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: content,
     );
   }
 }
