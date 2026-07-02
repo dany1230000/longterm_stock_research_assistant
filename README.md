@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v14.3 tightens the overview AI glance on phones. The home screen now shows a
+  two-line AI summary/action card with `非買賣建議`, while the full AI page keeps
+  the complete daily interpretation.
+
 - v14.2 tightens the AI page first screen on phones. The compact view now keeps
   only today's conclusion, data-time facts, the primary program action, and the
   `AI 資料細節` entry visible; the four-tile daily decision strip moves into the

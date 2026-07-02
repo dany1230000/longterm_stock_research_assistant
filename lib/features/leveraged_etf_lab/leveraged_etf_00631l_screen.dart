@@ -3785,58 +3785,103 @@ class _OverviewAiGlancePanel extends StatelessWidget {
             : _aiDisplayText(summary.actionItems.first);
     final generatedAt = summary.dataTime ?? summary.generatedAt;
 
-    return DecoratedBox(
-      key: const ValueKey('00631l-overview-ai-glance-card'),
-      decoration: BoxDecoration(
-        color: _marketPanelColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 7, 10, 7),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const _MiniStatusBadge(label: 'AI'),
-                const SizedBox(width: 7),
-                Expanded(
-                  child: Text(
-                    'AI 今日摘要',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: _marketTextColor(context),
-                          fontWeight: FontWeight.w900,
-                        ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 430;
+        return DecoratedBox(
+          key: const ValueKey('00631l-overview-ai-glance-card'),
+          decoration: BoxDecoration(
+            color: _marketPanelColor(context),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: _marketBorderColor(context)),
+          ),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(10, compact ? 6 : 7, 10, 7),
+            child: compact
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const _MiniStatusBadge(label: 'AI'),
+                          const SizedBox(width: 7),
+                          Expanded(
+                            child: Text(
+                              bullets.isEmpty ? 'AI 今日摘要' : bullets.first,
+                              key: const ValueKey(
+                                '00631l-overview-ai-compact-line',
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: _marketTextColor(context),
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.2,
+                                  ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          const _CompactTextBadge(label: '非買賣建議'),
+                        ],
+                      ),
+                      if (action != null && action.trim().isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        _OverviewAiActionLine(text: action),
+                      ],
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const _MiniStatusBadge(label: 'AI'),
+                          const SizedBox(width: 7),
+                          Expanded(
+                            child: Text(
+                              'AI 今日摘要',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(
+                                    color: _marketTextColor(context),
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                            ),
+                          ),
+                          _CompactTextBadge(
+                            label: _sourceStatusBadgeLabel(summary.source),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      for (final bullet in bullets) ...[
+                        _OverviewAiGlanceLine(text: bullet),
+                        const SizedBox(height: 2),
+                      ],
+                      if (action != null && action.trim().isNotEmpty)
+                        _OverviewAiActionLine(text: action),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${formatTimeSeconds(generatedAt)} · ${summary.disclaimer}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: _marketMutedTextColor(context),
+                              fontWeight: FontWeight.w800,
+                              height: 1.2,
+                            ),
+                      ),
+                    ],
                   ),
-                ),
-                _CompactTextBadge(
-                    label: _sourceStatusBadgeLabel(summary.source)),
-              ],
-            ),
-            const SizedBox(height: 5),
-            for (final bullet in bullets) ...[
-              _OverviewAiGlanceLine(text: bullet),
-              const SizedBox(height: 2),
-            ],
-            if (action != null && action.trim().isNotEmpty)
-              _OverviewAiActionLine(text: action),
-            const SizedBox(height: 4),
-            Text(
-              '${formatTimeSeconds(generatedAt)} · ${summary.disclaimer}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: _marketMutedTextColor(context),
-                    fontWeight: FontWeight.w800,
-                    height: 1.2,
-                  ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
