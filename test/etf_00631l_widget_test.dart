@@ -1138,6 +1138,19 @@ void main() {
       ),
       findsOneWidget,
     );
+    final metricStrip = find.descendant(
+      of: rangeContext,
+      matching: find.byKey(const ValueKey('00631l-range-context-metric-strip')),
+    );
+    expect(metricStrip, findsOneWidget);
+    expect(tester.getRect(metricStrip).height, lessThanOrEqualTo(38));
+    expect(
+      find.descendant(
+        of: rangeContext,
+        matching: find.byKey(const ValueKey('00631l-date-range-summary-mode')),
+      ),
+      findsNothing,
+    );
     expect(
       find.descendant(
         of: rangeContext,

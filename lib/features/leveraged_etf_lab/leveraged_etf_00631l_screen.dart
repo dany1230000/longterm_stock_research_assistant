@@ -8563,6 +8563,7 @@ class _BacktestDateRangeControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final preset = _activeDateRangePreset(
       startDate: startDate,
       endDate: endDate,
@@ -8578,12 +8579,14 @@ class _BacktestDateRangeControls extends StatelessWidget {
           rangeLabel: preset.label,
         ),
         const SizedBox(height: 6),
-        _DateRangeInlineLabels(
-          startDate: startDate,
-          endDate: endDate,
-          rangeLabel: preset.label,
-        ),
-        const SizedBox(height: 8),
+        if (!compact) ...[
+          _DateRangeInlineLabels(
+            startDate: startDate,
+            endDate: endDate,
+            rangeLabel: preset.label,
+          ),
+          const SizedBox(height: 8),
+        ],
         LayoutBuilder(
           builder: (context, constraints) {
             final children = [
@@ -8754,6 +8757,7 @@ class _BacktestDateButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     return InkWell(
       borderRadius: BorderRadius.circular(8),
       onTap: onTap,
@@ -8763,15 +8767,18 @@ class _BacktestDateButton extends StatelessWidget {
           border: Border.all(color: theme.colorScheme.outlineVariant),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 9),
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 7 : 9,
+            vertical: compact ? 7 : 9,
+          ),
           child: Row(
             children: [
               Icon(
                 Icons.calendar_today_outlined,
-                size: 16,
+                size: compact ? 14 : 16,
                 color: theme.colorScheme.primary,
               ),
-              const SizedBox(width: 7),
+              SizedBox(width: compact ? 5 : 7),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -8843,80 +8850,93 @@ class _RangeContextStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 430;
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHighest
+                .withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(compact ? 8 : 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
                     ),
+                    const _CompactTextBadge(label: '日期可調'),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  maxLines: compact ? 1 : 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w700,
+                    height: 1.25,
                   ),
                 ),
-                const _CompactTextBadge(label: '日期可調'),
+                const SizedBox(height: 8),
+                _RangeContextMetricStrip(
+                  items: items,
+                  compact: compact,
+                ),
+                if (child != null) ...[
+                  SizedBox(height: compact ? 6 : 8),
+                  child!,
+                ],
               ],
             ),
-            const SizedBox(height: 3),
-            Text(
-              subtitle,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w700,
-                height: 1.25,
-              ),
-            ),
-            const SizedBox(height: 8),
-            _RangeContextMetricStrip(
-              items: items,
-            ),
-            if (child != null) ...[
-              const SizedBox(height: 8),
-              child!,
-            ],
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
 
 class _RangeContextMetricStrip extends StatelessWidget {
-  const _RangeContextMetricStrip({required this.items});
+  const _RangeContextMetricStrip({
+    required this.items,
+    required this.compact,
+  });
 
   final List<_RangeContextItem> items;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       key: const ValueKey('00631l-range-context-metric-strip'),
       builder: (context, constraints) {
-        if (constraints.maxWidth < 380) {
-          final tileWidth = (constraints.maxWidth - 8) / 2;
-          return Wrap(
+        if (compact) {
+          final visibleItems = items.take(2).toList();
+          return Row(
             key: const ValueKey('00631l-range-context-wrap'),
-            spacing: 8,
-            runSpacing: 8,
             children: [
-              for (final item in items)
-                SizedBox(
-                  width: tileWidth,
-                  child: _RangeContextTile(item: item),
+              for (var index = 0; index < visibleItems.length; index += 1) ...[
+                if (index > 0) const SizedBox(width: 6),
+                Expanded(
+                  child: _RangeContextTile(
+                    item: visibleItems[index],
+                    compact: true,
+                  ),
                 ),
+              ],
             ],
           );
         }
@@ -8930,7 +8950,10 @@ class _RangeContextMetricStrip extends StatelessWidget {
                 if (index > 0) const SizedBox(width: 8),
                 SizedBox(
                   width: 132,
-                  child: _RangeContextTile(item: items[index]),
+                  child: _RangeContextTile(
+                    item: items[index],
+                    compact: false,
+                  ),
                 ),
               ],
             ],
@@ -8942,9 +8965,13 @@ class _RangeContextMetricStrip extends StatelessWidget {
 }
 
 class _RangeContextTile extends StatelessWidget {
-  const _RangeContextTile({required this.item});
+  const _RangeContextTile({
+    required this.item,
+    required this.compact,
+  });
 
   final _RangeContextItem item;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -8952,14 +8979,17 @@ class _RangeContextTile extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(compact ? 7 : 8),
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 7 : 9,
+          vertical: compact ? 6 : 8,
+        ),
         child: Text(
           item.text,
-          maxLines: 2,
+          maxLines: compact ? 1 : 2,
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.labelMedium?.copyWith(
             color: theme.colorScheme.onSurface,
@@ -9593,7 +9623,7 @@ class _PositionAccountMetricStrip extends StatelessWidget {
               for (final item in items)
                 SizedBox(
                   width: tileWidth,
-                  child: _RangeContextTile(item: item),
+                  child: _RangeContextTile(item: item, compact: true),
                 ),
             ],
           );
@@ -9607,7 +9637,10 @@ class _PositionAccountMetricStrip extends StatelessWidget {
                 if (index > 0) const SizedBox(width: 8),
                 SizedBox(
                   width: 132,
-                  child: _RangeContextTile(item: items[index]),
+                  child: _RangeContextTile(
+                    item: items[index],
+                    compact: false,
+                  ),
                 ),
               ],
             ],

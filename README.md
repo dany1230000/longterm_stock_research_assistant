@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v11.6 shortens the history/backtest range controls on phones. The latest
+  one-year range remains the default, start/end date buttons stay visible, and
+  duplicate inline date labels are hidden on compact width.
+
 - v11.5 shortens the phone quote chart stack. The one-year chart remains
   visible, while the date axis and touch-detail row use compact spacing so the
   first screen reaches holdings context sooner.

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History range density v11.6: `docs\00631l_v11_6_history_range_density.md`
 - Mobile quote chart density v11.5: `docs\00631l_v11_5_mobile_quote_chart_density.md`
 - Mobile overview trim v11.4: `docs\00631l_v11_4_mobile_overview_trim.md`
 - Static fallback cache reuse v11.3: `docs\00631l_v11_3_static_fallback_cache.md`
