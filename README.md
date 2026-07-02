@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v13.3 tightens the phone AI page. Compact width now opens with the daily
+  interpretation, source/readiness badges, and primary program action; long AI
+  bullets and the conclusion card move into the detail panel.
+
 - v13.2 tightens the phone position page. The empty local-position first screen
   now focuses on shares, average cost, and save; the local-only note stays
   available after a position exists or on wider layouts.

@@ -2970,6 +2970,46 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('AI phone first screen keeps long details collapsed',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _tapSection(tester, 'ai');
+    await tester.pumpAndSettle();
+
+    final headline =
+        find.byKey(const ValueKey('00631l-ai-first-screen-headline'));
+    final primaryAction =
+        find.byKey(const ValueKey('00631l-ai-primary-action-block'));
+    final detailExpansion =
+        find.byKey(const ValueKey('00631l-ai-daily-detail-expansion'));
+
+    expect(headline, findsOneWidget);
+    expect(primaryAction, findsOneWidget);
+    expect(detailExpansion, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-ai-first-screen-bullets')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-daily-conclusion')),
+      findsNothing,
+    );
+    expect(
+      tester.getTopLeft(primaryAction).dy,
+      lessThan(tester.getTopLeft(detailExpansion).dy),
+      reason: 'Compact AI should show the main program action before details.',
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('AI daily facts fit in a compact phone row', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;

@@ -10456,221 +10456,244 @@ class _AiDailyBriefingHero extends StatelessWidget {
       ),
     ];
 
-    return DecoratedBox(
-      key: const ValueKey('00631l-ai-daily-briefing-hero'),
-      decoration: BoxDecoration(
-        color: _marketPanelColor(context),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 520;
+        final heroPadding = compact
+            ? const EdgeInsets.fromLTRB(10, 10, 10, 10)
+            : const EdgeInsets.fromLTRB(12, 12, 12, 12);
+        return DecoratedBox(
+          key: const ValueKey('00631l-ai-daily-briefing-hero'),
+          decoration: BoxDecoration(
+            color: _marketPanelColor(context),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: _marketBorderColor(context)),
+          ),
+          child: Padding(
+            padding: heroPadding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const _MiniStatusBadge(label: 'AI'),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '今日 AI 判讀',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0,
+                Row(
+                  children: [
+                    const _MiniStatusBadge(label: 'AI'),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '今日 AI 判讀',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0,
+                        ),
+                      ),
                     ),
+                    const _CompactTextBadge(label: '規則分析'),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                _AiDailyHeadlinePanel(
+                  data: data,
+                  summary: summary,
+                  premiumText: premiumText,
+                  primaryAction: primaryAction,
+                ),
+                const SizedBox(height: 8),
+                KeyedSubtree(
+                  key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
+                  child: _StatusWrap(
+                    labels: [
+                      _statusDisplay(summary.source),
+                      summary.readinessLabel,
+                      summary.disclaimer,
+                    ],
                   ),
                 ),
-                const _CompactTextBadge(label: '規則分析'),
-              ],
-            ),
-            const SizedBox(height: 8),
-            _AiDailyHeadlinePanel(
-              data: data,
-              summary: summary,
-              premiumText: premiumText,
-              primaryAction: primaryAction,
-            ),
-            const SizedBox(height: 8),
-            KeyedSubtree(
-              key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
-              child: _StatusWrap(
-                labels: [
-                  _statusDisplay(summary.source),
-                  summary.readinessLabel,
-                  summary.disclaimer,
+                if (!compact && briefingBullets.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  _AiFirstScreenBulletList(bullets: briefingBullets),
                 ],
-              ),
-            ),
-            if (briefingBullets.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              _AiFirstScreenBulletList(bullets: briefingBullets),
-            ],
-            const SizedBox(height: 10),
-            _AiDailyConclusionCard(
-              data: data,
-              summary: summary,
-              premiumText: premiumText,
-            ),
-            const SizedBox(height: 10),
-            _AiDailyDecisionStrip(
-              data: data,
-              summary: summary,
-              premiumText: premiumText,
-              primaryAction: primaryAction,
-            ),
-            const SizedBox(height: 10),
-            _CompactExpansionPanel(
-              key: const ValueKey('00631l-ai-daily-detail-expansion'),
-              title: 'AI 資料細節',
-              subtitle: '資料狀態、當日讀數與歷史來源；需要核對時再展開。',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: statusColor.withValues(alpha: 0.45),
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      '資料狀態為 ${summary.readinessLabel}。$premiumText '
-                      '官方 內容物 更新至 ${_dateOrDash(snapshot.tradeDate)}；'
-                      'TX 權重 ${formatNullablePercent(txWeight)}，'
-                      '台積電權重 ${formatNullablePercent(tsmcWeight)}。',
-                      key: const ValueKey('00631l-ai-daily-briefing-summary'),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: _marketTextColor(context),
-                        height: 1.35,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
+                if (!compact) ...[
                   const SizedBox(height: 10),
-                  DecoratedBox(
-                    key: const ValueKey('00631l-ai-today-readout'),
-                    decoration: BoxDecoration(
-                      color: _marketPanelAltColor(context),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: _marketBorderColor(context)),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        children: [
-                          for (var index = 0;
-                              index < todayReadouts.length;
-                              index += 1) ...[
-                            if (index > 0) const SizedBox(height: 8),
-                            _AiTodayReadoutRow(item: todayReadouts[index]),
-                          ],
-                        ],
-                      ),
-                    ),
+                  _AiDailyConclusionCard(
+                    data: data,
+                    summary: summary,
+                    premiumText: premiumText,
                   ),
-                  if (briefingBullets.isNotEmpty) ...[
-                    const SizedBox(height: 10),
-                    DecoratedBox(
-                      key: const ValueKey('00631l-ai-daily-briefing-bullets'),
-                      decoration: BoxDecoration(
-                        color: _marketPanelAltColor(context),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: _marketBorderColor(context)),
-                      ),
-                      child: Padding(
+                ],
+                const SizedBox(height: 10),
+                _AiDailyDecisionStrip(
+                  data: data,
+                  summary: summary,
+                  premiumText: premiumText,
+                  primaryAction: primaryAction,
+                ),
+                const SizedBox(height: 10),
+                _CompactExpansionPanel(
+                  key: const ValueKey('00631l-ai-daily-detail-expansion'),
+                  title: 'AI 資料細節',
+                  subtitle: '資料狀態、當日讀數與歷史來源；需要核對時再展開。',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (compact) ...[
+                        _AiDailyConclusionCard(
+                          data: data,
+                          summary: summary,
+                          premiumText: premiumText,
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: statusColor.withValues(alpha: 0.45),
+                          ),
+                        ),
                         padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '當日判讀',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                color: _marketTextColor(context),
-                                fontWeight: FontWeight.w900,
+                        child: Text(
+                          '資料狀態為 ${summary.readinessLabel}。$premiumText '
+                          '官方 內容物 更新至 ${_dateOrDash(snapshot.tradeDate)}；'
+                          'TX 權重 ${formatNullablePercent(txWeight)}，'
+                          '台積電權重 ${formatNullablePercent(tsmcWeight)}。',
+                          key: const ValueKey(
+                              '00631l-ai-daily-briefing-summary'),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: _marketTextColor(context),
+                            height: 1.35,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      DecoratedBox(
+                        key: const ValueKey('00631l-ai-today-readout'),
+                        decoration: BoxDecoration(
+                          color: _marketPanelAltColor(context),
+                          borderRadius: BorderRadius.circular(12),
+                          border:
+                              Border.all(color: _marketBorderColor(context)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            children: [
+                              for (var index = 0;
+                                  index < todayReadouts.length;
+                                  index += 1) ...[
+                                if (index > 0) const SizedBox(height: 8),
+                                _AiTodayReadoutRow(item: todayReadouts[index]),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (briefingBullets.isNotEmpty) ...[
+                        const SizedBox(height: 10),
+                        DecoratedBox(
+                          key: const ValueKey(
+                              '00631l-ai-daily-briefing-bullets'),
+                          decoration: BoxDecoration(
+                            color: _marketPanelAltColor(context),
+                            borderRadius: BorderRadius.circular(12),
+                            border:
+                                Border.all(color: _marketBorderColor(context)),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '當日判讀',
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    color: _marketTextColor(context),
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                for (final bullet in briefingBullets)
+                                  _BulletLine(
+                                    text: bullet,
+                                    icon: Icons.analytics_outlined,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 10),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final compact = constraints.maxWidth < 640;
+                          final factCards = [
+                            _AiDailyBriefingFact(
+                              label: '內容物',
+                              value: 'TX ${formatNullablePercent(txWeight)}',
+                              detail:
+                                  '台積電 ${formatNullablePercent(tsmcWeight)}；官方每日快照',
+                            ),
+                            _AiDailyBriefingFact(
+                              label: '盤中 NAV',
+                              value: formatSignedNullablePercent(
+                                nav?.resolvedPremiumDiscountPct,
+                              ),
+                              detail: _intradayDataTimeText(nav),
+                            ),
+                            _AiDailyBriefingFact(
+                              label: '歷史資料',
+                              value:
+                                  '${formatInteger(data.priceHistory.completenessSummary().rowCount)} 筆',
+                              detail: _sourceStatusBadgeLabel(
+                                data.priceHistory.sourceStatusLabel,
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            for (final bullet in briefingBullets)
-                              _BulletLine(
-                                text: bullet,
-                                icon: Icons.analytics_outlined,
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 10),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final compact = constraints.maxWidth < 640;
-                      final factCards = [
-                        _AiDailyBriefingFact(
-                          label: '內容物',
-                          value: 'TX ${formatNullablePercent(txWeight)}',
-                          detail:
-                              '台積電 ${formatNullablePercent(tsmcWeight)}；官方每日快照',
-                        ),
-                        _AiDailyBriefingFact(
-                          label: '盤中 NAV',
-                          value: formatSignedNullablePercent(
-                            nav?.resolvedPremiumDiscountPct,
-                          ),
-                          detail: _intradayDataTimeText(nav),
-                        ),
-                        _AiDailyBriefingFact(
-                          label: '歷史資料',
-                          value:
-                              '${formatInteger(data.priceHistory.completenessSummary().rowCount)} 筆',
-                          detail: _sourceStatusBadgeLabel(
-                            data.priceHistory.sourceStatusLabel,
-                          ),
-                        ),
-                      ];
-                      if (compact) {
-                        return Row(
-                          key: const ValueKey('00631l-ai-daily-fact-row'),
-                          children: [
-                            for (var index = 0;
-                                index < factCards.length;
-                                index += 1)
-                              Expanded(
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                    left: index == 0 ? 0 : 4,
-                                    right:
-                                        index == factCards.length - 1 ? 0 : 4,
+                          ];
+                          if (compact) {
+                            return Row(
+                              key: const ValueKey('00631l-ai-daily-fact-row'),
+                              children: [
+                                for (var index = 0;
+                                    index < factCards.length;
+                                    index += 1)
+                                  Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        left: index == 0 ? 0 : 4,
+                                        right: index == factCards.length - 1
+                                            ? 0
+                                            : 4,
+                                      ),
+                                      child: factCards[index],
+                                    ),
                                   ),
-                                  child: factCards[index],
-                                ),
-                              ),
-                          ],
-                        );
-                      }
-                      final itemWidth = compact
-                          ? constraints.maxWidth
-                          : (constraints.maxWidth - 16) / 3;
-                      return Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final card in factCards)
-                            SizedBox(width: itemWidth, child: card),
-                        ],
-                      );
-                    },
+                              ],
+                            );
+                          }
+                          final itemWidth = compact
+                              ? constraints.maxWidth
+                              : (constraints.maxWidth - 16) / 3;
+                          return Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (final card in factCards)
+                                SizedBox(width: itemWidth, child: card),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
