@@ -3191,6 +3191,37 @@ void main() {
       lessThan(tester.getTopLeft(detailExpansion).dy),
       reason: 'Compact AI should show the main program action before details.',
     );
+    final firstScreenFacts =
+        find.byKey(const ValueKey('00631l-ai-first-screen-facts'));
+    expect(firstScreenFacts, findsOneWidget);
+    expect(
+      tester.getRect(firstScreenFacts).height,
+      lessThanOrEqualTo(72),
+      reason: 'Phone AI facts should stay in a compact single row.',
+    );
+    final dayLabel = find.descendant(
+      of: firstScreenFacts,
+      matching: find.text('DAY'),
+    );
+    final liveLabel = find.descendant(
+      of: firstScreenFacts,
+      matching: find.text('LIVE'),
+    );
+    final holdLabel = find.descendant(
+      of: firstScreenFacts,
+      matching: find.text('HOLD'),
+    );
+    expect(dayLabel, findsOneWidget);
+    expect(liveLabel, findsOneWidget);
+    expect(holdLabel, findsOneWidget);
+    expect(
+      (tester.getTopLeft(dayLabel).dy - tester.getTopLeft(liveLabel).dy).abs(),
+      lessThan(2),
+    );
+    expect(
+      (tester.getTopLeft(dayLabel).dy - tester.getTopLeft(holdLabel).dy).abs(),
+      lessThan(2),
+    );
     _expectNoTradingActionText();
   });
 

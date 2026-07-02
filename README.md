@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.1 tightens the AI first screen on phones. DAY / LIVE / HOLD facts now
+  stay in one compact row, keeping the daily interpretation and program action
+  visible sooner.
+
 - v15.0 tightens the empty position screen on phones. The local-only input
   fields and save action now live in one compact card, so the position tab no
   longer starts with a repeated full-width action card when no position is

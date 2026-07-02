@@ -11170,10 +11170,29 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
             const SizedBox(height: 10),
             LayoutBuilder(
               builder: (context, constraints) {
-                final compact = constraints.maxWidth < 380;
-                final itemWidth = compact
-                    ? (constraints.maxWidth - 8) / 2
-                    : (constraints.maxWidth - 16) / 3;
+                final singleRow = constraints.maxWidth < 460;
+                if (singleRow) {
+                  return Row(
+                    key: const ValueKey('00631l-ai-first-screen-facts'),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (var index = 0; index < factItems.length; index += 1)
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              left: index == 0 ? 0 : 4,
+                              right: index == factItems.length - 1 ? 0 : 4,
+                            ),
+                            child: _AiInlineFactPill(
+                              item: factItems[index],
+                              dense: true,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                }
+                final itemWidth = (constraints.maxWidth - 16) / 3;
                 return Wrap(
                   key: const ValueKey('00631l-ai-first-screen-facts'),
                   spacing: 8,
@@ -11259,9 +11278,13 @@ class _AiInlineFactItem {
 }
 
 class _AiInlineFactPill extends StatelessWidget {
-  const _AiInlineFactPill({required this.item});
+  const _AiInlineFactPill({
+    required this.item,
+    this.dense = false,
+  });
 
   final _AiInlineFactItem item;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
@@ -11273,7 +11296,10 @@ class _AiInlineFactPill extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: dense ? 6 : 9,
+          vertical: dense ? 6 : 8,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
