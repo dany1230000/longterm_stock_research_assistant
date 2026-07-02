@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v14.5 tightens ETF comparison guidance. The history/backtest comparison area
+  now relies on the compact selected-basket summary instead of repeating
+  guidance, mode, and selected-code text blocks.
+
 - v14.4 tightens the history/backtest page. Holdings history remains available,
   but it now lives under `內容物歷史` so the first screen stays focused on date
   range, price chart, and backtest context.

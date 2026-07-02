@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Comparison guidance density v14.5: `docs\00631l_v14_5_comparison_guidance_density.md`
 - History holdings density v14.4: `docs\00631l_v14_4_history_holdings_density.md`
 - Overview AI density v14.3: `docs\00631l_v14_3_overview_ai_density.md`
 - AI detail density v14.2: `docs\00631l_v14_2_ai_detail_density.md`

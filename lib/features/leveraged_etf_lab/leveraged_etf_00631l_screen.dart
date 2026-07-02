@@ -7733,10 +7733,6 @@ class _EtfHistoryComparisonPanelState
       metrics: usableMetrics,
     );
     final basketContext = _comparisonBasketContext(usableMetrics);
-    final comparisonModeSummary = usableMetrics.isEmpty
-        ? '自選比較：尚未選擇 ETF；不設基準。'
-        : '自選比較：${usableMetrics.map((metric) => metric.code).join(' / ')}；以重疊區間重算百分比，不設基準。';
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -7881,35 +7877,6 @@ class _EtfHistoryComparisonPanelState
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          '預設只看目前 ETF；可選 1-5 檔 ETF 比較，資料筆數足夠才會進入圖表。',
-          key: const ValueKey('00631l-etf-comparison-guidance'),
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w700,
-              ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          comparisonModeSummary,
-          key: const ValueKey('00631l-etf-comparison-mode-summary'),
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: _marketTextColor(context),
-                fontWeight: FontWeight.w900,
-              ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          usableMetrics.isEmpty
-              ? '尚未選擇比較 ETF'
-              : '目前組合：${usableMetrics.map((metric) => metric.code).join(' / ')}',
-          key: const ValueKey('00631l-etf-comparison-selected-codes'),
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w800,
-              ),
-        ),
-        const SizedBox(height: 10),
         _ComparisonDataReadinessStrip(
           candidateCount: metrics.length,
           readyCount: availableMetrics.length,
