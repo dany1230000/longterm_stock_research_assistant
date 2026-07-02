@@ -3254,11 +3254,14 @@ void main() {
         find.byKey(const ValueKey('00631l-ai-daily-detail-expansion'));
     final decisionStrip =
         find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
+    final compactInsight =
+        find.byKey(const ValueKey('00631l-ai-compact-daily-insight'));
 
     expect(headline, findsOneWidget);
     expect(primaryAction, findsOneWidget);
     expect(detailExpansion, findsOneWidget);
     expect(decisionStrip, findsNothing);
+    expect(compactInsight, findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-ai-first-screen-bullets')),
       findsNothing,
@@ -3269,8 +3272,13 @@ void main() {
     );
     expect(
       tester.getTopLeft(primaryAction).dy,
+      lessThan(tester.getTopLeft(compactInsight).dy),
+      reason: 'Compact AI should show the main program action before insight.',
+    );
+    expect(
+      tester.getTopLeft(compactInsight).dy,
       lessThan(tester.getTopLeft(detailExpansion).dy),
-      reason: 'Compact AI should show the main program action before details.',
+      reason: 'Compact AI should show daily insight before details.',
     );
     final firstScreenFacts =
         find.byKey(const ValueKey('00631l-ai-first-screen-facts'));

@@ -10823,6 +10823,9 @@ class _AiDailyBriefingHero extends StatelessWidget {
     final briefingBullets =
         summary.bullets.take(2).map(_aiDisplayText).toList(growable: false);
     final priceSummary = data.priceHistory.completenessSummary();
+    final compactInsight =
+        '今日重點：官方內容物 TX ${formatNullablePercent(txWeight)}、台積電 ${formatNullablePercent(tsmcWeight)}；'
+        '$premiumText；歷史樣本 ${formatInteger(priceSummary.rowCount)} 筆。';
     final todayReadouts = [
       _AiTodayReadoutItem(
         label: '當日資料',
@@ -10902,6 +10905,10 @@ class _AiDailyBriefingHero extends StatelessWidget {
                 if (!compact && briefingBullets.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   _AiFirstScreenBulletList(bullets: briefingBullets),
+                ],
+                if (compact) ...[
+                  const SizedBox(height: 8),
+                  _AiCompactDailyInsightLine(text: compactInsight),
                 ],
                 if (!compact) ...[
                   const SizedBox(height: 10),
@@ -11134,6 +11141,39 @@ class _AiFirstScreenBulletList extends StatelessWidget {
                 icon: Icons.analytics_outlined,
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiCompactDailyInsightLine extends StatelessWidget {
+  const _AiCompactDailyInsightLine({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-ai-compact-daily-insight'),
+      decoration: BoxDecoration(
+        color: _marketBlue.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBlue.withValues(alpha: 0.26)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Text(
+          text,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: _marketTextColor(context),
+            fontWeight: FontWeight.w800,
+            height: 1.25,
+            letterSpacing: 0,
+          ),
         ),
       ),
     );

@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.8 adds a compact rule-based daily insight to the phone AI tab. The first
+  screen now summarizes holdings, premium/discount state, and historical sample
+  count before the detailed AI panels.
+
 - v15.7 tightens the phone history/backtest date-range summary. Narrow metric
   chips now avoid long `start - end` strings while the editable start/end date
   cards remain visible.
