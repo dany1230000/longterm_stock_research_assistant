@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v11.3 reuses in-memory static fallback data after the first public load, so
+  later live warmup attempts do not re-fetch the same static preview/status
+  JSON when it is already available.
+
 - v11.2 reduces public first-load refresh pressure. Live-core warmup now makes
   only two short attempts before returning to the normal market-session refresh
   interval, so static/public fallback pages do not keep reloading heavy data.

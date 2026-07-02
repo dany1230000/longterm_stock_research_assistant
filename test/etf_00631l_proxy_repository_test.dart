@@ -800,6 +800,32 @@ void main() {
     expect(data.operationsStatus.priceHistoryRows, 3);
   });
 
+  test('cached fast startup reuses static fallback cache on live retry',
+      () async {
+    final staticClient = _RecordingProxyHttpClient({
+      '00631l-static-data/price_preview.json':
+          jsonEncode(_staticPricePreviewPayload()),
+      '00631l-static-data/status.json': jsonEncode(_staticStatusPayload()),
+      '00631l-static-data/release.json': jsonEncode(_staticReleasePayload()),
+    });
+    final repository = Cached00631LRepository(
+      primary: _FastDeferredLiveRepository(),
+      fallback: Static00631LRepository(client: staticClient),
+      fastPrimaryTimeout: const Duration(milliseconds: 200),
+      raceFastFallback: true,
+    );
+
+    await repository.fetchFastLabData();
+    await Future<void>.delayed(Duration.zero);
+    final firstPaths = List<String>.of(staticClient.requestedPaths);
+
+    await repository.fetchFastLabData();
+
+    expect(firstPaths, contains('00631l-static-data/price_preview.json'));
+    expect(firstPaths, contains('00631l-static-data/status.json'));
+    expect(staticClient.requestedPaths, firstPaths);
+  });
+
   test('cached fast startup uses static preview when live primary times out',
       () async {
     final repository = Cached00631LRepository(

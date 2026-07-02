@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Static fallback cache reuse v11.3: `docs\00631l_v11_3_static_fallback_cache.md`
 - First-load refresh budget v11.2: `docs\00631l_v11_2_first_load_refresh_budget.md`
 - AI first-screen badge summary v11.1: `docs\00631l_v11_1_ai_badge_summary.md`
 - Position/settings density v11.0: `docs\00631l_v11_0_position_settings_density.md`
