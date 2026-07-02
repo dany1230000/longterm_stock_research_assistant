@@ -3503,47 +3503,54 @@ class _OverviewSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final history = data.holdingsHistory.trendSummary();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (selectedEtf.is00631L)
-          _OverviewMarketStack(data: data, selectedEtf: selectedEtf)
-        else ...[
-          _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
-          const SizedBox(height: 8),
-          _SelectedEtfOverviewDigest(selectedEtf: selectedEtf),
-        ],
-        const SizedBox(height: 8),
-        if (!selectedEtf.is00631L)
-          _AlwaysExpandedPanel(
-            title: selectedEtf.is00631L ? '價格與曝險' : '價格走勢',
-            subtitle: selectedEtf.is00631L
-                ? '近一年收盤與官方每日曝險。'
-                : '${selectedEtf.code} 近一年收盤與歷史資料狀態。',
-            child: selectedEtf.is00631L
-                ? _OverviewSignalPanel(data: data)
-                : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
-          ),
-        const SizedBox(height: 8),
-        if (selectedEtf.is00631L) ...[
-          _OverviewHoldingsDigestPanel(data: data),
-          const SizedBox(height: 8),
-        ],
-        _CompactExpansionPanel(
-          key: const ValueKey('00631l-overview-more-expansion'),
-          title: '更多資料',
-          subtitle: selectedEtf.is00631L
-              ? '資料來源、完整性、比較與維護細節；平常先看上方行情與圖表。'
-              : '${selectedEtf.code} 的資料來源、資料範圍與目前限制。',
-          child: selectedEtf.is00631L
-              ? _OverviewMorePanel(
-                  data: data,
-                  history: history,
-                  selectedEtf: selectedEtf,
-                )
-              : _SelectedEtfMorePanel(data: data, selectedEtf: selectedEtf),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final showSecondaryDetails = constraints.maxWidth >= 520;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (selectedEtf.is00631L)
+              _OverviewMarketStack(data: data, selectedEtf: selectedEtf)
+            else ...[
+              _CompactQuoteHeader(data: data, selectedEtf: selectedEtf),
+              const SizedBox(height: 8),
+              _SelectedEtfOverviewDigest(selectedEtf: selectedEtf),
+            ],
+            const SizedBox(height: 8),
+            if (!selectedEtf.is00631L)
+              _AlwaysExpandedPanel(
+                title: selectedEtf.is00631L ? '價格與曝險' : '價格走勢',
+                subtitle: selectedEtf.is00631L
+                    ? '近一年收盤與官方每日曝險。'
+                    : '${selectedEtf.code} 近一年收盤與歷史資料狀態。',
+                child: selectedEtf.is00631L
+                    ? _OverviewSignalPanel(data: data)
+                    : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
+              ),
+            const SizedBox(height: 8),
+            if (selectedEtf.is00631L) ...[
+              _OverviewHoldingsDigestPanel(data: data),
+              const SizedBox(height: 8),
+            ],
+            if (showSecondaryDetails)
+              _CompactExpansionPanel(
+                key: const ValueKey('00631l-overview-more-expansion'),
+                title: '更多資料',
+                subtitle: selectedEtf.is00631L
+                    ? '資料來源、完整性、比較與維護細節；平常先看上方行情與圖表。'
+                    : '${selectedEtf.code} 的資料來源、資料範圍與目前限制。',
+                child: selectedEtf.is00631L
+                    ? _OverviewMorePanel(
+                        data: data,
+                        history: history,
+                        selectedEtf: selectedEtf,
+                      )
+                    : _SelectedEtfMorePanel(
+                        data: data, selectedEtf: selectedEtf),
+              ),
+          ],
+        );
+      },
     );
   }
 }

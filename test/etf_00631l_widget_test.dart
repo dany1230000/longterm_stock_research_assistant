@@ -532,7 +532,7 @@ void main() {
     expect(find.text('今日快覽'), findsNothing);
     expect(find.text('資料完整度'), findsNothing);
     expect(find.text('圖表與曝險'), findsNothing);
-    expect(find.text('更多資料'), findsOneWidget);
+    expect(find.text('????'), findsNothing);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('資料正確性'), findsNothing);
     expect(find.text('目前檔案'), findsNothing);
@@ -581,33 +581,10 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-exposure-compact-row')),
       findsNothing,
     );
-    await tester.ensureVisible(
+    expect(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),
+      findsNothing,
     );
-    await tester.pumpAndSettle();
-    await tester.tap(
-      find.byKey(const ValueKey('00631l-overview-more-expansion')),
-    );
-    await tester.pumpAndSettle();
-    expect(readinessStrip, findsOneWidget);
-    final stripRect = tester.getRect(readinessStrip);
-    for (final label in const ['內容物', '盤中 NAV', '價格欄位', '分割調整']) {
-      final labelFinder = find.descendant(
-        of: readinessStrip,
-        matching: find.text(label),
-      );
-      expect(labelFinder, findsOneWidget);
-      expect(
-        tester.getRect(labelFinder).right,
-        lessThanOrEqualTo(stripRect.right),
-      );
-    }
-    for (final label in const ['DAY', 'LIVE', 'HIS']) {
-      expect(
-        find.descendant(of: readinessStrip, matching: find.text(label)),
-        findsNothing,
-      );
-    }
     expect(find.text('Mock'), findsNothing);
     expect(find.text('示範'), findsWidgets);
     expect(find.text('00631L'), findsWidgets);
@@ -2401,18 +2378,15 @@ void main() {
       );
     }
     expect(find.byType(DataTable), findsNothing);
-    await tester.ensureVisible(find.text('更多資料'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('更多資料'));
-    await tester.pumpAndSettle();
+    expect(find.byType(DataTable), findsNothing);
+    expect(
+      find.byKey(const ValueKey('00631l-overview-more-expansion')),
+      findsNothing,
+    );
     expect(
       find.byKey(const ValueKey('00631l-overview-update-clock-strip')),
-      findsOneWidget,
+      findsNothing,
     );
-    expect(find.text('更新時間'), findsOneWidget);
-    expect(find.text('DAY'), findsWidgets);
-    expect(find.text('LIVE'), findsWidgets);
-    expect(find.text('HIS'), findsWidgets);
     for (final section in const [
       'overview',
       'historyBacktest',

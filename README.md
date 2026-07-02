@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v11.4 removes the secondary overview `更多資料` expansion from phone width,
+  keeping the first screen focused on quote, chart, data time, and official
+  holdings digest. Wider layouts still keep the expansion.
+
 - v11.3 reuses in-memory static fallback data after the first public load, so
   later live warmup attempts do not re-fetch the same static preview/status
   JSON when it is already available.
