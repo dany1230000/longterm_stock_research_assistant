@@ -197,6 +197,13 @@ void main() {
       find.byKey(const ValueKey('00631l-symbol-search-button')),
       findsOneWidget,
     );
+    final topBar = find.byKey(const ValueKey('00631l-market-top-bar'));
+    expect(topBar, findsOneWidget);
+    expect(tester.getRect(topBar).height, equals(60));
+    final symbolButton =
+        find.byKey(const ValueKey('00631l-symbol-search-button'));
+    expect(tester.getRect(symbolButton).height, greaterThanOrEqualTo(38));
+    expect(tester.getRect(symbolButton).height, lessThanOrEqualTo(46));
     expect(
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsOneWidget,

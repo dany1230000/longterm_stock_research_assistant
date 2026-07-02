@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v11.9 makes the top-left ETF selector and app title proportion clearer on
+  phones. The selector is easier to tap and remains the single place to switch
+  ETF symbols.
+
 - v11.8 makes the AI page lead with today's interpretation. The first-screen
   facts now show DAY, LIVE, and HOLD context, with HOLD focused on TX and TSMC
   weights from official holdings.
