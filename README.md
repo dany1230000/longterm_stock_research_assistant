@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v12.3 tightens the history/backtest date controls on phones. Preset ranges
+  stay in one short row, start/end date buttons drop lower-priority captions on
+  compact width, and the chart appears sooner.
+
 - v12.2 fixes sparse history charts. If a selected date range has only one
   valid price point, the chart now shows a clear sparse-data state with the
   date/value instead of a blank-looking frame.

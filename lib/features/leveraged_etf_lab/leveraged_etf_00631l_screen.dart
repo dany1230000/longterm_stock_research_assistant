@@ -7232,6 +7232,7 @@ class _DateRangeControlPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final activePreset = _activeDateRangePreset(
       startDate: startDate,
       endDate: endDate,
@@ -7247,9 +7248,8 @@ class _DateRangeControlPanel extends StatelessWidget {
         children: [
           KeyedSubtree(
             key: chipsKey,
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
+            child: _DateRangePresetStrip(
+              compact: compact,
               children: [
                 _RangeActionChip(
                   key: oneYearKey,
@@ -7272,7 +7272,7 @@ class _DateRangeControlPanel extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: compact ? 6 : 8),
           KeyedSubtree(
             key: dateControlsKey,
             child: _BacktestDateRangeControls(
@@ -7284,6 +7284,40 @@ class _DateRangeControlPanel extends StatelessWidget {
               onEndTap: onEndTap,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DateRangePresetStrip extends StatelessWidget {
+  const _DateRangePresetStrip({
+    required this.compact,
+    required this.children,
+  });
+
+  final bool compact;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!compact) {
+      return Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: children,
+      );
+    }
+    return SingleChildScrollView(
+      key: const ValueKey('00631l-date-range-preset-scroll'),
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          for (var index = 0; index < children.length; index += 1) ...[
+            if (index > 0) const SizedBox(width: 6),
+            children[index],
+          ],
         ],
       ),
     );
@@ -8768,13 +8802,13 @@ class _BacktestDateRangeControls extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _BacktestDateRangeSummary(
-          startDate: startDate,
-          endDate: endDate,
-          rangeLabel: preset.label,
-        ),
-        const SizedBox(height: 6),
         if (!compact) ...[
+          _BacktestDateRangeSummary(
+            startDate: startDate,
+            endDate: endDate,
+            rangeLabel: preset.label,
+          ),
+          const SizedBox(height: 6),
           _DateRangeInlineLabels(
             startDate: startDate,
             endDate: endDate,
@@ -8968,12 +9002,14 @@ class _BacktestDateButton extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(
-                Icons.calendar_today_outlined,
-                size: compact ? 14 : 16,
-                color: theme.colorScheme.primary,
-              ),
-              SizedBox(width: compact ? 5 : 7),
+              if (!compact) ...[
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 16,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 7),
+              ],
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -8996,14 +9032,15 @@ class _BacktestDateButton extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    Text(
-                      caption,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                    if (!compact)
+                      Text(
+                        caption,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -9075,18 +9112,20 @@ class _RangeContextStrip extends StatelessWidget {
                     const _CompactTextBadge(label: '日期可調'),
                   ],
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  subtitle,
-                  maxLines: compact ? 1 : 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                    height: 1.25,
+                if (!compact) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w700,
+                      height: 1.25,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
+                ],
+                SizedBox(height: compact ? 6 : 8),
                 _RangeContextMetricStrip(
                   items: items,
                   compact: compact,
@@ -9180,7 +9219,7 @@ class _RangeContextTile extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: compact ? 7 : 9,
-          vertical: compact ? 6 : 8,
+          vertical: compact ? 5 : 8,
         ),
         child: Text(
           item.text,

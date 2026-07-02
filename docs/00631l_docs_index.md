@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History date density v12.3: `docs\00631l_v12_3_history_date_density.md`
 - Sparse history chart v12.2: `docs\00631l_v12_2_sparse_history_chart.md`
 - Overview AI glance v12.1: `docs\00631l_v12_1_overview_ai_glance.md`
 - Overview holdings inline v12.0: `docs\00631l_v12_0_overview_holdings_inline.md`

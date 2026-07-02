@@ -1159,6 +1159,7 @@ void main() {
     final rangeContext =
         find.byKey(const ValueKey('00631l-history-range-context'));
     expect(rangeContext, findsOneWidget);
+    expect(tester.getRect(rangeContext).height, lessThanOrEqualTo(180));
     expect(
       find.descendant(
         of: rangeContext,
@@ -1172,6 +1173,28 @@ void main() {
     );
     expect(metricStrip, findsOneWidget);
     expect(tester.getRect(metricStrip).height, lessThanOrEqualTo(38));
+    expect(
+      find.descendant(
+        of: rangeContext,
+        matching: find.byKey(const ValueKey('00631l-date-range-preset-scroll')),
+      ),
+      findsOneWidget,
+    );
+    final dateControls = find.descendant(
+      of: rangeContext,
+      matching: find.byKey(
+        const ValueKey('00631l-history-date-controls-visible'),
+      ),
+    );
+    expect(dateControls, findsOneWidget);
+    expect(tester.getRect(dateControls).height, lessThanOrEqualTo(58));
+    expect(
+      find.descendant(
+        of: rangeContext,
+        matching: find.byKey(const ValueKey('00631l-date-range-summary')),
+      ),
+      findsNothing,
+    );
     expect(
       find.descendant(
         of: rangeContext,
