@@ -596,14 +596,23 @@ void main() {
     );
     expect(chartFinder, findsOneWidget);
     final chartRect = tester.getRect(chartFinder);
-    expect(chartRect.height, lessThanOrEqualTo(70));
+    expect(chartRect.height, lessThanOrEqualTo(62));
     expect(chartRect.bottom, lessThanOrEqualTo(440));
     expect(chartRect.top, lessThan(ribbonRect.top));
     expect(ribbonRect.top, greaterThan(chartRect.bottom));
-    final dateStripRect = tester.getRect(
-      find.byKey(const ValueKey('00631l-overview-sparkline-date-strip')),
+    final dateStrip = find.byKey(
+      const ValueKey('00631l-overview-sparkline-date-strip'),
     );
-    expect(dateStripRect.height, lessThanOrEqualTo(32));
+    final dateStripRect = tester.getRect(
+      dateStrip,
+    );
+    expect(dateStripRect.height, lessThanOrEqualTo(28));
+    for (final label in const ['起', '中', '迄']) {
+      expect(
+        find.descendant(of: dateStrip, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
     final touchDetailRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
     );

@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v14.0 tightens the overview chart area. The one-year chart remains visible on
+  the home screen, but compact phones use a shorter chart and `起 / 中 / 迄`
+  axis labels while touch detail keeps the full date and value.
+
 - v13.9 tightens the history/backtest ETF comparison area. The first screen now
   shows the selected-basket summary and chart entry first; filter chips, manual
   ETF selection, and quick actions live under `選擇比較 ETF`.

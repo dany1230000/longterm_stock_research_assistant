@@ -3593,7 +3593,7 @@ class _OverviewMarketStack extends StatelessWidget {
             border: Border.all(color: _marketBorderColor(context)),
           ),
           child: Padding(
-            padding: EdgeInsets.fromLTRB(6, 6, 6, compact ? 4 : 6),
+            padding: EdgeInsets.fromLTRB(5, 5, 5, compact ? 3 : 6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -3602,11 +3602,11 @@ class _OverviewMarketStack extends StatelessWidget {
                   selectedEtf: selectedEtf,
                   embedded: true,
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 _OverviewSignalPanel(data: data, embedded: true),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 const _MarketStackDivider(),
-                SizedBox(height: compact ? 3 : 3),
+                SizedBox(height: compact ? 2 : 3),
                 if (compact)
                   _OverviewCompactDataRibbon(data: data)
                 else ...[
@@ -5629,9 +5629,9 @@ class _SparklineChartState extends State<_SparklineChart> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final chartHeight = compact ? 68.0 : 88.0;
-    final emptyHeight = compact ? 54.0 : 72.0;
-    final verticalGap = compact ? 3.0 : 5.0;
+    final chartHeight = compact ? 60.0 : 88.0;
+    final emptyHeight = compact ? 48.0 : 72.0;
+    final verticalGap = compact ? 2.0 : 5.0;
     final spots = <FlSpot>[];
     final spotPoints = <EtfPriceHistoryPoint>[];
     for (var index = 0; index < widget.points.length; index += 1) {
@@ -5787,7 +5787,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
           child: _dateCell(
             context,
             key: const ValueKey('00631l-overview-sparkline-date-start'),
-            label: '起點',
+            label: compact ? '起' : '起點',
             date: start,
             align: CrossAxisAlignment.start,
             textAlign: TextAlign.left,
@@ -5799,7 +5799,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
           child: _dateCell(
             context,
             key: const ValueKey('00631l-overview-sparkline-date-mid'),
-            label: '中段',
+            label: compact ? '中' : '中段',
             date: middle,
             align: CrossAxisAlignment.center,
             textAlign: TextAlign.center,
@@ -5811,7 +5811,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
           child: _dateCell(
             context,
             key: const ValueKey('00631l-overview-sparkline-date-end'),
-            label: '終點',
+            label: compact ? '迄' : '終點',
             date: end,
             align: CrossAxisAlignment.end,
             textAlign: TextAlign.right,
