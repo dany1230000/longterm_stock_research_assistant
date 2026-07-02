@@ -753,7 +753,7 @@ class _LabLoadingShell extends StatelessWidget {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 14),
+                padding: const EdgeInsets.fromLTRB(10, 6, 10, 12),
                 children: [
                   Align(
                     alignment: Alignment.topCenter,
@@ -768,7 +768,7 @@ class _LabLoadingShell extends StatelessWidget {
                           const SizedBox(height: 8),
                           const _LoadingQuoteCard(),
                           const SizedBox(height: 8),
-                          const _LoadingSectionCard(title: '準備首頁資料'),
+                          const _LoadingSectionCard(title: '讀取行情資料'),
                         ],
                       ),
                     ),
@@ -801,14 +801,14 @@ class _LoadingStatusStrip extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Row(
           children: [
             const _StatusPill(label: 'static / live check'),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                '正在載入首頁資料',
+                '讀取公開資料與後端狀態',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -837,21 +837,21 @@ class _LoadingQuoteCard extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: const Padding(
-        padding: EdgeInsets.all(14),
+        padding: EdgeInsets.all(9),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _LoadingBar(width: 92, height: 20),
-            SizedBox(height: 12),
-            _LoadingBar(width: 156, height: 36),
-            SizedBox(height: 12),
+            _LoadingBar(width: 86, height: 16),
+            SizedBox(height: 8),
+            _LoadingBar(width: 132, height: 30),
+            SizedBox(height: 8),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 6,
+              runSpacing: 6,
               children: [
-                _LoadingBar(width: 96, height: 34),
-                _LoadingBar(width: 96, height: 34),
-                _LoadingBar(width: 108, height: 34),
+                _LoadingBar(width: 82, height: 24),
+                _LoadingBar(width: 82, height: 24),
+                _LoadingBar(width: 94, height: 24),
               ],
             ),
           ],
@@ -876,21 +876,21 @@ class _LoadingSectionCard extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     color: _marketTextColor(context),
                     fontWeight: FontWeight.w900,
                   ),
             ),
-            const SizedBox(height: 12),
-            const _LoadingBar(width: double.infinity, height: 16),
             const SizedBox(height: 8),
-            const _LoadingBar(width: 220, height: 16),
+            const _LoadingBar(width: double.infinity, height: 12),
+            const SizedBox(height: 6),
+            const _LoadingBar(width: 170, height: 12),
           ],
         ),
       ),

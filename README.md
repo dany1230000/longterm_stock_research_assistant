@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v13.7 tightens the public loading shell. Startup now uses shorter status copy
+  and smaller quote/section skeleton cards before the first market data appears.
+
 - v13.6 tightens history/backtest chart date labels. Phone axis chips use short
   `起 / 中 / 迄` labels with `yy/MM/dd`, while touch detail keeps full dates.
 

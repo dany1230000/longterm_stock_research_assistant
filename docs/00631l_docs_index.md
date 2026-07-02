@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Loading shell density v13.7: `docs\00631l_v13_7_loading_shell_density.md`
 - History axis density v13.6: `docs\00631l_v13_6_history_axis_density.md`
 - Overview sparkline density v13.5: `docs\00631l_v13_5_overview_sparkline_density.md`
 - Position input density v13.4: `docs\00631l_v13_4_position_input_density.md`

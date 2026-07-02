@@ -743,7 +743,7 @@ void main() {
     await tester.pump();
 
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
-    expect(find.text('準備首頁資料'), findsOneWidget);
+    expect(find.text('讀取行情資料'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(repository.fullRequested, isFalse);
@@ -789,12 +789,24 @@ void main() {
       findsOneWidget,
     );
     expect(
+      tester
+          .getRect(find.byKey(const ValueKey('00631l-loading-quote-card')))
+          .height,
+      lessThanOrEqualTo(105),
+    );
+    expect(
       find.byKey(const ValueKey('00631l-loading-metric-grid')),
       findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-loading-section-card')),
       findsOneWidget,
+    );
+    expect(
+      tester
+          .getRect(find.byKey(const ValueKey('00631l-loading-section-card')))
+          .height,
+      lessThanOrEqualTo(88),
     );
   });
 
