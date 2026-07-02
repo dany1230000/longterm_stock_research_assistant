@@ -510,6 +510,10 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.text('進階設定'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('進階設定'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('ETF 資料與比較能力'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('ETF 資料與比較能力'));
@@ -2838,7 +2842,7 @@ void main() {
     expect(find.text('我的總覽'), findsNothing);
     expect(find.text('帳戶與偏好'), findsOneWidget);
     expect(find.text('免登入'), findsOneWidget);
-    expect(find.text('ETF 資料與比較能力'), findsOneWidget);
+    expect(find.text('ETF 資料與比較能力'), findsNothing);
     expect(find.text('ETF 研究室完成度'), findsNothing);
     expect(find.text('公開 PWA'), findsNothing);
     expect(find.text('ETF 清單'), findsNothing);
@@ -2860,6 +2864,19 @@ void main() {
     expect(find.text('盤中 NAV / 折溢價'), findsNothing);
     expect(find.text('台指期即時'), findsNothing);
 
+    await tester.scrollUntilVisible(
+      find.text('進階設定'),
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('進階設定'));
+    await tester.pumpAndSettle();
+    expect(find.text('ETF 資料與比較能力'), findsOneWidget);
+    expect(find.text('資料模式與完整度'), findsOneWidget);
+    expect(find.text('進階維護診斷'), findsOneWidget);
+    expect(find.text('App 上架準備'), findsOneWidget);
+
     await tester.ensureVisible(find.text('ETF 資料與比較能力'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('ETF 資料與比較能力'));
@@ -2872,18 +2889,6 @@ void main() {
     expect(find.text('公開 PWA'), findsOneWidget);
     expect(find.text('ETF 清單'), findsWidgets);
     expect(find.text('ETF 比較'), findsOneWidget);
-
-    await tester.scrollUntilVisible(
-      find.text('進階設定'),
-      220,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('進階設定'));
-    await tester.pumpAndSettle();
-    expect(find.text('資料模式與完整度'), findsOneWidget);
-    expect(find.text('進階維護診斷'), findsOneWidget);
-    expect(find.text('App 上架準備'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('App 上架準備'),
@@ -2966,12 +2971,8 @@ void main() {
     expect(find.text('進階設定'), findsOneWidget);
     expect(find.text('資料模式與完整度'), findsNothing);
     expect(find.text('進階維護診斷'), findsNothing);
+    expect(find.text('ETF 資料與比較能力'), findsNothing);
     expect(find.text('App 上架準備'), findsNothing);
-    expect(
-      tester.getTopLeft(find.text('ETF 資料與比較能力')).dy,
-      lessThan(tester.getTopLeft(find.text('進階設定')).dy),
-      reason: 'Daily data settings should appear before app store planning.',
-    );
     expect(find.text('需要處理'), findsNothing);
     expect(find.text('data path not writable'), findsNothing);
     _expectNoTradingActionText();
@@ -2991,7 +2992,7 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
-    expect(find.text('靜態資料可用，詳情在下方'), findsWidgets);
+    expect(find.text('靜態資料可用；連線細節在進階'), findsWidgets);
     expect(find.text('後端錯誤'), findsNothing);
     expect(find.text('data path not writable'), findsNothing);
     _expectNoTradingActionText();
@@ -3115,6 +3116,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('ETF 資料庫狀態'), findsNothing);
+    await tester.ensureVisible(find.text('進階設定'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('進階設定'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('ETF 資料與比較能力'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('ETF 資料與比較能力'));
@@ -3155,6 +3160,10 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.text('進階設定'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('進階設定'));
+    await tester.pumpAndSettle();
     final dataLibraryPanel =
         find.byKey(const ValueKey('00631l-etf-data-library-panel'));
     await tester.ensureVisible(dataLibraryPanel);
@@ -3245,6 +3254,10 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.text('進階設定'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('進階設定'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('ETF 資料與比較能力'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('ETF 資料與比較能力'));
@@ -3273,6 +3286,10 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.text('進階設定'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('進階設定'));
+    await tester.pumpAndSettle();
     final dataLibraryPanel =
         find.byKey(const ValueKey('00631l-etf-data-library-panel'));
     await tester.ensureVisible(dataLibraryPanel);

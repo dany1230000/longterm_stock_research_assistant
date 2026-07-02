@@ -12375,54 +12375,54 @@ class _SettingsSection extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 10),
-        _CompactExpansionPanel(
-          key: const ValueKey('00631l-etf-data-library-panel'),
-          title: 'ETF 資料與比較能力',
-          subtitle: 'ETF 清單、歷史資料覆蓋、比較能力與研究室資料來源。',
-          child: Column(
-            children: [
-              _EtfResearchRoomReadinessPanel(
-                data: data,
-                selectedEtf: selectedEtf,
-              ),
-              const SizedBox(height: 10),
-              _EtfDataLibrarySummary(data: data, compact: true),
-              _EtfGapDetailPanel(
-                value: gapDetailsValue,
-                status: status,
-              ),
-              const SizedBox(height: 10),
-              _StatusList(
-                items: [
-                  _StatusItem(
-                    label: 'ETF 清單',
-                    status: data.etfCatalog.hasData
-                        ? _sourceStatusBadgeLabel(
-                            data.etfCatalog.sourceStatusLabel)
-                        : _sourceStatusBadgeLabel(status.etfCatalogStatus),
-                    detail:
-                        '筆數 ${data.etfCatalog.hasData ? data.etfCatalog.rowCount : status.etfCatalogRowCount}，資料時間 ${_dateTimeOrDash(data.etfCatalog.dataTime ?? status.etfCatalogDataTime)}。',
-                    action: '左上角代號按鈕可搜尋代號、名稱與分類。',
-                  ),
-                  const _StatusItem(
-                    label: 'ETF 比較',
-                    status: '可使用',
-                    detail: '歷史回測頁可自選 1-5 檔 ETF，比較同一區間的歷史報酬與回撤。',
-                    action: '在歷史回測頁使用同類型篩選或手動勾選比較組合。',
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
         _CompactExpansionPanel(
           key: const ValueKey('00631l-settings-advanced-settings-panel'),
           title: '進階設定',
-          subtitle: '資料完整度、維護診斷與上架準備；日常使用通常不用打開。',
+          subtitle: '資料庫、維護診斷與上架準備；日常使用通常不用打開。',
           child: Column(
             children: [
+              _CompactExpansionPanel(
+                key: const ValueKey('00631l-etf-data-library-panel'),
+                title: 'ETF 資料與比較能力',
+                subtitle: 'ETF 清單、歷史資料覆蓋、比較能力與研究室資料來源。',
+                child: Column(
+                  children: [
+                    _EtfResearchRoomReadinessPanel(
+                      data: data,
+                      selectedEtf: selectedEtf,
+                    ),
+                    const SizedBox(height: 10),
+                    _EtfDataLibrarySummary(data: data, compact: true),
+                    _EtfGapDetailPanel(
+                      value: gapDetailsValue,
+                      status: status,
+                    ),
+                    const SizedBox(height: 10),
+                    _StatusList(
+                      items: [
+                        _StatusItem(
+                          label: 'ETF 清單',
+                          status: data.etfCatalog.hasData
+                              ? _sourceStatusBadgeLabel(
+                                  data.etfCatalog.sourceStatusLabel)
+                              : _sourceStatusBadgeLabel(
+                                  status.etfCatalogStatus),
+                          detail:
+                              '筆數 ${data.etfCatalog.hasData ? data.etfCatalog.rowCount : status.etfCatalogRowCount}，資料時間 ${_dateTimeOrDash(data.etfCatalog.dataTime ?? status.etfCatalogDataTime)}。',
+                          action: '左上角代號按鈕可搜尋代號、名稱與分類。',
+                        ),
+                        const _StatusItem(
+                          label: 'ETF 比較',
+                          status: '可使用',
+                          detail: '歷史回測頁可自選 1-5 檔 ETF，比較同一區間的歷史報酬與回撤。',
+                          action: '在歷史回測頁使用同類型篩選或手動勾選比較組合。',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
               _CompactExpansionPanel(
                 title: '資料模式與完整度',
                 subtitle: '公開靜態歷史資料、即時後端與內容物狀態需要時再看。',
@@ -12818,8 +12818,8 @@ class _SettingsPreferenceGrid extends StatelessWidget {
             childAspectRatio: veryNarrow
                 ? 3.2
                 : compact
-                    ? 1.9
-                    : 1.55,
+                    ? 2.0
+                    : 1.75,
             children: [
               for (final item in items)
                 _SettingsPreferenceCard(
@@ -12985,13 +12985,13 @@ String _settingsDataModeCaption(EtfOperationsStatus status) {
   if (status.backendDisconnected ||
       status.sourceStatusLabel == 'error' ||
       status.sourceStatusLabel == 'unavailable') {
-    return '靜態資料可用，詳情在下方';
+    return '靜態資料可用；連線細節在進階';
   }
   if (status.sourceStatusLabel == 'mock') {
     return '預設示範資料';
   }
   if (_use00631LLiveProxy) {
-    return '後端連線狀態詳情在下方';
+    return '後端連線細節在進階';
   }
   return status.backendConnectionLabel;
 }

@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v13.8 tightens the `我的` page first screen. Account, appearance, selected
+  ETF, and local-position preferences stay visible; ETF database readiness,
+  comparison details, and maintenance diagnostics move under `進階設定`.
+
 - v13.7 tightens the public loading shell. Startup now uses shorter status copy
   and smaller quote/section skeleton cards before the first market data appears.
 
