@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Header scale v15.12: `docs\00631l_v15_12_header_scale.md`
 - Compact chart touch detail v15.11: `docs\00631l_v15_11_compact_chart_touch_detail.md`
 - Overview AI density v15.10: `docs\00631l_v15_10_overview_ai_density.md`
 - Overview sparkline axis v15.9: `docs\00631l_v15_9_overview_sparkline_axis.md`

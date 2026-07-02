@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.12 slightly enlarges the phone app header so `ETF 研究室` reads more like
+  the product title while keeping the symbol search pill compact.
+
 - v15.11 removes truncated chart helper text from compact chart touch details.
   Phone charts now keep the selected date and value visible without extra
   hints competing for space.

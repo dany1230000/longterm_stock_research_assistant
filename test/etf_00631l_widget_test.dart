@@ -199,7 +199,7 @@ void main() {
     );
     final topBar = find.byKey(const ValueKey('00631l-market-top-bar'));
     expect(topBar, findsOneWidget);
-    expect(tester.getRect(topBar).height, equals(54));
+    expect(tester.getRect(topBar).height, equals(58));
     final symbolButton =
         find.byKey(const ValueKey('00631l-symbol-search-button'));
     expect(tester.getRect(symbolButton).height, greaterThanOrEqualTo(34));

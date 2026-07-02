@@ -1075,7 +1075,7 @@ class _MarketTopBar extends StatelessWidget {
             : selectedEtfName.trim();
     return SizedBox(
       key: const ValueKey('00631l-market-top-bar'),
-      height: 54,
+      height: 58,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 560;
@@ -1104,7 +1104,7 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: _marketTextColor(context),
-                        fontSize: 19,
+                        fontSize: 20.5,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0,
                         height: 1.08,
@@ -1117,7 +1117,7 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: _marketMutedTextColor(context),
-                        fontSize: 11,
+                        fontSize: 11.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0,
                         height: 1.08,
