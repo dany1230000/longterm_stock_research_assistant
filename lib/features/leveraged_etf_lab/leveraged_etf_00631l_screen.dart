@@ -4016,10 +4016,6 @@ class _OverviewAiGlancePanel extends StatelessWidget {
                           const _CompactTextBadge(label: '非買賣建議'),
                         ],
                       ),
-                      if (action != null && action.trim().isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        _OverviewAiActionLine(text: action),
-                      ],
                     ],
                   )
                 : Column(

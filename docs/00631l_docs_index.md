@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview AI density v15.10: `docs\00631l_v15_10_overview_ai_density.md`
 - Overview sparkline axis v15.9: `docs\00631l_v15_9_overview_sparkline_axis.md`
 - AI compact daily insight v15.8: `docs\00631l_v15_8_ai_compact_daily_insight.md`
 - History range summary density v15.7: `docs\00631l_v15_7_history_range_summary_density.md`

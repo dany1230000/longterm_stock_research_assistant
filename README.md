@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.10 keeps the phone overview AI card focused on the daily summary. Program
+  operation details stay in the AI tab instead of taking space on the first
+  screen.
+
 - v15.9 cleans up the phone overview sparkline. Compact mode now keeps the
   selected date/value summary above the chart and only shows the start/end date
   axis below it.

@@ -655,7 +655,7 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
       findsOneWidget,
     );
-    expect(find.text('程式操作'), findsOneWidget);
+    expect(find.text('程式操作'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),
       findsNothing,
