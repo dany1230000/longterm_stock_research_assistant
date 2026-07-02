@@ -12595,13 +12595,18 @@ class _SettingsPreferenceGrid extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final veryNarrow = constraints.maxWidth < 320;
+          final compact = constraints.maxWidth < 430;
           return GridView.count(
             crossAxisCount: veryNarrow ? 1 : 2,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
-            childAspectRatio: veryNarrow ? 3.0 : 1.55,
+            childAspectRatio: veryNarrow
+                ? 3.2
+                : compact
+                    ? 1.9
+                    : 1.55,
             children: [
               for (final item in items)
                 _SettingsPreferenceCard(
@@ -12629,6 +12634,7 @@ class _SettingsPreferenceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: _marketPanelAltColor(context),
@@ -12636,7 +12642,7 @@ class _SettingsPreferenceCard extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(compact ? 8 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -12657,12 +12663,15 @@ class _SettingsPreferenceCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 7),
+            SizedBox(height: compact ? 5 : 7),
             Text(
               item.status,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: (compact
+                      ? theme.textTheme.titleSmall
+                      : theme.textTheme.titleMedium)
+                  ?.copyWith(
                 color: _marketTextColor(context),
                 fontWeight: FontWeight.w900,
               ),

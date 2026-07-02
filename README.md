@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v12.6 tightens the `我的` page preference grid. Account, appearance, current
+  ETF, and local-position cards use a flatter 2x2 phone layout while advanced
+  diagnostics stay behind details.
+
 - v12.5 moves the AI daily interpretation out of the detail expansion. The AI
   page now shows today's data readout, price-divergence interpretation,
   historical context, and program action before advanced details.
