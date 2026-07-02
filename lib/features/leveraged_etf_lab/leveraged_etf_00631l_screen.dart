@@ -5919,10 +5919,25 @@ class _SparklineChartState extends State<_SparklineChart> {
     final touchedValue = spots[safeTouchedIndex].y;
     final lastX = (spots.length - 1).toDouble();
     final edgePaddingX = (lastX * 0.08).clamp(2.0, 24.0).toDouble();
+    final touchDetail = KeyedSubtree(
+      key: const ValueKey('00631l-overview-sparkline-touch-detail'),
+      child: _ChartTouchDetail(
+        point: touchedPoint,
+        value: touchedValue,
+        rangeStart: spotPoints.first.date,
+        rangeEnd: spotPoints.last.date,
+        isManualSelection: hasManualSelection,
+        compact: compact,
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (compact) ...[
+          touchDetail,
+          SizedBox(height: verticalGap + 1),
+        ],
         SizedBox(
           key: const ValueKey('00631l-overview-sparkline-chart'),
           height: chartHeight,
@@ -5998,17 +6013,7 @@ class _SparklineChartState extends State<_SparklineChart> {
           compact: compact,
         ),
         SizedBox(height: verticalGap),
-        KeyedSubtree(
-          key: const ValueKey('00631l-overview-sparkline-touch-detail'),
-          child: _ChartTouchDetail(
-            point: touchedPoint,
-            value: touchedValue,
-            rangeStart: spotPoints.first.date,
-            rangeEnd: spotPoints.last.date,
-            isManualSelection: hasManualSelection,
-            compact: compact,
-          ),
-        ),
+        if (!compact) touchDetail,
       ],
     );
   }
@@ -6029,6 +6034,37 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (compact) {
+      return Row(
+        key: const ValueKey('00631l-overview-sparkline-date-strip'),
+        children: [
+          Expanded(
+            child: _dateCell(
+              context,
+              key: const ValueKey('00631l-overview-sparkline-date-start'),
+              label: '起',
+              date: start,
+              align: CrossAxisAlignment.start,
+              textAlign: TextAlign.left,
+              compact: compact,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _dateCell(
+              context,
+              key: const ValueKey('00631l-overview-sparkline-date-end'),
+              label: '迄',
+              date: end,
+              align: CrossAxisAlignment.end,
+              textAlign: TextAlign.right,
+              compact: compact,
+            ),
+          ),
+        ],
+      );
+    }
+
     return Row(
       key: const ValueKey('00631l-overview-sparkline-date-strip'),
       children: [

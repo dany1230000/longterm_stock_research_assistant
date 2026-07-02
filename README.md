@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.9 cleans up the phone overview sparkline. Compact mode now keeps the
+  selected date/value summary above the chart and only shows the start/end date
+  axis below it.
+
 - v15.8 adds a compact rule-based daily insight to the phone AI tab. The first
   screen now summarizes holdings, premium/discount state, and historical sample
   count before the detailed AI panels.

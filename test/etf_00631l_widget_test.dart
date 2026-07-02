@@ -608,16 +608,35 @@ void main() {
       dateStrip,
     );
     expect(dateStripRect.height, lessThanOrEqualTo(28));
-    for (final label in const ['起', '中', '迄']) {
-      expect(
-        find.descendant(of: dateStrip, matching: find.text(label)),
-        findsOneWidget,
-      );
-    }
+    expect(
+      find.descendant(
+        of: dateStrip,
+        matching:
+            find.byKey(const ValueKey('00631l-overview-sparkline-date-start')),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: dateStrip,
+        matching:
+            find.byKey(const ValueKey('00631l-overview-sparkline-date-mid')),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: dateStrip,
+        matching:
+            find.byKey(const ValueKey('00631l-overview-sparkline-date-end')),
+      ),
+      findsOneWidget,
+    );
     final touchDetailRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
     );
     expect(touchDetailRect.height, lessThanOrEqualTo(34));
+    expect(touchDetailRect.top, lessThan(chartRect.top));
     expect(
       find.byKey(const ValueKey('00631l-overview-exposure-compact-row')),
       findsNothing,
