@@ -1499,7 +1499,44 @@ void main() {
     expect(find.textContaining('資料只留在本機'), findsWidgets);
     expect(find.text('市價'), findsNothing);
     expect(
+      find.byKey(const ValueKey('00631l-position-tools-panel')),
+      findsNothing,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-position-action-save')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-action-export')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-action-clear')),
+      findsNothing,
+    );
+
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-position-field-shares')),
+      '1000',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-position-field-average-cost')),
+      '120',
+    );
+    await tester.pumpAndSettle();
+    final toolsPanel =
+        find.byKey(const ValueKey('00631l-position-tools-panel'));
+    expect(toolsPanel, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-position-tool-actions')),
+      findsNothing,
+    );
+    await tester.ensureVisible(toolsPanel);
+    await tester.pumpAndSettle();
+    await tester.tap(toolsPanel);
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-position-tool-actions')),
       findsOneWidget,
     );
     expect(
@@ -1580,6 +1617,10 @@ void main() {
     expect(
       find.byKey(const ValueKey('00631l-position-action-save')),
       findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-tools-panel')),
+      findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-position-action-export')),

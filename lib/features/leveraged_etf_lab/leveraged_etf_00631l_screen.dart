@@ -9623,15 +9623,6 @@ class _PositionSectionState extends State<_PositionSection> {
           summary: summary,
           selectedEtf: widget.selectedEtf,
         ),
-        if (input.hasPosition) ...[
-          const SizedBox(height: 8),
-          _PositionActionBar(
-            hasPosition: input.hasPosition,
-            onSave: _save,
-            onExport: _export,
-            onClear: _clear,
-          ),
-        ],
         const SizedBox(height: 12),
         KeyedSubtree(
           key: const ValueKey('00631l-position-compact-input-card'),
@@ -9647,13 +9638,27 @@ class _PositionSectionState extends State<_PositionSection> {
                   child: inputForm,
                 ),
         ),
-        if (!input.hasPosition) ...[
+        const SizedBox(height: 8),
+        _PositionActionBar(
+          hasPosition: input.hasPosition,
+          onSave: _save,
+          onExport: _export,
+          onClear: _clear,
+          primaryOnly: true,
+        ),
+        if (input.hasPosition) ...[
           const SizedBox(height: 8),
-          _PositionActionBar(
-            hasPosition: input.hasPosition,
-            onSave: _save,
-            onExport: _export,
-            onClear: _clear,
+          _CompactExpansionPanel(
+            key: const ValueKey('00631l-position-tools-panel'),
+            title: '持倉工具',
+            subtitle: '匯出 JSON、清除本機資料與核對細節；低頻動作收在這裡。',
+            child: _PositionActionBar(
+              hasPosition: input.hasPosition,
+              onSave: _save,
+              onExport: _export,
+              onClear: _clear,
+              secondaryOnly: true,
+            ),
           ),
         ],
       ],
@@ -9757,32 +9762,41 @@ class _PositionActionBar extends StatelessWidget {
     required this.onSave,
     required this.onExport,
     required this.onClear,
+    this.primaryOnly = false,
+    this.secondaryOnly = false,
   });
 
   final bool hasPosition;
   final VoidCallback onSave;
   final VoidCallback onExport;
   final VoidCallback onClear;
+  final bool primaryOnly;
+  final bool secondaryOnly;
 
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 430;
     if (compact) {
       return KeyedSubtree(
-        key: const ValueKey('00631l-position-primary-actions'),
+        key: ValueKey(
+          secondaryOnly
+              ? '00631l-position-tool-actions'
+              : '00631l-position-primary-actions',
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _PositionQuickAction(
-              key: const ValueKey('00631l-position-action-save'),
-              icon: Icons.save_outlined,
-              label: hasPosition ? '更新本機資料' : '保存本機資料',
-              caption: '只保存在此裝置',
-              isPrimary: true,
-              fillWidth: true,
-              onTap: onSave,
-            ),
-            if (hasPosition) ...[
+            if (!secondaryOnly)
+              _PositionQuickAction(
+                key: const ValueKey('00631l-position-action-save'),
+                icon: Icons.save_outlined,
+                label: hasPosition ? '更新本機資料' : '保存本機資料',
+                caption: '只保存在此裝置',
+                isPrimary: true,
+                fillWidth: true,
+                onTap: onSave,
+              ),
+            if (hasPosition && !primaryOnly) ...[
               const SizedBox(height: 6),
               SingleChildScrollView(
                 key: const ValueKey('00631l-position-secondary-actions'),
@@ -9814,35 +9828,43 @@ class _PositionActionBar extends StatelessWidget {
       );
     }
     return SingleChildScrollView(
-      key: const ValueKey('00631l-position-primary-actions'),
+      key: ValueKey(
+        secondaryOnly
+            ? '00631l-position-tool-actions'
+            : '00631l-position-primary-actions',
+      ),
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
       child: Row(
         children: [
-          _PositionQuickAction(
-            key: const ValueKey('00631l-position-action-save'),
-            icon: Icons.save_outlined,
-            label: hasPosition ? '更新' : '保存',
-            caption: '本機資料',
-            isPrimary: true,
-            onTap: onSave,
-          ),
-          const SizedBox(width: 8),
-          _PositionQuickAction(
-            key: const ValueKey('00631l-position-action-export'),
-            icon: Icons.ios_share_outlined,
-            label: 'JSON',
-            caption: '匯出',
-            onTap: onExport,
-          ),
-          const SizedBox(width: 8),
-          _PositionQuickAction(
-            key: const ValueKey('00631l-position-action-clear'),
-            icon: Icons.delete_outline,
-            label: '清除',
-            caption: '本機資料',
-            onTap: onClear,
-          ),
+          if (!secondaryOnly) ...[
+            _PositionQuickAction(
+              key: const ValueKey('00631l-position-action-save'),
+              icon: Icons.save_outlined,
+              label: hasPosition ? '更新' : '保存',
+              caption: '本機資料',
+              isPrimary: true,
+              onTap: onSave,
+            ),
+            if (!primaryOnly) const SizedBox(width: 8),
+          ],
+          if (!primaryOnly) ...[
+            _PositionQuickAction(
+              key: const ValueKey('00631l-position-action-export'),
+              icon: Icons.ios_share_outlined,
+              label: 'JSON',
+              caption: '匯出',
+              onTap: onExport,
+            ),
+            const SizedBox(width: 8),
+            _PositionQuickAction(
+              key: const ValueKey('00631l-position-action-clear'),
+              icon: Icons.delete_outline,
+              label: '清除',
+              caption: '本機資料',
+              onTap: onClear,
+            ),
+          ],
         ],
       ),
     );

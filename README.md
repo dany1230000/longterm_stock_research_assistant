@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v14.1 tightens the position page. The first screen focuses on account summary,
+  shares, average cost, and save/update; JSON export and clear-local-data tools
+  move under `持倉工具` after a position exists.
+
 - v14.0 tightens the overview chart area. The one-year chart remains visible on
   the home screen, but compact phones use a shorter chart and `起 / 中 / 迄`
   axis labels while touch detail keeps the full date and value.
