@@ -9583,7 +9583,9 @@ class _RangeContextMetricStrip extends StatelessWidget {
       key: const ValueKey('00631l-range-context-metric-strip'),
       builder: (context, constraints) {
         if (compact) {
-          final visibleItems = items.take(2).toList();
+          final visibleItems = items.length > 2
+              ? items.skip(1).take(2).toList()
+              : items.take(2).toList();
           return Row(
             key: const ValueKey('00631l-range-context-wrap'),
             children: [

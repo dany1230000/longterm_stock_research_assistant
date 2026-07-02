@@ -1230,6 +1230,10 @@ void main() {
     expect(metricStrip, findsOneWidget);
     expect(tester.getRect(metricStrip).height, lessThanOrEqualTo(38));
     expect(
+      find.descendant(of: metricStrip, matching: find.textContaining(' - ')),
+      findsNothing,
+    );
+    expect(
       find.descendant(
         of: rangeContext,
         matching: find.byKey(const ValueKey('00631l-date-range-preset-scroll')),

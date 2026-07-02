@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.7 tightens the phone history/backtest date-range summary. Narrow metric
+  chips now avoid long `start - end` strings while the editable start/end date
+  cards remain visible.
+
 - v15.6 restores a concise holdings digest to the phone overview. TX, TSMC,
   and exposure structure are visible on the first screen without opening the
   history or settings tabs.

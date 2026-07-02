@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History range summary density v15.7: `docs\00631l_v15_7_history_range_summary_density.md`
 - Overview holdings digest v15.6: `docs\00631l_v15_6_overview_holdings_digest.md`
 - Symbol search result density v15.5: `docs\00631l_v15_5_symbol_search_result_density.md`
 - Backtest result density v15.4: `docs\00631l_v15_4_backtest_result_density.md`
