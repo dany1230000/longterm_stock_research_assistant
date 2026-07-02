@@ -3121,10 +3121,13 @@ void main() {
         find.byKey(const ValueKey('00631l-ai-primary-action-block'));
     final detailExpansion =
         find.byKey(const ValueKey('00631l-ai-daily-detail-expansion'));
+    final decisionStrip =
+        find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
 
     expect(headline, findsOneWidget);
     expect(primaryAction, findsOneWidget);
     expect(detailExpansion, findsOneWidget);
+    expect(decisionStrip, findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-ai-first-screen-bullets')),
       findsNothing,
@@ -3168,6 +3171,9 @@ void main() {
     await tester.tap(find.text('AI 資料細節'));
     await tester.pumpAndSettle();
 
+    final decisionStrip =
+        find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
+    expect(decisionStrip, findsOneWidget);
     final factRow = find.byKey(const ValueKey('00631l-ai-daily-fact-row'));
     expect(factRow, findsOneWidget);
     final rowRect = tester.getRect(factRow);

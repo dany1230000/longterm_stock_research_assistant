@@ -10581,11 +10581,17 @@ class _AiDailyBriefingHero extends StatelessWidget {
                 KeyedSubtree(
                   key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
                   child: _StatusWrap(
-                    labels: [
-                      _statusDisplay(summary.source),
-                      summary.readinessLabel,
-                      summary.disclaimer,
-                    ],
+                    labels: compact
+                        ? [
+                            _statusDisplay(summary.source),
+                            summary.readinessLabel,
+                            '非買賣建議',
+                          ]
+                        : [
+                            _statusDisplay(summary.source),
+                            summary.readinessLabel,
+                            summary.disclaimer,
+                          ],
                   ),
                 ),
                 if (!compact && briefingBullets.isNotEmpty) ...[
@@ -10600,13 +10606,15 @@ class _AiDailyBriefingHero extends StatelessWidget {
                     premiumText: premiumText,
                   ),
                 ],
-                const SizedBox(height: 10),
-                _AiDailyDecisionStrip(
-                  data: data,
-                  summary: summary,
-                  premiumText: premiumText,
-                  primaryAction: primaryAction,
-                ),
+                if (!compact) ...[
+                  const SizedBox(height: 10),
+                  _AiDailyDecisionStrip(
+                    data: data,
+                    summary: summary,
+                    premiumText: premiumText,
+                    primaryAction: primaryAction,
+                  ),
+                ],
                 const SizedBox(height: 10),
                 _CompactExpansionPanel(
                   key: const ValueKey('00631l-ai-daily-detail-expansion'),
@@ -10620,6 +10628,13 @@ class _AiDailyBriefingHero extends StatelessWidget {
                           data: data,
                           summary: summary,
                           premiumText: premiumText,
+                        ),
+                        const SizedBox(height: 10),
+                        _AiDailyDecisionStrip(
+                          data: data,
+                          summary: summary,
+                          premiumText: premiumText,
+                          primaryAction: primaryAction,
                         ),
                         const SizedBox(height: 10),
                       ],

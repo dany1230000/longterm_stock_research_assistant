@@ -4,6 +4,11 @@
 
 Latest mobile UI polish:
 
+- v14.2 tightens the AI page first screen on phones. The compact view now keeps
+  only today's conclusion, data-time facts, the primary program action, and the
+  `AI 資料細節` entry visible; the four-tile daily decision strip moves into the
+  expanded detail area on phone width.
+
 - v14.1 tightens the position page. The first screen focuses on account summary,
   shares, average cost, and save/update; JSON export and clear-local-data tools
   move under `持倉工具` after a position exists.

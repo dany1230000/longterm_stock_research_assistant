@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- AI detail density v14.2: `docs\00631l_v14_2_ai_detail_density.md`
 - Position tools density v14.1: `docs\00631l_v14_1_position_tools_density.md`
 - Overview chart density v14.0: `docs\00631l_v14_0_overview_chart_density.md`
 - Comparison selection density v13.9: `docs\00631l_v13_9_comparison_selection_density.md`
