@@ -1200,6 +1200,29 @@ void main() {
     expect(find.text('尚無內容物紀錄'), findsWidgets);
   });
 
+  testWidgets('history sparse chart shows latest point instead of blank frame',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _SparsePriceHistoryRepository());
+
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('00631l-line-chart-sparse-state')),
+      findsWidgets,
+    );
+    expect(find.textContaining('資料點不足'), findsWidgets);
+    expect(find.textContaining('2026/06/08'), findsWidgets);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('history backtest section renders inputs and disclaimer',
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());
@@ -3892,6 +3915,34 @@ EtfOperationsStatus _operationsStatusWithEtfHistory({
     exportDirReady: true,
     backupDirReady: false,
   );
+}
+
+class _SparsePriceHistoryRepository extends Mock00631LRepository {
+  @override
+  Future<EtfPriceHistory> fetchPriceHistory({int limit = 5000}) async {
+    final points = [
+      EtfPriceHistoryPoint(
+        date: DateTime(2026, 6, 8),
+        open: 35.0,
+        high: 35.4,
+        low: 34.8,
+        close: 35.2,
+        adjustedClose: 35.2,
+        adjustmentFactor: 1.0,
+        volume: 1200000,
+      ),
+    ];
+    return EtfPriceHistory(
+      points: points,
+      status: EtfDataStatus.cached,
+      sourceStatusLabel: 'cached',
+      sourceUrl: 'local://sparse-price-history',
+      lastFetchedAt: DateTime(2026, 6, 11),
+      coverageStart: points.first.date,
+      coverageEnd: points.last.date,
+      isCompleteFromListing: false,
+    );
+  }
 }
 
 class _NoHistoryRepository extends Mock00631LRepository {

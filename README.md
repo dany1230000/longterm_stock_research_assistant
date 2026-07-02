@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v12.2 fixes sparse history charts. If a selected date range has only one
+  valid price point, the chart now shows a clear sparse-data state with the
+  date/value instead of a blank-looking frame.
+
 - v12.1 adds a compact overview AI glance card, using the lower phone first
   screen for one short interpretation line and one program action without
   turning the overview into the full AI page.

@@ -14943,51 +14943,57 @@ class _LineChartPanelState extends State<_LineChartPanel> {
           height: widget.height,
           child: spots.isEmpty
               ? const Center(child: Text('尚無圖表資料'))
-              : LineChart(
-                  LineChartData(
-                    gridData: const FlGridData(show: true),
-                    lineTouchData: LineTouchData(
-                      enabled: true,
-                      touchCallback: (event, response) {
-                        final touched =
-                            response?.lineBarSpots?.isNotEmpty == true
-                                ? response!.lineBarSpots!.first.spotIndex
-                                : null;
-                        if (touched != null && touched != _touchedIndex) {
-                          setState(() => _touchedIndex = touched);
-                        }
-                      },
-                      touchTooltipData: LineTouchTooltipData(
-                        getTooltipItems: (touchedSpots) => [
-                          for (final spot in touchedSpots)
-                            LineTooltipItem(
-                              '${formatTaiwanDate(spotPoints[spot.spotIndex].date)}\n${_compactChartValue(spot.y)}',
-                              const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 11,
-                              ),
-                            ),
+              : spots.length < 2
+                  ? _SparseLineChartState(
+                      point: spotPoints.first,
+                      value: spots.first.y,
+                      label: widget.labelOf(spotPoints.first),
+                    )
+                  : LineChart(
+                      LineChartData(
+                        gridData: const FlGridData(show: true),
+                        lineTouchData: LineTouchData(
+                          enabled: true,
+                          touchCallback: (event, response) {
+                            final touched =
+                                response?.lineBarSpots?.isNotEmpty == true
+                                    ? response!.lineBarSpots!.first.spotIndex
+                                    : null;
+                            if (touched != null && touched != _touchedIndex) {
+                              setState(() => _touchedIndex = touched);
+                            }
+                          },
+                          touchTooltipData: LineTouchTooltipData(
+                            getTooltipItems: (touchedSpots) => [
+                              for (final spot in touchedSpots)
+                                LineTooltipItem(
+                                  '${formatTaiwanDate(spotPoints[spot.spotIndex].date)}\n${_compactChartValue(spot.y)}',
+                                  const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        titlesData: const FlTitlesData(
+                          rightTitles: AxisTitles(),
+                          topTitles: AxisTitles(),
+                          bottomTitles: AxisTitles(),
+                        ),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: spots,
+                            barWidth: 2.5,
+                            isCurved: false,
+                            dotData: FlDotData(show: spots.length <= 12),
+                            color: widget.color ??
+                                Theme.of(context).colorScheme.primary,
+                          ),
                         ],
                       ),
                     ),
-                    titlesData: const FlTitlesData(
-                      rightTitles: AxisTitles(),
-                      topTitles: AxisTitles(),
-                      bottomTitles: AxisTitles(),
-                    ),
-                    lineBarsData: [
-                      LineChartBarData(
-                        spots: spots,
-                        barWidth: 2.5,
-                        isCurved: false,
-                        dotData: FlDotData(show: spots.length <= 12),
-                        color: widget.color ??
-                            Theme.of(context).colorScheme.primary,
-                      ),
-                    ],
-                  ),
-                ),
         ),
         const SizedBox(height: 6),
         if (spotPoints.isNotEmpty) ...[
@@ -15006,6 +15012,104 @@ class _LineChartPanelState extends State<_LineChartPanel> {
           isManualSelection: hasManualSelection,
         ),
       ],
+    );
+  }
+}
+
+class _SparseLineChartState extends StatelessWidget {
+  const _SparseLineChartState({
+    required this.point,
+    required this.value,
+    required this.label,
+  });
+
+  final EtfPriceHistoryPoint point;
+  final double value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxHeight < 96;
+        return DecoratedBox(
+          key: const ValueKey('00631l-line-chart-sparse-state'),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.24,
+            ),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(compact ? 8 : 12),
+            child: compact
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '資料點不足',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: _marketTextColor(context),
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      _CompactTextBadge(label: formatTaiwanDate(point.date)),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '資料點不足，暫顯示目前區間最新一筆',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          _CompactTextBadge(
+                            label: formatTaiwanDate(point.date),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '$label ${_compactChartValue(value)}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                color: _marketTextColor(context),
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '可調整日期區間取得更多資料點。',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        );
+      },
     );
   }
 }
