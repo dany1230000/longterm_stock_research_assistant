@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v14.9 tightens history chart cards. Phone width now uses content-sized chart
+  cards instead of fixed-height grid cells, removing blank space after chart
+  touch detail.
+
 - v14.8 cleans up the history/backtest title strip. ETF codes are no longer
   repeated when the history source name is the same as the code.
 

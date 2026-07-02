@@ -14490,13 +14490,23 @@ class _MiniChartGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 620;
+        if (isCompact) {
+          return Column(
+            children: [
+              for (var index = 0; index < children.length; index++) ...[
+                children[index],
+                if (index != children.length - 1) const SizedBox(height: 8),
+              ],
+            ],
+          );
+        }
         return GridView.count(
-          crossAxisCount: isCompact ? 1 : 2,
+          crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
-          childAspectRatio: isCompact ? 1.35 : 1.5,
+          childAspectRatio: 1.5,
           children: children,
         );
       },
@@ -14544,14 +14554,12 @@ class _MiniChartCard extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            Expanded(
-              child: _LineChartPanel(
-                points: points,
-                valueOf: valueOf ?? (point) => point.close,
-                labelOf: (point) => _monthDay(point.date),
-                height: 76,
-                color: theme.colorScheme.secondary,
-              ),
+            _LineChartPanel(
+              points: points,
+              valueOf: valueOf ?? (point) => point.close,
+              labelOf: (point) => _monthDay(point.date),
+              height: 76,
+              color: theme.colorScheme.secondary,
             ),
           ],
         ),
