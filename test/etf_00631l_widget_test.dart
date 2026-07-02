@@ -1016,6 +1016,7 @@ void main() {
       find.byKey(const ValueKey('00631l-history-backtest-top-strip')),
       findsOneWidget,
     );
+    expect(find.text('00631L 00631L'), findsNothing);
     expect(
       tester
           .getRect(

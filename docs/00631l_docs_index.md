@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History title cleanup v14.8: `docs\00631l_v14_8_history_title_cleanup.md`
 - Loading market skeleton v14.7: `docs\00631l_v14_7_loading_market_skeleton.md`
 - Overview top density v14.6: `docs\00631l_v14_6_overview_top_density.md`
 - Comparison guidance density v14.5: `docs\00631l_v14_5_comparison_guidance_density.md`

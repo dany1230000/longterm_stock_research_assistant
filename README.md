@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v14.8 cleans up the history/backtest title strip. ETF codes are no longer
+  repeated when the history source name is the same as the code.
+
 - v14.7 improves the loading state. The public app now shows a market-stack
   skeleton with quote, premium/discount, chart, date chips, and data ribbon
   placeholders while repositories are still loading.

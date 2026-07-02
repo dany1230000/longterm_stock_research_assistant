@@ -7157,6 +7157,10 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
     final latest = completeness.latest;
     final latestDate = latest == null ? '尚無' : _dateOrDash(latest.date);
     final latestClose = _price(latest?.performanceClose);
+    final normalizedName = name.trim();
+    final titleText = normalizedName.isEmpty || normalizedName == code
+        ? code
+        : '$code $normalizedName';
     final adjustmentLabel = completeness.hasNonUnitAdjustment
         ? '分割調整'
         : completeness.hasAdjustedClose
@@ -7189,7 +7193,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '$code $name',
+                            titleText,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.labelLarge?.copyWith(
