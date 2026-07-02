@@ -1487,12 +1487,32 @@ void main() {
       findsNothing,
     );
     expect(
+      find.byKey(const ValueKey('00631l-position-source-expansion')),
+      findsNothing,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-position-field-shares')),
       findsOneWidget,
     );
     expect(
       find.byKey(const ValueKey('00631l-position-field-average-cost')),
       findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-estimate-details')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-action-save')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-action-export')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-action-clear')),
+      findsNothing,
     );
     final stripRect = tester.getRect(strip);
     for (final label in const [

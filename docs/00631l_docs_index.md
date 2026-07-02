@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position mobile density v12.4: `docs\00631l_v12_4_position_mobile_density.md`
 - History date density v12.3: `docs\00631l_v12_3_history_date_density.md`
 - Sparse history chart v12.2: `docs\00631l_v12_2_sparse_history_chart.md`
 - Overview AI glance v12.1: `docs\00631l_v12_1_overview_ai_glance.md`

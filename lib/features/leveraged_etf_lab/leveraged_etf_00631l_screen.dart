@@ -9384,12 +9384,15 @@ class _PositionSectionState extends State<_PositionSection> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        _CompactExpansionPanel(
-          title: '估算細節',
-          subtitle: input.hasPosition ? '市值、成本、損益與部位比例。' : '輸入股數與成本後顯示完整估算。',
-          child: _PositionResultGrid(summary: summary),
-        ),
+        if (!compact || input.hasPosition) ...[
+          const SizedBox(height: 12),
+          _CompactExpansionPanel(
+            key: const ValueKey('00631l-position-estimate-details'),
+            title: '估算細節',
+            subtitle: input.hasPosition ? '市值、成本、損益與部位比例。' : '輸入股數與成本後顯示完整估算。',
+            child: _PositionResultGrid(summary: summary),
+          ),
+        ],
         if (_exportJson != null) ...[
           const SizedBox(height: 12),
           SelectableText(_exportJson!),
@@ -9558,6 +9561,53 @@ class _PositionActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 430;
+    if (compact) {
+      return KeyedSubtree(
+        key: const ValueKey('00631l-position-primary-actions'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _PositionQuickAction(
+              key: const ValueKey('00631l-position-action-save'),
+              icon: Icons.save_outlined,
+              label: hasPosition ? '更新本機資料' : '保存本機資料',
+              caption: '只保存在此裝置',
+              isPrimary: true,
+              fillWidth: true,
+              onTap: onSave,
+            ),
+            if (hasPosition) ...[
+              const SizedBox(height: 6),
+              SingleChildScrollView(
+                key: const ValueKey('00631l-position-secondary-actions'),
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    _PositionQuickAction(
+                      key: const ValueKey('00631l-position-action-export'),
+                      icon: Icons.ios_share_outlined,
+                      label: 'JSON',
+                      caption: '匯出',
+                      onTap: onExport,
+                    ),
+                    const SizedBox(width: 8),
+                    _PositionQuickAction(
+                      key: const ValueKey('00631l-position-action-clear'),
+                      icon: Icons.delete_outline,
+                      label: '清除',
+                      caption: '本機資料',
+                      onTap: onClear,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    }
     return SingleChildScrollView(
       key: const ValueKey('00631l-position-primary-actions'),
       scrollDirection: Axis.horizontal,
@@ -9643,6 +9693,7 @@ class _PositionQuickAction extends StatelessWidget {
     required this.caption,
     required this.onTap,
     this.isPrimary = false,
+    this.fillWidth = false,
   });
 
   final IconData icon;
@@ -9650,6 +9701,7 @@ class _PositionQuickAction extends StatelessWidget {
   final String caption;
   final VoidCallback onTap;
   final bool isPrimary;
+  final bool fillWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -9670,7 +9722,7 @@ class _PositionQuickAction extends StatelessWidget {
           border: Border.all(color: theme.colorScheme.outlineVariant),
         ),
         child: SizedBox(
-          width: 86,
+          width: fillWidth ? double.infinity : 86,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
             child: Row(
@@ -9726,6 +9778,7 @@ class _PositionAccountStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final dataTime = summary.dataTime == null
         ? '暫無'
         : formatTaiwanDateTimeSeconds(summary.dataTime!);
@@ -9799,16 +9852,18 @@ class _PositionAccountStrip extends StatelessWidget {
             _PositionAccountMetricStrip(
               items: items,
             ),
-            const SizedBox(height: 8),
-            _CompactExpansionPanel(
-              key: const ValueKey('00631l-position-source-expansion'),
-              title: '更多資料來源',
-              subtitle: '行情來源、歷史來源與資料時間；需要核對時展開。',
-              child: _PositionSourceChipStrip(
-                selectedEtf: selectedEtf,
-                dataTime: dataTime,
+            if (!compact) ...[
+              const SizedBox(height: 8),
+              _CompactExpansionPanel(
+                key: const ValueKey('00631l-position-source-expansion'),
+                title: '更多資料來源',
+                subtitle: '行情來源、歷史來源與資料時間；需要核對時展開。',
+                child: _PositionSourceChipStrip(
+                  selectedEtf: selectedEtf,
+                  dataTime: dataTime,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

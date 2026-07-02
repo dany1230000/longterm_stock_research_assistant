@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v12.4 tightens the phone position page. Empty local-position flow now keeps
+  the save action primary, while source diagnostics and secondary actions stop
+  competing with the first input screen.
+
 - v12.3 tightens the history/backtest date controls on phones. Preset ranges
   stay in one short row, start/end date buttons drop lower-priority captions on
   compact width, and the chart appears sooner.
