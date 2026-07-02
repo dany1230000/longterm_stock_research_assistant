@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v11.8 makes the AI page lead with today's interpretation. The first-screen
+  facts now show DAY, LIVE, and HOLD context, with HOLD focused on TX and TSMC
+  weights from official holdings.
+
 - v11.7 trims the phone position entry flow. The share and average-cost fields
   stay visible, while duplicate local-only guidance is hidden on compact width.
 

@@ -10048,7 +10048,14 @@ class _AiDailyBriefingHero extends StatelessWidget {
                 const _CompactTextBadge(label: '規則分析'),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
+            _AiDailyHeadlinePanel(
+              data: data,
+              summary: summary,
+              premiumText: premiumText,
+              primaryAction: primaryAction,
+            ),
+            const SizedBox(height: 8),
             KeyedSubtree(
               key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
               child: _StatusWrap(
@@ -10058,13 +10065,6 @@ class _AiDailyBriefingHero extends StatelessWidget {
                   summary.disclaimer,
                 ],
               ),
-            ),
-            const SizedBox(height: 8),
-            _AiDailyHeadlinePanel(
-              data: data,
-              summary: summary,
-              premiumText: premiumText,
-              primaryAction: primaryAction,
             ),
             if (briefingBullets.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -10299,17 +10299,19 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
     final theme = Theme.of(context);
     final snapshot = data.snapshot;
     final nav = data.intradayNav;
-    final price = data.priceHistory.completenessSummary();
+    final txWeight = snapshot.futuresHoldings
+        .where((line) => line.code.toUpperCase().contains('TX'))
+        .fold<double>(0, (sum, line) => sum + line.weightPct);
+    final tsmcWeight = snapshot.stockHoldings
+        .where((line) => line.code == '2330')
+        .fold<double>(0, (sum, line) => sum + line.weightPct);
     final statusColor = _aiStatusColor(
       context,
       summary,
       nav?.premiumDiscountAssessment,
     );
-    final coverage = price.coverageStart == null || price.coverageEnd == null
-        ? '資料區間暫無'
-        : '${_dateOrDash(price.coverageStart)}-${_dateOrDash(price.coverageEnd)}';
     final headline =
-        '${summary.readinessLabel}；$premiumText 歷史資料 ${formatInteger(price.rowCount)} 筆。';
+        '${summary.readinessLabel}；$premiumText TX ${formatNullablePercent(txWeight)}，台積電 ${formatNullablePercent(tsmcWeight)}。';
     final factItems = [
       _AiInlineFactItem(
         label: 'DAY',
@@ -10322,9 +10324,9 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
         detail: '盤中 NAV',
       ),
       _AiInlineFactItem(
-        label: 'HIS',
-        value: formatInteger(price.rowCount),
-        detail: coverage,
+        label: 'HOLD',
+        value: 'TX ${formatNullablePercent(txWeight)}',
+        detail: '台積電 ${formatNullablePercent(tsmcWeight)}',
       ),
     ];
 
