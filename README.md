@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v13.6 tightens history/backtest chart date labels. Phone axis chips use short
+  `起 / 中 / 迄` labels with `yy/MM/dd`, while touch detail keeps full dates.
+
 - v13.5 tightens the overview sparkline header on phones. The one-year chart
   now uses one compact row for title, latest price, and one-year change, while
   the date context stays on the chart axis.

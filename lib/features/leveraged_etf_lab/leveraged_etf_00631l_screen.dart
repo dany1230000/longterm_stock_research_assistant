@@ -15459,6 +15459,10 @@ class _ChartAxisDateStrip extends StatelessWidget {
     TextAlign align,
   ) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
+    final displayLabel = compact ? _compactAxisLabel(label) : label;
+    final displayDate =
+        compact ? _compactAxisDate(date) : formatTaiwanDate(date);
     final key = align == TextAlign.left
         ? const ValueKey('00631l-chart-axis-start-label')
         : align == TextAlign.center
@@ -15482,7 +15486,7 @@ class _ChartAxisDateStrip extends StatelessWidget {
                   ? Alignment.center
                   : Alignment.centerRight,
           child: Text(
-            '$label ${formatTaiwanDate(date)}',
+            '$displayLabel $displayDate',
             maxLines: 1,
             overflow: TextOverflow.visible,
             textAlign: align,
@@ -15495,6 +15499,25 @@ class _ChartAxisDateStrip extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _compactAxisLabel(String label) {
+    switch (label) {
+      case '起點':
+        return '起';
+      case '中段':
+        return '中';
+      case '終點':
+        return '迄';
+    }
+    return label;
+  }
+
+  String _compactAxisDate(DateTime date) {
+    final year = (date.year % 100).toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    return '$year/$month/$day';
   }
 }
 

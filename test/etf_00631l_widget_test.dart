@@ -1215,6 +1215,27 @@ void main() {
       ),
       findsNothing,
     );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-chart-axis-start-label')).first,
+        matching: find.textContaining('起 '),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-chart-axis-middle-label')).first,
+        matching: find.textContaining('中 '),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-chart-axis-end-label')).first,
+        matching: find.textContaining('迄 '),
+      ),
+      findsOneWidget,
+    );
     _expectNoTradingActionText();
   });
 
