@@ -10360,6 +10360,19 @@ class _AiDailyBriefingHero extends StatelessWidget {
               _AiFirstScreenBulletList(bullets: briefingBullets),
             ],
             const SizedBox(height: 10),
+            _AiDailyConclusionCard(
+              data: data,
+              summary: summary,
+              premiumText: premiumText,
+            ),
+            const SizedBox(height: 10),
+            _AiDailyDecisionStrip(
+              data: data,
+              summary: summary,
+              premiumText: premiumText,
+              primaryAction: primaryAction,
+            ),
+            const SizedBox(height: 10),
             _CompactExpansionPanel(
               key: const ValueKey('00631l-ai-daily-detail-expansion'),
               title: 'AI 資料細節',
@@ -10367,19 +10380,6 @@ class _AiDailyBriefingHero extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _AiDailyConclusionCard(
-                    data: data,
-                    summary: summary,
-                    premiumText: premiumText,
-                  ),
-                  const SizedBox(height: 10),
-                  _AiDailyDecisionStrip(
-                    data: data,
-                    summary: summary,
-                    premiumText: premiumText,
-                    primaryAction: primaryAction,
-                  ),
-                  const SizedBox(height: 10),
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(

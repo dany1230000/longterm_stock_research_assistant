@@ -2621,18 +2621,34 @@ void main() {
     expect(find.text('今日重點'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-ai-daily-conclusion')),
-      findsNothing,
+      findsOneWidget,
     );
     expect(
       find.byKey(const ValueKey('00631l-ai-daily-decision-strip')),
-      findsNothing,
+      findsOneWidget,
     );
     expect(
       find.byKey(const ValueKey('00631l-ai-daily-briefing-bullets')),
       findsNothing,
     );
+    expect(find.text('當日資料判讀'), findsOneWidget);
+    expect(find.textContaining('資料時間：'), findsOneWidget);
+    expect(find.textContaining('折溢價：'), findsOneWidget);
+    final aiDecisionStrip =
+        find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
+    for (final label in const ['今日資料', '偏離判讀', '歷史資料', '後續操作']) {
+      expect(
+        find.descendant(of: aiDecisionStrip, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
     final detailExpansion =
         find.byKey(const ValueKey('00631l-ai-daily-detail-expansion'));
+    expect(
+      tester.getTopLeft(aiDecisionStrip).dy,
+      lessThan(tester.getTopLeft(detailExpansion).dy),
+      reason: 'Daily AI analysis should be visible before detail expansion.',
+    );
     await tester.scrollUntilVisible(
       detailExpansion,
       220,
@@ -2660,14 +2676,6 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-daily-decision-strip')),
       findsOneWidget,
     );
-    final aiDecisionStrip =
-        find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
-    for (final label in const ['今日資料', '偏離判讀', '歷史資料', '後續操作']) {
-      expect(
-        find.descendant(of: aiDecisionStrip, matching: find.text(label)),
-        findsOneWidget,
-      );
-    }
     final primaryActionBlock =
         find.byKey(const ValueKey('00631l-ai-primary-action-block'));
     expect(primaryActionBlock, findsOneWidget);
@@ -2676,9 +2684,6 @@ void main() {
       lessThan(tester.getTopLeft(detailExpansion).dy),
       reason: 'The primary program action should appear before AI details.',
     );
-    expect(find.text('當日資料判讀'), findsOneWidget);
-    expect(find.textContaining('資料時間：'), findsOneWidget);
-    expect(find.textContaining('折溢價：'), findsOneWidget);
     expect(find.textContaining('非投資建議'), findsWidgets);
     expect(find.text('當日資料'), findsOneWidget);
     expect(find.text('價格偏離'), findsOneWidget);

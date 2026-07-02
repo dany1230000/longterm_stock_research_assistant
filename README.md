@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v12.5 moves the AI daily interpretation out of the detail expansion. The AI
+  page now shows today's data readout, price-divergence interpretation,
+  historical context, and program action before advanced details.
+
 - v12.4 tightens the phone position page. Empty local-position flow now keeps
   the save action primary, while source diagnostics and secondary actions stop
   competing with the first input screen.
