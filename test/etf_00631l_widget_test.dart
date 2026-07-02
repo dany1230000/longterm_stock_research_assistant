@@ -638,6 +638,15 @@ void main() {
     expect(touchDetailRect.height, lessThanOrEqualTo(34));
     expect(touchDetailRect.top, lessThan(chartRect.top));
     expect(
+      find.descendant(
+        of: find
+            .byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
+        matching:
+            find.byKey(const ValueKey('00631l-line-chart-touch-secondary')),
+      ),
+      findsNothing,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-overview-exposure-compact-row')),
       findsNothing,
     );

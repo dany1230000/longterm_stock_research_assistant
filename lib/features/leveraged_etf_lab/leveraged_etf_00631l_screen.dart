@@ -16064,20 +16064,24 @@ class _ChartTouchDetail extends StatelessWidget {
                       compact: compact,
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  Flexible(
-                    flex: 5,
-                    child: Text(
-                      secondary,
-                      key: const ValueKey('00631l-line-chart-touch-secondary'),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _marketMutedTextColor(context),
-                        fontWeight: FontWeight.w700,
+                  if (!compact) ...[
+                    const SizedBox(width: 6),
+                    Flexible(
+                      flex: 5,
+                      child: Text(
+                        secondary,
+                        key: const ValueKey(
+                          '00631l-line-chart-touch-secondary',
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
               )
             else

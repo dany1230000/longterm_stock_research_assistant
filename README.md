@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.11 removes truncated chart helper text from compact chart touch details.
+  Phone charts now keep the selected date and value visible without extra
+  hints competing for space.
+
 - v15.10 keeps the phone overview AI card focused on the daily summary. Program
   operation details stay in the AI tab instead of taking space on the first
   screen.
