@@ -4,6 +4,11 @@
 
 Latest mobile UI polish:
 
+- v15.0 tightens the empty position screen on phones. The local-only input
+  fields and save action now live in one compact card, so the position tab no
+  longer starts with a repeated full-width action card when no position is
+  saved.
+
 - v14.9 tightens history chart cards. Phone width now uses content-sized chart
   cards instead of fixed-height grid cells, removing blank space after chart
   touch detail.

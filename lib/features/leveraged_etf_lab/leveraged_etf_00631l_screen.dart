@@ -9670,6 +9670,7 @@ class _PositionSectionState extends State<_PositionSection> {
       marketPrice: widget.selectedEtf.marketPrice,
       dataTime: widget.selectedEtf.dataTime,
     );
+    final useCompactEmptyInputCard = compact && !input.hasPosition;
     final inputForm = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -9780,26 +9781,33 @@ class _PositionSectionState extends State<_PositionSection> {
         const SizedBox(height: 12),
         KeyedSubtree(
           key: const ValueKey('00631l-position-compact-input-card'),
-          child: input.hasPosition
-              ? _CompactExpansionPanel(
-                  title: '輸入持倉資料',
-                  subtitle: '已保存本機持倉；需要修改股數、成本或備註時再展開。',
-                  child: inputForm,
+          child: useCompactEmptyInputCard
+              ? _PositionCompactEmptyInputCard(
+                  inputForm: inputForm,
+                  onSave: _save,
                 )
-              : _SectionBlock(
-                  title: '輸入持倉資料',
-                  subtitle: '本機保存；先填股數與平均成本即可估算。',
-                  child: inputForm,
-                ),
+              : input.hasPosition
+                  ? _CompactExpansionPanel(
+                      title: '輸入持倉資料',
+                      subtitle: '已保存本機持倉；需要修改股數、成本或備註時再展開。',
+                      child: inputForm,
+                    )
+                  : _SectionBlock(
+                      title: '輸入持倉資料',
+                      subtitle: '本機保存；先填股數與平均成本即可估算。',
+                      child: inputForm,
+                    ),
         ),
-        const SizedBox(height: 8),
-        _PositionActionBar(
-          hasPosition: input.hasPosition,
-          onSave: _save,
-          onExport: _export,
-          onClear: _clear,
-          primaryOnly: true,
-        ),
+        if (!useCompactEmptyInputCard) ...[
+          const SizedBox(height: 8),
+          _PositionActionBar(
+            hasPosition: input.hasPosition,
+            onSave: _save,
+            onExport: _export,
+            onClear: _clear,
+            primaryOnly: true,
+          ),
+        ],
         if (input.hasPosition) ...[
           const SizedBox(height: 8),
           _CompactExpansionPanel(
@@ -9862,6 +9870,74 @@ class _PositionSectionState extends State<_PositionSection> {
       'feeAndTax': input.feeAndTax,
       'note': input.note,
     });
+  }
+}
+
+class _PositionCompactEmptyInputCard extends StatelessWidget {
+  const _PositionCompactEmptyInputCard({
+    required this.inputForm,
+    required this.onSave,
+  });
+
+  final Widget inputForm;
+  final VoidCallback onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 9, 10, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '輸入持倉',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                const _CompactTextBadge(label: '本機保存'),
+              ],
+            ),
+            const SizedBox(height: 3),
+            Text(
+              '股數與平均成本只保存在此裝置。',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 9),
+            inputForm,
+            const SizedBox(height: 8),
+            _PositionQuickAction(
+              key: const ValueKey('00631l-position-action-save'),
+              icon: Icons.save_outlined,
+              label: '保存本機資料',
+              caption: '只保存在此裝置',
+              isPrimary: true,
+              fillWidth: true,
+              onTap: onSave,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position empty input density v15.0: `docs\00631l_v15_0_position_empty_input_density.md`
 - History chart density v14.9: `docs\00631l_v14_9_history_chart_density.md`
 - History title cleanup v14.8: `docs\00631l_v14_8_history_title_cleanup.md`
 - Loading market skeleton v14.7: `docs\00631l_v14_7_loading_market_skeleton.md`

@@ -1653,6 +1653,19 @@ void main() {
       find.byKey(const ValueKey('00631l-position-action-save')),
       findsOneWidget,
     );
+    final inputCard =
+        find.byKey(const ValueKey('00631l-position-compact-input-card'));
+    expect(
+      find.descendant(
+        of: inputCard,
+        matching: find.byKey(const ValueKey('00631l-position-action-save')),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-primary-actions')),
+      findsNothing,
+    );
     expect(
       find.byKey(const ValueKey('00631l-position-tools-panel')),
       findsNothing,
