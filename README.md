@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v14.4 tightens the history/backtest page. Holdings history remains available,
+  but it now lives under `內容物歷史` so the first screen stays focused on date
+  range, price chart, and backtest context.
+
 - v14.3 tightens the overview AI glance on phones. The home screen now shows a
   two-line AI summary/action card with `非買賣建議`, while the full AI page keeps
   the complete daily interpretation.

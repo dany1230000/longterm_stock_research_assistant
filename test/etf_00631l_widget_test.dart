@@ -1105,7 +1105,12 @@ void main() {
     expect(find.textContaining('區間筆數 4'), findsOneWidget);
     expect(find.textContaining('完整筆數 5'), findsOneWidget);
     expect(find.text('目前區間價格表'), findsOneWidget);
-    expect(find.text('每日內容物紀錄'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-history-holdings-expansion')),
+      findsOneWidget,
+    );
+    expect(find.text('內容物歷史'), findsOneWidget);
+    expect(find.text('最近 30 筆 holdings'), findsNothing);
     expect(find.text('回測快覽'), findsOneWidget);
     expect(find.text('回測工具'), findsNothing);
     expect(find.text('開始日期'), findsWidgets);
@@ -1156,6 +1161,13 @@ void main() {
       find.byKey(const ValueKey('00631l-line-chart-touch-value')),
       findsWidgets,
     );
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-history-holdings-expansion')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('內容物歷史'));
+    await tester.pumpAndSettle();
+    expect(find.text('尚無內容物紀錄'), findsOneWidget);
     expect(find.byKey(const ValueKey('00631l-history-view')), findsOneWidget);
     _expectNoTradingActionText();
   });
@@ -1275,7 +1287,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('尚無官方價格歷史'), findsWidgets);
-    expect(find.text('尚無內容物紀錄'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('00631l-history-holdings-expansion')),
+      findsOneWidget,
+    );
+    expect(find.text('尚無內容物紀錄'), findsNothing);
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('00631l-history-holdings-expansion')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('內容物歷史'));
+    await tester.pumpAndSettle();
+    expect(find.text('尚無內容物紀錄'), findsOneWidget);
   });
 
   testWidgets('history sparse chart shows latest point instead of blank frame',

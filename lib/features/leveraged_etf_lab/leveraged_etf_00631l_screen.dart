@@ -6765,9 +6765,10 @@ class _HistorySection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         if (show00631LHoldingsHistory)
-          _SectionBlock(
-            title: '每日內容物紀錄',
-            subtitle: '官方內容物紀錄從每日流程開始累積，不補假過去資料。',
+          _CompactExpansionPanel(
+            key: const ValueKey('00631l-history-holdings-expansion'),
+            title: '內容物歷史',
+            subtitle: 'TX、台積電、曝險與 NAV 變化；平常先看總覽與價格回測。',
             child: data.holdingsHistory.hasData
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
