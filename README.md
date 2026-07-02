@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v13.4 tightens the phone position input flow. Empty local-position state now
+  keeps shares and average cost in one compact row, with optional fields
+  available after a position exists or on wider layouts.
+
 - v13.3 tightens the phone AI page. Compact width now opens with the daily
   interpretation, source/readiness badges, and primary program action; long AI
   bullets and the conclusion card move into the detail panel.

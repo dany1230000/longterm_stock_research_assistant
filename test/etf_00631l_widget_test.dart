@@ -1500,6 +1500,25 @@ void main() {
       find.byKey(const ValueKey('00631l-position-field-average-cost')),
       findsOneWidget,
     );
+    final sharesField =
+        find.byKey(const ValueKey('00631l-position-field-shares'));
+    final averageCostField =
+        find.byKey(const ValueKey('00631l-position-field-average-cost'));
+    expect(
+      (tester.getTopLeft(sharesField).dy -
+              tester.getTopLeft(averageCostField).dy)
+          .abs(),
+      lessThan(2),
+      reason: 'Phone position inputs should stay in one compact row.',
+    );
+    expect(
+      tester.getTopLeft(sharesField).dx,
+      lessThan(tester.getTopLeft(averageCostField).dx),
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-advanced-inputs')),
+      findsNothing,
+    );
     expect(
       find.byKey(const ValueKey('00631l-position-estimate-details')),
       findsNothing,

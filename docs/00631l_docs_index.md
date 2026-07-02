@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position input density v13.4: `docs\00631l_v13_4_position_input_density.md`
 - AI first-screen density v13.3: `docs\00631l_v13_3_ai_first_screen_density.md`
 - Position local-note density v13.2: `docs\00631l_v13_2_position_local_note_density.md`
 - History top strip density v13.1: `docs\00631l_v13_1_history_top_strip_density.md`
