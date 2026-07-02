@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v13.1 tightens the history/backtest top strip on phones. Coverage remains in
+  the date-range card, while the top strip focuses on symbol, source, latest
+  value, row count, and adjustment context.
+
 - v13.0 tightens the embedded overview quote header. The full ETF name stays in
   the app header and top-left symbol selector, while the market stack focuses on
   price, source status, premium/discount, and chart.

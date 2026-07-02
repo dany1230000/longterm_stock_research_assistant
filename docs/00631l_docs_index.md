@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History top strip density v13.1: `docs\00631l_v13_1_history_top_strip_density.md`
 - Embedded quote density v13.0: `docs\00631l_v13_0_embedded_quote_density.md`
 - Overview compact data ribbon v12.9: `docs\00631l_v12_9_overview_compact_data_ribbon.md`
 - Overview AI glance density v12.8: `docs\00631l_v12_8_overview_ai_glance_density.md`

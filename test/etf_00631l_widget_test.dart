@@ -967,7 +967,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('歷史回測'), findsWidgets);
-    expect(find.textContaining('預設 1 年，可調日期'), findsOneWidget);
+    expect(find.textContaining('預設 1 年，可調日期'), findsNothing);
+    expect(
+      find.byKey(const ValueKey('00631l-history-range-context')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('00631l-history-backtest-top-strip')),
       findsOneWidget,
@@ -1140,7 +1144,7 @@ void main() {
     final topStrip =
         find.byKey(const ValueKey('00631l-history-backtest-top-strip'));
     expect(topStrip, findsOneWidget);
-    expect(tester.getRect(topStrip).height, lessThanOrEqualTo(92));
+    expect(tester.getRect(topStrip).height, lessThanOrEqualTo(78));
     expect(
       find.byKey(const ValueKey('00631l-history-top-strip-metrics')),
       findsOneWidget,

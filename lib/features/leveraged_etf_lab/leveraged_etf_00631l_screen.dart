@@ -6975,17 +6975,19 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                               letterSpacing: 0,
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '$coverage · 預設 1 年，可調日期',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: _marketMutedTextColor(context),
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0,
+                          if (!compact) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              '$coverage - 1Y default - adjusted close',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: _marketMutedTextColor(context),
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0,
+                              ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ),
