@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.5 tightens the left-top symbol search result list on phones. ETF code,
+  name, readiness, and price stay in one cleaner result row while details stay
+  available behind the row detail toggle.
+
 - v15.4 tightens the backtest quick result strip on phones. Technical source
   badges move out of the compact result row while strategy and non-advice
   context remain visible.

@@ -1802,6 +1802,42 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('top symbol search result stays compact on phone width',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-symbol-search-field')),
+      '0050',
+    );
+    await tester.pumpAndSettle();
+
+    final result0050 =
+        find.byKey(const ValueKey('00631l-symbol-search-result-0050'));
+    final detailToggle =
+        find.byKey(const ValueKey('00631l-symbol-result-details-0050'));
+    expect(result0050, findsOneWidget);
+    expect(detailToggle, findsOneWidget);
+    expect(tester.getRect(result0050).height, lessThanOrEqualTo(92));
+
+    await tester.tap(detailToggle);
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-capability-summary-0050')),
+      findsOneWidget,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('top symbol search lazy-loads catalog when first data omits it',
       (tester) async {
     final repository = _DeferredCatalogSearchRepository();

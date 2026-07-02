@@ -1890,6 +1890,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final readiness = _etfHistoryReadiness(item);
     final hasHistory = readiness.hasHistory;
     final historyMetadataLabel = _etfHistoryMetadataLabel(item);
@@ -1919,7 +1920,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
     ];
     return InkWell(
       key: ValueKey('00631l-symbol-search-result-${item.code}'),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(compact ? 10 : 12),
       onTap: () {
         final messenger = ScaffoldMessenger.of(context);
         Navigator.of(context).pop();
@@ -1934,17 +1935,20 @@ class _SymbolSearchResultTile extends StatelessWidget {
           color: selected
               ? _marketBlue.withValues(alpha: 0.16)
               : _marketPanelAltColor(context),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(compact ? 10 : 12),
           border: Border.all(
             color: selected ? _marketBlue : _marketBorderColor(context),
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 9 : 12,
+            vertical: compact ? 8 : 12,
+          ),
           child: Row(
             children: [
-              _MiniStatusBadge(label: item.code),
-              const SizedBox(width: 10),
+              _SymbolSearchCodeBadge(label: item.code, compact: compact),
+              SizedBox(width: compact ? 8 : 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1984,9 +1988,10 @@ class _SymbolSearchResultTile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: compact ? 3 : 6),
                     _SymbolSearchResultDetails(
                       code: item.code,
+                      compact: compact,
                       capabilitySummary: capabilitySummary,
                       dataSummary: dataSummary,
                       detailBadges: detailBadges,
@@ -1995,7 +2000,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: compact ? 6 : 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -2026,6 +2031,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
 class _SymbolSearchResultDetails extends StatefulWidget {
   const _SymbolSearchResultDetails({
     required this.code,
+    required this.compact,
     required this.capabilitySummary,
     required this.dataSummary,
     required this.detailBadges,
@@ -2033,6 +2039,7 @@ class _SymbolSearchResultDetails extends StatefulWidget {
   });
 
   final String code;
+  final bool compact;
   final String capabilitySummary;
   final String dataSummary;
   final List<_SymbolSearchDetailBadge> detailBadges;
@@ -2058,7 +2065,7 @@ class _SymbolSearchResultDetailsState
           behavior: HitTestBehavior.opaque,
           onTap: () => setState(() => _expanded = !_expanded),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: EdgeInsets.symmetric(vertical: widget.compact ? 2 : 4),
             child: Row(
               children: [
                 Expanded(
@@ -2081,7 +2088,7 @@ class _SymbolSearchResultDetailsState
           ),
         ),
         if (_expanded) ...[
-          const SizedBox(height: 2),
+          SizedBox(height: widget.compact ? 1 : 2),
           Text(
             widget.capabilitySummary,
             key: ValueKey('00631l-symbol-capability-summary-${widget.code}'),
@@ -2092,7 +2099,7 @@ class _SymbolSearchResultDetailsState
               height: 1.25,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: widget.compact ? 3 : 4),
           Text(
             widget.dataSummary,
             key: ValueKey('00631l-symbol-data-summary-${widget.code}'),
@@ -2103,7 +2110,7 @@ class _SymbolSearchResultDetailsState
             ),
           ),
           if (widget.detailBadges.isNotEmpty) ...[
-            const SizedBox(height: 6),
+            SizedBox(height: widget.compact ? 4 : 6),
             Wrap(
               spacing: 5,
               runSpacing: 5,
@@ -2116,7 +2123,7 @@ class _SymbolSearchResultDetailsState
               ],
             ),
           ],
-          const SizedBox(height: 6),
+          SizedBox(height: widget.compact ? 4 : 6),
           Wrap(
             spacing: 5,
             runSpacing: 5,
@@ -2132,6 +2139,46 @@ class _SymbolSearchResultDetailsState
           ),
         ],
       ],
+    );
+  }
+}
+
+class _SymbolSearchCodeBadge extends StatelessWidget {
+  const _SymbolSearchCodeBadge({
+    required this.label,
+    required this.compact,
+  });
+
+  final String label;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketBlue.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(compact ? 7 : 8),
+          border: Border.all(color: _marketBlue.withValues(alpha: 0.42)),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 6 : 8,
+            vertical: compact ? 4 : 5,
+          ),
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: _marketBlue,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0,
+                ),
+          ),
+        ),
+      ),
     );
   }
 }

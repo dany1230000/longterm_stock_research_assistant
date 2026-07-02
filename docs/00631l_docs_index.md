@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Symbol search result density v15.5: `docs\00631l_v15_5_symbol_search_result_density.md`
 - Backtest result density v15.4: `docs\00631l_v15_4_backtest_result_density.md`
 - Settings summary density v15.3: `docs\00631l_v15_3_settings_summary_density.md`
 - Overview touch detail density v15.2: `docs\00631l_v15_2_overview_touch_detail_density.md`
