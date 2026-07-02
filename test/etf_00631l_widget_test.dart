@@ -1505,6 +1505,10 @@ void main() {
       findsNothing,
     );
     expect(
+      find.byKey(const ValueKey('00631l-position-local-note')),
+      findsNothing,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-position-action-save')),
       findsOneWidget,
     );

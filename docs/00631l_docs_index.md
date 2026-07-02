@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position local-note density v13.2: `docs\00631l_v13_2_position_local_note_density.md`
 - History top strip density v13.1: `docs\00631l_v13_1_history_top_strip_density.md`
 - Embedded quote density v13.0: `docs\00631l_v13_0_embedded_quote_density.md`
 - Overview compact data ribbon v12.9: `docs\00631l_v12_9_overview_compact_data_ribbon.md`

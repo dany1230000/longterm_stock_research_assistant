@@ -9540,8 +9540,13 @@ class _PositionSectionState extends State<_PositionSection> {
           const SizedBox(height: 12),
           SelectableText(_exportJson!),
         ],
-        const SizedBox(height: 10),
-        const Text('本區只做持倉資料狀態與估算顯示，非買賣建議。'),
+        if (!compact || input.hasPosition) ...[
+          const SizedBox(height: 10),
+          const KeyedSubtree(
+            key: ValueKey('00631l-position-local-note'),
+            child: Text('Local position data stays in this browser.'),
+          ),
+        ],
       ],
     );
     return Column(

@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v13.2 tightens the phone position page. The empty local-position first screen
+  now focuses on shares, average cost, and save; the local-only note stays
+  available after a position exists or on wider layouts.
+
 - v13.1 tightens the history/backtest top strip on phones. Coverage remains in
   the date-range card, while the top strip focuses on symbol, source, latest
   value, row count, and adjustment context.
