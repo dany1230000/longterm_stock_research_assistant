@@ -550,7 +550,7 @@ void main() {
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
-      findsNothing,
+      findsOneWidget,
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-core-metric-strip')),
@@ -564,11 +564,12 @@ void main() {
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );
     expect(compactRibbon, findsOneWidget);
-    expect(find.text('DAY'), findsOneWidget);
-    expect(find.text('NAV'), findsOneWidget);
-    expect(find.text('TX'), findsWidgets);
-    expect(find.text('2330'), findsWidgets);
-    expect(find.text('HIS'), findsOneWidget);
+    for (final label in const ['DAY', 'NAV', 'TX', '2330', 'HIS']) {
+      expect(
+        find.descendant(of: compactRibbon, matching: find.text(label)),
+        findsWidgets,
+      );
+    }
     expect(
       find.byKey(const ValueKey('00631l-overview-market-stack')),
       findsOneWidget,
@@ -2757,11 +2758,7 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
-      findsNothing,
-    );
-    expect(
-      find.byKey(const ValueKey('00631l-overview-exposure-summary-strip')),
-      findsNothing,
+      findsOneWidget,
     );
 
     final compactRibbon = find.byKey(
@@ -2818,7 +2815,7 @@ void main() {
       find.byKey(
         const ValueKey('00631l-overview-holdings-digest-unavailable'),
       ),
-      findsNothing,
+      findsOneWidget,
     );
     final compactRibbon = find.byKey(
       const ValueKey('00631l-overview-compact-data-ribbon'),

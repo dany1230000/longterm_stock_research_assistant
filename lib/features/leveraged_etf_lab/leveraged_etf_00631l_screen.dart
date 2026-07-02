@@ -3704,6 +3704,7 @@ class _OverviewSection extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final showSecondaryDetails = constraints.maxWidth >= 520;
+        final showMobileHoldingsDigest = constraints.maxWidth < 520;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -3718,6 +3719,10 @@ class _OverviewSection extends StatelessWidget {
             if (selectedEtf.is00631L) ...[
               _OverviewAiGlancePanel(data: data),
               const SizedBox(height: 8),
+              if (showMobileHoldingsDigest) ...[
+                _OverviewHoldingsDigestPanel(data: data, embedded: true),
+                const SizedBox(height: 8),
+              ],
             ],
             if (!selectedEtf.is00631L)
               _AlwaysExpandedPanel(
@@ -5414,14 +5419,29 @@ class _HoldingDigestStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return LayoutBuilder(
       key: const ValueKey('00631l-overview-holdings-digest-strip'),
-      children: [
-        for (var index = 0; index < items.length; index++) ...[
-          Expanded(child: _HoldingDigestTile(item: items[index])),
-          if (index != items.length - 1) const SizedBox(width: 6),
-        ],
-      ],
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 430;
+        const gap = 6.0;
+        final halfWidth = (constraints.maxWidth - gap) / 2;
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: [
+            for (final item in items)
+              SizedBox(
+                width: compact && item.metrics.isNotEmpty
+                    ? constraints.maxWidth
+                    : compact
+                        ? halfWidth
+                        : (constraints.maxWidth - gap * (items.length - 1)) /
+                            items.length,
+                child: _HoldingDigestTile(item: item),
+              ),
+          ],
+        );
+      },
     );
   }
 }

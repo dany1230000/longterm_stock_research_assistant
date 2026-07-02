@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.6 restores a concise holdings digest to the phone overview. TX, TSMC,
+  and exposure structure are visible on the first screen without opening the
+  history or settings tabs.
+
 - v15.5 tightens the left-top symbol search result list on phones. ETF code,
   name, readiness, and price stay in one cleaner result row while details stay
   available behind the row detail toggle.
