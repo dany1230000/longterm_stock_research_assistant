@@ -3655,7 +3655,7 @@ class _OverviewAiGlancePanel extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+        padding: const EdgeInsets.fromLTRB(10, 7, 10, 7),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -3678,14 +3678,14 @@ class _OverviewAiGlancePanel extends StatelessWidget {
                     label: _sourceStatusBadgeLabel(summary.source)),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 5),
             for (final bullet in bullets) ...[
               _OverviewAiGlanceLine(text: bullet),
-              const SizedBox(height: 3),
+              const SizedBox(height: 2),
             ],
             if (action != null && action.trim().isNotEmpty)
               _OverviewAiActionLine(text: action),
-            const SizedBox(height: 5),
+            const SizedBox(height: 4),
             Text(
               '${formatTimeSeconds(generatedAt)} · ${summary.disclaimer}',
               maxLines: 1,

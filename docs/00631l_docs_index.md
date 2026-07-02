@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview AI glance density v12.8: `docs\00631l_v12_8_overview_ai_glance_density.md`
 - Symbol search result density v12.7: `docs\00631l_v12_7_symbol_search_result_density.md`
 - Settings preference density v12.6: `docs\00631l_v12_6_settings_preference_density.md`
 - AI daily analysis visible v12.5: `docs\00631l_v12_5_ai_daily_analysis_visible.md`

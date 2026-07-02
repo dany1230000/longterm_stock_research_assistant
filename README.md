@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v12.8 tightens the overview AI glance card. It keeps the same short summary
+  and program action, but uses less vertical space on the phone first screen.
+
 - v12.7 cleans up the left-top ETF search results. Result rows now keep only
   code, name, type, ready state, and price; coverage metadata moves under
   `更多資料`.

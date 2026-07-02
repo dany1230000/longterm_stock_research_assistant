@@ -615,7 +615,7 @@ void main() {
       find.byKey(const ValueKey('00631l-bottom-nav')),
     );
     expect(aiRect.top, lessThan(bottomNavRect.top));
-    expect(aiRect.height, lessThanOrEqualTo(112));
+    expect(aiRect.height, lessThanOrEqualTo(104));
     expect(find.text('AI 今日摘要'), findsOneWidget);
     expect(find.text('程式操作'), findsOneWidget);
     expect(
