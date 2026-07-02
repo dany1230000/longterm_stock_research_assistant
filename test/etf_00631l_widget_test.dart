@@ -616,7 +616,7 @@ void main() {
     final touchDetailRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
     );
-    expect(touchDetailRect.height, lessThanOrEqualTo(38));
+    expect(touchDetailRect.height, lessThanOrEqualTo(34));
     expect(
       find.byKey(const ValueKey('00631l-overview-exposure-compact-row')),
       findsNothing,

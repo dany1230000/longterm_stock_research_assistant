@@ -15889,6 +15889,7 @@ class _ChartTouchDetail extends StatelessWidget {
                       key: const ValueKey('00631l-line-chart-touch-date'),
                       label: '日',
                       value: formatTaiwanDate(point!.date),
+                      compact: compact,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -15898,6 +15899,7 @@ class _ChartTouchDetail extends StatelessWidget {
                       key: const ValueKey('00631l-line-chart-touch-value'),
                       label: '值',
                       value: _compactChartValue(value!),
+                      compact: compact,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -15952,10 +15954,12 @@ class _ChartTouchInfoPill extends StatelessWidget {
     super.key,
     required this.label,
     required this.value,
+    this.compact = false,
   });
 
   final String label;
   final String value;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -15963,11 +15967,14 @@ class _ChartTouchInfoPill extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLow.withValues(alpha: 0.8),
-        borderRadius: BorderRadius.circular(7),
+        borderRadius: BorderRadius.circular(compact ? 6 : 7),
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 4 : 5,
+          vertical: compact ? 1 : 2,
+        ),
         child: Row(
           children: [
             Text(

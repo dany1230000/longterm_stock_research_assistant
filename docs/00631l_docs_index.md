@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview touch detail density v15.2: `docs\00631l_v15_2_overview_touch_detail_density.md`
 - AI fact row density v15.1: `docs\00631l_v15_1_ai_fact_row_density.md`
 - Position empty input density v15.0: `docs\00631l_v15_0_position_empty_input_density.md`
 - History chart density v14.9: `docs\00631l_v14_9_history_chart_density.md`

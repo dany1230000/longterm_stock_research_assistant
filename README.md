@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.2 tightens the overview chart touch detail on phones. Date and value
+  remain visible after tapping the chart, but the detail row uses a smaller
+  market-app style footprint.
+
 - v15.1 tightens the AI first screen on phones. DAY / LIVE / HOLD facts now
   stay in one compact row, keeping the daily interpretation and program action
   visible sooner.
