@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Embedded quote density v13.0: `docs\00631l_v13_0_embedded_quote_density.md`
 - Overview compact data ribbon v12.9: `docs\00631l_v12_9_overview_compact_data_ribbon.md`
 - Overview AI glance density v12.8: `docs\00631l_v12_8_overview_ai_glance_density.md`
 - Symbol search result density v12.7: `docs\00631l_v12_7_symbol_search_result_density.md`

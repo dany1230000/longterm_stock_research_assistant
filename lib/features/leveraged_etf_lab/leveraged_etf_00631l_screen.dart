@@ -2212,36 +2212,48 @@ class _CompactQuoteHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (!embedded) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${selectedEtf.code} $quoteName',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: _marketMutedTextColor(context),
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0,
+                              ),
+                            ),
+                          ),
+                          _CompactTextBadge(
+                            label: quoteStatusDisplay,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                    ],
                     Row(
                       children: [
                         Expanded(
                           child: Text(
-                            '${selectedEtf.code} $quoteName',
+                            _price(quoteValue),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: _marketMutedTextColor(context),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: _marketTextColor(context),
                               fontWeight: FontWeight.w900,
                               letterSpacing: 0,
+                              height: 1.0,
                             ),
                           ),
                         ),
-                        _CompactTextBadge(
-                          label: quoteStatusDisplay,
-                        ),
+                        if (embedded) ...[
+                          const SizedBox(width: 6),
+                          _CompactTextBadge(label: quoteStatusDisplay),
+                        ],
                       ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      _price(quoteValue),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: _marketTextColor(context),
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0,
-                        height: 1.0,
-                      ),
                     ),
                     const SizedBox(height: 1),
                     Text(

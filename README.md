@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v13.0 tightens the embedded overview quote header. The full ETF name stays in
+  the app header and top-left symbol selector, while the market stack focuses on
+  price, source status, premium/discount, and chart.
+
 - v12.9 replaces the separate phone daily-summary and holdings-digest rows with
   one compact data ribbon. The overview first screen now prioritizes quote,
   chart, DAY, NAV, TX, 2330, and history row count in one market stack.
