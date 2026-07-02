@@ -571,6 +571,10 @@ void main() {
     );
     final ribbonRect = tester.getRect(compactRibbon);
     expect(ribbonRect.height, lessThanOrEqualTo(28));
+    expect(
+      find.byKey(const ValueKey('00631l-overview-sparkline-summary-row')),
+      findsNothing,
+    );
     final readinessStrip = find.byKey(
       const ValueKey('00631l-quote-readiness-strip'),
     );

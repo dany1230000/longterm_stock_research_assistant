@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview sparkline density v13.5: `docs\00631l_v13_5_overview_sparkline_density.md`
 - Position input density v13.4: `docs\00631l_v13_4_position_input_density.md`
 - AI first-screen density v13.3: `docs\00631l_v13_3_ai_first_screen_density.md`
 - Position local-note density v13.2: `docs\00631l_v13_2_position_local_note_density.md`

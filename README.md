@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v13.5 tightens the overview sparkline header on phones. The one-year chart
+  now uses one compact row for title, latest price, and one-year change, while
+  the date context stays on the chart axis.
+
 - v13.4 tightens the phone position input flow. Empty local-position state now
   keeps shares and average cost in one compact row, with optional fields
   available after a position exists or on wider layouts.

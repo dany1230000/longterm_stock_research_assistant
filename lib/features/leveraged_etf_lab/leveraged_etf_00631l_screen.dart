@@ -5497,6 +5497,51 @@ class _OverviewSparklineBlock extends StatelessWidget {
         latest == null || first == null || first.performanceClose <= 0
             ? null
             : (latest.performanceClose / first.performanceClose - 1) * 100;
+    final compact = MediaQuery.sizeOf(context).width < 430;
+    final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: _marketTextColor(context),
+          fontWeight: FontWeight.w900,
+        );
+    final changeStyle = Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: (changePct ?? 0) >= 0 ? _marketRed : _marketGreen,
+          fontWeight: FontWeight.w900,
+        );
+
+    if (compact) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '近一年走勢',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: titleStyle,
+                ),
+              ),
+              Text(
+                _price(latest?.close),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                formatSignedNullablePercent(changePct),
+                style: changeStyle,
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          _SparklineChart(points: recent),
+        ],
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -5508,23 +5553,18 @@ class _OverviewSparklineBlock extends StatelessWidget {
                 '近一年走勢',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                    ),
+                style: titleStyle,
               ),
             ),
             Text(
               formatSignedNullablePercent(changePct),
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: (changePct ?? 0) >= 0 ? _marketRed : _marketGreen,
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: changeStyle,
             ),
           ],
         ),
         const SizedBox(height: 6),
         Row(
+          key: const ValueKey('00631l-overview-sparkline-summary-row'),
           children: [
             Text(
               _price(latest?.close),
