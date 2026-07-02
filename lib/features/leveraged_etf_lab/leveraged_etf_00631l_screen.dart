@@ -5252,6 +5252,10 @@ class _SparklineChartState extends State<_SparklineChart> {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 430;
+    final chartHeight = compact ? 68.0 : 88.0;
+    final emptyHeight = compact ? 54.0 : 72.0;
+    final verticalGap = compact ? 3.0 : 5.0;
     final spots = <FlSpot>[];
     final spotPoints = <EtfPriceHistoryPoint>[];
     for (var index = 0; index < widget.points.length; index += 1) {
@@ -5263,7 +5267,7 @@ class _SparklineChartState extends State<_SparklineChart> {
     }
     if (spots.length < 2) {
       return SizedBox(
-        height: 72,
+        height: emptyHeight,
         child: Center(
           child: Text(
             '尚無圖表資料',
@@ -5296,7 +5300,7 @@ class _SparklineChartState extends State<_SparklineChart> {
       children: [
         SizedBox(
           key: const ValueKey('00631l-overview-sparkline-chart'),
-          height: 88,
+          height: chartHeight,
           child: LineChart(
             LineChartData(
               minX: -edgePaddingX,
@@ -5361,13 +5365,14 @@ class _SparklineChartState extends State<_SparklineChart> {
             ),
           ),
         ),
-        const SizedBox(height: 5),
+        SizedBox(height: verticalGap),
         _OverviewSparklineDateStrip(
           start: spotPoints.first.date,
           middle: spotPoints[(spotPoints.length - 1) ~/ 2].date,
           end: spotPoints.last.date,
+          compact: compact,
         ),
-        const SizedBox(height: 5),
+        SizedBox(height: verticalGap),
         KeyedSubtree(
           key: const ValueKey('00631l-overview-sparkline-touch-detail'),
           child: _ChartTouchDetail(
@@ -5376,6 +5381,7 @@ class _SparklineChartState extends State<_SparklineChart> {
             rangeStart: spotPoints.first.date,
             rangeEnd: spotPoints.last.date,
             isManualSelection: hasManualSelection,
+            compact: compact,
           ),
         ),
       ],
@@ -5388,11 +5394,13 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
     required this.start,
     required this.middle,
     required this.end,
+    required this.compact,
   });
 
   final DateTime start;
   final DateTime middle;
   final DateTime end;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -5407,9 +5415,10 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
             date: start,
             align: CrossAxisAlignment.start,
             textAlign: TextAlign.left,
+            compact: compact,
           ),
         ),
-        const SizedBox(width: 5),
+        SizedBox(width: compact ? 4 : 5),
         Expanded(
           child: _dateCell(
             context,
@@ -5418,9 +5427,10 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
             date: middle,
             align: CrossAxisAlignment.center,
             textAlign: TextAlign.center,
+            compact: compact,
           ),
         ),
-        const SizedBox(width: 5),
+        SizedBox(width: compact ? 4 : 5),
         Expanded(
           child: _dateCell(
             context,
@@ -5429,6 +5439,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
             date: end,
             align: CrossAxisAlignment.end,
             textAlign: TextAlign.right,
+            compact: compact,
           ),
         ),
       ],
@@ -5442,17 +5453,21 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
     required DateTime date,
     required CrossAxisAlignment align,
     required TextAlign textAlign,
+    required bool compact,
   }) {
     final theme = Theme.of(context);
     return DecoratedBox(
       key: key,
       decoration: BoxDecoration(
         color: _marketPanelAltColor(context),
-        borderRadius: BorderRadius.circular(7),
+        borderRadius: BorderRadius.circular(compact ? 6 : 7),
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 5 : 6,
+          vertical: compact ? 2 : 4,
+        ),
         child: Column(
           crossAxisAlignment: align,
           children: [
@@ -5464,7 +5479,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 color: _marketMutedTextColor(context),
                 fontWeight: FontWeight.w800,
-                fontSize: 9,
+                fontSize: compact ? 8.5 : 9,
                 height: 1,
               ),
             ),
@@ -5482,7 +5497,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: _marketTextColor(context),
                   fontWeight: FontWeight.w900,
-                  fontSize: 10,
+                  fontSize: compact ? 9.5 : 10,
                   height: 1.08,
                 ),
               ),
@@ -14837,6 +14852,7 @@ class _ChartTouchDetail extends StatelessWidget {
     required this.rangeStart,
     required this.rangeEnd,
     required this.isManualSelection,
+    this.compact = false,
   });
 
   final EtfPriceHistoryPoint? point;
@@ -14844,6 +14860,7 @@ class _ChartTouchDetail extends StatelessWidget {
   final DateTime? rangeStart;
   final DateTime? rangeEnd;
   final bool isManualSelection;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -14863,7 +14880,10 @@ class _ChartTouchDetail extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 7 : 9,
+          vertical: compact ? 3 : 5,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

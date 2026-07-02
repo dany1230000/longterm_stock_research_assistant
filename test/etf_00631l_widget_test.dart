@@ -574,9 +574,18 @@ void main() {
     );
     expect(chartFinder, findsOneWidget);
     final chartRect = tester.getRect(chartFinder);
+    expect(chartRect.height, lessThanOrEqualTo(70));
     expect(chartRect.bottom, lessThanOrEqualTo(455));
     expect(chartRect.top, lessThan(summaryRect.top));
     expect(summaryRect.top, greaterThan(chartRect.bottom));
+    final dateStripRect = tester.getRect(
+      find.byKey(const ValueKey('00631l-overview-sparkline-date-strip')),
+    );
+    expect(dateStripRect.height, lessThanOrEqualTo(32));
+    final touchDetailRect = tester.getRect(
+      find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
+    );
+    expect(touchDetailRect.height, lessThanOrEqualTo(38));
     expect(
       find.byKey(const ValueKey('00631l-overview-exposure-compact-row')),
       findsNothing,
