@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v11.7 trims the phone position entry flow. The share and average-cost fields
+  stay visible, while duplicate local-only guidance is hidden on compact width.
+
 - v11.6 shortens the history/backtest range controls on phones. The latest
   one-year range remains the default, start/end date buttons stay visible, and
   duplicate inline date labels are hidden on compact width.

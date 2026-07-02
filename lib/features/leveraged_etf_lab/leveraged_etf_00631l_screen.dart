@@ -9077,6 +9077,7 @@ class _PositionSectionState extends State<_PositionSection> {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final input = _input;
     final summary = EtfPositionSummary.evaluate(
       input: input,
@@ -9087,12 +9088,14 @@ class _PositionSectionState extends State<_PositionSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (!_loaded) const LinearProgressIndicator(),
-        _PositionInputMiniHeader(
-          input: input,
-          selectedEtf: widget.selectedEtf,
-        ),
-        const SizedBox(height: 8),
-        if (!input.hasPosition) ...[
+        if (!compact) ...[
+          _PositionInputMiniHeader(
+            input: input,
+            selectedEtf: widget.selectedEtf,
+          ),
+          const SizedBox(height: 8),
+        ],
+        if (!input.hasPosition && !compact) ...[
           const _PositionEmptyHintStrip(),
           const SizedBox(height: 8),
         ],

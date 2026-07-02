@@ -1404,6 +1404,22 @@ void main() {
       const ValueKey('00631l-position-account-metric-strip'),
     );
     expect(strip, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-position-input-mini-header')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-empty-hint-strip')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-field-shares')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-field-average-cost')),
+      findsOneWidget,
+    );
     final stripRect = tester.getRect(strip);
     for (final label in const [
       '市值',
