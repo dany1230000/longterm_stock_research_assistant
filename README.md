@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.14 makes the phone position tab start with the local input card when no
+  position has been saved yet, instead of showing placeholder account metrics
+  first.
+
 - v15.13 shortens the ETF comparison action row on phones. The comparison
   basket keeps the same behavior, but the mobile actions now use compact labels
   so they read as controls instead of long text blocks.

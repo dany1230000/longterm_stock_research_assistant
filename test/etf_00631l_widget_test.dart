@@ -1618,7 +1618,8 @@ void main() {
     expect(find.textContaining('本機保存'), findsWidgets);
   });
 
-  testWidgets('position account summary fits on phone width', (tester) async {
+  testWidgets('empty position starts with input card on phone width',
+      (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(() {
@@ -1631,10 +1632,14 @@ void main() {
     await _tapSection(tester, 'position');
     await tester.pumpAndSettle();
 
-    final strip = find.byKey(
-      const ValueKey('00631l-position-account-metric-strip'),
+    expect(
+      find.byKey(const ValueKey('00631l-position-account-strip')),
+      findsNothing,
     );
-    expect(strip, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-position-account-metric-strip')),
+      findsNothing,
+    );
     expect(
       find.byKey(const ValueKey('00631l-position-input-mini-header')),
       findsNothing,
@@ -1711,19 +1716,6 @@ void main() {
       find.byKey(const ValueKey('00631l-position-action-clear')),
       findsNothing,
     );
-    final stripRect = tester.getRect(strip);
-    for (final label in const [
-      '市值',
-      '未實現損益',
-      '部位比例',
-    ]) {
-      final tileText = find.textContaining(label);
-      expect(tileText, findsWidgets);
-      final tileRect = tester.getRect(tileText.first);
-      expect(tileRect.left, greaterThanOrEqualTo(stripRect.left));
-      expect(tileRect.right, lessThanOrEqualTo(stripRect.right));
-    }
-    expect(find.textContaining('尚無比例'), findsWidgets);
     _expectNoTradingActionText();
   });
 

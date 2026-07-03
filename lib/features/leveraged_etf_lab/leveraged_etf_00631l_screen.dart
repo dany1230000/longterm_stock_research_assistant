@@ -9880,13 +9880,15 @@ class _PositionSectionState extends State<_PositionSection> {
                 : '先輸入股數與平均成本，就能在本機估算持倉狀態。',
             badges: ['本機保存', widget.selectedEtf.code],
           ),
-        const SizedBox(height: 8),
-        _PositionAccountStrip(
-          input: input,
-          summary: summary,
-          selectedEtf: widget.selectedEtf,
-        ),
-        const SizedBox(height: 12),
+        if (!(compact && !input.hasPosition)) ...[
+          const SizedBox(height: 8),
+          _PositionAccountStrip(
+            input: input,
+            summary: summary,
+            selectedEtf: widget.selectedEtf,
+          ),
+          const SizedBox(height: 12),
+        ],
         KeyedSubtree(
           key: const ValueKey('00631l-position-compact-input-card'),
           child: useCompactEmptyInputCard
