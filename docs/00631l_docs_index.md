@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Top bar balance v15.51: `docs\00631l_v15_51_top_bar_balance.md`
 - Overview quote chart balance v15.50: `docs\00631l_v15_50_overview_quote_chart_balance.md`
 - Symbol search density v15.49: `docs\00631l_v15_49_symbol_search_density.md`
 - Comparison chart density v15.48: `docs\00631l_v15_48_comparison_chart_density.md`

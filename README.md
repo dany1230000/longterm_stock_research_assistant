@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.51 makes the top app bar read more like a phone stock app: a clearer
+  `ETF 研究室` title and a larger left-top symbol search button.
+
 - v15.50 rebalances the overview quote and chart stack: the phone chart is
   taller, the daily summary is shorter, and holdings highlights become a
   three-column market strip.
