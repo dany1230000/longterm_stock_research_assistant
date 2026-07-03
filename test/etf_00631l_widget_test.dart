@@ -748,6 +748,71 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('phone tabs open distinct first-screen content', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    expect(
+      find.byKey(const ValueKey('00631l-overview-market-stack')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-backtest-top-strip')),
+      findsNothing,
+    );
+
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-history-backtest-top-strip')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-market-stack')),
+      findsNothing,
+    );
+
+    await _tapSection(tester, 'position');
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-position-compact-input-card')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-backtest-top-strip')),
+      findsNothing,
+    );
+
+    await _tapSection(tester, 'ai');
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-ai-daily-briefing-hero')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-compact-input-card')),
+      findsNothing,
+    );
+
+    await _tapSection(tester, 'settings');
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-settings-quick-summary-compact')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-ai-daily-briefing-hero')),
+      findsNothing,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('overview chart shows one-year label and date axis',
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());

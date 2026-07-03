@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.59 adds a phone tab identity guard so overview, history/backtest,
+  position, AI, and settings each open on their own first-screen content.
+
 - v15.58 tightens the ETF comparison phone summary so custom baskets read as
   one compact selector line before the comparison controls.
 
