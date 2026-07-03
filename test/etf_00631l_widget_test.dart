@@ -316,6 +316,20 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('00631L live quote uses intraday status wording', (tester) async {
+    await _pumpLab(tester, _OfficialIntradayRepository());
+
+    expect(find.text('盤中'), findsWidgets);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-main-quote-header')),
+        matching: find.text('快取'),
+      ),
+      findsNothing,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('overview TX clock labels missing quote as backend required',
       (tester) async {
     await _pumpLab(tester, _NoTxQuoteRepository());
@@ -4060,6 +4074,31 @@ class _StaticHistoryOnlyRepository extends _PriceHistoryRepository {
   @override
   Future<EtfIntradayNav?> fetchIntradayNav() async {
     return null;
+  }
+}
+
+class _OfficialIntradayRepository extends _PriceHistoryRepository {
+  @override
+  Future<EtfIntradayNav?> fetchIntradayNav() async {
+    return EtfIntradayNav(
+      symbol: '00631L',
+      name: '元大台灣50正2',
+      outstandingUnits: 120000000,
+      outstandingUnitsDelta: 0,
+      marketPrice: 39.0,
+      estimatedNav: 38.98,
+      estimatedPremiumDiscountPct: 0.08,
+      previousBusinessDayNav: 38.6,
+      previousBusinessDayNavText: '38.60',
+      dataDate: DateTime(2026, 7, 3),
+      dataTime: DateTime(2026, 7, 3, 12, 54),
+      targetType: 'ETF',
+      userDelayMs: 15000,
+      sourceContract: 'twse_a_k_json',
+      isStale: false,
+      status: EtfDataStatus.official,
+      lastFetchedAt: DateTime(2026, 7, 3, 12, 54, 8),
+    );
   }
 }
 

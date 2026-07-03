@@ -2363,11 +2363,13 @@ class _CompactQuoteHeader extends StatelessWidget {
         !usesCatalogQuote &&
         latestHistoryPoint != null &&
         quoteValue == latestHistoryPoint.close;
-    final quoteStatusDisplay = usesCatalogQuote
-        ? '清單'
-        : usesHistoryQuote
-            ? '歷史收盤'
-            : _statusDisplay(quoteStatus);
+    final quoteStatusDisplay = usesLiveQuote
+        ? _intradayQuoteStatusDisplay(data.intradayNav!)
+        : usesCatalogQuote
+            ? '清單'
+            : usesHistoryQuote
+                ? '歷史收盤'
+                : _statusDisplay(quoteStatus);
     final marketSession = selectedEtf.is00631L
         ? data.intradayNav?.marketSession() ??
             IntradayMarketSession.evaluate(sourceAvailable: false)
@@ -2479,6 +2481,18 @@ class _CompactQuoteHeader extends StatelessWidget {
       child: content,
     );
   }
+}
+
+String _intradayQuoteStatusDisplay(EtfIntradayNav nav) {
+  if (nav.isStale) {
+    return '過期';
+  }
+  if (nav.marketPrice != null &&
+      (nav.status == EtfDataStatus.official ||
+          nav.status == EtfDataStatus.cached)) {
+    return '盤中';
+  }
+  return _statusDisplay(nav.status.label);
 }
 
 class _QuoteReadinessItem {

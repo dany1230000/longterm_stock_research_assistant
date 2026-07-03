@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.34 makes the quote header show `盤中` for available intraday quotes,
+  instead of surfacing cache-oriented wording in the main price badge.
+
 - v15.33 localizes the overview holdings unavailable badge so phone users see
   app wording instead of raw backend status text.
 
