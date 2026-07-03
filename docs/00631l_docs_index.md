@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings first screen density v15.47: `docs\00631l_v15_47_settings_first_screen_density.md`
 - AI first screen density v15.46: `docs\00631l_v15_46_ai_first_screen_density.md`
 - Position account density v15.45: `docs\00631l_v15_45_position_account_density.md`
 - History/backtest spacing v15.44: `docs\00631l_v15_44_history_backtest_spacing.md`

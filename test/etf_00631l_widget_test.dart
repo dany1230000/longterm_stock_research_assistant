@@ -3383,7 +3383,7 @@ void main() {
             find.byKey(const ValueKey('00631l-settings-quick-summary-compact')),
           )
           .height,
-      lessThanOrEqualTo(132),
+      lessThanOrEqualTo(124),
       reason: 'Settings should open with a compact account-style summary.',
     );
     final preferenceGrid =
@@ -3397,7 +3397,7 @@ void main() {
     final positionCard =
         find.byKey(const ValueKey('00631l-settings-preference-position'));
     expect(preferenceGrid, findsOneWidget);
-    expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(150));
+    expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(146));
     expect(accountCard, findsOneWidget);
     expect(appearanceCard, findsOneWidget);
     expect(selectedEtfCard, findsOneWidget);

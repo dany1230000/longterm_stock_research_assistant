@@ -13117,6 +13117,7 @@ class _SettingsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = data.operationsStatus;
     final readiness = status.dailyReadinessSummary;
+    final compact = MediaQuery.sizeOf(context).width < 430;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -13125,7 +13126,7 @@ class _SettingsSection extends StatelessWidget {
           selectedEtf: selectedEtf,
           readinessLabel: readiness.label,
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: compact ? 6 : 10),
         _SectionBlock(
           title: '帳戶與偏好',
           subtitle: '一般使用者只需要看這裡：登入、外觀、目前 ETF 與本機持倉狀態。',
@@ -13610,7 +13611,7 @@ class _SettingsPreferenceGrid extends StatelessWidget {
             childAspectRatio: veryNarrow
                 ? 3.2
                 : compact
-                    ? 2.9
+                    ? 2.95
                     : 1.75,
             children: [
               for (final item in items)
@@ -13722,7 +13723,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
       key: const ValueKey('00631l-settings-quick-summary-compact'),
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+          padding: EdgeInsets.fromLTRB(10, compact ? 7 : 8, 10, 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -13751,7 +13752,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                   ),
                 ),
               ],
-              const SizedBox(height: 8),
+              SizedBox(height: compact ? 6 : 8),
               _StatusWrap(
                 labels: compact
                     ? [
@@ -13770,7 +13771,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                         readinessStatus,
                       ],
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: compact ? 4 : 6),
               Text(
                 _settingsDataModeCaption(status),
                 maxLines: 1,

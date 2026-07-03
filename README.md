@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.47 tightens the settings first screen so it reads like account and app
+  preferences before advanced maintenance diagnostics.
+
 - v15.46 tightens the phone AI first screen by shortening the action row and
   keeping today's interpretation above advanced details.
 
