@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.29 makes the overview chart date axis clearer on phone width. The compact
+  chart now keeps start, middle, and end date anchors visible without folding
+  the chart.
+
 - v15.28 tightens the phone top app bar. The left-top ETF search pill and app
   header use a shorter fixed height so the overview content starts earlier.
 

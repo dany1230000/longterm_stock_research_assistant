@@ -640,7 +640,7 @@ void main() {
         matching:
             find.byKey(const ValueKey('00631l-overview-sparkline-date-mid')),
       ),
-      findsNothing,
+      findsOneWidget,
     );
     expect(
       find.descendant(

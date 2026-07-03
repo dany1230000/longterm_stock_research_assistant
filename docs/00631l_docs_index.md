@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview chart date axis v15.29: `docs\00631l_v15_29_overview_chart_dates.md`
 - Top app bar density v15.28: `docs\00631l_v15_28_top_app_bar_density.md`
 - Bottom navigation density v15.27: `docs\00631l_v15_27_bottom_navigation_density.md`
 - Settings quick controls density v15.26: `docs\00631l_v15_26_settings_quick_controls_density.md`

@@ -6103,7 +6103,19 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
               compact: compact,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
+          Expanded(
+            child: _dateCell(
+              context,
+              key: const ValueKey('00631l-overview-sparkline-date-mid'),
+              label: '中',
+              date: middle,
+              align: CrossAxisAlignment.center,
+              textAlign: TextAlign.center,
+              compact: compact,
+            ),
+          ),
+          const SizedBox(width: 4),
           Expanded(
             child: _dateCell(
               context,
