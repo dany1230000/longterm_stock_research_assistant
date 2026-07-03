@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.42 tightens the mobile overview first screen by removing the repeated
+  holdings digest title row and reducing digest tile vertical spacing.
+
 - v15.41 changes the compact AI insight into a short `今日解讀` card so the
   phone AI tab reads as daily interpretation instead of raw status tokens.
 

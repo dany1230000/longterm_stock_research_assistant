@@ -697,6 +697,10 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
     );
     expect(
+      find.byKey(const ValueKey('00631l-overview-holdings-digest-title-row')),
+      findsNothing,
+    );
+    expect(
       holdingsDigestRect.bottom,
       lessThanOrEqualTo(bottomNavRect.top - 8),
     );
@@ -2962,6 +2966,10 @@ void main() {
         find.byKey(const ValueKey('00631l-holding-digest-metric-row'));
     expect(digestMetricRow, findsOneWidget);
     expect(tester.getRect(digestMetricRow).height, lessThanOrEqualTo(42));
+    expect(
+      find.byKey(const ValueKey('00631l-overview-holdings-digest-title-row')),
+      findsNothing,
+    );
 
     final compactRibbon = find.byKey(
       const ValueKey('00631l-overview-compact-data-ribbon'),

@@ -3784,7 +3784,11 @@ class _OverviewSection extends StatelessWidget {
               _OverviewAiGlancePanel(data: data),
               SizedBox(height: sectionGap),
               if (showMobileHoldingsDigest) ...[
-                _OverviewHoldingsDigestPanel(data: data, embedded: true),
+                _OverviewHoldingsDigestPanel(
+                  data: data,
+                  embedded: true,
+                  showEmbeddedHeader: false,
+                ),
                 SizedBox(height: sectionGap),
               ],
             ],
@@ -5276,10 +5280,12 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
   const _OverviewHoldingsDigestPanel({
     required this.data,
     this.embedded = false,
+    this.showEmbeddedHeader = true,
   });
 
   final Etf00631LLabData data;
   final bool embedded;
+  final bool showEmbeddedHeader;
 
   @override
   Widget build(BuildContext context) {
@@ -5332,8 +5338,9 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
             ),
             const SizedBox(height: 7),
           ],
-          if (embedded && hasUsableHoldings) ...[
+          if (embedded && showEmbeddedHeader && hasUsableHoldings) ...[
             Row(
+              key: const ValueKey('00631l-overview-holdings-digest-title-row'),
               children: [
                 const _MiniStatusBadge(label: 'DAY'),
                 const SizedBox(width: 6),
@@ -5548,7 +5555,7 @@ class _HoldingDigestTile extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(9, 8, 9, 8),
+        padding: EdgeInsets.fromLTRB(9, compact ? 6 : 8, 9, compact ? 6 : 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -5568,7 +5575,7 @@ class _HoldingDigestTile extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 7),
+            SizedBox(height: compact ? 4 : 7),
             if (item.metrics.isEmpty) ...[
               FittedBox(
                 fit: BoxFit.scaleDown,
@@ -5582,7 +5589,7 @@ class _HoldingDigestTile extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 3),
+              SizedBox(height: compact ? 1 : 3),
               Text(
                 item.caption,
                 maxLines: 1,

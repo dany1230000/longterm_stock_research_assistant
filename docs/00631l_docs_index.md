@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview first screen density v15.42: `docs\00631l_v15_42_overview_first_screen_density.md`
 - AI daily interpretation card v15.41: `docs\00631l_v15_41_ai_daily_interpretation_card.md`
 - Position first screen v15.40: `docs\00631l_v15_40_position_first_screen.md`
 - History/backtest first screen v15.39: `docs\00631l_v15_39_history_backtest_first_screen.md`
