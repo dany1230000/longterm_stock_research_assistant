@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position summary density v15.19: `docs\00631l_v15_19_position_summary_density.md`
 - Holdings digest density v15.18: `docs\00631l_v15_18_holdings_digest_density.md`
 - Overview ribbon density v15.17: `docs\00631l_v15_17_overview_ribbon_density.md`
 - History top density v15.16: `docs\00631l_v15_16_history_top_density.md`

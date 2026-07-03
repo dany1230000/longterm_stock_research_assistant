@@ -9927,7 +9927,7 @@ class _PositionSectionState extends State<_PositionSection> {
             ),
           ),
         ],
-        if (!compact || input.hasPosition) ...[
+        if (!compact) ...[
           const SizedBox(height: 12),
           _CompactExpansionPanel(
             key: const ValueKey('00631l-position-estimate-details'),

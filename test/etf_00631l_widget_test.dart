@@ -1745,6 +1745,49 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('position phone values keep summary first without duplicate grid',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    await _tapSection(tester, 'position');
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-position-field-shares')),
+      '1000',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-position-field-average-cost')),
+      '120',
+    );
+    await tester.pumpAndSettle();
+
+    final accountStrip =
+        find.byKey(const ValueKey('00631l-position-account-strip'));
+    final inputCard =
+        find.byKey(const ValueKey('00631l-position-compact-input-card'));
+    expect(accountStrip, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-position-account-metric-strip')),
+      findsOneWidget,
+    );
+    expect(
+      tester.getTopLeft(accountStrip).dy,
+      lessThan(tester.getTopLeft(inputCard).dy),
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-position-estimate-details')),
+      findsNothing,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('backtest quick result stays compact on phone width',
       (tester) async {
     tester.view.physicalSize = const Size(390, 844);

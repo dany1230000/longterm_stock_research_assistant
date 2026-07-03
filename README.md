@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.19 removes duplicate phone position estimate details when a position is
+  entered. The account summary stays first, while detailed inputs remain behind
+  the editable input panel.
+
 - v15.18 compresses the phone overview holdings digest. The exposure structure
   card now shows stock, futures, and cash/margin as one comparable row instead
   of three stacked rows.
