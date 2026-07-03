@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.30 closes the current mobile design-density batch. It documents the
+  first-screen spacing, navigation, search, settings, AI, and chart readability
+  changes as one rollback point before the next product slice.
+
 - v15.29 makes the overview chart date axis clearer on phone width. The compact
   chart now keeps start, middle, and end date anchors visible without folding
   the chart.
