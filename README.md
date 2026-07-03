@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.61 turns the phone overview holdings digest into one-line `TX / 2330 /
+  CASH` market chips below the chart.
+
 - v15.60 adds a focused mobile layout check script so phone first screens,
   compact controls, tab identity, AI, settings, and theme switching stay guarded.
 

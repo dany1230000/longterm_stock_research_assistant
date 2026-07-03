@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview digest tape v15.61: `docs\00631l_v15_61_overview_digest_tape.md`
 - Mobile layout check v15.60: `docs\00631l_v15_60_mobile_layout_check.md`
 - Tab identity guard v15.59: `docs\00631l_v15_59_tab_identity_guard.md`
 - Comparison summary density v15.58: `docs\00631l_v15_58_comparison_summary_density.md`

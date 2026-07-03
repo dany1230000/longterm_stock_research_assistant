@@ -5576,7 +5576,7 @@ class _MobileHoldingDigestStrip extends StatelessWidget {
       key: const ValueKey('00631l-overview-holdings-digest-strip'),
       children: [
         for (var index = 0; index < items.length; index++) ...[
-          Expanded(child: _MobileHoldingDigestChip(item: items[index])),
+          Expanded(child: _MobileHoldingDigestChipV2(item: items[index])),
           if (index != items.length - 1) const SizedBox(width: 5),
         ],
       ],
@@ -5596,6 +5596,67 @@ class _MobileHoldingDigestItem {
   final String caption;
 }
 
+class _MobileHoldingDigestChipV2 extends StatelessWidget {
+  const _MobileHoldingDigestChipV2({required this.item});
+
+  final _MobileHoldingDigestItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final label = item.caption == 'TX'
+        ? 'TX'
+        : item.label == '2330'
+            ? '2330'
+            : 'CASH';
+    return DecoratedBox(
+      key: const ValueKey('00631l-mobile-holding-digest-chip'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Row(
+          children: [
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+                fontSize: 9,
+                height: 1,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(width: 5),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: Text(
+                  item.value,
+                  maxLines: 1,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: _marketTextColor(context),
+                    fontWeight: FontWeight.w900,
+                    height: 1,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: unused_element
 class _MobileHoldingDigestChip extends StatelessWidget {
   const _MobileHoldingDigestChip({required this.item});
 

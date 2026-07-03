@@ -705,6 +705,23 @@ void main() {
     final holdingsDigestRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
     );
+    final mobileDigestChips = find.byKey(
+      const ValueKey('00631l-mobile-holding-digest-chip'),
+    );
+    expect(mobileDigestChips, findsNWidgets(3));
+    for (final label in const ['TX', '2330', 'CASH']) {
+      expect(
+        find.descendant(
+          of: find.byKey(
+            const ValueKey('00631l-overview-holdings-digest-strip'),
+          ),
+          matching: find.text(label),
+        ),
+        findsOneWidget,
+      );
+    }
+    expect(
+        tester.getRect(mobileDigestChips.first).height, lessThanOrEqualTo(24));
     final mobileDailySummaryRect = tester.getRect(mobileDailySummary);
     expect(mobileDailySummaryRect.height, lessThanOrEqualTo(112));
     expect(aiRect.top, greaterThanOrEqualTo(mobileDailySummaryRect.top));
@@ -3112,8 +3129,8 @@ void main() {
       const ValueKey('00631l-overview-holdings-digest-strip'),
     );
     final holdingsDigestRect = tester.getRect(holdingsDigest);
-    expect(holdingsDigestRect.height, lessThanOrEqualTo(44));
-    for (final label in const ['期貨', '2330', '現金']) {
+    expect(holdingsDigestRect.height, lessThanOrEqualTo(24));
+    for (final label in const ['TX', '2330', 'CASH']) {
       expect(
         find.descendant(of: holdingsDigest, matching: find.text(label)),
         findsWidgets,
