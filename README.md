@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.71 tightens the phone bottom navigation and guards that ETF switching
+  remains in the left-top symbol search button, not as a bottom tab.
+
 - v15.70 tightens the phone home first-glance guard so the top bar, quote
   header, market stack, and chart start stay compact on the public app home.
 

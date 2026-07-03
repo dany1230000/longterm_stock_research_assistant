@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Bottom navigation guard v15.71: `docs\00631l_v15_71_bottom_nav_guard.md`
 - Home first-glance guard v15.70: `docs\00631l_v15_70_home_first_glance_guard.md`
 - AI briefing density v15.69: `docs\00631l_v15_69_ai_briefing_density.md`
 - Position account strip v15.68: `docs\00631l_v15_68_position_account_strip.md`

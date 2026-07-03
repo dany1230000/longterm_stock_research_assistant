@@ -277,7 +277,7 @@ void main() {
     );
     final bottomNav = find.byKey(const ValueKey('00631l-bottom-nav'));
     expect(bottomNav, findsOneWidget);
-    expect(tester.getRect(bottomNav).height, lessThanOrEqualTo(70));
+    expect(tester.getRect(bottomNav).height, lessThanOrEqualTo(60));
     expect(
       find.descendant(of: bottomNav, matching: find.text('ETF')),
       findsNothing,
@@ -298,6 +298,10 @@ void main() {
       'settings',
     ]) {
       expect(find.byKey(ValueKey('00631l-section-$section')), findsOneWidget);
+      expect(
+        find.byKey(ValueKey('00631l-section-label-$section')),
+        findsOneWidget,
+      );
     }
     _expectNoTradingActionText();
   });
