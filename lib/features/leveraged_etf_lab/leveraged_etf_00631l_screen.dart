@@ -8169,7 +8169,7 @@ class _DateRangeControlPanel extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: compact ? 6 : 8),
+          SizedBox(height: compact ? 4 : 8),
           KeyedSubtree(
             key: dateControlsKey,
             child: _BacktestDateRangeControls(
@@ -8205,18 +8205,14 @@ class _DateRangePresetStrip extends StatelessWidget {
         children: children,
       );
     }
-    return SingleChildScrollView(
+    return Row(
       key: const ValueKey('00631l-date-range-preset-scroll'),
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: [
-          for (var index = 0; index < children.length; index += 1) ...[
-            if (index > 0) const SizedBox(width: 6),
-            children[index],
-          ],
+      children: [
+        for (var index = 0; index < children.length; index += 1) ...[
+          if (index > 0) const SizedBox(width: 5),
+          Expanded(child: children[index]),
         ],
-      ),
+      ],
     );
   }
 }
@@ -9942,7 +9938,7 @@ class _BacktestDateButton extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: compact ? 7 : 9,
-            vertical: compact ? 7 : 9,
+            vertical: compact ? 5 : 9,
           ),
           child: Row(
             children: [

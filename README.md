@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.52 tightens the history/backtest date controls: the 1Y / 3Y / all range
+  chips fit in one phone row and the start/end date controls are shorter.
+
 - v15.51 makes the top app bar read more like a phone stock app: a clearer
   `ETF 研究室` title and a larger left-top symbol search button.
 

@@ -1364,6 +1364,16 @@ void main() {
       ),
       findsOneWidget,
     );
+    final rangeRect = tester.getRect(rangeContext);
+    for (final key in const [
+      ValueKey('00631l-history-range-1y'),
+      ValueKey('00631l-history-range-3y'),
+      ValueKey('00631l-history-range-all'),
+    ]) {
+      final chipRect = tester.getRect(find.byKey(key));
+      expect(chipRect.left, greaterThanOrEqualTo(rangeRect.left));
+      expect(chipRect.right, lessThanOrEqualTo(rangeRect.right));
+    }
     final dateControls = find.descendant(
       of: rangeContext,
       matching: find.byKey(
@@ -1371,7 +1381,7 @@ void main() {
       ),
     );
     expect(dateControls, findsOneWidget);
-    expect(tester.getRect(dateControls).height, lessThanOrEqualTo(58));
+    expect(tester.getRect(dateControls).height, lessThanOrEqualTo(54));
     expect(
       find.descendant(
         of: rangeContext,

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History date controls v15.52: `docs\00631l_v15_52_history_date_controls.md`
 - Top bar balance v15.51: `docs\00631l_v15_51_top_bar_balance.md`
 - Overview quote chart balance v15.50: `docs\00631l_v15_50_overview_quote_chart_balance.md`
 - Symbol search density v15.49: `docs\00631l_v15_49_symbol_search_density.md`
