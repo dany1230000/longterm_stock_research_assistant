@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.13 shortens the ETF comparison action row on phones. The comparison
+  basket keeps the same behavior, but the mobile actions now use compact labels
+  so they read as controls instead of long text blocks.
+
 - v15.12 slightly enlarges the phone app header so `ETF 研究室` reads more like
   the product title while keeping the symbol search pill compact.
 

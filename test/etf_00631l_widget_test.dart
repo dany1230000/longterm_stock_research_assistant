@@ -2607,6 +2607,56 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('ETF comparison action strip uses compact labels on phone width',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _PriceHistoryRepository());
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
+
+    final selectionPanel =
+        find.byKey(const ValueKey('00631l-etf-comparison-selection-panel'));
+    await tester.ensureVisible(selectionPanel);
+    await tester.pumpAndSettle();
+    await tester.tap(selectionPanel);
+    await tester.pumpAndSettle();
+
+    final actionStrip =
+        find.byKey(const ValueKey('00631l-etf-comparison-action-strip'));
+    expect(actionStrip, findsOneWidget);
+    expect(
+      find.descendant(of: actionStrip, matching: find.text('清空')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: actionStrip, matching: find.text('同類型')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: actionStrip, matching: find.text('目前')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: actionStrip, matching: find.text('清空組合')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: actionStrip, matching: find.text('套用同類型')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: actionStrip, matching: find.text('只看目前 ETF')),
+      findsNothing,
+    );
+    _expectNoTradingActionText();
+  });
+
   testWidgets('selecting ETF switches overview position and AI context',
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());

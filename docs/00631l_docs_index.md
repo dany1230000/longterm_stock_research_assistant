@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Comparison action density v15.13: `docs\00631l_v15_13_comparison_action_density.md`
 - Header scale v15.12: `docs\00631l_v15_12_header_scale.md`
 - Compact chart touch detail v15.11: `docs\00631l_v15_11_compact_chart_touch_detail.md`
 - Overview AI density v15.10: `docs\00631l_v15_10_overview_ai_density.md`

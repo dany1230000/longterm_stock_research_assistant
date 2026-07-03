@@ -7963,6 +7963,7 @@ class _EtfHistoryComparisonPanelState
         if (metric.rowCount < 2) metric,
     ];
     final selectedCodes = _effectiveComparisonCodes(availableMetrics);
+    final compactActionLabels = MediaQuery.sizeOf(context).width < 430;
     final usableMetrics = [
       for (final metric in availableMetrics)
         if (selectedCodes.contains(metric.code)) metric,
@@ -8074,7 +8075,7 @@ class _EtfHistoryComparisonPanelState
                               });
                             },
                       icon: const Icon(Icons.remove_circle_outline, size: 16),
-                      label: const Text('清空組合'),
+                      label: Text(compactActionLabels ? '清空' : '清空組合'),
                     ),
                     const SizedBox(width: 8),
                     OutlinedButton.icon(
@@ -8091,7 +8092,7 @@ class _EtfHistoryComparisonPanelState
                         });
                       },
                       icon: const Icon(Icons.group_work_outlined, size: 16),
-                      label: const Text('套用同類型'),
+                      label: Text(compactActionLabels ? '同類型' : '套用同類型'),
                     ),
                     const SizedBox(width: 8),
                     OutlinedButton.icon(
@@ -8108,7 +8109,7 @@ class _EtfHistoryComparisonPanelState
                         });
                       },
                       icon: const Icon(Icons.adjust_outlined, size: 16),
-                      label: const Text('只看目前 ETF'),
+                      label: Text(compactActionLabels ? '目前' : '只看目前 ETF'),
                     ),
                   ],
                 ),
