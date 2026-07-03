@@ -3503,7 +3503,10 @@ void main() {
         find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
     final compactInsight =
         find.byKey(const ValueKey('00631l-ai-compact-daily-insight'));
+    final hero = find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
 
+    expect(hero, findsOneWidget);
+    expect(tester.getRect(hero).height, lessThanOrEqualTo(360));
     expect(headline, findsOneWidget);
     expect(primaryAction, findsOneWidget);
     expect(detailExpansion, findsNothing);

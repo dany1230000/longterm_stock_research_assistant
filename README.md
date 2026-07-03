@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.46 tightens the phone AI first screen by shortening the action row and
+  keeping today's interpretation above advanced details.
+
 - v15.45 tightens the phone position account summary so saved local positions
   read more like an account snapshot and less like a long form.
 

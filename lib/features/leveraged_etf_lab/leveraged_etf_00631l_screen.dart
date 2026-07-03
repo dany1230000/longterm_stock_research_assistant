@@ -10842,11 +10842,12 @@ class _AiSectionV2 extends StatelessWidget {
     final hiddenActions =
         summary.actionItems.skip(1).map(_aiDisplayText).toList(growable: false);
     final compact = MediaQuery.sizeOf(context).width < 430;
+    final sectionGap = compact ? 6.0 : 10.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _AiDailyBriefingHero(data: data, summary: summary),
-        const SizedBox(height: 10),
+        SizedBox(height: sectionGap),
         _CompactExpansionPanel(
           key: const ValueKey('00631l-ai-full-detail-expansion'),
           title: '進階 AI 明細',
@@ -11158,7 +11159,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 520;
         final heroPadding = compact
-            ? const EdgeInsets.fromLTRB(10, 10, 10, 10)
+            ? const EdgeInsets.fromLTRB(8, 8, 8, 8)
             : const EdgeInsets.fromLTRB(12, 12, 12, 12);
         return DecoratedBox(
           key: const ValueKey('00631l-ai-daily-briefing-hero'),
@@ -11189,14 +11190,14 @@ class _AiDailyBriefingHero extends StatelessWidget {
                     const _CompactTextBadge(label: '規則分析'),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: compact ? 6 : 8),
                 _AiDailyHeadlinePanel(
                   data: data,
                   summary: summary,
                   premiumText: premiumText,
                   primaryAction: primaryAction,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: compact ? 6 : 8),
                 KeyedSubtree(
                   key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
                   child: _StatusWrap(
@@ -11218,7 +11219,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
                   _AiFirstScreenBulletList(bullets: briefingBullets),
                 ],
                 if (compact) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   _AiCompactDailyInsightLine(text: compactInsight),
                 ],
                 if (!compact) ...[
@@ -11477,7 +11478,7 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
         border: Border.all(color: _marketBlue.withValues(alpha: 0.26)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -11527,6 +11528,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final snapshot = data.snapshot;
     final nav = data.intradayNav;
     final txWeight = snapshot.futuresHoldings
@@ -11600,7 +11602,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         headline,
-                        maxLines: 3,
+                        maxLines: compact ? 2 : 3,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: _marketTextColor(context),
@@ -11654,7 +11656,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: compact ? 8 : 10),
             Container(
               key: const ValueKey('00631l-ai-primary-action-block'),
               width: double.infinity,
@@ -11663,46 +11665,82 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: statusColor.withValues(alpha: 0.35)),
               ),
-              padding: const EdgeInsets.all(9),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.task_alt_outlined,
-                    size: 17,
-                    color: statusColor,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              padding: compact
+                  ? const EdgeInsets.symmetric(horizontal: 8, vertical: 7)
+                  : const EdgeInsets.all(9),
+              child: compact
+                  ? Row(
                       children: [
+                        Icon(
+                          Icons.task_alt_outlined,
+                          size: 16,
+                          color: statusColor,
+                        ),
+                        const SizedBox(width: 6),
                         Text(
-                          '程式操作',
+                          '操作',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelMedium?.copyWith(
+                          style: theme.textTheme.labelSmall?.copyWith(
                             color: _marketMutedTextColor(context),
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          primaryAction,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: _marketTextColor(context),
-                            height: 1.3,
-                            fontWeight: FontWeight.w800,
+                        const SizedBox(width: 7),
+                        Expanded(
+                          child: Text(
+                            primaryAction,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: _marketTextColor(context),
+                              height: 1.2,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.task_alt_outlined,
+                          size: 17,
+                          color: statusColor,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '程式操作',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  color: _marketMutedTextColor(context),
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                primaryAction,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: _marketTextColor(context),
+                                  height: 1.3,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
             ),
           ],
         ),
