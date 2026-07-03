@@ -580,6 +580,10 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-market-stack')),
       findsOneWidget,
     );
+    final marketStackRect = tester.getRect(
+      find.byKey(const ValueKey('00631l-overview-market-stack')),
+    );
+    expect(marketStackRect.height, lessThanOrEqualTo(360));
     final ribbonRect = tester.getRect(compactRibbon);
     expect(ribbonRect.height, lessThanOrEqualTo(28));
     expect(
@@ -666,6 +670,17 @@ void main() {
     );
     expect(aiRect.top, lessThan(bottomNavRect.top));
     expect(aiRect.height, lessThanOrEqualTo(76));
+    final holdingsDigestRect = tester.getRect(
+      find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
+    );
+    expect(
+      holdingsDigestRect.bottom,
+      lessThanOrEqualTo(bottomNavRect.top - 8),
+    );
+    expect(
+      holdingsDigestRect.bottom - marketStackRect.top,
+      lessThanOrEqualTo(560),
+    );
     expect(
       find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
       findsOneWidget,

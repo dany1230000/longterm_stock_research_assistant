@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview first-screen guard v15.22: `docs\00631l_v15_22_overview_first_screen_guard.md`
 - AI detail entry density v15.21: `docs\00631l_v15_21_ai_detail_entry_density.md`
 - Settings preference density v15.20: `docs\00631l_v15_20_settings_preference_density.md`
 - Position summary density v15.19: `docs\00631l_v15_19_position_summary_density.md`

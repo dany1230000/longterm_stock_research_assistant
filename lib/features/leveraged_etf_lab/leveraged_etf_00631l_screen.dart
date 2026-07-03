@@ -3705,6 +3705,7 @@ class _OverviewSection extends StatelessWidget {
       builder: (context, constraints) {
         final showSecondaryDetails = constraints.maxWidth >= 520;
         final showMobileHoldingsDigest = constraints.maxWidth < 520;
+        final sectionGap = constraints.maxWidth < 430 ? 6.0 : 8.0;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -3715,13 +3716,13 @@ class _OverviewSection extends StatelessWidget {
               const SizedBox(height: 8),
               _SelectedEtfOverviewDigest(selectedEtf: selectedEtf),
             ],
-            const SizedBox(height: 8),
+            SizedBox(height: sectionGap),
             if (selectedEtf.is00631L) ...[
               _OverviewAiGlancePanel(data: data),
-              const SizedBox(height: 8),
+              SizedBox(height: sectionGap),
               if (showMobileHoldingsDigest) ...[
                 _OverviewHoldingsDigestPanel(data: data, embedded: true),
-                const SizedBox(height: 8),
+                SizedBox(height: sectionGap),
               ],
             ],
             if (!selectedEtf.is00631L)
@@ -3734,7 +3735,7 @@ class _OverviewSection extends StatelessWidget {
                     ? _OverviewSignalPanel(data: data)
                     : _SelectedEtfSignalPanel(selectedEtf: selectedEtf),
               ),
-            const SizedBox(height: 8),
+            SizedBox(height: sectionGap),
             if (showSecondaryDetails)
               _CompactExpansionPanel(
                 key: const ValueKey('00631l-overview-more-expansion'),

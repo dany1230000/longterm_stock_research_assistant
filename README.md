@@ -4,6 +4,11 @@
 
 Latest mobile UI polish:
 
+- v15.22 adds a phone overview first-screen height guard. The market stack,
+  AI glance, holdings digest, and bottom navigation now have widget coverage so
+  future copy or card changes cannot quietly push the main overview out of the
+  first screen.
+
 - v15.21 shortens the phone AI detail entry. The collapsed detail panel keeps a
   concise subtitle so the daily interpretation stays dominant on the first
   screen.
