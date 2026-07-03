@@ -2794,6 +2794,13 @@ void main() {
     await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
 
+    final compactSummary =
+        find.byKey(const ValueKey('00631l-etf-comparison-compact-summary'));
+    await tester.ensureVisible(compactSummary);
+    await tester.pumpAndSettle();
+    expect(compactSummary, findsOneWidget);
+    expect(tester.getRect(compactSummary).height, lessThanOrEqualTo(72));
+
     final selectionPanel =
         find.byKey(const ValueKey('00631l-etf-comparison-selection-panel'));
     await tester.ensureVisible(selectionPanel);

@@ -8784,17 +8784,22 @@ class _ComparisonCompactSummaryStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final codes = selectedMetrics.map((metric) => metric.code).join(' / ');
     final commonRange = _comparisonCommonRangeText(selectedMetrics);
     final totalRows =
         selectedMetrics.fold<int>(0, (sum, metric) => sum + metric.rowCount);
-    final summary = selectedMetrics.isEmpty
-        ? '尚未選擇比較 ETF · 不設基準 · 可比較 ${formatInteger(readyCount)} / ${formatInteger(candidateCount)} 檔'
-        : '目前組合 $codes · 不設基準 · $commonRange · ${formatInteger(totalRows)} 筆';
+    final summary = compact
+        ? selectedMetrics.isEmpty
+            ? '尚未選擇 · 可比較 ${formatInteger(readyCount)} / ${formatInteger(candidateCount)}'
+            : '$codes · $commonRange · ${formatInteger(totalRows)} 筆'
+        : selectedMetrics.isEmpty
+            ? '尚未選擇比較 ETF · 不設基準 · 可比較 ${formatInteger(readyCount)} / ${formatInteger(candidateCount)} 檔'
+            : '目前組合 $codes · 不設基準 · $commonRange · ${formatInteger(totalRows)} 筆';
     return Container(
       key: const ValueKey('00631l-etf-comparison-compact-summary'),
       width: double.infinity,
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(compact ? 8 : 10),
       decoration: BoxDecoration(
         color: _marketPanelColor(context),
         borderRadius: BorderRadius.circular(10),
@@ -8806,21 +8811,30 @@ class _ComparisonCompactSummaryStrip extends StatelessWidget {
           Text(
             summary,
             key: const ValueKey('00631l-etf-comparison-compact-summary-text'),
+            maxLines: compact ? 1 : 3,
+            overflow: TextOverflow.ellipsis,
             style: theme.textTheme.labelMedium?.copyWith(
               color: _marketTextColor(context),
               fontWeight: FontWeight.w900,
-              height: 1.25,
+              height: compact ? 1.16 : 1.25,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: compact ? 5 : 8),
           _StatusWrap(
-            labels: [
-              selectedMetrics.isEmpty
-                  ? '組合 0 檔'
-                  : '組合 ${formatInteger(selectedMetrics.length)} 檔',
-              '不設基準',
-              '可比較 ${formatInteger(readyCount)} / ${formatInteger(candidateCount)}',
-            ],
+            labels: compact
+                ? [
+                    selectedMetrics.isEmpty
+                        ? '組合 0 檔'
+                        : '組合 ${formatInteger(selectedMetrics.length)} 檔',
+                    '不設基準',
+                  ]
+                : [
+                    selectedMetrics.isEmpty
+                        ? '組合 0 檔'
+                        : '組合 ${formatInteger(selectedMetrics.length)} 檔',
+                    '不設基準',
+                    '可比較 ${formatInteger(readyCount)} / ${formatInteger(candidateCount)}',
+                  ],
           ),
         ],
       ),

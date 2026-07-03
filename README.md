@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.58 tightens the ETF comparison phone summary so custom baskets read as
+  one compact selector line before the comparison controls.
+
 - v15.57 tightens the phone overview daily tape: AI status and holdings
   highlights use less vertical space below the chart.
 
