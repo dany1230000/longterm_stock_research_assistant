@@ -11638,7 +11638,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 520;
         final heroPadding = compact
-            ? const EdgeInsets.fromLTRB(8, 8, 8, 8)
+            ? const EdgeInsets.fromLTRB(7, 7, 7, 7)
             : const EdgeInsets.fromLTRB(12, 12, 12, 12);
         return DecoratedBox(
           key: const ValueKey('00631l-ai-daily-briefing-hero'),
@@ -11669,14 +11669,14 @@ class _AiDailyBriefingHero extends StatelessWidget {
                     const _CompactTextBadge(label: '規則分析'),
                   ],
                 ),
-                SizedBox(height: compact ? 6 : 8),
+                SizedBox(height: compact ? 5 : 8),
                 _AiDailyHeadlinePanel(
                   data: data,
                   summary: summary,
                   premiumText: premiumText,
                   primaryAction: primaryAction,
                 ),
-                SizedBox(height: compact ? 6 : 8),
+                SizedBox(height: compact ? 5 : 8),
                 KeyedSubtree(
                   key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
                   child: _StatusWrap(
@@ -11957,7 +11957,7 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
         border: Border.all(color: _marketBlue.withValues(alpha: 0.26)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -11972,7 +11972,7 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
                 letterSpacing: 0,
               ),
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             Text(
               text,
               maxLines: 2,
@@ -12049,7 +12049,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(compact ? 8 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -12057,7 +12057,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
               children: [
                 Container(
                   width: 8,
-                  height: 32,
+                  height: compact ? 28 : 32,
                   decoration: BoxDecoration(
                     color: statusColor,
                     borderRadius: BorderRadius.circular(99),
@@ -12094,7 +12094,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: compact ? 7 : 10),
             LayoutBuilder(
               builder: (context, constraints) {
                 final singleRow = constraints.maxWidth < 460;
@@ -12145,7 +12145,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                 border: Border.all(color: statusColor.withValues(alpha: 0.35)),
               ),
               padding: compact
-                  ? const EdgeInsets.symmetric(horizontal: 8, vertical: 7)
+                  ? const EdgeInsets.symmetric(horizontal: 7, vertical: 6)
                   : const EdgeInsets.all(9),
               child: compact
                   ? Row(
@@ -12261,7 +12261,7 @@ class _AiInlineFactPill extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: dense ? 6 : 9,
-          vertical: dense ? 5 : 8,
+          vertical: dense ? 4 : 8,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

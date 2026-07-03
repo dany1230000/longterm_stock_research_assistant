@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.69 tightens the phone AI briefing hero so daily readout, action, and
+  compact insight stay shorter before full detail.
+
 - v15.68 tightens the phone position account strip so saved holdings keep the
   main account numbers above the edit/tools area.
 

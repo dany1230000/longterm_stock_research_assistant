@@ -3716,7 +3716,7 @@ void main() {
     final hero = find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
 
     expect(hero, findsOneWidget);
-    expect(tester.getRect(hero).height, lessThanOrEqualTo(360));
+    expect(tester.getRect(hero).height, lessThanOrEqualTo(340));
     expect(headline, findsOneWidget);
     expect(primaryAction, findsOneWidget);
     expect(detailExpansion, findsNothing);
@@ -3726,7 +3726,7 @@ void main() {
     expect(compactInsight, findsOneWidget);
     expect(
       tester.getRect(compactInsight).height,
-      lessThanOrEqualTo(62),
+      lessThanOrEqualTo(58),
       reason: 'Phone AI insight should read like a compact app status line.',
     );
     expect(
@@ -3758,7 +3758,7 @@ void main() {
     expect(firstScreenFacts, findsOneWidget);
     expect(
       tester.getRect(firstScreenFacts).height,
-      lessThanOrEqualTo(72),
+      lessThanOrEqualTo(68),
       reason: 'Phone AI facts should stay in a compact single row.',
     );
     final dayLabel = find.descendant(
