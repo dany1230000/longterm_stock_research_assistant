@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History top density v15.16: `docs\00631l_v15_16_history_top_density.md`
 - AI detail density v15.15: `docs\00631l_v15_15_ai_detail_density.md`
 - Position empty first screen v15.14: `docs\00631l_v15_14_position_empty_first.md`
 - Comparison action density v15.13: `docs\00631l_v15_13_comparison_action_density.md`

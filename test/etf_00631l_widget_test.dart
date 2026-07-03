@@ -1239,6 +1239,26 @@ void main() {
       find.byKey(const ValueKey('00631l-history-top-strip-contract-badge')),
       findsNothing,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-history-top-strip-date-pill')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-top-strip-close-pill')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-top-strip-row-pill')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: topStrip, matching: find.textContaining(' / ')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: topStrip, matching: find.text('來源')),
+      findsNothing,
+    );
 
     final rangeContext =
         find.byKey(const ValueKey('00631l-history-range-context'));

@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.16 tightens the phone history/backtest top strip. Compact mode now keeps
+  only date, close, and row count in the first metric row while source status
+  remains in the right-side badge.
+
 - v15.15 keeps the phone AI first screen focused on the headline, fact row,
   program action, and short daily interpretation. Longer AI detail moves under
   the full detail panel below the hero.

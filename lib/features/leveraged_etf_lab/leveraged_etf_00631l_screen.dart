@@ -7269,6 +7269,42 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 430;
+        final metricPills = compact
+            ? <Widget>[
+                KeyedSubtree(
+                  key: const ValueKey('00631l-history-top-strip-date-pill'),
+                  child: _InlineQualityPill(label: '日期', value: latestDate),
+                ),
+                KeyedSubtree(
+                  key: const ValueKey('00631l-history-top-strip-close-pill'),
+                  child: _InlineQualityPill(label: '收盤', value: latestClose),
+                ),
+                KeyedSubtree(
+                  key: const ValueKey('00631l-history-top-strip-row-pill'),
+                  child: _InlineQualityPill(
+                    label: '筆數',
+                    value: formatInteger(completeness.rowCount),
+                  ),
+                ),
+              ]
+            : <Widget>[
+                KeyedSubtree(
+                  key: const ValueKey('00631l-history-top-strip-date-pill'),
+                  child: _InlineQualityPill(
+                    label: '最新',
+                    value: '$latestDate / $latestClose',
+                  ),
+                ),
+                KeyedSubtree(
+                  key: const ValueKey('00631l-history-top-strip-row-pill'),
+                  child: _InlineQualityPill(
+                    label: '筆數',
+                    value: formatInteger(completeness.rowCount),
+                  ),
+                ),
+                _InlineQualityPill(label: '來源', value: sourceLabel),
+                _InlineQualityPill(label: '價格', value: adjustmentLabel),
+              ];
         return DecoratedBox(
           key: const ValueKey('00631l-history-backtest-top-strip'),
           decoration: BoxDecoration(
@@ -7292,7 +7328,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            titleText,
+                            compact ? code : titleText,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.labelLarge?.copyWith(
@@ -7339,25 +7375,12 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                     ],
                   ],
                 ),
-                const SizedBox(height: 7),
+                SizedBox(height: compact ? 5 : 7),
                 SingleChildScrollView(
                   key: const ValueKey('00631l-history-top-strip-metrics'),
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
-                  child: Row(
-                    children: [
-                      _InlineQualityPill(
-                        label: '最新',
-                        value: '$latestDate / $latestClose',
-                      ),
-                      _InlineQualityPill(
-                        label: '筆數',
-                        value: formatInteger(completeness.rowCount),
-                      ),
-                      _InlineQualityPill(label: '來源', value: sourceLabel),
-                      _InlineQualityPill(label: '價格', value: adjustmentLabel),
-                    ],
-                  ),
+                  child: Row(children: metricPills),
                 ),
                 const KeyedSubtree(
                   key: ValueKey('00631l-history-top-strip-legacy-labels'),
