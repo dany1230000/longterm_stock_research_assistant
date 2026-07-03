@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.41 changes the compact AI insight into a short `今日解讀` card so the
+  phone AI tab reads as daily interpretation instead of raw status tokens.
+
 - v15.40 trims the phone position tab so local-only storage notes stay out of
   the first screen after a position is entered.
 

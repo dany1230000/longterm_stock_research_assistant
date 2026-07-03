@@ -11391,16 +11391,33 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        child: Text(
-          text,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: _marketTextColor(context),
-            fontWeight: FontWeight.w800,
-            height: 1.25,
-            letterSpacing: 0,
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '今日解讀',
+              key: const ValueKey('00631l-ai-compact-daily-insight-title'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              text,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w800,
+                height: 1.25,
+                letterSpacing: 0,
+              ),
+            ),
+          ],
         ),
       ),
     );

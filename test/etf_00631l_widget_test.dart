@@ -3493,6 +3493,11 @@ void main() {
     expect(decisionStrip, findsNothing);
     expect(compactInsight, findsOneWidget);
     expect(
+      find.byKey(const ValueKey('00631l-ai-compact-daily-insight-title')),
+      findsOneWidget,
+    );
+    expect(find.text('今日解讀'), findsOneWidget);
+    expect(
       find.byKey(const ValueKey('00631l-ai-first-screen-bullets')),
       findsNothing,
     );
