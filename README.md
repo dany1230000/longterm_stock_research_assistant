@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.68 tightens the phone position account strip so saved holdings keep the
+  main account numbers above the edit/tools area.
+
 - v15.67 tightens the phone settings preference grid so account, appearance,
   selected ETF, and position controls stay compact before advanced diagnostics.
 

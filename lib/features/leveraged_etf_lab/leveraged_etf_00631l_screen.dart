@@ -11132,7 +11132,7 @@ class _PositionAccountStrip extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 8 : 10),
+        padding: EdgeInsets.all(compact ? 7 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -11162,7 +11162,7 @@ class _PositionAccountStrip extends StatelessWidget {
                 height: 1.25,
               ),
             ),
-            SizedBox(height: compact ? 6 : 8),
+            SizedBox(height: compact ? 4 : 8),
             _PositionAccountMetricStrip(
               items: items,
             ),

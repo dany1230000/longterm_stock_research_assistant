@@ -2003,7 +2003,7 @@ void main() {
     final inputCard =
         find.byKey(const ValueKey('00631l-position-compact-input-card'));
     expect(accountStrip, findsOneWidget);
-    expect(tester.getRect(accountStrip).height, lessThanOrEqualTo(104));
+    expect(tester.getRect(accountStrip).height, lessThanOrEqualTo(100));
     expect(
       find.byKey(const ValueKey('00631l-position-account-metric-strip')),
       findsOneWidget,
