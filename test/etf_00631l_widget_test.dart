@@ -694,6 +694,13 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
       findsOneWidget,
     );
+    final aiCompactLine = tester.widget<Text>(
+      find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
+    );
+    expect(aiCompactLine.data, contains('盤中折溢價'));
+    expect(aiCompactLine.data, contains('內容物'));
+    expect(aiCompactLine.data, contains('TX'));
+    expect(aiCompactLine.data, contains('台積電'));
     expect(find.text('程式操作'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),

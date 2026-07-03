@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.32 makes the overview AI line describe current day data directly:
+  intraday premium/discount, holdings date, TX weight, and TSMC weight.
+
 - v15.31 makes unavailable holdings on the public/static overview a short
   status row instead of a large error block, keeping the home screen focused.
 
