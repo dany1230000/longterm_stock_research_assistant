@@ -5207,7 +5207,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!embedded || !hasUsableHoldings) ...[
+          if (!embedded) ...[
             Row(
               children: [
                 Expanded(
@@ -5346,7 +5346,7 @@ class _HoldingDigestUnavailable extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
         child: Row(
           children: [
             const _MiniStatusBadge(label: 'DAY'),
@@ -5354,7 +5354,7 @@ class _HoldingDigestUnavailable extends StatelessWidget {
             Expanded(
               child: Text(
                 '資料來源尚未回傳可用快照；未顯示 0 值內容物。',
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: _marketMutedTextColor(context),

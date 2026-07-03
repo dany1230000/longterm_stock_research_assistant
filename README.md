@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.31 makes unavailable holdings on the public/static overview a short
+  status row instead of a large error block, keeping the home screen focused.
+
 - v15.30 closes the current mobile design-density batch. It documents the
   first-screen spacing, navigation, search, settings, AI, and chart readability
   changes as one rollback point before the next product slice.

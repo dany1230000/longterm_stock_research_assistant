@@ -2994,6 +2994,10 @@ void main() {
       ),
       findsOneWidget,
     );
+    final unavailableRect = tester.getRect(
+      find.byKey(const ValueKey('00631l-overview-holdings-digest-unavailable')),
+    );
+    expect(unavailableRect.height, lessThanOrEqualTo(48));
     final compactRibbon = find.byKey(
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );
