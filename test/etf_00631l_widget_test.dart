@@ -3005,6 +3005,24 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-holdings-digest-unavailable')),
     );
     expect(unavailableRect.height, lessThanOrEqualTo(48));
+    expect(
+      find.descendant(
+        of: find.byKey(
+          const ValueKey('00631l-overview-holdings-digest-unavailable'),
+        ),
+        matching: find.text('error'),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(
+          const ValueKey('00631l-overview-holdings-digest-unavailable'),
+        ),
+        matching: find.text('錯誤'),
+      ),
+      findsOneWidget,
+    );
     final compactRibbon = find.byKey(
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );

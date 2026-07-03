@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Localized overview fallback badges v15.33: `docs\00631l_v15_33_localized_overview_badges.md`
 - Overview AI daily insight v15.32: `docs\00631l_v15_32_overview_ai_daily_insight.md`
 - Compact unavailable holdings v15.31: `docs\00631l_v15_31_compact_unavailable_holdings.md`
 - Mobile design density batch v15.30: `docs\00631l_v15_30_mobile_design_density_summary.md`

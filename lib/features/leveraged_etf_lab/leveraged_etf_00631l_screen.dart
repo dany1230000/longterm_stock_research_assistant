@@ -5257,7 +5257,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                 _CompactTextBadge(
                   label: hasUsableHoldings
                       ? formatTaiwanDate(snapshot.tradeDate)
-                      : snapshot.status.label,
+                      : _sourceStatusBadgeLabel(snapshot.status.label),
                 ),
               ],
             ),
@@ -5396,7 +5396,8 @@ class _HoldingDigestUnavailable extends StatelessWidget {
                 ),
               ),
             ),
-            _CompactTextBadge(label: snapshot.status.label),
+            _CompactTextBadge(
+                label: _sourceStatusBadgeLabel(snapshot.status.label)),
           ],
         ),
       ),

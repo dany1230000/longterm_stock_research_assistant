@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.33 localizes the overview holdings unavailable badge so phone users see
+  app wording instead of raw backend status text.
+
 - v15.32 makes the overview AI line describe current day data directly:
   intraday premium/discount, holdings date, TX weight, and TSMC weight.
 
