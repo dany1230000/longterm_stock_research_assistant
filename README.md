@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.74 changes the compact phone AI insight from token-style text into a
+  short daily data sentence covering holdings date, TX, TSMC, premium/discount,
+  and history rows.
+
 - v15.73 tightens the phone position empty-state input card so shares, average
   cost, and save action stay compact before local tools appear.
 

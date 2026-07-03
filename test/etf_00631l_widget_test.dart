@@ -3725,6 +3725,10 @@ void main() {
         find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
     final compactInsight =
         find.byKey(const ValueKey('00631l-ai-compact-daily-insight'));
+    final compactInsightDailyText = find.descendant(
+      of: compactInsight,
+      matching: find.textContaining('今日資料'),
+    );
     final hero = find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
 
     expect(hero, findsOneWidget);
@@ -3736,6 +3740,7 @@ void main() {
     expect(find.text('完整摘要與資料來源。'), findsOneWidget);
     expect(decisionStrip, findsNothing);
     expect(compactInsight, findsOneWidget);
+    expect(compactInsightDailyText, findsOneWidget);
     expect(
       tester.getRect(compactInsight).height,
       lessThanOrEqualTo(58),

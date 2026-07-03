@@ -11692,8 +11692,8 @@ class _AiDailyBriefingHero extends StatelessWidget {
         summary.bullets.take(2).map(_aiDisplayText).toList(growable: false);
     final priceSummary = data.priceHistory.completenessSummary();
     final compactInsight =
-        'TX ${formatNullablePercent(txWeight)} · 台積電 ${formatNullablePercent(tsmcWeight)} · '
-        '$compactPremiumText · 歷史 ${formatInteger(priceSummary.rowCount)} 筆';
+        '今日資料：內容物 ${_dateOrDash(snapshot.tradeDate)}，TX ${formatNullablePercent(txWeight)}，'
+        '台積電 ${formatNullablePercent(tsmcWeight)}；$compactPremiumText；歷史 ${formatInteger(priceSummary.rowCount)} 筆。';
     final todayReadouts = [
       _AiTodayReadoutItem(
         label: '當日資料',
