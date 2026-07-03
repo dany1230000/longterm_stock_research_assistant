@@ -14090,7 +14090,7 @@ class _SettingsPreferenceGrid extends StatelessWidget {
             childAspectRatio: veryNarrow
                 ? 3.2
                 : compact
-                    ? 2.95
+                    ? 3.25
                     : 1.75,
             children: [
               for (final item in items)
@@ -14127,14 +14127,14 @@ class _SettingsPreferenceCard extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 6 : 10),
+        padding: EdgeInsets.all(compact ? 5 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(item.icon,
-                    size: compact ? 16 : 17, color: theme.colorScheme.primary),
+                    size: compact ? 15 : 17, color: theme.colorScheme.primary),
                 SizedBox(width: compact ? 5 : 6),
                 Expanded(
                   child: Text(
@@ -14149,7 +14149,7 @@ class _SettingsPreferenceCard extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: compact ? 2 : 7),
+            SizedBox(height: compact ? 1 : 7),
             Text(
               item.status,
               maxLines: 1,
