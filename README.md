@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.28 tightens the phone top app bar. The left-top ETF search pill and app
+  header use a shorter fixed height so the overview content starts earlier.
+
 - v15.27 tightens the phone bottom navigation. The main app tabs keep the same
   behavior with a shorter fixed nav height so more page content stays visible.
 

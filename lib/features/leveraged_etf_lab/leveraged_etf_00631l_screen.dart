@@ -1075,7 +1075,7 @@ class _MarketTopBar extends StatelessWidget {
             : selectedEtfName.trim();
     return SizedBox(
       key: const ValueKey('00631l-market-top-bar'),
-      height: 58,
+      height: 54,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 560;
@@ -1173,7 +1173,7 @@ class _MarketIndexPill extends StatelessWidget {
             border: Border.all(color: const Color(0xFF67C58B)),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -1181,14 +1181,14 @@ class _MarketIndexPill extends StatelessWidget {
                   label,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(width: 5),
-                const Icon(Icons.search, color: Colors.white, size: 15),
+                const Icon(Icons.search, color: Colors.white, size: 14),
                 const SizedBox(width: 3),
-                const Icon(Icons.expand_more, color: Colors.white, size: 16),
+                const Icon(Icons.expand_more, color: Colors.white, size: 15),
               ],
             ),
           ),

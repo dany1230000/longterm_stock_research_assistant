@@ -199,11 +199,11 @@ void main() {
     );
     final topBar = find.byKey(const ValueKey('00631l-market-top-bar'));
     expect(topBar, findsOneWidget);
-    expect(tester.getRect(topBar).height, equals(58));
+    expect(tester.getRect(topBar).height, lessThanOrEqualTo(56));
     final symbolButton =
         find.byKey(const ValueKey('00631l-symbol-search-button'));
-    expect(tester.getRect(symbolButton).height, greaterThanOrEqualTo(34));
-    expect(tester.getRect(symbolButton).height, lessThanOrEqualTo(42));
+    expect(tester.getRect(symbolButton).height, greaterThanOrEqualTo(28));
+    expect(tester.getRect(symbolButton).height, lessThanOrEqualTo(34));
     expect(
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsOneWidget,
@@ -560,6 +560,14 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-daily-summary-strip')),
       findsNothing,
     );
+    final topBar = find.byKey(const ValueKey('00631l-market-top-bar'));
+    final symbolButton =
+        find.byKey(const ValueKey('00631l-symbol-search-button'));
+    expect(topBar, findsOneWidget);
+    expect(symbolButton, findsOneWidget);
+    expect(tester.getRect(topBar).height, lessThanOrEqualTo(56));
+    expect(tester.getRect(symbolButton).height, lessThanOrEqualTo(34));
+
     final compactRibbon = find.byKey(
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );
