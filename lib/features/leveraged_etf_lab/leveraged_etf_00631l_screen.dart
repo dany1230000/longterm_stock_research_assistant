@@ -10761,6 +10761,8 @@ class _PositionQuickAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
+    final showCaption = !(compact && fillWidth);
     final background = isPrimary
         ? theme.colorScheme.primaryContainer.withValues(alpha: 0.68)
         : theme.colorScheme.surfaceContainerHighest;
@@ -10779,7 +10781,10 @@ class _PositionQuickAction extends StatelessWidget {
         child: SizedBox(
           width: fillWidth ? double.infinity : 86,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+            padding: EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: showCaption ? 7 : 6,
+            ),
             child: Row(
               children: [
                 Icon(icon, size: 16, color: foreground),
@@ -10798,15 +10803,16 @@ class _PositionQuickAction extends StatelessWidget {
                           fontWeight: FontWeight.w900,
                         ),
                       ),
-                      Text(
-                        caption,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: foreground.withValues(alpha: 0.76),
-                          fontWeight: FontWeight.w700,
+                      if (showCaption)
+                        Text(
+                          caption,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: foreground.withValues(alpha: 0.76),
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),

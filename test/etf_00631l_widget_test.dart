@@ -1797,6 +1797,12 @@ void main() {
       find.byKey(const ValueKey('00631l-position-action-save')),
       findsOneWidget,
     );
+    expect(
+      tester
+          .getRect(find.byKey(const ValueKey('00631l-position-action-save')))
+          .height,
+      lessThanOrEqualTo(38),
+    );
     final inputCard =
         find.byKey(const ValueKey('00631l-position-compact-input-card'));
     expect(

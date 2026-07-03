@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.53 shortens the phone position primary action: full-width save/update
+  actions are one line, keeping the position input page tighter.
+
 - v15.52 tightens the history/backtest date controls: the 1Y / 3Y / all range
   chips fit in one phone row and the start/end date controls are shorter.
 
