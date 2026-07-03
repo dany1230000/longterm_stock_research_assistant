@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.50 rebalances the overview quote and chart stack: the phone chart is
+  taller, the daily summary is shorter, and holdings highlights become a
+  three-column market strip.
+
 - v15.49 tightens the left-top ETF search sheet so the first screen behaves
   like a symbol picker, with maintenance details kept under database status.
 

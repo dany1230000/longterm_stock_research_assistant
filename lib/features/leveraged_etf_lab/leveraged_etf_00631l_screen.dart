@@ -4182,7 +4182,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 6, 8, 7),
+        padding: const EdgeInsets.fromLTRB(8, 5, 8, 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -4201,7 +4201,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
                 Text(
                   compactLine,
                   key: const ValueKey('00631l-overview-ai-compact-line'),
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: _marketTextColor(context),
@@ -4211,9 +4211,9 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 5),
             const _MarketStackDivider(),
-            const SizedBox(height: 6),
+            const SizedBox(height: 5),
             _OverviewHoldingsDigestPanel(
               data: data,
               embedded: true,
@@ -5401,6 +5401,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
     final subtitleText =
         hasUsableHoldings ? '每日快照 · 盤中看 NAV' : '資料來源尚未回傳可用快照；已隱藏 0 值內容物。';
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final content = Padding(
       padding: embedded
           ? const EdgeInsets.fromLTRB(2, 2, 2, 2)
@@ -5465,53 +5466,59 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
             const SizedBox(height: 5),
           ],
           hasUsableHoldings
-              ? _HoldingDigestStrip(
-                  items: [
-                    _HoldingDigestItem(
-                      title: '期貨',
-                      value: txLine == null
-                          ? 'unavailable'
-                          : formatNullablePercent(txLine.weightPct),
-                      caption: txLine == null
-                          ? '官方快照未列 TX'
-                          : '${txLine.code} / ${txLine.contractMonth}',
-                    ),
-                    _HoldingDigestItem(
-                      title: '台積電',
-                      value: tsmcLine == null
-                          ? 'unavailable'
-                          : formatNullablePercent(tsmcLine.weightPct),
-                      caption: tsmcLine == null
-                          ? '官方快照未列 2330'
-                          : '${formatInteger(tsmcLine.quantity)} 股',
-                    ),
-                    _HoldingDigestItem(
-                      title: '曝險結構',
-                      value: '三項比例',
-                      caption: '股票 / 期貨 / 現金',
-                      metrics: [
-                        _HoldingDigestMetric(
-                          label: '股',
-                          value: formatNullablePercent(
-                            snapshot.stockExposureWeightPct,
-                          ),
+              ? embedded && !showEmbeddedHeader && compact
+                  ? _MobileHoldingDigestStrip(
+                      snapshot: snapshot,
+                      txLine: txLine,
+                      tsmcLine: tsmcLine,
+                    )
+                  : _HoldingDigestStrip(
+                      items: [
+                        _HoldingDigestItem(
+                          title: '期貨',
+                          value: txLine == null
+                              ? 'unavailable'
+                              : formatNullablePercent(txLine.weightPct),
+                          caption: txLine == null
+                              ? '官方快照未列 TX'
+                              : '${txLine.code} / ${txLine.contractMonth}',
                         ),
-                        _HoldingDigestMetric(
-                          label: '期',
-                          value: formatNullablePercent(
-                            snapshot.futuresExposureWeightPct,
-                          ),
+                        _HoldingDigestItem(
+                          title: '台積電',
+                          value: tsmcLine == null
+                              ? 'unavailable'
+                              : formatNullablePercent(tsmcLine.weightPct),
+                          caption: tsmcLine == null
+                              ? '官方快照未列 2330'
+                              : '${formatInteger(tsmcLine.quantity)} 股',
                         ),
-                        _HoldingDigestMetric(
-                          label: '現',
-                          value: formatNullablePercent(
-                            snapshot.cashAndMarginWeightPct,
-                          ),
+                        _HoldingDigestItem(
+                          title: '曝險結構',
+                          value: '三項比例',
+                          caption: '股票 / 期貨 / 現金',
+                          metrics: [
+                            _HoldingDigestMetric(
+                              label: '股',
+                              value: formatNullablePercent(
+                                snapshot.stockExposureWeightPct,
+                              ),
+                            ),
+                            _HoldingDigestMetric(
+                              label: '期',
+                              value: formatNullablePercent(
+                                snapshot.futuresExposureWeightPct,
+                              ),
+                            ),
+                            _HoldingDigestMetric(
+                              label: '現',
+                              value: formatNullablePercent(
+                                snapshot.cashAndMarginWeightPct,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                    ),
-                  ],
-                )
+                    )
               : _HoldingDigestUnavailable(snapshot: snapshot),
         ],
       ),
@@ -5528,6 +5535,131 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: content,
+    );
+  }
+}
+
+class _MobileHoldingDigestStrip extends StatelessWidget {
+  const _MobileHoldingDigestStrip({
+    required this.snapshot,
+    required this.txLine,
+    required this.tsmcLine,
+  });
+
+  final EtfDailyHoldingSnapshot snapshot;
+  final EtfFuturesHoldingLine? txLine;
+  final EtfStockHoldingLine? tsmcLine;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      _MobileHoldingDigestItem(
+        label: '期貨',
+        value: txLine == null ? '暫無' : formatNullablePercent(txLine!.weightPct),
+        caption: txLine?.code ?? 'TX',
+      ),
+      _MobileHoldingDigestItem(
+        label: '2330',
+        value: tsmcLine == null
+            ? '暫無'
+            : formatNullablePercent(tsmcLine!.weightPct),
+        caption: '台積電',
+      ),
+      _MobileHoldingDigestItem(
+        label: '現金',
+        value: formatNullablePercent(snapshot.cashAndMarginWeightPct),
+        caption: '保證金',
+      ),
+    ];
+    return Row(
+      key: const ValueKey('00631l-overview-holdings-digest-strip'),
+      children: [
+        for (var index = 0; index < items.length; index++) ...[
+          Expanded(child: _MobileHoldingDigestChip(item: items[index])),
+          if (index != items.length - 1) const SizedBox(width: 5),
+        ],
+      ],
+    );
+  }
+}
+
+class _MobileHoldingDigestItem {
+  const _MobileHoldingDigestItem({
+    required this.label,
+    required this.value,
+    required this.caption,
+  });
+
+  final String label;
+  final String value;
+  final String caption;
+}
+
+class _MobileHoldingDigestChip extends StatelessWidget {
+  const _MobileHoldingDigestChip({required this.item});
+
+  final _MobileHoldingDigestItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(9),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    item.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 9,
+                      height: 1,
+                    ),
+                  ),
+                ),
+                Text(
+                  item.caption,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 8.5,
+                    height: 1,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 3),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                item.value,
+                maxLines: 1,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -6135,8 +6267,8 @@ class _SparklineChartState extends State<_SparklineChart> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final chartHeight = compact ? 54.0 : 88.0;
-    final emptyHeight = compact ? 44.0 : 72.0;
+    final chartHeight = compact ? 72.0 : 92.0;
+    final emptyHeight = compact ? 58.0 : 74.0;
     final verticalGap = compact ? 1.0 : 5.0;
     final spots = <FlSpot>[];
     final spotPoints = <EtfPriceHistoryPoint>[];

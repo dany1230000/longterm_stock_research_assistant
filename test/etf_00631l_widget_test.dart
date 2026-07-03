@@ -629,8 +629,9 @@ void main() {
     );
     expect(chartFinder, findsOneWidget);
     final chartRect = tester.getRect(chartFinder);
-    expect(chartRect.height, lessThanOrEqualTo(56));
-    expect(chartRect.bottom, lessThanOrEqualTo(440));
+    expect(chartRect.height, greaterThanOrEqualTo(70));
+    expect(chartRect.height, lessThanOrEqualTo(76));
+    expect(chartRect.bottom, lessThanOrEqualTo(462));
     expect(chartRect.top, lessThan(ribbonRect.top));
     expect(ribbonRect.top, greaterThan(chartRect.bottom));
     final dateStrip = find.byKey(
@@ -725,7 +726,7 @@ void main() {
     final aiCompactLine = tester.widget<Text>(
       find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
     );
-    expect(aiCompactLine.maxLines, 2);
+    expect(aiCompactLine.maxLines, 1);
     expect(aiCompactLine.data, contains('折溢'));
     expect(aiCompactLine.data, contains('DAY'));
     expect(aiCompactLine.data, contains('TX'));
@@ -2996,10 +2997,21 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
       findsOneWidget,
     );
-    final digestMetricRow =
-        find.byKey(const ValueKey('00631l-holding-digest-metric-row'));
-    expect(digestMetricRow, findsOneWidget);
-    expect(tester.getRect(digestMetricRow).height, lessThanOrEqualTo(42));
+    final holdingsDigest = find.byKey(
+      const ValueKey('00631l-overview-holdings-digest-strip'),
+    );
+    final holdingsDigestRect = tester.getRect(holdingsDigest);
+    expect(holdingsDigestRect.height, lessThanOrEqualTo(44));
+    for (final label in const ['期貨', '2330', '現金']) {
+      expect(
+        find.descendant(of: holdingsDigest, matching: find.text(label)),
+        findsWidgets,
+      );
+    }
+    expect(
+      find.byKey(const ValueKey('00631l-holding-digest-metric-row')),
+      findsNothing,
+    );
     expect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-title-row')),
       findsNothing,
