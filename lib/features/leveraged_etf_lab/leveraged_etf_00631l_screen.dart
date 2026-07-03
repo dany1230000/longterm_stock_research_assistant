@@ -767,8 +767,8 @@ class _LabLoadingShell extends StatelessWidget {
                           const _LoadingStatusStrip(),
                           const SizedBox(height: 8),
                           const _LoadingQuoteCard(),
-                          const SizedBox(height: 8),
-                          const _LoadingSectionCard(title: '讀取行情資料'),
+                          const SizedBox(height: 6),
+                          const _LoadingSourceRail(),
                         ],
                       ),
                     ),
@@ -804,11 +804,11 @@ class _LoadingStatusStrip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Row(
           children: [
-            const _StatusPill(label: 'static / live check'),
+            const _StatusPill(label: 'loading'),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                '讀取公開資料與後端狀態',
+                '資料載入中：公開歷史優先，live 後端同步檢查',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -991,36 +991,85 @@ class _LoadingMiniTile extends StatelessWidget {
   }
 }
 
-class _LoadingSectionCard extends StatelessWidget {
-  const _LoadingSectionCard({required this.title});
-
-  final String title;
+class _LoadingSourceRail extends StatelessWidget {
+  const _LoadingSourceRail();
 
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      key: const ValueKey('00631l-loading-section-card'),
+      key: const ValueKey('00631l-loading-source-rail'),
       decoration: BoxDecoration(
         color: _marketPanelColor(context),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+        child: Row(
+          children: [
+            Expanded(
+              child: _LoadingSourceChip(label: 'HIS', value: '公開歷史'),
+            ),
+            SizedBox(width: 5),
+            Expanded(
+              child: _LoadingSourceChip(label: 'LIVE', value: '後端檢查'),
+            ),
+            SizedBox(width: 5),
+            Expanded(
+              child: _LoadingSourceChip(label: 'AI', value: '摘要準備'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingSourceChip extends StatelessWidget {
+  const _LoadingSourceChip({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+        child: Row(
           children: [
             Text(
-              title,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: _marketTextColor(context),
-                    fontWeight: FontWeight.w900,
-                  ),
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketBlue,
+                fontWeight: FontWeight.w900,
+                fontSize: 9,
+                height: 1,
+              ),
             ),
-            const SizedBox(height: 8),
-            const _LoadingBar(width: double.infinity, height: 12),
-            const SizedBox(height: 6),
-            const _LoadingBar(width: 170, height: 12),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w800,
+                  fontSize: 9,
+                  height: 1,
+                ),
+              ),
+            ),
           ],
         ),
       ),

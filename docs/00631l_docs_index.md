@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Compact loading shell v15.37: `docs\00631l_v15_37_compact_loading_shell.md`
 - Overview AI wrap v15.36: `docs\00631l_v15_36_overview_ai_wrap.md`
 - Compact AI market tokens v15.35: `docs\00631l_v15_35_compact_ai_market_tokens.md`
 - Intraday quote header wording v15.34: `docs\00631l_v15_34_intraday_quote_header_wording.md`

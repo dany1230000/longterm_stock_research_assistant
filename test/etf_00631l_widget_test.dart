@@ -840,7 +840,7 @@ void main() {
     await tester.pump();
 
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
-    expect(find.text('讀取行情資料'), findsOneWidget);
+    expect(find.textContaining('資料載入中'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(repository.fullRequested, isFalse);
@@ -905,14 +905,21 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-loading-section-card')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-loading-source-rail')),
       findsOneWidget,
     );
     expect(
       tester
-          .getRect(find.byKey(const ValueKey('00631l-loading-section-card')))
+          .getRect(find.byKey(const ValueKey('00631l-loading-source-rail')))
           .height,
-      lessThanOrEqualTo(88),
+      lessThanOrEqualTo(42),
     );
+    for (final label in const ['HIS', 'LIVE', 'AI']) {
+      expect(find.text(label), findsWidgets);
+    }
   });
 
   testWidgets('fast startup renders first screen while details load',
