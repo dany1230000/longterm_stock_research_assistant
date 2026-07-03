@@ -157,6 +157,10 @@ def main() -> int:
         ),
         _run_command("env_check", ["cmd", "/c", "scripts\\00631l_check_env.cmd"]),
         _run_command(
+            "mobile_layout_check",
+            ["cmd", "/c", "scripts\\00631l_mobile_layout_check.cmd"],
+        ),
+        _run_command(
             "dart_format_check",
             ["cmd", "/c", "dart", "format", "--set-exit-if-changed", "."],
         ),

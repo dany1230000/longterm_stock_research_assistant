@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.60 adds a focused mobile layout check script so phone first screens,
+  compact controls, tab identity, AI, settings, and theme switching stay guarded.
+
 - v15.59 adds a phone tab identity guard so overview, history/backtest,
   position, AI, and settings each open on their own first-screen content.
 
