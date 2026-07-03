@@ -564,10 +564,16 @@ void main() {
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );
     expect(compactRibbon, findsOneWidget);
-    for (final label in const ['DAY', 'NAV', 'TX', '2330', 'HIS']) {
+    for (final label in const ['DAY', 'NAV', 'HIS']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),
         findsWidgets,
+      );
+    }
+    for (final label in const ['TX', '2330']) {
+      expect(
+        find.descendant(of: compactRibbon, matching: find.text(label)),
+        findsNothing,
       );
     }
     expect(
@@ -2861,7 +2867,7 @@ void main() {
     expect(compactRibbon, findsOneWidget);
     final ribbonRect = tester.getRect(compactRibbon);
     expect(ribbonRect.height, lessThanOrEqualTo(28));
-    for (final label in const ['DAY', 'NAV', 'TX', '2330', 'HIS']) {
+    for (final label in const ['DAY', 'NAV', 'HIS']) {
       final labelFinder = find.descendant(
         of: compactRibbon,
         matching: find.text(label),
@@ -2870,6 +2876,12 @@ void main() {
       expect(
         tester.getRect(labelFinder.first).right,
         lessThanOrEqualTo(ribbonRect.right),
+      );
+    }
+    for (final label in const ['TX', '2330']) {
+      expect(
+        find.descendant(of: compactRibbon, matching: find.text(label)),
+        findsNothing,
       );
     }
 
@@ -2915,18 +2927,18 @@ void main() {
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );
     expect(compactRibbon, findsOneWidget);
-    expect(
-      find.descendant(of: compactRibbon, matching: find.text('TX')),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: compactRibbon, matching: find.text('2330')),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: compactRibbon, matching: find.text('unavailable')),
-      findsWidgets,
-    );
+    for (final label in const ['DAY', 'NAV', 'HIS']) {
+      expect(
+        find.descendant(of: compactRibbon, matching: find.text(label)),
+        findsWidgets,
+      );
+    }
+    for (final label in const ['TX', '2330']) {
+      expect(
+        find.descendant(of: compactRibbon, matching: find.text(label)),
+        findsNothing,
+      );
+    }
     expect(find.text('2026/06/28'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-exposure-summary-strip')),

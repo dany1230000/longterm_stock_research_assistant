@@ -3840,8 +3840,6 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
     final nav = data.intradayNav;
     final priceSummary = data.priceHistory.completenessSummary();
     final hasUsableHoldings = _hasUsableHoldingsSnapshot(snapshot);
-    final txLine = _primaryFuturesLine(snapshot);
-    final tsmcLine = _stockHoldingByCode(snapshot, '2330');
     final items = [
       _OverviewCompactRibbonItem(
         label: 'DAY',
@@ -3854,18 +3852,6 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
         value: nav?.dataTime == null
             ? _sourceStatusBadgeLabel(nav?.status.label)
             : _summaryTimeMinute(nav!.dataTime!),
-      ),
-      _OverviewCompactRibbonItem(
-        label: 'TX',
-        value: hasUsableHoldings
-            ? formatNullablePercent(txLine?.weightPct)
-            : 'unavailable',
-      ),
-      _OverviewCompactRibbonItem(
-        label: '2330',
-        value: hasUsableHoldings
-            ? formatNullablePercent(tsmcLine?.weightPct)
-            : 'unavailable',
       ),
       _OverviewCompactRibbonItem(
         label: 'HIS',

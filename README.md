@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.17 simplifies the phone overview data ribbon to `DAY / NAV / HIS`.
+  Holdings weights stay in the holdings digest, keeping data-status and
+  holdings information grouped separately.
+
 - v15.16 tightens the phone history/backtest top strip. Compact mode now keeps
   only date, close, and row count in the first metric row while source status
   remains in the right-side badge.
