@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position metric strip v15.56: `docs\00631l_v15_56_position_metric_strip.md`
 - History top metrics v15.55: `docs\00631l_v15_55_history_top_metrics.md`
 - AI first screen density v15.54: `docs\00631l_v15_54_ai_first_screen_density.md`
 - Position primary action v15.53: `docs\00631l_v15_53_position_action_density.md`

@@ -1873,11 +1873,15 @@ void main() {
     final inputCard =
         find.byKey(const ValueKey('00631l-position-compact-input-card'));
     expect(accountStrip, findsOneWidget);
-    expect(tester.getRect(accountStrip).height, lessThanOrEqualTo(136));
+    expect(tester.getRect(accountStrip).height, lessThanOrEqualTo(104));
     expect(
       find.byKey(const ValueKey('00631l-position-account-metric-strip')),
       findsOneWidget,
     );
+    final metricScroll =
+        find.byKey(const ValueKey('00631l-position-account-metric-scroll'));
+    expect(metricScroll, findsOneWidget);
+    expect(tester.getRect(metricScroll).height, lessThanOrEqualTo(34));
     expect(
       tester.getTopLeft(accountStrip).dy,
       lessThan(tester.getTopLeft(inputCard).dy),

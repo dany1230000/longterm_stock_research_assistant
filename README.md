@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.56 tightens the phone position account summary: saved-position metrics
+  now stay in one horizontal row so the edit panel appears sooner.
+
 - v15.55 tightens the phone history/backtest header: latest date, row count,
   total return, and max drawdown now stay in one fixed metric row.
 

@@ -11060,18 +11060,21 @@ class _PositionAccountMetricStrip extends StatelessWidget {
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 460;
         if (isCompact) {
-          const gap = 6.0;
-          final tileWidth = (constraints.maxWidth - gap) / 2;
-          return Wrap(
-            spacing: gap,
-            runSpacing: gap,
-            children: [
-              for (final item in items)
-                SizedBox(
-                  width: tileWidth,
-                  child: _RangeContextTile(item: item, compact: true),
-                ),
-            ],
+          return SingleChildScrollView(
+            key: const ValueKey('00631l-position-account-metric-scroll'),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: [
+                for (var index = 0; index < items.length; index += 1) ...[
+                  SizedBox(
+                    width: index == 1 ? 152 : 106,
+                    child: _RangeContextTile(item: items[index], compact: true),
+                  ),
+                  if (index != items.length - 1) const SizedBox(width: 6),
+                ],
+              ],
+            ),
           );
         }
         return SingleChildScrollView(
