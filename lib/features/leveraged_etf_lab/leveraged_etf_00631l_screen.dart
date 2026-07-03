@@ -8988,7 +8988,7 @@ class _BacktestQuickResultStrip extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+        padding: EdgeInsets.fromLTRB(8, compact ? 6 : 8, 8, compact ? 7 : 9),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -9001,7 +9001,10 @@ class _BacktestQuickResultStrip extends StatelessWidget {
                     '回測快覽',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: (compact
+                            ? theme.textTheme.labelLarge
+                            : theme.textTheme.titleMedium)
+                        ?.copyWith(
                       color: _marketTextColor(context),
                       fontWeight: FontWeight.w900,
                     ),
@@ -9010,13 +9013,13 @@ class _BacktestQuickResultStrip extends StatelessWidget {
                 _CompactTextBadge(label: selectedEtfCode),
               ],
             ),
-            const SizedBox(height: 7),
+            SizedBox(height: compact ? 5 : 7),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
               child: Row(children: items),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: compact ? 4 : 6),
             _StatusWrap(
               labels: compact
                   ? [

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Backtest quick result density v15.24: `docs\00631l_v15_24_backtest_result_density.md`
 - History range control density v15.23: `docs\00631l_v15_23_history_range_control_density.md`
 - Overview first-screen guard v15.22: `docs\00631l_v15_22_overview_first_screen_guard.md`
 - AI detail entry density v15.21: `docs\00631l_v15_21_ai_detail_entry_density.md`

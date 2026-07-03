@@ -1827,7 +1827,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(quickResultStrip, findsOneWidget);
-    expect(tester.getRect(quickResultStrip).height, lessThanOrEqualTo(118));
+    expect(tester.getRect(quickResultStrip).height, lessThanOrEqualTo(106));
     expect(
       find.descendant(
         of: quickResultStrip,

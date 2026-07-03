@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.24 tightens the phone backtest quick result strip. The result header uses
+  compact type and spacing so core metrics stay visible without pushing the
+  chart area down.
+
 - v15.23 tightens the phone history/backtest range controls. Compact date
   panels use less vertical padding and a smaller title style so chart and
   backtest content stay closer to the top of the tab.
