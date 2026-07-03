@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.44 tightens phone spacing in the history/backtest page while preserving
+  date range controls and calculation behavior.
+
 - v15.43 merges the compact overview AI line and holdings digest into one
   daily summary card, reducing first-screen card noise on phone width.
 

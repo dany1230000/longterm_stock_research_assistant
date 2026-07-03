@@ -7197,6 +7197,9 @@ class _HistorySection extends StatelessWidget {
     final completeness = priceHistory.completenessSummary();
     final selectedName =
         priceHistory.name.trim().isEmpty ? selectedEtfCode : priceHistory.name;
+    final compact = MediaQuery.sizeOf(context).width < 430;
+    final sectionGap = compact ? 6.0 : 8.0;
+    final secondaryGap = compact ? 8.0 : 12.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -7207,7 +7210,7 @@ class _HistorySection extends StatelessWidget {
           priceHistory: priceHistory,
           completeness: completeness,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: sectionGap),
         if (priceHistory.hasData)
           _FilterablePriceHistoryBlock(priceHistory: priceHistory)
         else
@@ -7220,7 +7223,7 @@ class _HistorySection extends StatelessWidget {
               message: '價格歷史需要官方、快取或公開靜態資料；不會用模擬資料當成官方資料。',
             ),
           ),
-        const SizedBox(height: 8),
+        SizedBox(height: sectionGap),
         _CompactExpansionPanel(
           key: const ValueKey('00631l-history-quality-expansion'),
           title: '資料品質',
@@ -7231,7 +7234,7 @@ class _HistorySection extends StatelessWidget {
             priceHistory: priceHistory,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: secondaryGap),
         if (show00631LHoldingsHistory)
           _CompactExpansionPanel(
             key: const ValueKey('00631l-history-holdings-expansion'),
@@ -7545,7 +7548,10 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
             border: Border.all(color: _marketBorderColor(context)),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? 9 : 10,
+              vertical: compact ? 5 : 7,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -9293,6 +9299,9 @@ class _BacktestSectionState extends State<_BacktestSection> {
       ),
       history: history.points,
     );
+    final compact = MediaQuery.sizeOf(context).width < 430;
+    final sectionGap = compact ? 6.0 : 8.0;
+    final innerGap = compact ? 8.0 : 12.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -9304,7 +9313,7 @@ class _BacktestSectionState extends State<_BacktestSection> {
           strategyLabel:
               _strategy == EtfBacktestStrategy.lumpSum ? '一次投入' : '定期定額',
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: sectionGap),
         _SectionBlock(
           title: '歷史回測',
           subtitle: '只使用已保存的歷史收盤價。回測不代表未來表現，非買賣建議。',
@@ -9334,7 +9343,7 @@ class _BacktestSectionState extends State<_BacktestSection> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: innerGap),
                     _DateRangeControlPanel(
                       key: const ValueKey('00631l-backtest-range-context'),
                       title: '日期與設定',
@@ -9379,7 +9388,7 @@ class _BacktestSectionState extends State<_BacktestSection> {
                       threeYearsKey: const ValueKey('00631l-backtest-range-3y'),
                       allKey: const ValueKey('00631l-backtest-range-all'),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: innerGap),
                     _CompactExpansionPanel(
                       title: '金額與成本參數',
                       subtitle: '預設值可直接跑；需要調整金額、投入日或成本時再展開。',

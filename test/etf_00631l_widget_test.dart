@@ -1297,7 +1297,7 @@ void main() {
     final topStrip =
         find.byKey(const ValueKey('00631l-history-backtest-top-strip'));
     expect(topStrip, findsOneWidget);
-    expect(tester.getRect(topStrip).height, lessThanOrEqualTo(78));
+    expect(tester.getRect(topStrip).height, lessThanOrEqualTo(74));
     expect(
       find.byKey(const ValueKey('00631l-history-top-strip-metrics')),
       findsOneWidget,
