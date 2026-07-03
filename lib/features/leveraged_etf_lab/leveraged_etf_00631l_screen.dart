@@ -4079,21 +4079,21 @@ String? _overviewDailyInsight(Etf00631LLabData data) {
   final nav = data.intradayNav;
   final premium = nav?.resolvedPremiumDiscountPct;
   if (premium != null) {
-    parts.add('盤中折溢價 ${formatSignedNullablePercent(premium)}');
+    parts.add('折溢 ${formatSignedNullablePercent(premium)}');
   } else if (nav != null) {
     parts.add('盤中 NAV ${_sourceStatusBadgeLabel(nav.status.label)}');
   }
 
   final snapshot = data.snapshot;
   if (_hasUsableHoldingsSnapshot(snapshot)) {
-    parts.add('內容物 ${_summaryMonthDay(snapshot.tradeDate)}');
+    parts.add('DAY ${_summaryMonthDay(snapshot.tradeDate)}');
     final txLine = _primaryFuturesLine(snapshot);
     final tsmcLine = _stockHoldingByCode(snapshot, '2330');
     if (txLine?.weightPct != null) {
       parts.add('TX ${formatNullablePercent(txLine!.weightPct)}');
     }
     if (tsmcLine?.weightPct != null) {
-      parts.add('台積電 ${formatNullablePercent(tsmcLine!.weightPct)}');
+      parts.add('2330 ${formatNullablePercent(tsmcLine!.weightPct)}');
     }
   } else {
     parts.add('內容物 ${_sourceStatusBadgeLabel(snapshot.status.label)}');

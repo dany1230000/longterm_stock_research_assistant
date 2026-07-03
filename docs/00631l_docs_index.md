@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Compact AI market tokens v15.35: `docs\00631l_v15_35_compact_ai_market_tokens.md`
 - Intraday quote header wording v15.34: `docs\00631l_v15_34_intraday_quote_header_wording.md`
 - Localized overview fallback badges v15.33: `docs\00631l_v15_33_localized_overview_badges.md`
 - Overview AI daily insight v15.32: `docs\00631l_v15_32_overview_ai_daily_insight.md`

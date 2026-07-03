@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.35 shortens the overview AI line to compact market-style tokens:
+  premium/discount, DAY, TX, and 2330.
+
 - v15.34 makes the quote header show `盤中` for available intraday quotes,
   instead of surfacing cache-oriented wording in the main price badge.
 
