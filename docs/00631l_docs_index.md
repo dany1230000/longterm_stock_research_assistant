@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position empty-card density v15.73: `docs\00631l_v15_73_position_empty_card_density.md`
 - Mobile comparison header v15.72: `docs\00631l_v15_72_mobile_comparison_header.md`
 - Bottom navigation guard v15.71: `docs\00631l_v15_71_bottom_nav_guard.md`
 - Home first-glance guard v15.70: `docs\00631l_v15_70_home_first_glance_guard.md`

@@ -2752,7 +2752,7 @@ class _SelectedEtfOverviewDigest extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
+        padding: const EdgeInsets.fromLTRB(8, 6, 8, 7),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -4301,7 +4301,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             const _MarketStackDivider(),
             const SizedBox(height: 3),
             _OverviewHoldingsDigestPanel(
@@ -10850,9 +10850,9 @@ class _PositionCompactEmptyInputCard extends StatelessWidget {
                 fontWeight: FontWeight.w800,
               ),
             ),
-            const SizedBox(height: 7),
+            const SizedBox(height: 5),
             inputForm,
-            const SizedBox(height: 7),
+            const SizedBox(height: 5),
             _PositionQuickAction(
               key: const ValueKey('00631l-position-action-save'),
               icon: Icons.save_outlined,

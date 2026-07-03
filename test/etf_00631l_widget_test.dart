@@ -1953,6 +1953,7 @@ void main() {
     );
     final inputCard =
         find.byKey(const ValueKey('00631l-position-compact-input-card'));
+    expect(tester.getRect(inputCard).height, lessThanOrEqualTo(190));
     expect(
       find.descendant(
         of: inputCard,

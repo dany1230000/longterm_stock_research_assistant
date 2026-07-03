@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.73 tightens the phone position empty-state input card so shares, average
+  cost, and save action stay compact before local tools appear.
+
 - v15.72 shortens the phone ETF comparison entry so the history/backtest page
   keeps comparison available without opening with a large explanatory card.
 
