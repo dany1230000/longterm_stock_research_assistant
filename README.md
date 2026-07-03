@@ -4,6 +4,15 @@
 
 Latest mobile UI polish:
 
+- v15.38 renames the rightmost bottom tab to `設定`, matching its actual role:
+  account, appearance, selected ETF, local position, and advanced diagnostics.
+
+- v15.37 compacts the first loading shell into a short source rail for `HIS`,
+  `LIVE`, and `AI`, so startup looks less like a stacked debug screen.
+
+- v15.36 lets the compact overview AI market tokens wrap to two lines, keeping
+  premium/discount, DAY, TX, and 2330 visible on phone width.
+
 - v15.35 shortens the overview AI line to compact market-style tokens:
   premium/discount, DAY, TX, and 2330.
 

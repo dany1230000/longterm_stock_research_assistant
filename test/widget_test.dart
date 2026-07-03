@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:longterm_stock_research_assistant/app.dart';
@@ -17,7 +17,7 @@ void main() {
     expect(find.text('歷史'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI'), findsWidgets);
-    expect(find.text('我的'), findsWidgets);
+    expect(find.text('設定'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-section-etf')),
       findsNothing,
