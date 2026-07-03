@@ -8544,6 +8544,72 @@ class _HistoryBacktestSection extends StatelessWidget {
   }
 }
 
+class _EtfComparisonMobileHeader extends StatelessWidget {
+  const _EtfComparisonMobileHeader({
+    required this.selectedCount,
+    required this.readyCount,
+    required this.rangeText,
+    required this.modeLabel,
+  });
+
+  final int selectedCount;
+  final int readyCount;
+  final String rangeText;
+  final String modeLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-etf-comparison-mobile-header'),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
+        child: Row(
+          children: [
+            const _MiniStatusBadge(label: 'CMP'),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'ETF 歷史比較',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '$rangeText · $modeLabel · ${formatInteger(readyCount)} 檔可用',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            _CompactTextBadge(label: '${formatInteger(selectedCount)} 檔'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 enum _EtfComparisonFilter {
   focused('代表'),
   market('市值型'),
@@ -8643,29 +8709,37 @@ class _EtfHistoryComparisonPanelState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeaderCard(
-          title: 'ETF 歷史比較',
-          subtitle: '預設只看目前 ETF；可用同類型快速帶入，也可清空後自行勾選 1-5 檔。',
-          icon: Icons.stacked_line_chart_outlined,
-          badges: const [
-            '自選組合',
-            '最近 1 年',
-            'static / proxy history',
-          ],
-          metrics: [
-            _SectionHeaderMetric(
-              label: '比較檔數',
-              value: formatInteger(usableMetrics.length),
-              caption: usableMetrics.isEmpty ? '尚未選擇' : '目前組合',
-            ),
-            _SectionHeaderMetric(
-              label: '區間',
-              value: '${_dateOrDash(startDate)} - ${_dateOrDash(endDate)}',
-              caption: '已載入 $allUsableCount 檔可比較資料',
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
+        if (compact)
+          _EtfComparisonMobileHeader(
+            selectedCount: usableMetrics.length,
+            readyCount: allUsableCount,
+            rangeText: '${_dateOrDash(startDate)} - ${_dateOrDash(endDate)}',
+            modeLabel: _filter.label,
+          )
+        else
+          _SectionHeaderCard(
+            title: 'ETF 歷史比較',
+            subtitle: '預設只看目前 ETF；可用同類型快速帶入，也可清空後自行勾選 1-5 檔。',
+            icon: Icons.stacked_line_chart_outlined,
+            badges: const [
+              '自選組合',
+              '最近 1 年',
+              'static / proxy history',
+            ],
+            metrics: [
+              _SectionHeaderMetric(
+                label: '比較檔數',
+                value: formatInteger(usableMetrics.length),
+                caption: usableMetrics.isEmpty ? '尚未選擇' : '目前組合',
+              ),
+              _SectionHeaderMetric(
+                label: '區間',
+                value: '${_dateOrDash(startDate)} - ${_dateOrDash(endDate)}',
+                caption: '已載入 $allUsableCount 檔可比較資料',
+              ),
+            ],
+          ),
+        SizedBox(height: compact ? 6 : 10),
         if (widget.isLoading || widget.error != null) ...[
           _DetailsLoadStateStrip(
             isLoading: widget.isLoading,

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.72 shortens the phone ETF comparison entry so the history/backtest page
+  keeps comparison available without opening with a large explanatory card.
+
 - v15.71 tightens the phone bottom navigation and guards that ETF switching
   remains in the left-top symbol search button, not as a bottom tab.
 

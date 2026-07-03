@@ -2927,6 +2927,13 @@ void main() {
     await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
 
+    final mobileHeader =
+        find.byKey(const ValueKey('00631l-etf-comparison-mobile-header'));
+    await tester.ensureVisible(mobileHeader);
+    await tester.pumpAndSettle();
+    expect(mobileHeader, findsOneWidget);
+    expect(tester.getRect(mobileHeader).height, lessThanOrEqualTo(54));
+
     final compactSummary =
         find.byKey(const ValueKey('00631l-etf-comparison-compact-summary'));
     await tester.ensureVisible(compactSummary);
