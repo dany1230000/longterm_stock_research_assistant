@@ -5447,6 +5447,7 @@ class _HoldingDigestTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: _marketPanelAltColor(context),
@@ -5499,37 +5500,107 @@ class _HoldingDigestTile extends StatelessWidget {
                 ),
               ),
             ] else ...[
-              for (final metric in item.metrics)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 2),
-                  child: Row(
-                    children: [
-                      Text(
-                        metric.label,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: _marketMutedTextColor(context),
-                          fontWeight: FontWeight.w900,
+              if (compact)
+                Row(
+                  key: const ValueKey('00631l-holding-digest-metric-row'),
+                  children: [
+                    for (var index = 0;
+                        index < item.metrics.length;
+                        index++) ...[
+                      Expanded(
+                        child: _HoldingDigestMetricChip(
+                          metric: item.metrics[index],
                         ),
                       ),
-                      const SizedBox(width: 5),
-                      Expanded(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            metric.value,
-                            maxLines: 1,
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: _marketTextColor(context),
-                              fontWeight: FontWeight.w900,
+                      if (index != item.metrics.length - 1)
+                        const SizedBox(width: 5),
+                    ],
+                  ],
+                )
+              else
+                for (final metric in item.metrics)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: Row(
+                      children: [
+                        Text(
+                          metric.label,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: _marketMutedTextColor(context),
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              metric.value,
+                              maxLines: 1,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: _marketTextColor(context),
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HoldingDigestMetricChip extends StatelessWidget {
+  const _HoldingDigestMetricChip({required this.metric});
+
+  final _HoldingDigestMetric metric;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              metric.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+                fontSize: 9,
+                height: 1,
+              ),
+            ),
+            const SizedBox(height: 2),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                metric.value,
+                maxLines: 1,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                ),
+              ),
+            ),
           ],
         ),
       ),

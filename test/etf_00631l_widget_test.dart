@@ -2860,6 +2860,10 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
       findsOneWidget,
     );
+    final digestMetricRow =
+        find.byKey(const ValueKey('00631l-holding-digest-metric-row'));
+    expect(digestMetricRow, findsOneWidget);
+    expect(tester.getRect(digestMetricRow).height, lessThanOrEqualTo(42));
 
     final compactRibbon = find.byKey(
       const ValueKey('00631l-overview-compact-data-ribbon'),
