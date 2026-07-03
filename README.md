@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.39 removes the repeated history heading and keeps the selected date range
+  visible in the compact history/backtest tab.
+
 - v15.38 renames the rightmost bottom tab to `設定`, matching its actual role:
   account, appearance, selected ETF, local position, and advanced diagnostics.
 

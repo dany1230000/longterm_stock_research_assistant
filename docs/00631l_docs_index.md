@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History/backtest first screen v15.39: `docs\00631l_v15_39_history_backtest_first_screen.md`
 - Settings nav label v15.38: `docs\00631l_v15_38_settings_nav_label.md`
 - Compact loading shell v15.37: `docs\00631l_v15_37_compact_loading_shell.md`
 - Overview AI wrap v15.36: `docs\00631l_v15_36_overview_ai_wrap.md`

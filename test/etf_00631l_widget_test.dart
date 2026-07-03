@@ -1124,11 +1124,9 @@ void main() {
     expect(find.textContaining('範圍'), findsWidgets);
     expect(find.text('static_official'), findsNothing);
     expect(find.textContaining('static_official'), findsNothing);
-    expect(find.text('價格歷史'), findsOneWidget);
-    expect(find.textContaining('日期控制、圖表與回測快覽'), findsOneWidget);
     expect(
-      tester.getTopLeft(find.text('價格歷史')).dy,
-      lessThan(tester.getTopLeft(find.text('資料品質')).dy),
+      find.byKey(const ValueKey('00631l-history-primary-heading')),
+      findsNothing,
     );
     expect(find.text('市價'), findsNothing);
     expect(find.text('歷史資料完整度'), findsWidgets);
@@ -1338,7 +1336,7 @@ void main() {
     expect(tester.getRect(metricStrip).height, lessThanOrEqualTo(38));
     expect(
       find.descendant(of: metricStrip, matching: find.textContaining(' - ')),
-      findsNothing,
+      findsOneWidget,
     );
     expect(
       find.descendant(

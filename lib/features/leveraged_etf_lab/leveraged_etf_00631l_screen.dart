@@ -7131,16 +7131,9 @@ class _HistorySection extends StatelessWidget {
           completeness: completeness,
         ),
         const SizedBox(height: 8),
-        if (priceHistory.hasData) ...[
-          const _CompactSectionHeading(
-            key: ValueKey('00631l-history-primary-heading'),
-            title: '價格歷史',
-            subtitle: '預設最近 1 年，日期控制、圖表與回測快覽同步。',
-            labels: ['預設 1 年', '可調日期'],
-          ),
-          const SizedBox(height: 8),
-          _FilterablePriceHistoryBlock(priceHistory: priceHistory),
-        ] else
+        if (priceHistory.hasData)
+          _FilterablePriceHistoryBlock(priceHistory: priceHistory)
+        else
           const _SectionBlock(
             title: '尚無官方價格歷史',
             subtitle:
@@ -9812,9 +9805,7 @@ class _RangeContextMetricStrip extends StatelessWidget {
       key: const ValueKey('00631l-range-context-metric-strip'),
       builder: (context, constraints) {
         if (compact) {
-          final visibleItems = items.length > 2
-              ? items.skip(1).take(2).toList()
-              : items.take(2).toList();
+          final visibleItems = items.take(2).toList();
           return Row(
             key: const ValueKey('00631l-range-context-wrap'),
             children: [
@@ -15659,66 +15650,6 @@ class _SectionBlock extends StatelessWidget {
             child,
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _CompactSectionHeading extends StatelessWidget {
-  const _CompactSectionHeading({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.labels,
-  });
-
-  final String title;
-  final String subtitle;
-  final List<String> labels;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0,
-                  ),
-                ),
-              ),
-              for (final label in labels.take(2)) ...[
-                const SizedBox(width: 6),
-                _CompactTextBadge(label: label),
-              ],
-            ],
-          ),
-          const SizedBox(height: 3),
-          Text(
-            subtitle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w700,
-              height: 1.2,
-            ),
-          ),
-          if (labels.length > 2) ...[
-            const SizedBox(height: 6),
-            _StatusWrap(labels: labels.skip(2).toList()),
-          ],
-        ],
       ),
     );
   }
