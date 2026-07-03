@@ -2785,6 +2785,26 @@ void main() {
       find.descendant(of: actionStrip, matching: find.text('只看目前 ETF')),
       findsNothing,
     );
+
+    final chartExpansion =
+        find.byKey(const ValueKey('00631l-etf-comparison-chart-expansion'));
+    await tester.ensureVisible(chartExpansion);
+    await tester.pumpAndSettle();
+    await tester.tap(chartExpansion);
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-return-chart')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-legend-strip')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-comparison-touch-empty')),
+      findsOneWidget,
+    );
+    expect(find.text('history comparison'), findsNothing);
     _expectNoTradingActionText();
   });
 

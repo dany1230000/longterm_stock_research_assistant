@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.48 tightens the ETF comparison chart on phone width with a shorter
+  status row, horizontal legend, clearer date strip, and compact touch details.
+
 - v15.47 tightens the settings first screen so it reads like account and app
   preferences before advanced maintenance diagnostics.
 

@@ -8224,7 +8224,7 @@ class _EtfHistoryComparisonPanelState
         if (metric.rowCount < 2) metric,
     ];
     final selectedCodes = _effectiveComparisonCodes(availableMetrics);
-    final compactActionLabels = MediaQuery.sizeOf(context).width < 430;
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final usableMetrics = [
       for (final metric in availableMetrics)
         if (selectedCodes.contains(metric.code)) metric,
@@ -8336,7 +8336,7 @@ class _EtfHistoryComparisonPanelState
                               });
                             },
                       icon: const Icon(Icons.remove_circle_outline, size: 16),
-                      label: Text(compactActionLabels ? '清空' : '清空組合'),
+                      label: Text(compact ? '清空' : '清空組合'),
                     ),
                     const SizedBox(width: 8),
                     OutlinedButton.icon(
@@ -8353,7 +8353,7 @@ class _EtfHistoryComparisonPanelState
                         });
                       },
                       icon: const Icon(Icons.group_work_outlined, size: 16),
-                      label: Text(compactActionLabels ? '同類型' : '套用同類型'),
+                      label: Text(compact ? '同類型' : '套用同類型'),
                     ),
                     const SizedBox(width: 8),
                     OutlinedButton.icon(
@@ -8370,7 +8370,7 @@ class _EtfHistoryComparisonPanelState
                         });
                       },
                       icon: const Icon(Icons.adjust_outlined, size: 16),
-                      label: Text(compactActionLabels ? '目前' : '只看目前 ETF'),
+                      label: Text(compact ? '目前' : '只看目前 ETF'),
                     ),
                   ],
                 ),
@@ -8412,14 +8412,20 @@ class _EtfHistoryComparisonPanelState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _StatusWrap(
-                      labels: [
-                        '自選比較',
-                        _filter.label,
-                        '筆數 ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
-                        'history comparison',
-                      ],
+                      labels: compact
+                          ? [
+                              _filter.label,
+                              '選 ${formatInteger(usableMetrics.length)} 檔',
+                              '筆數 ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
+                            ]
+                          : [
+                              '自選比較',
+                              _filter.label,
+                              '筆數 ${formatInteger(usableMetrics.fold<int>(0, (sum, item) => sum + item.rowCount))}',
+                              'history comparison',
+                            ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: compact ? 6 : 10),
                     _EtfComparisonReturnChart(
                       key: const ValueKey(
                         '00631l-etf-comparison-return-chart',
@@ -8773,6 +8779,7 @@ class _EtfComparisonReturnChartState extends State<_EtfComparisonReturnChart> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final series = _buildComparisonChartSeries(
       context: context,
       histories: widget.histories,
@@ -8813,38 +8820,59 @@ class _EtfComparisonReturnChartState extends State<_EtfComparisonReturnChart> {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+        padding: EdgeInsets.fromLTRB(10, compact ? 8 : 12, 10, 9),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'ETF 報酬比較圖',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              '以區間第一筆收盤價歸零，顯示歷史區間報酬；可點擊圖表查看日期與數值。',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: _marketMutedTextColor(context),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 6,
+            Row(
               children: [
-                for (final item in series)
-                  _ChartLegendPill(
-                    color: item.color,
-                    label: '${item.code} ${item.name}',
+                Expanded(
+                  child: Text(
+                    'ETF 報酬比較圖',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
+                ),
+                _CompactTextBadge(
+                  label: '${formatInteger(series.length)} 檔',
+                ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: compact ? 2 : 3),
+            Text(
+              '以區間第一筆收盤價歸零；點擊圖表查看日期與各 ETF 數值。',
+              maxLines: compact ? 1 : 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            SizedBox(height: compact ? 6 : 8),
+            SingleChildScrollView(
+              key: const ValueKey('00631l-etf-comparison-legend-strip'),
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  for (var index = 0; index < series.length; index++) ...[
+                    _ChartLegendPill(
+                      color: series[index].color,
+                      label: compact
+                          ? series[index].code
+                          : '${series[index].code} ${series[index].name}',
+                    ),
+                    if (index != series.length - 1) const SizedBox(width: 6),
+                  ],
+                ],
+              ),
+            ),
+            SizedBox(height: compact ? 7 : 8),
             SizedBox(
-              height: 230,
+              height: compact ? 196 : 230,
               child: LineChart(
                 LineChartData(
                   minX: 0,
@@ -8929,8 +8957,8 @@ class _EtfComparisonReturnChartState extends State<_EtfComparisonReturnChart> {
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 34,
+                        showTitles: !compact,
+                        reservedSize: compact ? 0 : 34,
                         interval: bottomInterval,
                         getTitlesWidget: (value, meta) {
                           final day = value.round().clamp(0, maxDays);
@@ -8974,6 +9002,7 @@ class _EtfComparisonReturnChartState extends State<_EtfComparisonReturnChart> {
             _ComparisonTouchDetail(
               date: _touchedDate,
               values: _touchedValues,
+              compact: compact,
             ),
           ],
         ),
@@ -9026,10 +9055,12 @@ class _ComparisonTouchDetail extends StatelessWidget {
   const _ComparisonTouchDetail({
     required this.date,
     required this.values,
+    this.compact = false,
   });
 
   final DateTime? date;
   final List<_TouchedComparisonValue> values;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -9040,6 +9071,8 @@ class _ComparisonTouchDetail extends StatelessWidget {
         Text(
           '點擊圖表可查看指定資料日與各 ETF 區間報酬。',
           key: const ValueKey('00631l-comparison-touch-empty'),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: theme.textTheme.labelSmall?.copyWith(
             color: _marketMutedTextColor(context),
             fontWeight: FontWeight.w800,
@@ -9048,26 +9081,42 @@ class _ComparisonTouchDetail extends StatelessWidget {
       );
     } else {
       content.addAll([
-        Text(
-          '選取資料日 ${formatTaiwanDate(date!)}',
+        Row(
           key: const ValueKey('00631l-comparison-touch-date'),
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: _marketTextColor(context),
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 6,
-          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            for (final item in values)
-              _StatusPill(
-                label: '${item.code} ${formatSignedNullablePercent(item.value)}'
-                    '${_isSameDay(item.date, date!) ? '' : ' · ${formatTaiwanDate(item.date)}'}',
+            const _CompactTextBadge(label: '日期'),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                formatTaiwanDate(date!),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                ),
               ),
+            ),
+            _CompactTextBadge(label: '${formatInteger(values.length)} 檔'),
           ],
+        ),
+        SizedBox(height: compact ? 5 : 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            key: const ValueKey('00631l-comparison-touch-value-row'),
+            children: [
+              for (var index = 0; index < values.length; index++) ...[
+                _StatusPill(
+                  label:
+                      '${values[index].code} ${formatSignedNullablePercent(values[index].value)}'
+                      '${_isSameDay(values[index].date, date!) ? '' : ' · ${formatTaiwanDate(values[index].date)}'}',
+                ),
+                if (index != values.length - 1) const SizedBox(width: 6),
+              ],
+            ],
+          ),
         ),
       ]);
     }
@@ -9079,7 +9128,10 @@ class _ComparisonTouchDetail extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 8 : 10,
+          vertical: compact ? 6 : 8,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: content,
