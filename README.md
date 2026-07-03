@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.45 tightens the phone position account summary so saved local positions
+  read more like an account snapshot and less like a long form.
+
 - v15.44 tightens phone spacing in the history/backtest page while preserving
   date range controls and calculation behavior.
 

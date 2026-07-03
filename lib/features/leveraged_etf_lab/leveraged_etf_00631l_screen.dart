@@ -10154,13 +10154,13 @@ class _PositionSectionState extends State<_PositionSection> {
             badges: ['本機保存', widget.selectedEtf.code],
           ),
         if (!(compact && !input.hasPosition)) ...[
-          const SizedBox(height: 8),
+          SizedBox(height: compact ? 0 : 8),
           _PositionAccountStrip(
             input: input,
             summary: summary,
             selectedEtf: widget.selectedEtf,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: compact ? 8 : 12),
         ],
         KeyedSubtree(
           key: const ValueKey('00631l-position-compact-input-card'),
@@ -10275,7 +10275,7 @@ class _PositionCompactEmptyInputCard extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 9, 10, 10),
+        padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -10305,9 +10305,9 @@ class _PositionCompactEmptyInputCard extends StatelessWidget {
                 fontWeight: FontWeight.w800,
               ),
             ),
-            const SizedBox(height: 9),
+            const SizedBox(height: 7),
             inputForm,
-            const SizedBox(height: 8),
+            const SizedBox(height: 7),
             _PositionQuickAction(
               key: const ValueKey('00631l-position-action-save'),
               icon: Icons.save_outlined,
@@ -10658,7 +10658,7 @@ class _PositionAccountStrip extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(compact ? 8 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -10688,7 +10688,7 @@ class _PositionAccountStrip extends StatelessWidget {
                 height: 1.25,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: compact ? 6 : 8),
             _PositionAccountMetricStrip(
               items: items,
             ),
@@ -10747,10 +10747,11 @@ class _PositionAccountMetricStrip extends StatelessWidget {
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 460;
         if (isCompact) {
-          final tileWidth = (constraints.maxWidth - 8) / 2;
+          const gap = 6.0;
+          final tileWidth = (constraints.maxWidth - gap) / 2;
           return Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: gap,
+            runSpacing: gap,
             children: [
               for (final item in items)
                 SizedBox(

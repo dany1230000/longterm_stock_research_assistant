@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position account density v15.45: `docs\00631l_v15_45_position_account_density.md`
 - History/backtest spacing v15.44: `docs\00631l_v15_44_history_backtest_spacing.md`
 - Overview daily summary card v15.43: `docs\00631l_v15_43_overview_daily_summary_card.md`
 - Overview first screen density v15.42: `docs\00631l_v15_42_overview_first_screen_density.md`
