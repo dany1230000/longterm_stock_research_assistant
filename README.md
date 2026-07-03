@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.63 expands the focused mobile layout check to cover quote header density
+  and the overview `TX / 2330 / CASH` digest tape.
+
 - v15.62 tightens the phone overview quote header with a compact
   premium/discount box and a 64px height guard.
 

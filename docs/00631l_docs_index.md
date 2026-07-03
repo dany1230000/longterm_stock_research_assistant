@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Mobile check coverage v15.63: `docs\00631l_v15_63_mobile_check_coverage.md`
 - Quote header density v15.62: `docs\00631l_v15_62_quote_header_density.md`
 - Overview digest tape v15.61: `docs\00631l_v15_61_overview_digest_tape.md`
 - Mobile layout check v15.60: `docs\00631l_v15_60_mobile_layout_check.md`
