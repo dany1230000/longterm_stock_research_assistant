@@ -10047,7 +10047,7 @@ class _PositionSectionState extends State<_PositionSection> {
           const SizedBox(height: 12),
           SelectableText(_exportJson!),
         ],
-        if (!compact || input.hasPosition) ...[
+        if (!compact) ...[
           const SizedBox(height: 10),
           const KeyedSubtree(
             key: ValueKey('00631l-position-local-note'),

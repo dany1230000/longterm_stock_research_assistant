@@ -1836,6 +1836,10 @@ void main() {
       find.byKey(const ValueKey('00631l-position-estimate-details')),
       findsNothing,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-position-local-note')),
+      findsNothing,
+    );
     _expectNoTradingActionText();
   });
 

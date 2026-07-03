@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.40 trims the phone position tab so local-only storage notes stay out of
+  the first screen after a position is entered.
+
 - v15.39 removes the repeated history heading and keeps the selected date range
   visible in the compact history/backtest tab.
 
