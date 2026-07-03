@@ -682,6 +682,10 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-exposure-compact-row')),
       findsNothing,
     );
+    final mobileDailySummary = find.byKey(
+      const ValueKey('00631l-overview-mobile-daily-summary-card'),
+    );
+    expect(mobileDailySummary, findsOneWidget);
     final aiGlance = find.byKey(
       const ValueKey('00631l-overview-ai-glance-card'),
     );
@@ -695,6 +699,12 @@ void main() {
     expect(aiRect.height, lessThanOrEqualTo(76));
     final holdingsDigestRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
+    );
+    final mobileDailySummaryRect = tester.getRect(mobileDailySummary);
+    expect(aiRect.top, greaterThanOrEqualTo(mobileDailySummaryRect.top));
+    expect(
+      holdingsDigestRect.bottom,
+      lessThanOrEqualTo(mobileDailySummaryRect.bottom),
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-title-row')),

@@ -3781,16 +3781,11 @@ class _OverviewSection extends StatelessWidget {
             ],
             SizedBox(height: sectionGap),
             if (selectedEtf.is00631L) ...[
-              _OverviewAiGlancePanel(data: data),
+              if (showMobileHoldingsDigest)
+                _OverviewMobileDailySummaryPanel(data: data)
+              else
+                _OverviewAiGlancePanel(data: data),
               SizedBox(height: sectionGap),
-              if (showMobileHoldingsDigest) ...[
-                _OverviewHoldingsDigestPanel(
-                  data: data,
-                  embedded: true,
-                  showEmbeddedHeader: false,
-                ),
-                SizedBox(height: sectionGap),
-              ],
             ],
             if (!selectedEtf.is00631L)
               _AlwaysExpandedPanel(
@@ -4118,6 +4113,81 @@ class _OverviewAiGlancePanel extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _OverviewMobileDailySummaryPanel extends StatelessWidget {
+  const _OverviewMobileDailySummaryPanel({required this.data});
+
+  final Etf00631LLabData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final summary = data.aiAnalysis;
+    final isMockSummary = summary.sourceStatusLabel.toLowerCase() == 'mock' ||
+        summary.sourceStatuses.values.any(
+          (status) => status.toLowerCase() == 'mock',
+        );
+    final rawBullets = isMockSummary
+        ? const ['目前為示範資料，請以 live 或 static 資料來源為準。']
+        : summary.bullets;
+    final bullets = rawBullets
+        .take(1)
+        .map(_aiDisplayText)
+        .where((text) => text.trim().isNotEmpty)
+        .toList(growable: false);
+    final compactLine = _overviewDailyInsight(data) ??
+        (bullets.isEmpty ? 'AI 摘要暫無資料' : bullets.first);
+
+    return DecoratedBox(
+      key: const ValueKey('00631l-overview-mobile-daily-summary-card'),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 6, 8, 7),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              key: const ValueKey('00631l-overview-ai-glance-card'),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    _MiniStatusBadge(label: 'AI'),
+                    Spacer(),
+                    _CompactTextBadge(label: '非買賣建議'),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  compactLine,
+                  key: const ValueKey('00631l-overview-ai-compact-line'),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w900,
+                        height: 1.2,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            const _MarketStackDivider(),
+            const SizedBox(height: 6),
+            _OverviewHoldingsDigestPanel(
+              data: data,
+              embedded: true,
+              showEmbeddedHeader: false,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

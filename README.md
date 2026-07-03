@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.43 merges the compact overview AI line and holdings digest into one
+  daily summary card, reducing first-screen card noise on phone width.
+
 - v15.42 tightens the mobile overview first screen by removing the repeated
   holdings digest title row and reducing digest tile vertical spacing.
 
