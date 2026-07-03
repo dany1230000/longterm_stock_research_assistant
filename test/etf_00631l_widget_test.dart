@@ -3412,6 +3412,7 @@ void main() {
     expect(primaryAction, findsOneWidget);
     expect(detailExpansion, findsNothing);
     expect(fullDetailExpansion, findsOneWidget);
+    expect(find.text('完整摘要與資料來源。'), findsOneWidget);
     expect(decisionStrip, findsNothing);
     expect(compactInsight, findsOneWidget);
     expect(

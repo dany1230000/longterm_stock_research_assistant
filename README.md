@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.21 shortens the phone AI detail entry. The collapsed detail panel keeps a
+  concise subtitle so the daily interpretation stays dominant on the first
+  screen.
+
 - v15.20 tightens the phone settings preference grid. Preference cards now keep
   only icon, label, and current status on compact width; longer action copy
   stays off the first screen.

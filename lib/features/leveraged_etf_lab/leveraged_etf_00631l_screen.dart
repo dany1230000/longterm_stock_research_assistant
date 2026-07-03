@@ -10647,6 +10647,7 @@ class _AiSectionV2 extends StatelessWidget {
         summary.bullets.skip(2).map(_aiDisplayText).toList(growable: false);
     final hiddenActions =
         summary.actionItems.skip(1).map(_aiDisplayText).toList(growable: false);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -10655,7 +10656,7 @@ class _AiSectionV2 extends StatelessWidget {
         _CompactExpansionPanel(
           key: const ValueKey('00631l-ai-full-detail-expansion'),
           title: '進階 AI 明細',
-          subtitle: '來源、矩陣、資料完整性與更多程式操作；需要核對時再展開。',
+          subtitle: compact ? '完整摘要與資料來源。' : '來源、矩陣、資料完整性與更多程式操作；需要核對時再展開。',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
