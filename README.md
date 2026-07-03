@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.23 tightens the phone history/backtest range controls. Compact date
+  panels use less vertical padding and a smaller title style so chart and
+  backtest content stay closer to the top of the tab.
+
 - v15.22 adds a phone overview first-screen height guard. The market stack,
   AI glance, holdings digest, and bottom navigation now have widget coverage so
   future copy or card changes cannot quietly push the main overview out of the

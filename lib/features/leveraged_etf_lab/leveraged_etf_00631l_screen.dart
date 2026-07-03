@@ -9632,7 +9632,12 @@ class _RangeContextStrip extends StatelessWidget {
             border: Border.all(color: theme.colorScheme.outlineVariant),
           ),
           child: Padding(
-            padding: EdgeInsets.all(compact ? 8 : 10),
+            padding: EdgeInsets.fromLTRB(
+              compact ? 7 : 10,
+              compact ? 5 : 10,
+              compact ? 7 : 10,
+              compact ? 5 : 10,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -9643,7 +9648,10 @@ class _RangeContextStrip extends StatelessWidget {
                         title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall?.copyWith(
+                        style: (compact
+                                ? theme.textTheme.labelLarge
+                                : theme.textTheme.titleSmall)
+                            ?.copyWith(
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -9664,13 +9672,13 @@ class _RangeContextStrip extends StatelessWidget {
                     ),
                   ),
                 ],
-                SizedBox(height: compact ? 6 : 8),
+                SizedBox(height: compact ? 4 : 8),
                 _RangeContextMetricStrip(
                   items: items,
                   compact: compact,
                 ),
                 if (child != null) ...[
-                  SizedBox(height: compact ? 6 : 8),
+                  SizedBox(height: compact ? 4 : 8),
                   child!,
                 ],
               ],
