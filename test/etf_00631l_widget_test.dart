@@ -3322,6 +3322,8 @@ void main() {
         find.byKey(const ValueKey('00631l-ai-primary-action-block'));
     final detailExpansion =
         find.byKey(const ValueKey('00631l-ai-daily-detail-expansion'));
+    final fullDetailExpansion =
+        find.byKey(const ValueKey('00631l-ai-full-detail-expansion'));
     final decisionStrip =
         find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
     final compactInsight =
@@ -3329,7 +3331,8 @@ void main() {
 
     expect(headline, findsOneWidget);
     expect(primaryAction, findsOneWidget);
-    expect(detailExpansion, findsOneWidget);
+    expect(detailExpansion, findsNothing);
+    expect(fullDetailExpansion, findsOneWidget);
     expect(decisionStrip, findsNothing);
     expect(compactInsight, findsOneWidget);
     expect(
@@ -3347,8 +3350,8 @@ void main() {
     );
     expect(
       tester.getTopLeft(compactInsight).dy,
-      lessThan(tester.getTopLeft(detailExpansion).dy),
-      reason: 'Compact AI should show daily insight before details.',
+      lessThan(tester.getTopLeft(fullDetailExpansion).dy),
+      reason: 'Compact AI should show daily insight before full details.',
     );
     final firstScreenFacts =
         find.byKey(const ValueKey('00631l-ai-first-screen-facts'));
@@ -3384,7 +3387,8 @@ void main() {
     _expectNoTradingActionText();
   });
 
-  testWidgets('AI daily facts fit in a compact phone row', (tester) async {
+  testWidgets('AI full detail panel remains available on phone width',
+      (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(() {
@@ -3398,7 +3402,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final detailExpansion =
-        find.byKey(const ValueKey('00631l-ai-daily-detail-expansion'));
+        find.byKey(const ValueKey('00631l-ai-full-detail-expansion'));
     await tester.scrollUntilVisible(
       detailExpansion,
       220,
@@ -3408,24 +3412,15 @@ void main() {
     await tester.pumpAndSettle();
     await tester.drag(find.byType(Scrollable).first, const Offset(0, -140));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('AI 資料細節'));
+    await tester.tap(detailExpansion);
     await tester.pumpAndSettle();
 
-    final decisionStrip =
-        find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
-    expect(decisionStrip, findsOneWidget);
-    final factRow = find.byKey(const ValueKey('00631l-ai-daily-fact-row'));
-    expect(factRow, findsOneWidget);
-    final rowRect = tester.getRect(factRow);
-    for (final label in const ['內容物', '盤中 NAV', '歷史資料']) {
-      final labelFinder = find.descendant(
-        of: factRow,
-        matching: find.text(label),
-      );
-      expect(labelFinder, findsOneWidget);
-      expect(
-          tester.getRect(labelFinder).right, lessThanOrEqualTo(rowRect.right));
-    }
+    expect(find.byKey(const ValueKey('00631l-ai-daily-brief')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-ai-intraday-brief')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('00631l-ai-risk-brief')), findsOneWidget);
     _expectNoTradingActionText();
   });
 

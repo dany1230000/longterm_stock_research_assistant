@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.15 keeps the phone AI first screen focused on the headline, fact row,
+  program action, and short daily interpretation. Longer AI detail moves under
+  the full detail panel below the hero.
+
 - v15.14 makes the phone position tab start with the local input card when no
   position has been saved yet, instead of showing placeholder account metrics
   first.
