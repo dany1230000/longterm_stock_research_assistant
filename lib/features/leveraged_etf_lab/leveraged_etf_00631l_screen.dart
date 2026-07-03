@@ -2537,11 +2537,19 @@ class _CompactQuoteHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              _CompactPremiumBox(
-                value: formatSignedNullablePercent(quotePremiumDiscountPct),
-                label: _premiumLabel(premiumAssessment),
-                color: premiumColor,
-              ),
+              embedded
+                  ? _CompactPremiumBoxDense(
+                      value:
+                          formatSignedNullablePercent(quotePremiumDiscountPct),
+                      label: _premiumLabel(premiumAssessment),
+                      color: premiumColor,
+                    )
+                  : _CompactPremiumBox(
+                      value:
+                          formatSignedNullablePercent(quotePremiumDiscountPct),
+                      label: _premiumLabel(premiumAssessment),
+                      color: premiumColor,
+                    ),
             ],
           ),
         ],
@@ -2858,6 +2866,84 @@ class _QuoteReadinessChip extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _CompactPremiumBoxDense extends StatelessWidget {
+  const _CompactPremiumBoxDense({
+    required this.value,
+    required this.label,
+    required this.color,
+  });
+
+  final String value;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ConstrainedBox(
+      key: const ValueKey('00631l-quote-premium-box'),
+      constraints: const BoxConstraints(minWidth: 78, maxWidth: 98),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withValues(alpha: 0.46)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '折溢價',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: _marketMutedTextColor(context),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 9,
+                        height: 1,
+                        letterSpacing: 0,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 9,
+                      height: 1,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                  letterSpacing: 0,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

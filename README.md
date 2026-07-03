@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.62 tightens the phone overview quote header with a compact
+  premium/discount box and a 64px height guard.
+
 - v15.61 turns the phone overview holdings digest into one-line `TX / 2330 /
   CASH` market chips below the chart.
 

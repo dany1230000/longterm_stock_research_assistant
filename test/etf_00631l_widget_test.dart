@@ -162,7 +162,7 @@ void main() {
     expect(compactQuoteHeader, findsOneWidget);
     expect(
       tester.getRect(compactQuoteHeader).height,
-      lessThanOrEqualTo(74),
+      lessThanOrEqualTo(64),
     );
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
     expect(
