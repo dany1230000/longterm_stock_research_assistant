@@ -1357,9 +1357,15 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
             orElse: () => const <Stock>[],
           );
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final compact = MediaQuery.sizeOf(context).width < 430;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(14, 12, 14, 14 + bottomInset),
+      padding: EdgeInsets.fromLTRB(
+        compact ? 10 : 14,
+        compact ? 8 : 12,
+        compact ? 10 : 14,
+        (compact ? 10 : 14) + bottomInset,
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 620),
         child: Column(
@@ -1374,15 +1380,19 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                     children: [
                       Text(
                         '搜尋 ETF 代號',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: _marketTextColor(context),
-                                  fontWeight: FontWeight.w900,
-                                ),
+                        style: (compact
+                                ? Theme.of(context).textTheme.titleSmall
+                                : Theme.of(context).textTheme.titleMedium)
+                            ?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: compact ? 1 : 2),
                       Text(
                         '輸入 ETF 代號或名稱；選取 ETF 後切換研究標的。股票結果會放在其他研究資料。',
+                        maxLines: compact ? 1 : 2,
+                        overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: _marketMutedTextColor(context),
                               fontWeight: FontWeight.w700,
@@ -1398,12 +1408,12 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: compact ? 7 : 12),
             _SymbolSearchCurrentSelectionPanel(
               code: widget.selectedEtfCode,
               catalogItem: selectedCatalogItem,
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: compact ? 7 : 10),
             TextField(
               key: const ValueKey('00631l-symbol-search-field'),
               controller: _controller,
@@ -1411,6 +1421,11 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               onChanged: (_) => setState(() {}),
               textInputAction: TextInputAction.search,
               decoration: InputDecoration(
+                isDense: compact,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: compact ? 10 : 14,
+                ),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: query.isEmpty
                     ? null
@@ -1427,21 +1442,33 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                 border: const OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: compact ? 7 : 10),
             _StatusWrap(
-              labels: [
-                '篩選 ${_historyFilter.label}',
-                if (query.isEmpty)
-                  '熱門清單'
-                else
-                  'ETF ${formatInteger(items.length)} / ${formatInteger(baseItems.length)}',
-                '歷史可用 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
-                if (historyGap > 0) '待補 ${formatInteger(historyGap)}',
-                if (query.isNotEmpty) '歷史可用 ${formatInteger(queryReadyCount)}',
-                if (query.isNotEmpty)
-                  '僅清單 ${formatInteger(queryCatalogOnlyCount)}',
-                if (query.isNotEmpty) '個股 ${stockItems.length}',
-              ],
+              labels: compact
+                  ? [
+                      _historyFilter.label,
+                      if (query.isEmpty)
+                        '熱門'
+                      else
+                        'ETF ${formatInteger(items.length)} / ${formatInteger(baseItems.length)}',
+                      '可用 ${formatInteger(readyHistoryCount)}',
+                      if (query.isNotEmpty && stockItems.isNotEmpty)
+                        '個股 ${stockItems.length}',
+                    ]
+                  : [
+                      '篩選 ${_historyFilter.label}',
+                      if (query.isEmpty)
+                        '熱門清單'
+                      else
+                        'ETF ${formatInteger(items.length)} / ${formatInteger(baseItems.length)}',
+                      '歷史可用 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
+                      if (historyGap > 0) '待補 ${formatInteger(historyGap)}',
+                      if (query.isNotEmpty)
+                        '歷史可用 ${formatInteger(queryReadyCount)}',
+                      if (query.isNotEmpty)
+                        '僅清單 ${formatInteger(queryCatalogOnlyCount)}',
+                      if (query.isNotEmpty) '個股 ${stockItems.length}',
+                    ],
             ),
             KeyedSubtree(
               key: ValueKey(
@@ -1461,7 +1488,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               ),
               child: const SizedBox.shrink(),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: compact ? 7 : 10),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -1470,16 +1497,19 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                     ChoiceChip(
                       key: ValueKey('00631l-symbol-filter-${filter.name}'),
                       label: Text(filter.label),
+                      visualDensity: compact
+                          ? VisualDensity.compact
+                          : VisualDensity.standard,
                       selected: _historyFilter == filter,
                       onSelected: (_) =>
                           setState(() => _historyFilter = filter),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: compact ? 6 : 8),
                   ],
                 ],
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: compact ? 7 : 10),
             KeyedSubtree(
               key: ValueKey(
                 '00631l-symbol-search-ready-count-$readyHistoryCount',
@@ -1647,6 +1677,7 @@ class _SymbolSearchCurrentSelectionPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final normalizedCode = code.trim().toUpperCase();
     final item = catalogItem;
     final readiness = item == null ? null : _etfHistoryReadiness(item);
@@ -1658,11 +1689,14 @@ class _SymbolSearchCurrentSelectionPanel extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 8 : 10,
+          vertical: compact ? 5 : 7,
+        ),
         child: Row(
           children: [
             _MiniStatusBadge(label: normalizedCode),
-            const SizedBox(width: 8),
+            SizedBox(width: compact ? 6 : 8),
             Expanded(
               child: Text(
                 '目前 ${item?.displayName ?? '$normalizedCode ETF 研究室'}',
@@ -1675,7 +1709,7 @@ class _SymbolSearchCurrentSelectionPanel extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: compact ? 6 : 8),
             _CompactTextBadge(label: readiness?.badgeLabel ?? '搜尋可用'),
           ],
         ),

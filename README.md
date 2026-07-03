@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.49 tightens the left-top ETF search sheet so the first screen behaves
+  like a symbol picker, with maintenance details kept under database status.
+
 - v15.48 tightens the ETF comparison chart on phone width with a shorter
   status row, horizontal legend, clearer date strip, and compact touch details.
 
