@@ -13360,7 +13360,7 @@ class _SettingsPreferenceGrid extends StatelessWidget {
             childAspectRatio: veryNarrow
                 ? 3.2
                 : compact
-                    ? 2.0
+                    ? 2.65
                     : 1.75,
             children: [
               for (final item in items)
@@ -13431,16 +13431,18 @@ class _SettingsPreferenceCard extends StatelessWidget {
                 fontWeight: FontWeight.w900,
               ),
             ),
-            const SizedBox(height: 3),
-            Text(
-              item.action,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w800,
+            if (!compact) ...[
+              const SizedBox(height: 3),
+              Text(
+                item.action,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

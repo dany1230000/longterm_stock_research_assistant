@@ -3301,7 +3301,7 @@ void main() {
     final positionCard =
         find.byKey(const ValueKey('00631l-settings-preference-position'));
     expect(preferenceGrid, findsOneWidget);
-    expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(205));
+    expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(165));
     expect(accountCard, findsOneWidget);
     expect(appearanceCard, findsOneWidget);
     expect(selectedEtfCard, findsOneWidget);

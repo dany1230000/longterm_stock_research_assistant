@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.20 tightens the phone settings preference grid. Preference cards now keep
+  only icon, label, and current status on compact width; longer action copy
+  stays off the first screen.
+
 - v15.19 removes duplicate phone position estimate details when a position is
   entered. The account summary stays first, while detailed inputs remain behind
   the editable input panel.
