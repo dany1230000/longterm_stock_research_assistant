@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.65 tightens the phone overview market stack spacing and lowers the stack
+  height guard to 350px.
+
 - v15.64 adds a phone first-screen order guard so quote, chart, date strip, and
   digest tape stay in the intended market-app sequence.
 

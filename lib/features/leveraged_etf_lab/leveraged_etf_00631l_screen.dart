@@ -3965,7 +3965,7 @@ class _OverviewMarketStack extends StatelessWidget {
           ),
           child: Padding(
             padding:
-                EdgeInsets.fromLTRB(5, compact ? 4 : 5, 5, compact ? 3 : 6),
+                EdgeInsets.fromLTRB(4, compact ? 3 : 5, 4, compact ? 2 : 6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -3974,9 +3974,9 @@ class _OverviewMarketStack extends StatelessWidget {
                   selectedEtf: selectedEtf,
                   embedded: true,
                 ),
-                SizedBox(height: compact ? 1 : 2),
+                SizedBox(height: compact ? 0 : 2),
                 _OverviewSignalPanel(data: data, embedded: true),
-                SizedBox(height: compact ? 2 : 3),
+                SizedBox(height: compact ? 1 : 3),
                 const _MarketStackDivider(),
                 SizedBox(height: compact ? 1 : 3),
                 if (compact)
