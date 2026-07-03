@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.54 tightens the phone AI first screen: the compact insight is now a
+  short market status line instead of a long explanation block.
+
 - v15.53 shortens the phone position primary action: full-width save/update
   actions are one line, keeping the position input page tighter.
 

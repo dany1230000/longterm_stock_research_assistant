@@ -11352,13 +11352,15 @@ class _AiDailyBriefingHero extends StatelessWidget {
     final premiumText = premium == null
         ? '盤中 NAV 暫時不可用，折溢價狀態無法判斷。'
         : _premiumDescription(premium);
+    final compactPremiumText =
+        premium == null ? '盤中 NAV 暫無' : _premiumCompactDescription(premium);
     final statusColor = _aiStatusColor(context, summary, premium);
     final briefingBullets =
         summary.bullets.take(2).map(_aiDisplayText).toList(growable: false);
     final priceSummary = data.priceHistory.completenessSummary();
     final compactInsight =
-        '今日重點：官方內容物 TX ${formatNullablePercent(txWeight)}、台積電 ${formatNullablePercent(tsmcWeight)}；'
-        '$premiumText；歷史樣本 ${formatInteger(priceSummary.rowCount)} 筆。';
+        'TX ${formatNullablePercent(txWeight)} · 台積電 ${formatNullablePercent(tsmcWeight)} · '
+        '$compactPremiumText · 歷史 ${formatInteger(priceSummary.rowCount)} 筆';
     final todayReadouts = [
       _AiTodayReadoutItem(
         label: '當日資料',
@@ -11717,12 +11719,12 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
             const SizedBox(height: 3),
             Text(
               text,
-              maxLines: 3,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: _marketTextColor(context),
-                fontWeight: FontWeight.w800,
-                height: 1.25,
+                fontWeight: FontWeight.w900,
+                height: 1.18,
                 letterSpacing: 0,
               ),
             ),
@@ -12003,7 +12005,7 @@ class _AiInlineFactPill extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: dense ? 6 : 9,
-          vertical: dense ? 6 : 8,
+          vertical: dense ? 5 : 8,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -18727,4 +18729,15 @@ String _premiumDescription(PremiumDiscountAssessment assessment) {
     return '目前$relation $formatted，屬於正常區間。這是價格偏離提示。';
   }
   return '目前$relation $formatted，屬於${_premiumLabel(assessment)}。這是價格偏離提示。';
+}
+
+String _premiumCompactDescription(PremiumDiscountAssessment assessment) {
+  final value = assessment.premiumDiscountPct;
+  if (assessment.level == PremiumDiscountLevel.unavailable || value == null) {
+    return '盤中 NAV 暫無';
+  }
+  if (assessment.level == PremiumDiscountLevel.stale) {
+    return 'NAV 可能過期';
+  }
+  return '${formatSignedNullablePercent(value)} ${_premiumLabel(assessment)}';
 }

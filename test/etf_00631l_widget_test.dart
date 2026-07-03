@@ -3570,10 +3570,16 @@ void main() {
     expect(decisionStrip, findsNothing);
     expect(compactInsight, findsOneWidget);
     expect(
+      tester.getRect(compactInsight).height,
+      lessThanOrEqualTo(62),
+      reason: 'Phone AI insight should read like a compact app status line.',
+    );
+    expect(
       find.byKey(const ValueKey('00631l-ai-compact-daily-insight-title')),
       findsOneWidget,
     );
     expect(find.text('今日解讀'), findsOneWidget);
+    expect(find.textContaining('歷史'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-ai-first-screen-bullets')),
       findsNothing,
