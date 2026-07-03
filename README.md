@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.57 tightens the phone overview daily tape: AI status and holdings
+  highlights use less vertical space below the chart.
+
 - v15.56 tightens the phone position account summary: saved-position metrics
   now stay in one horizontal row so the edit panel appears sooner.
 

@@ -4183,7 +4183,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 5, 8, 6),
+        padding: const EdgeInsets.fromLTRB(7, 4, 7, 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -4198,7 +4198,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
                     _CompactTextBadge(label: '非買賣建議'),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Text(
                   compactLine,
                   key: const ValueKey('00631l-overview-ai-compact-line'),
@@ -4212,9 +4212,9 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 3),
             const _MarketStackDivider(),
-            const SizedBox(height: 5),
+            const SizedBox(height: 3),
             _OverviewHoldingsDigestPanel(
               data: data,
               embedded: true,
@@ -5611,7 +5611,7 @@ class _MobileHoldingDigestChip extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
+        padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

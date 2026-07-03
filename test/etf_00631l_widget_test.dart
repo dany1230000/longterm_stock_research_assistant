@@ -706,6 +706,7 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
     );
     final mobileDailySummaryRect = tester.getRect(mobileDailySummary);
+    expect(mobileDailySummaryRect.height, lessThanOrEqualTo(112));
     expect(aiRect.top, greaterThanOrEqualTo(mobileDailySummaryRect.top));
     expect(
       holdingsDigestRect.bottom,
