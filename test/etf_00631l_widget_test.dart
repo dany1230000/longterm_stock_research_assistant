@@ -711,6 +711,7 @@ void main() {
     final aiCompactLine = tester.widget<Text>(
       find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
     );
+    expect(aiCompactLine.maxLines, 2);
     expect(aiCompactLine.data, contains('折溢'));
     expect(aiCompactLine.data, contains('DAY'));
     expect(aiCompactLine.data, contains('TX'));

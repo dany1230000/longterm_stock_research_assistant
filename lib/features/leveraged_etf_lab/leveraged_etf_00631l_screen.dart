@@ -3992,32 +3992,27 @@ class _OverviewAiGlancePanel extends StatelessWidget {
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      const Row(
                         children: [
-                          const _MiniStatusBadge(label: 'AI'),
-                          const SizedBox(width: 7),
-                          Expanded(
-                            child: Text(
-                              dailyInsight ??
-                                  (bullets.isEmpty ? 'AI 今日摘要' : bullets.first),
-                              key: const ValueKey(
-                                '00631l-overview-ai-compact-line',
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: _marketTextColor(context),
-                                    fontWeight: FontWeight.w900,
-                                    height: 1.2,
-                                  ),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          const _CompactTextBadge(label: '非買賣建議'),
+                          _MiniStatusBadge(label: 'AI'),
+                          Spacer(),
+                          _CompactTextBadge(label: '非買賣建議'),
                         ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        dailyInsight ??
+                            (bullets.isEmpty ? 'AI 今日摘要' : bullets.first),
+                        key: const ValueKey(
+                          '00631l-overview-ai-compact-line',
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: _marketTextColor(context),
+                              fontWeight: FontWeight.w900,
+                              height: 1.2,
+                            ),
                       ),
                     ],
                   )
