@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.64 adds a phone first-screen order guard so quote, chart, date strip, and
+  digest tape stay in the intended market-app sequence.
+
 - v15.63 expands the focused mobile layout check to cover quote header density
   and the overview `TX / 2330 / CASH` digest tape.
 

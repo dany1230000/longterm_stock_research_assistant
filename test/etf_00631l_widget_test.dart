@@ -830,6 +830,53 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('overview phone first screen keeps market order', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    final quoteHeader = find.byKey(const ValueKey('00631l-main-quote-header'));
+    final chart = find.byKey(const ValueKey('00631l-overview-sparkline-chart'));
+    final dateStrip = find.byKey(
+      const ValueKey('00631l-overview-sparkline-date-strip'),
+    );
+    final digest = find.byKey(
+      const ValueKey('00631l-overview-holdings-digest-strip'),
+    );
+    final mobileSummary = find.byKey(
+      const ValueKey('00631l-overview-mobile-daily-summary-card'),
+    );
+    final bottomNav = find.byKey(const ValueKey('00631l-bottom-nav'));
+
+    expect(quoteHeader, findsOneWidget);
+    expect(chart, findsOneWidget);
+    expect(dateStrip, findsOneWidget);
+    expect(digest, findsOneWidget);
+    expect(mobileSummary, findsOneWidget);
+    expect(bottomNav, findsOneWidget);
+
+    final quoteRect = tester.getRect(quoteHeader);
+    final chartRect = tester.getRect(chart);
+    final dateRect = tester.getRect(dateStrip);
+    final digestRect = tester.getRect(digest);
+    final summaryRect = tester.getRect(mobileSummary);
+    final navRect = tester.getRect(bottomNav);
+
+    expect(quoteRect.height, lessThanOrEqualTo(64));
+    expect(quoteRect.top, lessThan(chartRect.top));
+    expect(chartRect.bottom, lessThan(dateRect.top));
+    expect(dateRect.bottom, lessThan(summaryRect.top));
+    expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
+    expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));
+    expect(chartRect.bottom, lessThanOrEqualTo(392));
+    _expectNoTradingActionText();
+  });
+
   testWidgets('overview chart shows one-year label and date axis',
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());
