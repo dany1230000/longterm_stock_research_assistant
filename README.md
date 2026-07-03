@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.70 tightens the phone home first-glance guard so the top bar, quote
+  header, market stack, and chart start stay compact on the public app home.
+
 - v15.69 tightens the phone AI briefing hero so daily readout, action, and
   compact insight stay shorter before full detail.
 

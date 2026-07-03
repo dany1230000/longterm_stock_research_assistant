@@ -162,7 +162,7 @@ void main() {
     expect(compactQuoteHeader, findsOneWidget);
     expect(
       tester.getRect(compactQuoteHeader).height,
-      lessThanOrEqualTo(64),
+      lessThanOrEqualTo(60),
     );
     final chartTitleTop = tester.getTopLeft(find.text('近一年走勢')).dy;
     expect(
@@ -199,7 +199,7 @@ void main() {
     );
     final topBar = find.byKey(const ValueKey('00631l-market-top-bar'));
     expect(topBar, findsOneWidget);
-    expect(tester.getRect(topBar).height, lessThanOrEqualTo(60));
+    expect(tester.getRect(topBar).height, lessThanOrEqualTo(56));
     expect(
         find.byKey(const ValueKey('00631l-market-top-title')), findsOneWidget);
     final symbolButton =
@@ -581,7 +581,7 @@ void main() {
         find.byKey(const ValueKey('00631l-symbol-search-button'));
     expect(topBar, findsOneWidget);
     expect(symbolButton, findsOneWidget);
-    expect(tester.getRect(topBar).height, lessThanOrEqualTo(60));
+    expect(tester.getRect(topBar).height, lessThanOrEqualTo(56));
     expect(
         find.byKey(const ValueKey('00631l-market-top-title')), findsOneWidget);
     expect(tester.getRect(symbolButton).height, lessThanOrEqualTo(38));
@@ -609,7 +609,7 @@ void main() {
     final marketStackRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-market-stack')),
     );
-    expect(marketStackRect.height, lessThanOrEqualTo(350));
+    expect(marketStackRect.height, lessThanOrEqualTo(340));
     final ribbonRect = tester.getRect(compactRibbon);
     expect(ribbonRect.height, lessThanOrEqualTo(28));
     expect(
@@ -867,13 +867,13 @@ void main() {
     final summaryRect = tester.getRect(mobileSummary);
     final navRect = tester.getRect(bottomNav);
 
-    expect(quoteRect.height, lessThanOrEqualTo(64));
+    expect(quoteRect.height, lessThanOrEqualTo(60));
     expect(quoteRect.top, lessThan(chartRect.top));
     expect(chartRect.bottom, lessThan(dateRect.top));
     expect(dateRect.bottom, lessThan(summaryRect.top));
     expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
     expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));
-    expect(chartRect.bottom, lessThanOrEqualTo(392));
+    expect(chartRect.bottom, lessThanOrEqualTo(384));
     _expectNoTradingActionText();
   });
 

@@ -1124,7 +1124,7 @@ class _MarketTopBar extends StatelessWidget {
             : selectedEtfName.trim();
     return SizedBox(
       key: const ValueKey('00631l-market-top-bar'),
-      height: 58,
+      height: 54,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 560;
@@ -1223,7 +1223,7 @@ class _MarketIndexPill extends StatelessWidget {
             border: Border.all(color: const Color(0xFF67C58B)),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 6),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -2469,7 +2469,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                     : '市價 · ${_statusDisplay(quoteStatus)} ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
     final content = Padding(
-      padding: EdgeInsets.fromLTRB(7, embedded ? 0 : 5, 7, embedded ? 0 : 5),
+      padding: EdgeInsets.fromLTRB(6, embedded ? 0 : 5, 6, embedded ? 0 : 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -2513,7 +2513,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                               color: _marketTextColor(context),
                               fontWeight: FontWeight.w900,
                               letterSpacing: 0,
-                              height: 1.0,
+                              height: 0.96,
                             ),
                           ),
                         ),
@@ -2531,6 +2531,8 @@ class _CompactQuoteHeader extends StatelessWidget {
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: _marketMutedTextColor(context),
                         fontWeight: FontWeight.w700,
+                        fontSize: 10.5,
+                        height: 1.0,
                       ),
                     ),
                   ],
@@ -2894,7 +2896,7 @@ class _CompactPremiumBoxDense extends StatelessWidget {
           border: Border.all(color: color.withValues(alpha: 0.46)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
