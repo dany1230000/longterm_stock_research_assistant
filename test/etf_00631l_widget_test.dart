@@ -1936,7 +1936,7 @@ void main() {
         find.byKey(const ValueKey('00631l-symbol-result-details-0050'));
     expect(result0050, findsOneWidget);
     expect(detailToggle, findsOneWidget);
-    expect(tester.getRect(result0050).height, lessThanOrEqualTo(92));
+    expect(tester.getRect(result0050).height, lessThanOrEqualTo(84));
 
     await tester.tap(detailToggle);
     await tester.pumpAndSettle();

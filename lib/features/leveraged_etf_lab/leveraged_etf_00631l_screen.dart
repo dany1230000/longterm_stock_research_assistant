@@ -1942,8 +1942,8 @@ class _SymbolSearchResultTile extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: compact ? 9 : 12,
-            vertical: compact ? 8 : 12,
+            horizontal: compact ? 8 : 12,
+            vertical: compact ? 6 : 12,
           ),
           child: Row(
             children: [
@@ -1988,7 +1988,7 @@ class _SymbolSearchResultTile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: compact ? 3 : 6),
+                    SizedBox(height: compact ? 2 : 6),
                     _SymbolSearchResultDetails(
                       code: item.code,
                       compact: compact,
@@ -2065,7 +2065,7 @@ class _SymbolSearchResultDetailsState
           behavior: HitTestBehavior.opaque,
           onTap: () => setState(() => _expanded = !_expanded),
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: widget.compact ? 2 : 4),
+            padding: EdgeInsets.symmetric(vertical: widget.compact ? 0 : 4),
             child: Row(
               children: [
                 Expanded(
@@ -2165,7 +2165,7 @@ class _SymbolSearchCodeBadge extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: compact ? 6 : 8,
-            vertical: compact ? 4 : 5,
+            vertical: compact ? 3 : 5,
           ),
           child: Text(
             label,

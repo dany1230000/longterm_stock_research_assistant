@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.25 tightens the phone ETF search result rows. The left-top symbol search
+  stays usable for ETF switching while each result keeps code, name, readiness,
+  price, and expandable details in a shorter row.
+
 - v15.24 tightens the phone backtest quick result strip. The result header uses
   compact type and spacing so core metrics stay visible without pushing the
   chart area down.
