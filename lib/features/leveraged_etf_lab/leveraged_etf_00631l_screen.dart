@@ -13368,12 +13368,12 @@ class _SettingsPreferenceGrid extends StatelessWidget {
             crossAxisCount: veryNarrow ? 1 : 2,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
+            mainAxisSpacing: compact ? 6 : 8,
+            crossAxisSpacing: compact ? 6 : 8,
             childAspectRatio: veryNarrow
                 ? 3.2
                 : compact
-                    ? 2.65
+                    ? 2.9
                     : 1.75,
             children: [
               for (final item in items)
@@ -13410,14 +13410,15 @@ class _SettingsPreferenceCard extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 8 : 10),
+        padding: EdgeInsets.all(compact ? 6 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(item.icon, size: 17, color: theme.colorScheme.primary),
-                const SizedBox(width: 6),
+                Icon(item.icon,
+                    size: compact ? 16 : 17, color: theme.colorScheme.primary),
+                SizedBox(width: compact ? 5 : 6),
                 Expanded(
                   child: Text(
                     item.label,
@@ -13431,13 +13432,13 @@ class _SettingsPreferenceCard extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: compact ? 5 : 7),
+            SizedBox(height: compact ? 2 : 7),
             Text(
               item.status,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: (compact
-                      ? theme.textTheme.titleSmall
+                      ? theme.textTheme.labelLarge
                       : theme.textTheme.titleMedium)
                   ?.copyWith(
                 color: _marketTextColor(context),

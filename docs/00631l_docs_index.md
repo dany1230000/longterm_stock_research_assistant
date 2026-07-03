@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings quick controls density v15.26: `docs\00631l_v15_26_settings_quick_controls_density.md`
 - ETF search result density v15.25: `docs\00631l_v15_25_symbol_search_result_density.md`
 - Backtest quick result density v15.24: `docs\00631l_v15_24_backtest_result_density.md`
 - History range control density v15.23: `docs\00631l_v15_23_history_range_control_density.md`

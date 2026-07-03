@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.26 tightens the phone settings preference grid. The account/settings tab
+  keeps its quick controls shorter while technical diagnostics stay behind
+  advanced panels.
+
 - v15.25 tightens the phone ETF search result rows. The left-top symbol search
   stays usable for ETF switching while each result keeps code, name, readiness,
   price, and expandable details in a shorter row.
