@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.27 tightens the phone bottom navigation. The main app tabs keep the same
+  behavior with a shorter fixed nav height so more page content stays visible.
+
 - v15.26 tightens the phone settings preference grid. The account/settings tab
   keeps its quick controls shorter while technical diagnostics stay behind
   advanced panels.

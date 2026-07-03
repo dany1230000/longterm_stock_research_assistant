@@ -668,6 +668,7 @@ void main() {
     final bottomNavRect = tester.getRect(
       find.byKey(const ValueKey('00631l-bottom-nav')),
     );
+    expect(bottomNavRect.height, lessThanOrEqualTo(62));
     expect(aiRect.top, lessThan(bottomNavRect.top));
     expect(aiRect.height, lessThanOrEqualTo(76));
     final holdingsDigestRect = tester.getRect(

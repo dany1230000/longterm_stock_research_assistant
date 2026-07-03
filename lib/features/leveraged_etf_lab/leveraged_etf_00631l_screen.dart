@@ -3605,7 +3605,7 @@ class _MarketBottomNav extends StatelessWidget {
           child: SafeArea(
             top: false,
             child: SizedBox(
-              height: 66,
+              height: 60,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -3649,21 +3649,21 @@ class _MarketBottomNavItem extends StatelessWidget {
       child: SizedBox(
         width: width,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 160),
-                width: selected ? 32 : 24,
-                height: 26,
+                width: selected ? 30 : 23,
+                height: 24,
                 decoration: BoxDecoration(
                   color: selected
                       ? _marketBlue.withValues(alpha: 0.16)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: Icon(section.icon, color: color, size: 20),
+                child: Icon(section.icon, color: color, size: 18),
               ),
               const SizedBox(height: 2),
               FittedBox(
@@ -3673,7 +3673,7 @@ class _MarketBottomNavItem extends StatelessWidget {
                   maxLines: 1,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: color,
-                        fontSize: 11,
+                        fontSize: 10.5,
                         fontWeight:
                             selected ? FontWeight.w900 : FontWeight.w700,
                         letterSpacing: 0,
