@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History range density v15.66: `docs\00631l_v15_66_history_range_density.md`
 - Market stack spacing v15.65: `docs\00631l_v15_65_market_stack_spacing.md`
 - First-screen order guard v15.64: `docs\00631l_v15_64_first_screen_order_guard.md`
 - Mobile check coverage v15.63: `docs\00631l_v15_63_mobile_check_coverage.md`

@@ -1432,7 +1432,7 @@ void main() {
     final topStrip =
         find.byKey(const ValueKey('00631l-history-backtest-top-strip'));
     expect(topStrip, findsOneWidget);
-    expect(tester.getRect(topStrip).height, lessThanOrEqualTo(74));
+    expect(tester.getRect(topStrip).height, lessThanOrEqualTo(70));
     expect(
       find.byKey(const ValueKey('00631l-history-top-strip-metrics')),
       findsOneWidget,
@@ -1483,7 +1483,7 @@ void main() {
     final rangeContext =
         find.byKey(const ValueKey('00631l-history-range-context'));
     expect(rangeContext, findsOneWidget);
-    expect(tester.getRect(rangeContext).height, lessThanOrEqualTo(168));
+    expect(tester.getRect(rangeContext).height, lessThanOrEqualTo(160));
     expect(
       find.descendant(
         of: rangeContext,
@@ -1496,7 +1496,7 @@ void main() {
       matching: find.byKey(const ValueKey('00631l-range-context-metric-strip')),
     );
     expect(metricStrip, findsOneWidget);
-    expect(tester.getRect(metricStrip).height, lessThanOrEqualTo(38));
+    expect(tester.getRect(metricStrip).height, lessThanOrEqualTo(34));
     expect(
       find.descendant(of: metricStrip, matching: find.textContaining(' - ')),
       findsOneWidget,
@@ -1525,7 +1525,7 @@ void main() {
       ),
     );
     expect(dateControls, findsOneWidget);
-    expect(tester.getRect(dateControls).height, lessThanOrEqualTo(54));
+    expect(tester.getRect(dateControls).height, lessThanOrEqualTo(50));
     expect(
       find.descendant(
         of: rangeContext,

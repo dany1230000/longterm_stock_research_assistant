@@ -7880,8 +7880,8 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: compact ? 9 : 10,
-              vertical: compact ? 5 : 7,
+              horizontal: compact ? 8 : 10,
+              vertical: compact ? 4 : 7,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -7944,7 +7944,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                     ],
                   ],
                 ),
-                SizedBox(height: compact ? 5 : 7),
+                SizedBox(height: compact ? 4 : 7),
                 if (compact)
                   Row(
                     key: const ValueKey('00631l-history-top-strip-metrics'),
@@ -8008,7 +8008,7 @@ class _HistoryTopMetricItem extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -8408,7 +8408,7 @@ class _DateRangeControlPanel extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: compact ? 4 : 8),
+          SizedBox(height: compact ? 3 : 8),
           KeyedSubtree(
             key: dateControlsKey,
             child: _BacktestDateRangeControls(
@@ -10190,8 +10190,8 @@ class _BacktestDateButton extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: compact ? 7 : 9,
-            vertical: compact ? 5 : 9,
+            horizontal: compact ? 6 : 9,
+            vertical: compact ? 4 : 9,
           ),
           child: Row(
             children: [
@@ -10287,10 +10287,10 @@ class _RangeContextStrip extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              compact ? 7 : 10,
-              compact ? 5 : 10,
-              compact ? 7 : 10,
-              compact ? 5 : 10,
+              compact ? 6 : 10,
+              compact ? 4 : 10,
+              compact ? 6 : 10,
+              compact ? 4 : 10,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -10326,7 +10326,7 @@ class _RangeContextStrip extends StatelessWidget {
                     ),
                   ),
                 ],
-                SizedBox(height: compact ? 4 : 8),
+                SizedBox(height: compact ? 3 : 8),
                 _RangeContextMetricStrip(
                   items: items,
                   compact: compact,
@@ -10420,7 +10420,7 @@ class _RangeContextTile extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: compact ? 7 : 9,
-          vertical: compact ? 5 : 8,
+          vertical: compact ? 4 : 8,
         ),
         child: Text(
           item.text,

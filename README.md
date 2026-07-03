@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.66 tightens the phone history/backtest range controls and top metrics so
+  the chart reaches the first screen sooner.
+
 - v15.65 tightens the phone overview market stack spacing and lowers the stack
   height guard to 350px.
 
