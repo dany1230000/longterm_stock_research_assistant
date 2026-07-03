@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.55 tightens the phone history/backtest header: latest date, row count,
+  total return, and max drawdown now stay in one fixed metric row.
+
 - v15.54 tightens the phone AI first screen: the compact insight is now a
   short market status line instead of a long explanation block.
 

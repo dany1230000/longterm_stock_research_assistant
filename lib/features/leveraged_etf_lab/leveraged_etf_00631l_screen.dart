@@ -7658,6 +7658,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
     final latest = completeness.latest;
     final latestDate = latest == null ? '尚無' : _dateOrDash(latest.date);
     final latestClose = _price(latest?.performanceClose);
+    final performance = priceHistory.performance;
     final normalizedName = name.trim();
     final titleText = normalizedName.isEmpty || normalizedName == code
         ? code
@@ -7671,42 +7672,58 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 430;
-        final metricPills = compact
-            ? <Widget>[
-                KeyedSubtree(
-                  key: const ValueKey('00631l-history-top-strip-date-pill'),
-                  child: _InlineQualityPill(label: '日期', value: latestDate),
-                ),
-                KeyedSubtree(
-                  key: const ValueKey('00631l-history-top-strip-close-pill'),
-                  child: _InlineQualityPill(label: '收盤', value: latestClose),
-                ),
-                KeyedSubtree(
-                  key: const ValueKey('00631l-history-top-strip-row-pill'),
-                  child: _InlineQualityPill(
-                    label: '筆數',
-                    value: formatInteger(completeness.rowCount),
-                  ),
-                ),
-              ]
-            : <Widget>[
-                KeyedSubtree(
-                  key: const ValueKey('00631l-history-top-strip-date-pill'),
-                  child: _InlineQualityPill(
-                    label: '最新',
-                    value: '$latestDate / $latestClose',
-                  ),
-                ),
-                KeyedSubtree(
-                  key: const ValueKey('00631l-history-top-strip-row-pill'),
-                  child: _InlineQualityPill(
-                    label: '筆數',
-                    value: formatInteger(completeness.rowCount),
-                  ),
-                ),
-                _InlineQualityPill(label: '來源', value: sourceLabel),
-                _InlineQualityPill(label: '價格', value: adjustmentLabel),
-              ];
+        final compactMetrics = [
+          _HistoryTopMetricItem(
+            key: const ValueKey('00631l-history-top-strip-date-pill'),
+            label: '最新',
+            value: latestDate,
+          ),
+          _HistoryTopMetricItem(
+            key: const ValueKey('00631l-history-top-strip-row-pill'),
+            label: '筆數',
+            value: formatInteger(completeness.rowCount),
+          ),
+          _HistoryTopMetricItem(
+            key: const ValueKey('00631l-history-top-strip-return-pill'),
+            label: '報酬',
+            value: formatSignedNullablePercent(performance.totalReturnPct),
+          ),
+          _HistoryTopMetricItem(
+            key: const ValueKey('00631l-history-top-strip-drawdown-pill'),
+            label: '回撤',
+            value: formatSignedNullablePercent(performance.maxDrawdownPct),
+          ),
+        ];
+        final metricPills = <Widget>[
+          KeyedSubtree(
+            key: const ValueKey('00631l-history-top-strip-date-pill'),
+            child: _InlineQualityPill(
+              label: '最新',
+              value: '$latestDate / $latestClose',
+            ),
+          ),
+          KeyedSubtree(
+            key: const ValueKey('00631l-history-top-strip-row-pill'),
+            child: _InlineQualityPill(
+              label: '筆數',
+              value: formatInteger(completeness.rowCount),
+            ),
+          ),
+          _InlineQualityPill(label: '來源', value: sourceLabel),
+          _InlineQualityPill(label: '價格', value: adjustmentLabel),
+          _InlineQualityPill(
+            label: '報酬',
+            value: formatSignedNullablePercent(
+              performance.totalReturnPct,
+            ),
+          ),
+          _InlineQualityPill(
+            label: '回撤',
+            value: formatSignedNullablePercent(
+              performance.maxDrawdownPct,
+            ),
+          ),
+        ];
         return DecoratedBox(
           key: const ValueKey('00631l-history-backtest-top-strip'),
           decoration: BoxDecoration(
@@ -7781,12 +7798,26 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: compact ? 5 : 7),
-                SingleChildScrollView(
-                  key: const ValueKey('00631l-history-top-strip-metrics'),
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  child: Row(children: metricPills),
-                ),
+                if (compact)
+                  Row(
+                    key: const ValueKey('00631l-history-top-strip-metrics'),
+                    children: [
+                      for (var index = 0;
+                          index < compactMetrics.length;
+                          index += 1) ...[
+                        Expanded(child: compactMetrics[index]),
+                        if (index != compactMetrics.length - 1)
+                          const SizedBox(width: 4),
+                      ],
+                    ],
+                  )
+                else
+                  SingleChildScrollView(
+                    key: const ValueKey('00631l-history-top-strip-metrics'),
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    child: Row(children: metricPills),
+                  ),
                 const KeyedSubtree(
                   key: ValueKey('00631l-history-top-strip-legacy-labels'),
                   child: SizedBox.shrink(),
@@ -7808,6 +7839,67 @@ class _FilterablePriceHistoryBlock extends StatefulWidget {
   @override
   State<_FilterablePriceHistoryBlock> createState() =>
       _FilterablePriceHistoryBlockState();
+}
+
+class _HistoryTopMetricItem extends StatelessWidget {
+  const _HistoryTopMetricItem({
+    super.key,
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                height: 1,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 2),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketTextColor(context),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                  letterSpacing: 0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _FilterablePriceHistoryBlockState

@@ -1321,12 +1321,26 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-history-top-strip-close-pill')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const ValueKey('00631l-history-top-strip-row-pill')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-history-top-strip-return-pill')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-top-strip-drawdown-pill')),
+      findsOneWidget,
+    );
+    for (final label in const ['最新', '筆數', '報酬', '回撤']) {
+      expect(
+        find.descendant(of: topStrip, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
     expect(
       find.descendant(of: topStrip, matching: find.textContaining(' / ')),
       findsNothing,
