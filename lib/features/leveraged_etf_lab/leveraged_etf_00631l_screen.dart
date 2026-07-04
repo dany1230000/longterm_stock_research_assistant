@@ -11256,7 +11256,7 @@ class _PositionAccountStrip extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 7 : 10),
+        padding: EdgeInsets.all(compact ? 5 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -11275,17 +11275,19 @@ class _PositionAccountStrip extends StatelessWidget {
                 const _CompactTextBadge(label: '本機保存'),
               ],
             ),
-            const SizedBox(height: 3),
-            Text(
-              input.hasPosition ? '本機資料；數值依目前可用行情估算。' : '填股數與平均成本；資料只留在本機。',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w700,
-                height: 1.25,
+            if (!compact || !input.hasPosition) ...[
+              const SizedBox(height: 3),
+              Text(
+                input.hasPosition ? '本機資料；數值依目前可用行情估算。' : '填股數與平均成本；資料只留在本機。',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                  height: 1.25,
+                ),
               ),
-            ),
+            ],
             SizedBox(height: compact ? 4 : 8),
             _PositionAccountMetricStrip(
               items: items,
@@ -11345,21 +11347,27 @@ class _PositionAccountMetricStrip extends StatelessWidget {
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 460;
         if (isCompact) {
-          return SingleChildScrollView(
-            key: const ValueKey('00631l-position-account-metric-scroll'),
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: Row(
-              children: [
-                for (var index = 0; index < items.length; index += 1) ...[
-                  SizedBox(
-                    width: index == 1 ? 152 : 106,
-                    child: _RangeContextTile(item: items[index], compact: true),
+          return Column(
+            key: const ValueKey('00631l-position-account-metric-grid'),
+            children: [
+              for (var rowStart = 0; rowStart < items.length; rowStart += 2)
+                Padding(
+                  padding: EdgeInsets.only(top: rowStart == 0 ? 0 : 3),
+                  child: Row(
+                    children: [
+                      for (var offset = 0; offset < 2; offset += 1) ...[
+                        if (offset > 0) const SizedBox(width: 5),
+                        Expanded(
+                          child: _PositionAccountMiniTile(
+                            item: items[rowStart + offset],
+                            emphasis: rowStart == 0,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
-                  if (index != items.length - 1) const SizedBox(width: 6),
-                ],
-              ],
-            ),
+                ),
+            ],
           );
         }
         return SingleChildScrollView(
@@ -11381,6 +11389,60 @@ class _PositionAccountMetricStrip extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _PositionAccountMiniTile extends StatelessWidget {
+  const _PositionAccountMiniTile({
+    required this.item,
+    required this.emphasis,
+  });
+
+  final _RangeContextItem item;
+  final bool emphasis;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(
+          alpha: emphasis ? 0.82 : 0.6,
+        ),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w800,
+                fontSize: 10,
+                height: 1.0,
+              ),
+            ),
+            Text(
+              item.value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w900,
+                fontSize: 11,
+                height: 1.05,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position account grid v15.79: `docs\00631l_v15_79_position_account_grid.md`
 - AI compact decision rail v15.78: `docs\00631l_v15_78_ai_compact_decision_rail.md`
 - Date toolbar density v15.77: `docs\00631l_v15_77_date_toolbar_density.md`
 - Chart date readability v15.76: `docs\00631l_v15_76_chart_date_readability.md`

@@ -2035,10 +2035,14 @@ void main() {
       find.byKey(const ValueKey('00631l-position-account-metric-strip')),
       findsOneWidget,
     );
-    final metricScroll =
-        find.byKey(const ValueKey('00631l-position-account-metric-scroll'));
-    expect(metricScroll, findsOneWidget);
-    expect(tester.getRect(metricScroll).height, lessThanOrEqualTo(34));
+    final metricGrid =
+        find.byKey(const ValueKey('00631l-position-account-metric-grid'));
+    expect(metricGrid, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('00631l-position-account-metric-scroll')),
+      findsNothing,
+    );
+    expect(tester.getRect(metricGrid).height, lessThanOrEqualTo(74));
     expect(
       tester.getTopLeft(accountStrip).dy,
       lessThan(tester.getTopLeft(inputCard).dy),

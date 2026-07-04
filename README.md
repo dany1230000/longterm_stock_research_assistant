@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.79 changes the phone saved-position summary into a fixed 2x2 account
+  grid so market value, P/L, cost, and weight are visible without scrolling.
+
 - v15.78 adds a compact phone AI decision rail for data state, price deviation,
   and app-operation action before full AI details.
 
