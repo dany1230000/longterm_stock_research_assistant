@@ -2193,7 +2193,7 @@ void main() {
         find.byKey(const ValueKey('00631l-symbol-result-details-0050'));
     expect(result0050, findsOneWidget);
     expect(detailToggle, findsOneWidget);
-    expect(tester.getRect(result0050).height, lessThanOrEqualTo(84));
+    expect(tester.getRect(result0050).height, lessThanOrEqualTo(78));
     expect(find.textContaining('篩選'), findsNothing);
     expect(find.textContaining('僅清單'), findsNothing);
     expect(find.textContaining('待補'), findsNothing);

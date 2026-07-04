@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Symbol search row compact v15.85: `docs\00631l_v15_85_symbol_search_row_compact.md`
 - Position empty input compact v15.84: `docs\00631l_v15_84_position_empty_input_compact.md`
 - AI header compact v15.83: `docs\00631l_v15_83_ai_header_compact.md`
 - History date range compact v15.82: `docs\00631l_v15_82_history_date_range_compact.md`

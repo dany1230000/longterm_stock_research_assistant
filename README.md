@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.85 tightens the phone ETF search result rows with lighter readiness
+  badges and a shorter details toggle.
+
 - v15.84 trims the phone position empty-state input card so the local-only
   label uses a lightweight text treatment and the form starts higher.
 

@@ -2026,8 +2026,8 @@ class _SymbolSearchResultTile extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: compact ? 8 : 12,
-            vertical: compact ? 6 : 12,
+            horizontal: compact ? 7 : 12,
+            vertical: compact ? 5 : 12,
           ),
           child: Row(
             children: [
@@ -2066,9 +2066,13 @@ class _SymbolSearchResultTile extends StatelessWidget {
                                 ? '00631l-symbol-history-ready-${item.code}'
                                 : '00631l-symbol-catalog-only-${item.code}',
                           ),
-                          child: _CompactTextBadge(
-                            label: readiness.badgeLabel,
-                          ),
+                          child: compact
+                              ? _SymbolSearchInlineBadge(
+                                  label: readiness.badgeLabel,
+                                )
+                              : _CompactTextBadge(
+                                  label: readiness.badgeLabel,
+                                ),
                         ),
                       ],
                     ),
@@ -2154,7 +2158,11 @@ class _SymbolSearchResultDetailsState
               children: [
                 Expanded(
                   child: Text(
-                    _expanded ? '收合資料' : '更多資料',
+                    _expanded
+                        ? '收合資料'
+                        : widget.compact
+                            ? '詳情'
+                            : '更多資料',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: _marketMutedTextColor(context),
                       fontWeight: FontWeight.w900,
@@ -2261,6 +2269,37 @@ class _SymbolSearchCodeBadge extends StatelessWidget {
                   letterSpacing: 0,
                 ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SymbolSearchInlineBadge extends StatelessWidget {
+  const _SymbolSearchInlineBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+                height: 1,
+                letterSpacing: 0,
+              ),
         ),
       ),
     );
