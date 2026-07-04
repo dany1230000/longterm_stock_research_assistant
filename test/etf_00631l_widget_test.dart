@@ -1490,7 +1490,7 @@ void main() {
     final rangeContext =
         find.byKey(const ValueKey('00631l-history-range-context'));
     expect(rangeContext, findsOneWidget);
-    expect(tester.getRect(rangeContext).height, lessThanOrEqualTo(160));
+    expect(tester.getRect(rangeContext).height, lessThanOrEqualTo(136));
     expect(
       find.descendant(
         of: rangeContext,
@@ -1503,7 +1503,7 @@ void main() {
       matching: find.byKey(const ValueKey('00631l-range-context-metric-strip')),
     );
     expect(metricStrip, findsOneWidget);
-    expect(tester.getRect(metricStrip).height, lessThanOrEqualTo(34));
+    expect(tester.getRect(metricStrip).height, lessThanOrEqualTo(18));
     expect(
       find.descendant(of: metricStrip, matching: find.textContaining(' - ')),
       findsOneWidget,

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History date range compact v15.82: `docs\00631l_v15_82_history_date_range_compact.md`
 - Overview daily fact rail v15.81: `docs\00631l_v15_81_overview_daily_fact_rail.md`
 - Settings preference compact v15.80: `docs\00631l_v15_80_settings_preference_compact.md`
 - Position account grid v15.79: `docs\00631l_v15_79_position_account_grid.md`

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.82 compacts the phone history/backtest date range card by turning the
+  range metrics into a single summary line before the date buttons.
+
 - v15.81 changes the phone overview daily AI line into a four-cell fact rail
   for premium/discount, daily holdings date, TX weight, and TSMC weight.
 

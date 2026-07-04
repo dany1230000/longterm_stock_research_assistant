@@ -10568,7 +10568,17 @@ class _RangeContextStrip extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const _CompactTextBadge(label: '日期'),
+                    if (compact)
+                      Text(
+                        '日期',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w900,
+                          height: 1,
+                        ),
+                      )
+                    else
+                      const _CompactTextBadge(label: '日期'),
                   ],
                 ),
                 if (!compact) ...[
@@ -10618,19 +10628,16 @@ class _RangeContextMetricStrip extends StatelessWidget {
       builder: (context, constraints) {
         if (compact) {
           final visibleItems = items.take(2).toList();
-          return Row(
+          return Text(
             key: const ValueKey('00631l-range-context-wrap'),
-            children: [
-              for (var index = 0; index < visibleItems.length; index += 1) ...[
-                if (index > 0) const SizedBox(width: 6),
-                Expanded(
-                  child: _RangeContextTile(
-                    item: visibleItems[index],
-                    compact: true,
-                  ),
+            visibleItems.map((item) => item.text).join(' · '),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w900,
+                  height: 1.05,
                 ),
-              ],
-            ],
           );
         }
         return SingleChildScrollView(
