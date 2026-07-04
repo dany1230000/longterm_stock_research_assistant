@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.86 keeps ETF comparison selection compact on phones by using a
+  horizontal chip strip and lower action buttons inside the expanded selector.
+
 - v15.85 tightens the phone ETF search result rows with lighter readiness
   badges and a shorter details toggle.
 

@@ -2980,6 +2980,11 @@ void main() {
     final actionStrip =
         find.byKey(const ValueKey('00631l-etf-comparison-action-strip'));
     expect(actionStrip, findsOneWidget);
+    final chipScroll =
+        find.byKey(const ValueKey('00631l-etf-comparison-chip-scroll'));
+    expect(chipScroll, findsOneWidget);
+    expect(tester.getRect(chipScroll).height, lessThanOrEqualTo(38));
+    expect(tester.getRect(actionStrip).height, lessThanOrEqualTo(36));
     expect(
       find.descendant(of: actionStrip, matching: find.text('清空')),
       findsOneWidget,

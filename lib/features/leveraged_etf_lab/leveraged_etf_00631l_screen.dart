@@ -8981,6 +8981,7 @@ class _EtfHistoryComparisonPanelState
               _ComparisonSelectionChips(
                 metrics: availableMetrics,
                 selectedCodes: selectedCodes,
+                compact: compact,
                 onChanged: (code, selected) {
                   setState(() {
                     final next = {...selectedCodes};
@@ -9003,6 +9004,7 @@ class _EtfHistoryComparisonPanelState
                   children: [
                     OutlinedButton.icon(
                       key: const ValueKey('00631l-etf-comparison-clear'),
+                      style: _comparisonActionButtonStyle(compact),
                       onPressed: selectedCodes.isEmpty
                           ? null
                           : () {
@@ -9016,6 +9018,7 @@ class _EtfHistoryComparisonPanelState
                     const SizedBox(width: 8),
                     OutlinedButton.icon(
                       key: const ValueKey('00631l-etf-comparison-apply-peer'),
+                      style: _comparisonActionButtonStyle(compact),
                       onPressed: () {
                         setState(() {
                           _filter = _defaultComparisonFilterForCode(
@@ -9034,6 +9037,7 @@ class _EtfHistoryComparisonPanelState
                     OutlinedButton.icon(
                       key:
                           const ValueKey('00631l-etf-comparison-selected-only'),
+                      style: _comparisonActionButtonStyle(compact),
                       onPressed: () {
                         setState(() {
                           final selectedCode =
@@ -9266,11 +9270,13 @@ class _ComparisonSelectionChips extends StatelessWidget {
   const _ComparisonSelectionChips({
     required this.metrics,
     required this.selectedCodes,
+    required this.compact,
     required this.onChanged,
   });
 
   final List<_EtfComparisonMetric> metrics;
   final Set<String> selectedCodes;
+  final bool compact;
   final void Function(String code, bool selected) onChanged;
 
   @override
@@ -9281,21 +9287,87 @@ class _ComparisonSelectionChips extends StatelessWidget {
         message: '請先匯入 ETF 歷史價格，再選擇要比較的標的。',
       );
     }
+    if (compact) {
+      return SingleChildScrollView(
+        key: const ValueKey('00631l-etf-comparison-chip-scroll'),
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            for (var index = 0; index < metrics.length; index += 1) ...[
+              if (index > 0) const SizedBox(width: 6),
+              _ComparisonSelectionChip(
+                metric: metrics[index],
+                selected: selectedCodes.contains(metrics[index].code),
+                onChanged: onChanged,
+                compact: true,
+              ),
+            ],
+          ],
+        ),
+      );
+    }
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
         for (final metric in metrics)
-          FilterChip(
-            key: ValueKey('00631l-etf-compare-chip-${metric.code}'),
-            label: Text(metric.code),
+          _ComparisonSelectionChip(
+            metric: metric,
             selected: selectedCodes.contains(metric.code),
-            onSelected: (selected) => onChanged(metric.code, selected),
-            visualDensity: VisualDensity.compact,
+            onChanged: onChanged,
+            compact: false,
           ),
       ],
     );
   }
+}
+
+class _ComparisonSelectionChip extends StatelessWidget {
+  const _ComparisonSelectionChip({
+    required this.metric,
+    required this.selected,
+    required this.onChanged,
+    required this.compact,
+  });
+
+  final _EtfComparisonMetric metric;
+  final bool selected;
+  final void Function(String code, bool selected) onChanged;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilterChip(
+      key: ValueKey('00631l-etf-compare-chip-${metric.code}'),
+      label: Text(
+        metric.code,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0,
+            ),
+      ),
+      selected: selected,
+      onSelected: (selected) => onChanged(metric.code, selected),
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 4 : 8,
+        vertical: compact ? 0 : 2,
+      ),
+    );
+  }
+}
+
+ButtonStyle _comparisonActionButtonStyle(bool compact) {
+  return OutlinedButton.styleFrom(
+    visualDensity: VisualDensity.compact,
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    padding: EdgeInsets.symmetric(
+      horizontal: compact ? 8 : 12,
+      vertical: compact ? 5 : 8,
+    ),
+    minimumSize: Size(0, compact ? 32 : 38),
+  );
 }
 
 class _ComparisonDataReadinessStrip extends StatelessWidget {

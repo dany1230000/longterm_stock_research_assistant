@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Comparison selection compact v15.86: `docs\00631l_v15_86_comparison_selection_compact.md`
 - Symbol search row compact v15.85: `docs\00631l_v15_85_symbol_search_row_compact.md`
 - Position empty input compact v15.84: `docs\00631l_v15_84_position_empty_input_compact.md`
 - AI header compact v15.83: `docs\00631l_v15_83_ai_header_compact.md`
