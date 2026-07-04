@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Chart axis labels v15.92: `docs\00631l_v15_92_chart_axis_labels.md`
 - Settings preference strip v15.91: `docs\00631l_v15_91_settings_preference_strip.md`
 - Overview daily summary compact v15.90: `docs\00631l_v15_90_overview_daily_summary_compact.md`
 - Overview chart priority v15.89: `docs\00631l_v15_89_overview_chart_priority.md`

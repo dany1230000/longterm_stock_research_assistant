@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.92 shortens chart date-axis captions to 起 / 中 / 迄 so phone history
+  and backtest charts keep date context without crowding the plot.
+
 - v15.91 turns the phone settings preference cards into a single horizontal
   account-style strip so settings opens shorter and less like diagnostics.
 
