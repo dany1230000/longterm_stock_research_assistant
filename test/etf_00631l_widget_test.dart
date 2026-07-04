@@ -750,18 +750,12 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-daily-fact-rail')),
       findsNothing,
     );
-    final dailyFactRail = find.byKey(
-      const ValueKey('00631l-overview-daily-fact-rail'),
-    );
-    expect(dailyFactRail, findsOneWidget);
-    for (final label in const ['折溢', 'DAY', 'TX', '2330']) {
-      expect(
-        find.descendant(of: dailyFactRail, matching: find.text(label)),
-        findsOneWidget,
-      );
-    }
     expect(find.text('程式操作'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),

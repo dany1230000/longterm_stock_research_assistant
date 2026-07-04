@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.90 removes the duplicated phone overview fact rail and keeps the first
+  screen focused on the chart, compact source ribbon, one-line AI readout, and
+  TX / 2330 / CASH holdings chips.
+
 - v15.89 moves the phone overview sparkline ahead of the touch detail so the
   first screen prioritizes the price trend.
 
