@@ -12530,8 +12530,9 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
       summary,
       nav?.premiumDiscountAssessment,
     );
-    final headline =
-        '${summary.readinessLabel}；$premiumText TX ${formatNullablePercent(txWeight)}，台積電 ${formatNullablePercent(tsmcWeight)}。';
+    final headline = '${summary.readinessLabel}；$premiumText 主要曝險來自 TX '
+        '${formatNullablePercent(txWeight)} 與台積電 ${formatNullablePercent(tsmcWeight)}；'
+        '請以官方資料時間判讀。';
     final factItems = [
       _AiInlineFactItem(
         label: 'DAY',
@@ -12544,7 +12545,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
         detail: '盤中 NAV',
       ),
       _AiInlineFactItem(
-        label: 'HOLD',
+        label: '曝險',
         value: 'TX ${formatNullablePercent(txWeight)}',
         detail: '台積電 ${formatNullablePercent(tsmcWeight)}',
       ),

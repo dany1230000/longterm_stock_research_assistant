@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.93 makes the AI first-screen headline more interpretive by calling out
+  data readiness, premium/discount context, primary exposure, and source time.
+
 - v15.92 shortens chart date-axis captions to 起 / 中 / 迄 so phone history
   and backtest charts keep date context without crowding the plot.
 
