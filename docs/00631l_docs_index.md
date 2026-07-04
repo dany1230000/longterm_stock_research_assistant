@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview chart priority v15.89: `docs\00631l_v15_89_overview_chart_priority.md`
 - Quote header wording v15.88: `docs\00631l_v15_88_quote_header_wording.md`
 - Comparison detail collapse v15.87: `docs\00631l_v15_87_comparison_detail_collapse.md`
 - Comparison selection compact v15.86: `docs\00631l_v15_86_comparison_selection_compact.md`

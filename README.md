@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.89 moves the phone overview sparkline ahead of the touch detail so the
+  first screen prioritizes the price trend.
+
 - v15.88 cleans the phone quote header wording so the first screen shows
   readable market-source labels such as intraday, catalog, and historical close.
 

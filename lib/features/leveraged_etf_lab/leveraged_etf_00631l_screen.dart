@@ -6670,10 +6670,6 @@ class _SparklineChartState extends State<_SparklineChart> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (compact) ...[
-          touchDetail,
-          SizedBox(height: verticalGap + 1),
-        ],
         SizedBox(
           key: const ValueKey('00631l-overview-sparkline-chart'),
           height: chartHeight,
@@ -6749,7 +6745,7 @@ class _SparklineChartState extends State<_SparklineChart> {
           compact: compact,
         ),
         SizedBox(height: verticalGap),
-        if (!compact) touchDetail,
+        touchDetail,
       ],
     );
   }
