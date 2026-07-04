@@ -4286,6 +4286,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
         .toList(growable: false);
     final compactLine = _overviewDailyInsight(data) ??
         (bullets.isEmpty ? 'AI 摘要暫無資料' : bullets.first);
+    final factItems = _overviewDailyFactItems(data, fallback: compactLine);
 
     return DecoratedBox(
       key: const ValueKey('00631l-overview-mobile-daily-summary-card'),
@@ -4303,25 +4304,29 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
               key: const ValueKey('00631l-overview-ai-glance-card'),
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   children: [
-                    _MiniStatusBadge(label: 'AI'),
-                    Spacer(),
-                    _CompactTextBadge(label: '非買賣建議'),
+                    Text(
+                      'AI 摘要',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: _marketMutedTextColor(context),
+                            fontWeight: FontWeight.w900,
+                            height: 1,
+                          ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '非買賣建議',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: _marketMutedTextColor(context),
+                            fontWeight: FontWeight.w900,
+                            height: 1,
+                          ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  compactLine,
-                  key: const ValueKey('00631l-overview-ai-compact-line'),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: _marketTextColor(context),
-                        fontWeight: FontWeight.w900,
-                        height: 1.2,
-                      ),
-                ),
+                _OverviewDailyFactRail(items: factItems),
               ],
             ),
             const SizedBox(height: 1),
@@ -4331,6 +4336,135 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
               data: data,
               embedded: true,
               showEmbeddedHeader: false,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewDailyFactItem {
+  const _OverviewDailyFactItem({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+}
+
+List<_OverviewDailyFactItem> _overviewDailyFactItems(
+  Etf00631LLabData data, {
+  required String fallback,
+}) {
+  final snapshot = data.snapshot;
+  final nav = data.intradayNav;
+  final txLine = _primaryFuturesLine(snapshot);
+  final tsmcLine = _stockHoldingByCode(snapshot, '2330');
+  final hasUsableHoldings = _hasUsableHoldingsSnapshot(snapshot);
+
+  final items = <_OverviewDailyFactItem>[
+    _OverviewDailyFactItem(
+      label: '折溢',
+      value: nav?.resolvedPremiumDiscountPct == null
+          ? _sourceStatusBadgeLabel(nav?.status.label ?? 'unavailable')
+          : formatSignedNullablePercent(nav!.resolvedPremiumDiscountPct),
+    ),
+    _OverviewDailyFactItem(
+      label: 'DAY',
+      value: hasUsableHoldings
+          ? _summaryMonthDay(snapshot.tradeDate)
+          : _sourceStatusBadgeLabel(snapshot.status.label),
+    ),
+    _OverviewDailyFactItem(
+      label: 'TX',
+      value: txLine?.weightPct == null
+          ? '-'
+          : formatNullablePercent(txLine!.weightPct),
+    ),
+    _OverviewDailyFactItem(
+      label: '2330',
+      value: tsmcLine?.weightPct == null
+          ? '-'
+          : formatNullablePercent(tsmcLine!.weightPct),
+    ),
+  ];
+
+  if (items.every((item) => item.value == '-' || item.value == '不可用')) {
+    return [
+      _OverviewDailyFactItem(label: '資料', value: fallback),
+    ];
+  }
+  return items;
+}
+
+class _OverviewDailyFactRail extends StatelessWidget {
+  const _OverviewDailyFactRail({required this.items});
+
+  final List<_OverviewDailyFactItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyedSubtree(
+      key: const ValueKey('00631l-overview-daily-fact-rail'),
+      child: Row(
+        children: [
+          for (final item in items.take(4))
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  right: item == items.take(4).last ? 0 : 4,
+                ),
+                child: _OverviewDailyFactChip(item: item),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OverviewDailyFactChip extends StatelessWidget {
+  const _OverviewDailyFactChip({required this.item});
+
+  final _OverviewDailyFactItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(5, 3, 5, 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+                height: 1,
+              ),
+            ),
+            const SizedBox(height: 1),
+            Text(
+              item.value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
+                height: 1,
+              ),
             ),
           ],
         ),

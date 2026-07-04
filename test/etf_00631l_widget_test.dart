@@ -748,16 +748,18 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
-      findsOneWidget,
+      findsNothing,
     );
-    final aiCompactLine = tester.widget<Text>(
-      find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
+    final dailyFactRail = find.byKey(
+      const ValueKey('00631l-overview-daily-fact-rail'),
     );
-    expect(aiCompactLine.maxLines, 1);
-    expect(aiCompactLine.data, contains('折溢'));
-    expect(aiCompactLine.data, contains('DAY'));
-    expect(aiCompactLine.data, contains('TX'));
-    expect(aiCompactLine.data, contains('2330'));
+    expect(dailyFactRail, findsOneWidget);
+    for (final label in const ['折溢', 'DAY', 'TX', '2330']) {
+      expect(
+        find.descendant(of: dailyFactRail, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
     expect(find.text('程式操作'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-overview-more-expansion')),

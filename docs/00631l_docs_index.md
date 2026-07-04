@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview daily fact rail v15.81: `docs\00631l_v15_81_overview_daily_fact_rail.md`
 - Settings preference compact v15.80: `docs\00631l_v15_80_settings_preference_compact.md`
 - Position account grid v15.79: `docs\00631l_v15_79_position_account_grid.md`
 - AI compact decision rail v15.78: `docs\00631l_v15_78_ai_compact_decision_rail.md`

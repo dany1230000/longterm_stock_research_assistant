@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.81 changes the phone overview daily AI line into a four-cell fact rail
+  for premium/discount, daily holdings date, TX weight, and TSMC weight.
+
 - v15.80 compacts the phone settings preference cards into short account-style
   rows while keeping detailed explanation on desktop and advanced panels.
 
