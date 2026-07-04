@@ -14590,6 +14590,31 @@ class _SettingsPreferenceGrid extends StatelessWidget {
         builder: (context, constraints) {
           final veryNarrow = constraints.maxWidth < 320;
           final compact = constraints.maxWidth < 430;
+          if (compact && !veryNarrow) {
+            return SizedBox(
+              height: 56,
+              child: SingleChildScrollView(
+                key: const ValueKey('00631l-settings-preference-strip'),
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (var index = 0; index < items.length; index++) ...[
+                      SizedBox(
+                        width: 126,
+                        child: _SettingsPreferenceCard(
+                          key: ValueKey(
+                            '00631l-settings-preference-${items[index].keySuffix}',
+                          ),
+                          item: items[index],
+                        ),
+                      ),
+                      if (index != items.length - 1) const SizedBox(width: 6),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          }
           return GridView.count(
             crossAxisCount: veryNarrow ? 1 : 2,
             shrinkWrap: true,

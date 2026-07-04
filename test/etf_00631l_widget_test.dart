@@ -3648,6 +3648,8 @@ void main() {
     );
     final preferenceGrid =
         find.byKey(const ValueKey('00631l-settings-preference-grid'));
+    final preferenceStrip =
+        find.byKey(const ValueKey('00631l-settings-preference-strip'));
     final accountCard =
         find.byKey(const ValueKey('00631l-settings-preference-account'));
     final appearanceCard =
@@ -3657,7 +3659,8 @@ void main() {
     final positionCard =
         find.byKey(const ValueKey('00631l-settings-preference-position'));
     expect(preferenceGrid, findsOneWidget);
-    expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(120));
+    expect(preferenceStrip, findsOneWidget);
+    expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(66));
     expect(accountCard, findsOneWidget);
     expect(appearanceCard, findsOneWidget);
     expect(selectedEtfCard, findsOneWidget);
@@ -3666,11 +3669,17 @@ void main() {
       (tester.getTopLeft(accountCard).dy - tester.getTopLeft(appearanceCard).dy)
           .abs(),
       lessThan(2),
-      reason: 'Settings preference cards should use a compact two-column row.',
+      reason:
+          'Settings preference cards should use one compact horizontal row.',
     );
     expect(
       tester.getTopLeft(accountCard).dx,
       lessThan(tester.getTopLeft(appearanceCard).dx),
+    );
+    expect(
+      (tester.getTopLeft(accountCard).dy - tester.getTopLeft(positionCard).dy)
+          .abs(),
+      lessThan(2),
     );
     expect(
       find.byKey(const ValueKey('00631l-etf-room-readiness-panel')),

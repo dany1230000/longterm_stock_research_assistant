@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings preference strip v15.91: `docs\00631l_v15_91_settings_preference_strip.md`
 - Overview daily summary compact v15.90: `docs\00631l_v15_90_overview_daily_summary_compact.md`
 - Overview chart priority v15.89: `docs\00631l_v15_89_overview_chart_priority.md`
 - Quote header wording v15.88: `docs\00631l_v15_88_quote_header_wording.md`

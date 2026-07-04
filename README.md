@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.91 turns the phone settings preference cards into a single horizontal
+  account-style strip so settings opens shorter and less like diagnostics.
+
 - v15.90 removes the duplicated phone overview fact rail and keeps the first
   screen focused on the chart, compact source ribbon, one-line AI readout, and
   TX / 2330 / CASH holdings chips.
