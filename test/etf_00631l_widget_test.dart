@@ -1555,21 +1555,42 @@ void main() {
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-chart-axis-start-label')).first,
-        matching: find.textContaining('起 '),
+        matching: find.text('起點'),
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-chart-axis-middle-label')).first,
-        matching: find.textContaining('中 '),
+        matching: find.text('中段'),
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-chart-axis-end-label')).first,
-        matching: find.textContaining('迄 '),
+        matching: find.text('終點'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-chart-axis-start-label')).first,
+        matching: find.text('2025/06/03'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-chart-axis-end-label')).first,
+        matching: find.text('2026/06/03'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-line-chart-touch-detail')).first,
+        matching: find.text('2026/06/03'),
       ),
       findsOneWidget,
     );

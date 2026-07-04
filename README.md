@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.76 makes shared chart date labels clearer on phone width: history and
+  backtest charts show start/middle/end with full dates and compact touch
+  details.
+
 - v15.75 tightens the phone overview daily summary card so AI daily data and
   holdings digest stay compact below the chart.
 

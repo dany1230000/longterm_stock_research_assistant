@@ -16540,6 +16540,7 @@ class _LineChartPanelState extends State<_LineChartPanel> {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final selected = widget.points.length > 120
         ? [
             for (var i = 0;
@@ -16641,6 +16642,7 @@ class _LineChartPanelState extends State<_LineChartPanel> {
           rangeStart: spotPoints.isEmpty ? null : spotPoints.first.date,
           rangeEnd: spotPoints.isEmpty ? null : spotPoints.last.date,
           isManualSelection: hasManualSelection,
+          compact: compact,
         ),
       ],
     );
@@ -16775,9 +16777,7 @@ class _ChartAxisDateStrip extends StatelessWidget {
   ) {
     final theme = Theme.of(context);
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final displayLabel = compact ? _compactAxisLabel(label) : label;
-    final displayDate =
-        compact ? _compactAxisDate(date) : formatTaiwanDate(date);
+    final displayDate = formatTaiwanDate(date);
     final key = align == TextAlign.left
         ? const ValueKey('00631l-chart-axis-start-label')
         : align == TextAlign.center
@@ -16792,47 +16792,72 @@ class _ChartAxisDateStrip extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: align == TextAlign.left
-              ? Alignment.centerLeft
-              : align == TextAlign.center
-                  ? Alignment.center
-                  : Alignment.centerRight,
-          child: Text(
-            '$displayLabel $displayDate',
-            maxLines: 1,
-            overflow: TextOverflow.visible,
-            textAlign: align,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: _marketMutedTextColor(context),
-              fontWeight: FontWeight.w800,
-              fontSize: 10,
-            ),
-          ),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 4 : 5,
+          vertical: compact ? 3 : 4,
         ),
+        child: compact
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: align == TextAlign.left
+                    ? CrossAxisAlignment.start
+                    : align == TextAlign.center
+                        ? CrossAxisAlignment.center
+                        : CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: align,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 9,
+                    ),
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: align == TextAlign.left
+                        ? Alignment.centerLeft
+                        : align == TextAlign.center
+                            ? Alignment.center
+                            : Alignment.centerRight,
+                    child: Text(
+                      displayDate,
+                      maxLines: 1,
+                      overflow: TextOverflow.visible,
+                      textAlign: align,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: align == TextAlign.left
+                    ? Alignment.centerLeft
+                    : align == TextAlign.center
+                        ? Alignment.center
+                        : Alignment.centerRight,
+                child: Text(
+                  '$label $displayDate',
+                  maxLines: 1,
+                  overflow: TextOverflow.visible,
+                  textAlign: align,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: _marketMutedTextColor(context),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
       ),
     );
-  }
-
-  String _compactAxisLabel(String label) {
-    switch (label) {
-      case '起點':
-        return '起';
-      case '中段':
-        return '中';
-      case '終點':
-        return '迄';
-    }
-    return label;
-  }
-
-  String _compactAxisDate(DateTime date) {
-    final year = (date.year % 100).toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final day = date.day.toString().padLeft(2, '0');
-    return '$year/$month/$day';
   }
 }
 
