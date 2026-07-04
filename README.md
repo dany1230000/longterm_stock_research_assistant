@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.80 compacts the phone settings preference cards into short account-style
+  rows while keeping detailed explanation on desktop and advanced panels.
+
 - v15.79 changes the phone saved-position summary into a fixed 2x2 account
   grid so market value, P/L, cost, and weight are visible without scrolling.
 

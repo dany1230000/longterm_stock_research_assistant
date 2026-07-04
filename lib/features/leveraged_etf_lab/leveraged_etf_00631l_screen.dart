@@ -14391,9 +14391,9 @@ class _SettingsPreferenceGrid extends StatelessWidget {
             mainAxisSpacing: compact ? 6 : 8,
             crossAxisSpacing: compact ? 6 : 8,
             childAspectRatio: veryNarrow
-                ? 3.2
+                ? 3.45
                 : compact
-                    ? 3.25
+                    ? 3.35
                     : 1.75,
             children: [
               for (final item in items)
@@ -14436,37 +14436,65 @@ class _SettingsPreferenceCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(item.icon,
-                    size: compact ? 15 : 17, color: theme.colorScheme.primary),
+                Container(
+                  width: compact ? 22 : 28,
+                  height: compact ? 22 : 28,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.18),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    item.icon,
+                    size: compact ? 13 : 16,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
                 SizedBox(width: compact ? 5 : 6),
                 Expanded(
-                  child: Text(
-                    item.label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: _marketMutedTextColor(context),
-                      fontWeight: FontWeight.w800,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w800,
+                          height: compact ? 1.0 : null,
+                        ),
+                      ),
+                      Text(
+                        item.status,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: _marketTextColor(context),
+                          fontWeight: FontWeight.w900,
+                          height: compact ? 1.05 : null,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            SizedBox(height: compact ? 1 : 7),
-            Text(
-              item.status,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: (compact
-                      ? theme.textTheme.labelLarge
-                      : theme.textTheme.titleMedium)
-                  ?.copyWith(
-                color: _marketTextColor(context),
-                fontWeight: FontWeight.w900,
-              ),
-            ),
             if (!compact) ...[
-              const SizedBox(height: 3),
+              const SizedBox(height: 7),
+              Text(
+                item.detail,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  height: 1.18,
+                ),
+              ),
+              const SizedBox(height: 5),
               Text(
                 item.action,
                 maxLines: 1,
