@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Date toolbar density v15.77: `docs\00631l_v15_77_date_toolbar_density.md`
 - Chart date readability v15.76: `docs\00631l_v15_76_chart_date_readability.md`
 - Overview summary density v15.75: `docs\00631l_v15_75_overview_summary_density.md`
 - AI daily sentence v15.74: `docs\00631l_v15_74_ai_daily_sentence.md`

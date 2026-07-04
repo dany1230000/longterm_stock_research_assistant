@@ -1530,7 +1530,7 @@ void main() {
       ),
     );
     expect(dateControls, findsOneWidget);
-    expect(tester.getRect(dateControls).height, lessThanOrEqualTo(50));
+    expect(tester.getRect(dateControls).height, lessThanOrEqualTo(36));
     expect(
       find.descendant(
         of: rangeContext,

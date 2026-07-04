@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.77 tightens the phone history/backtest date controls into a one-line
+  toolbar so charts and results move higher on the screen.
+
 - v15.76 makes shared chart date labels clearer on phone width: history and
   backtest charts show start/middle/end with full dates and compact touch
   details.

@@ -8411,7 +8411,7 @@ class _DateRangeControlPanel extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: compact ? 3 : 8),
+          SizedBox(height: compact ? 2 : 8),
           KeyedSubtree(
             key: dateControlsKey,
             child: _BacktestDateRangeControls(
@@ -8451,7 +8451,7 @@ class _DateRangePresetStrip extends StatelessWidget {
       key: const ValueKey('00631l-date-range-preset-scroll'),
       children: [
         for (var index = 0; index < children.length; index += 1) ...[
-          if (index > 0) const SizedBox(width: 5),
+          if (index > 0) const SizedBox(width: 4),
           Expanded(child: children[index]),
         ],
       ],
@@ -10268,54 +10268,78 @@ class _BacktestDateButton extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: compact ? 6 : 9,
-            vertical: compact ? 4 : 9,
+            vertical: compact ? 5 : 9,
           ),
-          child: Row(
-            children: [
-              if (!compact) ...[
-                Icon(
-                  Icons.calendar_today_outlined,
-                  size: 16,
-                  color: theme.colorScheme.primary,
-                ),
-                const SizedBox(width: 7),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: compact
+              ? Row(
                   children: [
                     Text(
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelMedium?.copyWith(
+                      style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w800,
+                        fontSize: 10,
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      value,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    if (!compact)
-                      Text(
-                        caption,
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        value,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                        textAlign: TextAlign.right,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: 16,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 7),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            value,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          Text(
+                            caption,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -10364,10 +10388,10 @@ class _RangeContextStrip extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              compact ? 6 : 10,
-              compact ? 4 : 10,
-              compact ? 6 : 10,
-              compact ? 4 : 10,
+              compact ? 5 : 10,
+              compact ? 3 : 10,
+              compact ? 5 : 10,
+              compact ? 3 : 10,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -10387,7 +10411,7 @@ class _RangeContextStrip extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const _CompactTextBadge(label: '日期可調'),
+                    const _CompactTextBadge(label: '日期'),
                   ],
                 ),
                 if (!compact) ...[
@@ -10403,13 +10427,13 @@ class _RangeContextStrip extends StatelessWidget {
                     ),
                   ),
                 ],
-                SizedBox(height: compact ? 3 : 8),
+                SizedBox(height: compact ? 2 : 8),
                 _RangeContextMetricStrip(
                   items: items,
                   compact: compact,
                 ),
                 if (child != null) ...[
-                  SizedBox(height: compact ? 4 : 8),
+                  SizedBox(height: compact ? 3 : 8),
                   child!,
                 ],
               ],
