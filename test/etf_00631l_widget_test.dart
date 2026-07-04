@@ -3745,6 +3745,8 @@ void main() {
         find.byKey(const ValueKey('00631l-ai-full-detail-expansion'));
     final decisionStrip =
         find.byKey(const ValueKey('00631l-ai-daily-decision-strip'));
+    final compactDecisionRail =
+        find.byKey(const ValueKey('00631l-ai-compact-decision-rail'));
     final compactInsight =
         find.byKey(const ValueKey('00631l-ai-compact-daily-insight'));
     final compactInsightDailyText = find.descendant(
@@ -3754,13 +3756,20 @@ void main() {
     final hero = find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
 
     expect(hero, findsOneWidget);
-    expect(tester.getRect(hero).height, lessThanOrEqualTo(340));
+    expect(tester.getRect(hero).height, lessThanOrEqualTo(390));
     expect(headline, findsOneWidget);
     expect(primaryAction, findsOneWidget);
     expect(detailExpansion, findsNothing);
     expect(fullDetailExpansion, findsOneWidget);
     expect(find.text('完整摘要與資料來源。'), findsOneWidget);
     expect(decisionStrip, findsNothing);
+    expect(compactDecisionRail, findsOneWidget);
+    for (final label in const ['資料', '偏離', '操作']) {
+      expect(
+        find.descendant(of: compactDecisionRail, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
     expect(compactInsight, findsOneWidget);
     expect(compactInsightDailyText, findsOneWidget);
     expect(
@@ -3791,6 +3800,11 @@ void main() {
       tester.getTopLeft(compactInsight).dy,
       lessThan(tester.getTopLeft(fullDetailExpansion).dy),
       reason: 'Compact AI should show daily insight before full details.',
+    );
+    expect(
+      tester.getTopLeft(compactDecisionRail).dy,
+      lessThan(tester.getTopLeft(fullDetailExpansion).dy),
+      reason: 'Compact AI should show daily decision items before details.',
     );
     final firstScreenFacts =
         find.byKey(const ValueKey('00631l-ai-first-screen-facts'));

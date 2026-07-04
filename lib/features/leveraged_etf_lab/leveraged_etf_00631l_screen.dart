@@ -3605,6 +3605,29 @@ String _aiDisplayText(String text) {
   return value;
 }
 
+String _compactProgramAction(String text) {
+  final value = _aiDisplayText(text);
+  if (value.contains('daily cycle')) {
+    return 'daily cycle';
+  }
+  if (value.contains('release check')) {
+    return 'release check';
+  }
+  if (value.contains('.env')) {
+    return '.env';
+  }
+  if (value.contains('後端')) {
+    return '檢查後端';
+  }
+  if (value.contains('資料時間')) {
+    return '確認時間';
+  }
+  if (value.contains('沒有') || value.contains('無')) {
+    return '無項目';
+  }
+  return '檢查資料';
+}
+
 class _HeaderPill extends StatelessWidget {
   const _HeaderPill({
     required this.label,
@@ -11801,6 +11824,12 @@ class _AiDailyBriefingHero extends StatelessWidget {
                 if (compact) ...[
                   const SizedBox(height: 6),
                   _AiCompactDailyInsightLine(text: compactInsight),
+                  const SizedBox(height: 6),
+                  _AiCompactDecisionRail(
+                    data: data,
+                    premiumText: compactPremiumText,
+                    primaryAction: primaryAction,
+                  ),
                 ],
                 if (!compact) ...[
                   const SizedBox(height: 10),
@@ -12083,6 +12112,117 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
                 fontWeight: FontWeight.w900,
                 height: 1.18,
                 letterSpacing: 0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiCompactDecisionRail extends StatelessWidget {
+  const _AiCompactDecisionRail({
+    required this.data,
+    required this.premiumText,
+    required this.primaryAction,
+  });
+
+  final Etf00631LLabData data;
+  final String premiumText;
+  final String primaryAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      _AiCompactDecisionItem(
+        label: '資料',
+        value: _dateOrDash(data.snapshot.tradeDate),
+        detail: _intradayDataTimeText(data.intradayNav),
+      ),
+      _AiCompactDecisionItem(
+        label: '偏離',
+        value: premiumText,
+        detail: '價格偏離提示',
+      ),
+      _AiCompactDecisionItem(
+        label: '操作',
+        value: _compactProgramAction(primaryAction),
+        detail: '程式檢查',
+      ),
+    ];
+    return Row(
+      key: const ValueKey('00631l-ai-compact-decision-rail'),
+      children: [
+        for (var index = 0; index < items.length; index += 1) ...[
+          if (index > 0) const SizedBox(width: 5),
+          Expanded(child: _AiCompactDecisionPill(item: items[index])),
+        ],
+      ],
+    );
+  }
+}
+
+class _AiCompactDecisionItem {
+  const _AiCompactDecisionItem({
+    required this.label,
+    required this.value,
+    required this.detail,
+  });
+
+  final String label;
+  final String value;
+  final String detail;
+}
+
+class _AiCompactDecisionPill extends StatelessWidget {
+  const _AiCompactDecisionPill({required this.item});
+
+  final _AiCompactDecisionItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(9),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w800,
+                fontSize: 10,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              item.value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 1),
+            Text(
+              item.detail,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w700,
+                fontSize: 9,
               ),
             ),
           ],

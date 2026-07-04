@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.78 adds a compact phone AI decision rail for data state, price deviation,
+  and app-operation action before full AI details.
+
 - v15.77 tightens the phone history/backtest date controls into a one-line
   toolbar so charts and results move higher on the screen.
 
