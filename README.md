@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.95 slightly enlarges the phone ETF research room header and symbol search
+  pill so the app identity and code switcher feel more deliberate.
+
 - v15.94 compacts the phone position account metrics into one horizontal strip
   so cost, value, P/L, and allocation stay close without a tall grid.
 
