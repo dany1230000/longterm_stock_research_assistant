@@ -2043,9 +2043,9 @@ void main() {
     expect(metricGrid, findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-position-account-metric-scroll')),
-      findsNothing,
+      findsOneWidget,
     );
-    expect(tester.getRect(metricGrid).height, lessThanOrEqualTo(74));
+    expect(tester.getRect(metricGrid).height, lessThanOrEqualTo(44));
     expect(
       tester.getTopLeft(accountStrip).dy,
       lessThan(tester.getTopLeft(inputCard).dy),

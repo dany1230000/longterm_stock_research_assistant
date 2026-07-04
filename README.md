@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.94 compacts the phone position account metrics into one horizontal strip
+  so cost, value, P/L, and allocation stay close without a tall grid.
+
 - v15.93 makes the AI first-screen headline more interpretive by calling out
   data readiness, premium/discount context, primary exposure, and source time.
 

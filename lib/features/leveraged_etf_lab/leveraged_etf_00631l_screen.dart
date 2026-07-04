@@ -11530,30 +11530,32 @@ class _PositionAccountMetricStrip extends StatelessWidget {
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 460;
         if (isCompact) {
-          return Column(
+          return SizedBox(
             key: const ValueKey('00631l-position-account-metric-grid'),
-            children: [
-              for (var rowStart = 0; rowStart < items.length; rowStart += 2)
-                Padding(
-                  padding: EdgeInsets.only(top: rowStart == 0 ? 0 : 3),
-                  child: Row(
-                    children: [
-                      for (var offset = 0; offset < 2; offset += 1) ...[
-                        if (offset > 0) const SizedBox(width: 5),
-                        Expanded(
-                          child: _PositionAccountMiniTile(
-                            item: items[rowStart + offset],
-                            emphasis: rowStart == 0,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-            ],
+            height: 40,
+            child: SingleChildScrollView(
+              key: const ValueKey('00631l-position-account-metric-scroll'),
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  for (var index = 0; index < items.length; index += 1) ...[
+                    if (index > 0) const SizedBox(width: 5),
+                    SizedBox(
+                      width: 104,
+                      child: _PositionAccountMiniTile(
+                        item: items[index],
+                        emphasis: index < 2,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           );
         }
         return SingleChildScrollView(
+          key: const ValueKey('00631l-position-account-metric-scroll'),
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
           child: Row(
@@ -11597,9 +11599,10 @@ class _PositionAccountMiniTile extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               item.label,
@@ -11612,15 +11615,19 @@ class _PositionAccountMiniTile extends StatelessWidget {
                 height: 1.0,
               ),
             ),
-            Text(
-              item.value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w900,
-                fontSize: 11,
-                height: 1.05,
+            const SizedBox(height: 1),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                item.value,
+                maxLines: 1,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 11,
+                  height: 1.05,
+                ),
               ),
             ),
           ],

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position metric strip v15.94: `docs\00631l_v15_94_position_metric_strip.md`
 - AI headline interpretation v15.93: `docs\00631l_v15_93_ai_headline_interpretation.md`
 - Chart axis labels v15.92: `docs\00631l_v15_92_chart_axis_labels.md`
 - Settings preference strip v15.91: `docs\00631l_v15_91_settings_preference_strip.md`
