@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.87 keeps the phone ETF comparison chart focused by moving the detailed
+  numeric comparison table behind a compact "details" expansion.
+
 - v15.86 keeps ETF comparison selection compact on phones by using a
   horizontal chip strip and lower action buttons inside the expanded selector.
 

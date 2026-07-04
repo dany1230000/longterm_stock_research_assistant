@@ -3028,6 +3028,10 @@ void main() {
       find.byKey(const ValueKey('00631l-comparison-touch-empty')),
       findsOneWidget,
     );
+    expect(
+      find.byKey(const ValueKey('00631l-etf-comparison-table-expansion')),
+      findsOneWidget,
+    );
     expect(find.text('history comparison'), findsNothing);
     _expectNoTradingActionText();
   });

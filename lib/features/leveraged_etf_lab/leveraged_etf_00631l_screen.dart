@@ -9114,39 +9114,83 @@ class _EtfHistoryComparisonPanelState
                       endDate: endDate,
                     ),
                     const SizedBox(height: 10),
-                    _HorizontalTable(
-                      columns: const [
-                        '代號',
-                        '名稱',
-                        '區間報酬',
-                        '年化',
-                        '最大回撤',
-                        '波動',
-                        '最新收盤',
-                        '筆數',
-                        '狀態',
-                      ],
-                      rows: [
-                        for (final metric in usableMetrics)
-                          [
-                            metric.code,
-                            metric.name,
-                            formatSignedNullablePercent(
-                              metric.totalReturnPct,
-                            ),
-                            formatSignedNullablePercent(
-                              metric.annualizedReturnPct,
-                            ),
-                            formatSignedNullablePercent(metric.maxDrawdownPct),
-                            formatNullablePercent(
-                              metric.annualizedVolatilityPct,
-                            ),
-                            _price(metric.latestClose),
-                            formatInteger(metric.rowCount),
-                            metric.sourceStatusLabel,
+                    if (compact)
+                      _CompactExpansionPanel(
+                        key: const ValueKey(
+                          '00631l-etf-comparison-table-expansion',
+                        ),
+                        title: '數字明細',
+                        subtitle: '展開查看各 ETF 報酬、回撤、波動與資料列數。',
+                        child: _HorizontalTable(
+                          columns: const [
+                            '代號',
+                            '名稱',
+                            '累積報酬',
+                            '年化',
+                            '最大回撤',
+                            '波動',
+                            '最新價',
+                            '資料列',
+                            '狀態',
                           ],
-                      ],
-                    ),
+                          rows: [
+                            for (final metric in usableMetrics)
+                              [
+                                metric.code,
+                                metric.name,
+                                formatSignedNullablePercent(
+                                  metric.totalReturnPct,
+                                ),
+                                formatSignedNullablePercent(
+                                  metric.annualizedReturnPct,
+                                ),
+                                formatSignedNullablePercent(
+                                    metric.maxDrawdownPct),
+                                formatNullablePercent(
+                                  metric.annualizedVolatilityPct,
+                                ),
+                                _price(metric.latestClose),
+                                formatInteger(metric.rowCount),
+                                metric.sourceStatusLabel,
+                              ],
+                          ],
+                        ),
+                      )
+                    else
+                      _HorizontalTable(
+                        columns: const [
+                          '代號',
+                          '名稱',
+                          '區間報酬',
+                          '年化',
+                          '最大回撤',
+                          '波動',
+                          '最新收盤',
+                          '筆數',
+                          '狀態',
+                        ],
+                        rows: [
+                          for (final metric in usableMetrics)
+                            [
+                              metric.code,
+                              metric.name,
+                              formatSignedNullablePercent(
+                                metric.totalReturnPct,
+                              ),
+                              formatSignedNullablePercent(
+                                metric.annualizedReturnPct,
+                              ),
+                              formatSignedNullablePercent(
+                                  metric.maxDrawdownPct),
+                              formatNullablePercent(
+                                metric.annualizedVolatilityPct,
+                              ),
+                              _price(metric.latestClose),
+                              formatInteger(metric.rowCount),
+                              metric.sourceStatusLabel,
+                            ],
+                        ],
+                      ),
                   ],
                 ),
         ),
