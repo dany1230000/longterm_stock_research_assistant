@@ -695,6 +695,7 @@ void main() {
       const ValueKey('00631l-overview-mobile-daily-summary-card'),
     );
     expect(mobileDailySummary, findsOneWidget);
+    expect(tester.getRect(mobileDailySummary).height, lessThanOrEqualTo(84));
     final aiGlance = find.byKey(
       const ValueKey('00631l-overview-ai-glance-card'),
     );

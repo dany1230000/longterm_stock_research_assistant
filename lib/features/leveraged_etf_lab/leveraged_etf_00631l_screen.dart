@@ -4272,7 +4272,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(7, 4, 7, 5),
+        padding: const EdgeInsets.fromLTRB(6, 3, 6, 4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -4287,7 +4287,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
                     _CompactTextBadge(label: '非買賣建議'),
                   ],
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 Text(
                   compactLine,
                   key: const ValueKey('00631l-overview-ai-compact-line'),
@@ -4301,9 +4301,9 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 1),
             const _MarketStackDivider(),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             _OverviewHoldingsDigestPanel(
               data: data,
               embedded: true,
@@ -5666,7 +5666,7 @@ class _MobileHoldingDigestStrip extends StatelessWidget {
       children: [
         for (var index = 0; index < items.length; index++) ...[
           Expanded(child: _MobileHoldingDigestChipV2(item: items[index])),
-          if (index != items.length - 1) const SizedBox(width: 5),
+          if (index != items.length - 1) const SizedBox(width: 4),
         ],
       ],
     );
@@ -5706,7 +5706,7 @@ class _MobileHoldingDigestChipV2 extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         child: Row(
           children: [
             Text(
@@ -5721,7 +5721,7 @@ class _MobileHoldingDigestChipV2 extends StatelessWidget {
                 letterSpacing: 0,
               ),
             ),
-            const SizedBox(width: 5),
+            const SizedBox(width: 4),
             Expanded(
               child: FittedBox(
                 fit: BoxFit.scaleDown,

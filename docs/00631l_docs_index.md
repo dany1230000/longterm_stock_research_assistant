@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview summary density v15.75: `docs\00631l_v15_75_overview_summary_density.md`
 - AI daily sentence v15.74: `docs\00631l_v15_74_ai_daily_sentence.md`
 - Position empty-card density v15.73: `docs\00631l_v15_73_position_empty_card_density.md`
 - Mobile comparison header v15.72: `docs\00631l_v15_72_mobile_comparison_header.md`
