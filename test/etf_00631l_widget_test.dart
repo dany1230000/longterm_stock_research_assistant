@@ -3762,7 +3762,7 @@ void main() {
     final hero = find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
 
     expect(hero, findsOneWidget);
-    expect(tester.getRect(hero).height, lessThanOrEqualTo(390));
+    expect(tester.getRect(hero).height, lessThanOrEqualTo(380));
     expect(headline, findsOneWidget);
     expect(primaryAction, findsOneWidget);
     expect(detailExpansion, findsNothing);

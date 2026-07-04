@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.83 trims the phone AI page header so the daily readout and decision rail
+  appear sooner without changing rule-based analysis logic.
+
 - v15.82 compacts the phone history/backtest date range card by turning the
   range metrics into a single summary line before the date buttons.
 

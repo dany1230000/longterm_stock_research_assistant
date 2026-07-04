@@ -11981,19 +11981,42 @@ class _AiDailyBriefingHero extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const _MiniStatusBadge(label: 'AI'),
-                    const SizedBox(width: 8),
+                    if (compact)
+                      Text(
+                        'AI',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w900,
+                          height: 1,
+                        ),
+                      )
+                    else
+                      const _MiniStatusBadge(label: 'AI'),
+                    SizedBox(width: compact ? 6 : 8),
                     Expanded(
                       child: Text(
                         '今日 AI 判讀',
-                        style: theme.textTheme.titleMedium?.copyWith(
+                        style: (compact
+                                ? theme.textTheme.labelLarge
+                                : theme.textTheme.titleMedium)
+                            ?.copyWith(
                           color: _marketTextColor(context),
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0,
                         ),
                       ),
                     ),
-                    const _CompactTextBadge(label: '規則分析'),
+                    if (compact)
+                      Text(
+                        '規則分析',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w900,
+                          height: 1,
+                        ),
+                      )
+                    else
+                      const _CompactTextBadge(label: '規則分析'),
                   ],
                 ),
                 SizedBox(height: compact ? 5 : 8),
