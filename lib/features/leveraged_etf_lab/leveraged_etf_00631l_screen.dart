@@ -2498,14 +2498,14 @@ class _CompactQuoteHeader extends StatelessWidget {
             IntradayMarketSession.evaluate(sourceAvailable: false)
         : null;
     final quoteCaptionDisplay = usesLiveQuote && selectedEtf.dataTime != null
-        ? '市價 · ${marketSession!.phaseLabel} ${_sourceTimeText(selectedEtf.dataTime!)}'
+        ? '行情 · ${marketSession!.phaseLabel} ${_sourceTimeText(selectedEtf.dataTime!)}'
         : usesCatalogQuote && selectedEtf.catalogItem?.dataTime != null
-            ? '市價 · 清單 ${formatTaiwanDateTimeSeconds(selectedEtf.catalogItem!.dataTime!)}'
+            ? '行情 · 清單 ${formatTaiwanDateTimeSeconds(selectedEtf.catalogItem!.dataTime!)}'
             : usesHistoryQuote
-                ? '市價 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
+                ? '行情 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
                 : selectedEtf.dataTime == null
-                    ? '市價 · 盤中資料暫無'
-                    : '市價 · ${_statusDisplay(quoteStatus)} ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
+                    ? '行情 · 資料不可用'
+                    : '行情 · ${_statusDisplay(quoteStatus)} ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
     final content = Padding(
       padding: EdgeInsets.fromLTRB(6, embedded ? 0 : 5, 6, embedded ? 0 : 5),

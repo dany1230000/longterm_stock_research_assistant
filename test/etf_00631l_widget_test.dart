@@ -125,7 +125,8 @@ void main() {
     expect(find.text('00631L 00631L'), findsNothing);
     expect(find.textContaining('00631L 元大台灣50正2'), findsNothing);
     expect(find.textContaining('元大台灣50正2'), findsNothing);
-    expect(find.textContaining('市價'), findsWidgets);
+    expect(find.textContaining('行情'), findsWidgets);
+    expect(find.textContaining('撣'), findsNothing);
     expect(find.textContaining('預估淨值'), findsNothing);
     expect(find.textContaining('折溢價'), findsWidgets);
     expect(find.text('核心資料'), findsNothing);
@@ -3095,7 +3096,7 @@ void main() {
     expect(find.text('目前檔案'), findsNothing);
     expect(find.text('0050'), findsWidgets);
     expect(find.textContaining('2025/06/03 - 2026/06/03'), findsWidgets);
-    expect(find.textContaining('市價 · 清單'), findsWidgets);
+    expect(find.textContaining('行情 · 清單'), findsWidgets);
     expect(find.text('官方內容物重點'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-selected-etf-history-readiness-strip')),
@@ -3190,8 +3191,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('0050 元大台灣50'), findsWidgets);
-    expect(find.textContaining('市價 · 歷史收盤'), findsWidgets);
-    expect(find.textContaining('市價 · catalog'), findsNothing);
+    expect(find.textContaining('行情 · 歷史收盤'), findsWidgets);
+    expect(find.textContaining('行情 · catalog'), findsNothing);
     _expectNoTradingActionText();
   });
 

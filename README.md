@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.88 cleans the phone quote header wording so the first screen shows
+  readable market-source labels such as intraday, catalog, and historical close.
+
 - v15.87 keeps the phone ETF comparison chart focused by moving the detailed
   numeric comparison table behind a compact "details" expansion.
 
