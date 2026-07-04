@@ -11001,6 +11001,7 @@ class _PositionCompactEmptyInputCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
@@ -11025,12 +11026,22 @@ class _PositionCompactEmptyInputCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const _CompactTextBadge(label: '本機保存'),
+                if (compact)
+                  Text(
+                    '本機保存',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w900,
+                      height: 1,
+                    ),
+                  )
+                else
+                  const _CompactTextBadge(label: '本機保存'),
               ],
             ),
-            const SizedBox(height: 3),
+            SizedBox(height: compact ? 1 : 3),
             Text(
-              '股數與平均成本只保存在此裝置。',
+              compact ? '只保存在此裝置。' : '股數與平均成本只保存在此裝置。',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelMedium?.copyWith(

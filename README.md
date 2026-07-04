@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.84 trims the phone position empty-state input card so the local-only
+  label uses a lightweight text treatment and the form starts higher.
+
 - v15.83 trims the phone AI page header so the daily readout and decision rail
   appear sooner without changing rule-based analysis logic.
 
