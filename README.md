@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.27 lets the phone AI "today insight" use two compact lines so the page
+  reads more like an interpretation summary and less like a ticker.
+
 - v16.26 tightens the empty-position phone card by keeping the first screen to
   the two core inputs and a short local save action.
 

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- AI insight readability v16.27: `docs\00631l_v16_27_ai_insight_readability.md`
 - Position input density v16.26: `docs\00631l_v16_26_position_input_density.md`
 - Backtest quick result density v16.25: `docs\00631l_v16_25_backtest_quick_result_density.md`
 - Overview first glance v16.24: `docs\00631l_v16_24_overview_first_glance.md`

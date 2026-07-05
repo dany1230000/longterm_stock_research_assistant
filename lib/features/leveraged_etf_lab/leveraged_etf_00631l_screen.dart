@@ -13026,30 +13026,36 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
         border: Border.all(color: _marketBlue.withValues(alpha: 0.26)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '今日解讀',
-              key: const ValueKey('00631l-ai-compact-daily-insight-title'),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w900,
-                letterSpacing: 0,
+            SizedBox(
+              width: 54,
+              child: Text(
+                '今日解讀',
+                key: const ValueKey('00631l-ai-compact-daily-insight-title'),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  height: 1.1,
+                  letterSpacing: 0,
+                ),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 text,
-                maxLines: 1,
+                key: const ValueKey('00631l-ai-compact-daily-insight-text'),
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: _marketTextColor(context),
-                  fontWeight: FontWeight.w900,
-                  height: 1.1,
+                  fontWeight: FontWeight.w800,
+                  height: 1.22,
                   letterSpacing: 0,
                 ),
               ),

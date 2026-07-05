@@ -3993,6 +3993,8 @@ void main() {
         find.byKey(const ValueKey('00631l-ai-compact-daily-insight'));
     final compactMeta =
         find.byKey(const ValueKey('00631l-ai-compact-meta-line'));
+    final compactInsightText =
+        find.byKey(const ValueKey('00631l-ai-compact-daily-insight-text'));
     final compactInsightDailyText = find.descendant(
       of: compactInsight,
       matching: find.textContaining('今日資料'),
@@ -4024,6 +4026,7 @@ void main() {
       );
     }
     expect(compactInsight, findsOneWidget);
+    expect(compactInsightText, findsOneWidget);
     expect(compactInsightDailyText, findsOneWidget);
     expect(
       find.descendant(
@@ -4034,8 +4037,8 @@ void main() {
     );
     expect(
       tester.getRect(compactInsight).height,
-      lessThanOrEqualTo(54),
-      reason: 'Phone AI insight should read like a compact app status line.',
+      lessThanOrEqualTo(72),
+      reason: 'Phone AI insight should stay compact while allowing two lines.',
     );
     expect(
       find.byKey(const ValueKey('00631l-ai-compact-daily-insight-title')),
