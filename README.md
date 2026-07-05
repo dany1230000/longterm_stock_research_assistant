@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.31 changes the phone overview data ribbon from `DAY / NAV / HIS / MODE`
+  to compact Chinese labels: `日 / 盤 / 歷 / 模式`.
+
 - v16.30 makes the account/settings first screen use friendly mode labels like
   `公開靜態模式` and `示範模式` instead of internal mode names.
 

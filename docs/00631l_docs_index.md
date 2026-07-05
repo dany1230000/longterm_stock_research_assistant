@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview ribbon labels v16.31: `docs\00631l_v16_31_overview_ribbon_labels.md`
 - Settings mode label v16.30: `docs\00631l_v16_30_settings_mode_label.md`
 - History range chip density v16.29: `docs\00631l_v16_29_history_range_chip_density.md`
 - Overview chart density v16.28: `docs\00631l_v16_28_overview_chart_density.md`

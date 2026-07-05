@@ -4135,23 +4135,23 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
     final hasUsableHoldings = _hasUsableHoldingsSnapshot(snapshot);
     final items = [
       _OverviewCompactRibbonItem(
-        label: 'DAY',
+        label: '日',
         value: hasUsableHoldings
             ? _summaryMonthDay(snapshot.tradeDate)
             : _sourceStatusBadgeLabel(snapshot.status.label),
       ),
       _OverviewCompactRibbonItem(
-        label: 'NAV',
+        label: '盤',
         value: nav?.dataTime == null
             ? _sourceStatusBadgeLabel(nav?.status.label)
             : _summaryTimeMinute(nav!.dataTime!),
       ),
       _OverviewCompactRibbonItem(
-        label: 'HIS',
+        label: '歷',
         value: formatInteger(priceSummary.rowCount),
       ),
       _OverviewCompactRibbonItem(
-        label: 'MODE',
+        label: '模式',
         value: _frontendDataModeShortLabel,
       ),
     ];
