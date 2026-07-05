@@ -2116,6 +2116,22 @@ void main() {
       ),
       findsNothing,
     );
+    final parameterStrip =
+        find.byKey(const ValueKey('00631l-backtest-parameter-strip'));
+    await tester.scrollUntilVisible(
+      parameterStrip,
+      240,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(parameterStrip, findsOneWidget);
+    expect(tester.getRect(parameterStrip).height, lessThanOrEqualTo(38));
+    for (final label in const ['策略', '初始', '每月', '日', '成本']) {
+      expect(
+        find.descendant(of: parameterStrip, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
     _expectNoTradingActionText();
   });
 

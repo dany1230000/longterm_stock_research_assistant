@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.97 adds a compact phone backtest parameter strip for strategy, initial
+  amount, monthly amount, contribution day, and cost before the editable form.
+
 - v15.96 turns the phone overview AI line into a daily interpretation sentence
   with intraday time, premium/discount state, holdings date, TX / 2330 exposure,
   and history row count.

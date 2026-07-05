@@ -10159,6 +10159,14 @@ class _BacktestSectionState extends State<_BacktestSection> {
                       threeYearsKey: const ValueKey('00631l-backtest-range-3y'),
                       allKey: const ValueKey('00631l-backtest-range-all'),
                     ),
+                    SizedBox(height: compact ? 6 : innerGap),
+                    _BacktestParameterStrip(
+                      strategy: _strategy,
+                      initialAmount: _parseDouble(_initialController.text),
+                      monthlyAmount: _parseDouble(_monthlyController.text),
+                      monthlyDay: _parseInt(_dayController.text, fallback: 5),
+                      feeRatePct: _parseDouble(_feeController.text),
+                    ),
                     SizedBox(height: innerGap),
                     _CompactExpansionPanel(
                       title: '金額與成本參數',
@@ -10266,6 +10274,127 @@ class _BacktestSectionState extends State<_BacktestSection> {
       _startDate = _historyFirstDate(widget.priceHistory);
       _endDate = _historyLastDate(widget.priceHistory);
     });
+  }
+}
+
+class _BacktestParameterStrip extends StatelessWidget {
+  const _BacktestParameterStrip({
+    required this.strategy,
+    required this.initialAmount,
+    required this.monthlyAmount,
+    required this.monthlyDay,
+    required this.feeRatePct,
+  });
+
+  final EtfBacktestStrategy strategy;
+  final double initialAmount;
+  final double monthlyAmount;
+  final int monthlyDay;
+  final double feeRatePct;
+
+  @override
+  Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 430;
+    final items = [
+      _BacktestParameterItem(
+        label: '策略',
+        value: strategy == EtfBacktestStrategy.lumpSum ? '一次' : '定期',
+      ),
+      _BacktestParameterItem(
+        label: '初始',
+        value: _compactNumber(initialAmount),
+      ),
+      _BacktestParameterItem(
+        label: '每月',
+        value: _compactNumber(monthlyAmount),
+      ),
+      _BacktestParameterItem(
+        label: '日',
+        value: monthlyDay.toString(),
+      ),
+      _BacktestParameterItem(
+        label: '成本',
+        value: '${feeRatePct.toStringAsFixed(2)}%',
+      ),
+    ];
+    return DecoratedBox(
+      key: const ValueKey('00631l-backtest-parameter-strip'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 5 : 8,
+          vertical: compact ? 4 : 6,
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: [
+              for (var index = 0; index < items.length; index += 1) ...[
+                if (index > 0) const SizedBox(width: 5),
+                _BacktestParameterPill(item: items[index]),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BacktestParameterItem {
+  const _BacktestParameterItem({required this.label, required this.value});
+
+  final String label;
+  final String value;
+}
+
+class _BacktestParameterPill extends StatelessWidget {
+  const _BacktestParameterPill({required this.item});
+
+  final _BacktestParameterItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              item.label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+                height: 1,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              item.value,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketTextColor(context),
+                fontWeight: FontWeight.w900,
+                height: 1,
+                letterSpacing: 0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

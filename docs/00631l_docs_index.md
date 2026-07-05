@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Backtest parameter strip v15.97: `docs\00631l_v15_97_backtest_parameter_strip.md`
 - Overview AI readout v15.96: `docs\00631l_v15_96_overview_ai_readout.md`
 - Top bar scale v15.95: `docs\00631l_v15_95_top_bar_scale.md`
 - Position metric strip v15.94: `docs\00631l_v15_94_position_metric_strip.md`
