@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.02 compresses the phone AI first screen into one source/status meta line
+  and a single-row daily interpretation readout.
+
 - v16.01 shortens phone position labels so saved holdings open with compact
   account-style wording.
 

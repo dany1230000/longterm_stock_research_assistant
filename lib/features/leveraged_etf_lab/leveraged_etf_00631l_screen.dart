@@ -12419,19 +12419,18 @@ class _AiDailyBriefingHero extends StatelessWidget {
                 SizedBox(height: compact ? 5 : 8),
                 KeyedSubtree(
                   key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
-                  child: _StatusWrap(
-                    labels: compact
-                        ? [
-                            _statusDisplay(summary.source),
-                            summary.readinessLabel,
-                            '非買賣建議',
-                          ]
-                        : [
+                  child: compact
+                      ? _AiCompactMetaLine(
+                          source: _statusDisplay(summary.source),
+                          readiness: summary.readinessLabel,
+                        )
+                      : _StatusWrap(
+                          labels: [
                             _statusDisplay(summary.source),
                             summary.readinessLabel,
                             summary.disclaimer,
                           ],
-                  ),
+                        ),
                 ),
                 if (!compact && briefingBullets.isNotEmpty) ...[
                   const SizedBox(height: 8),
@@ -12687,6 +12686,49 @@ class _AiFirstScreenBulletList extends StatelessWidget {
   }
 }
 
+class _AiCompactMetaLine extends StatelessWidget {
+  const _AiCompactMetaLine({
+    required this.source,
+    required this.readiness,
+  });
+
+  final String source;
+  final String readiness;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-ai-compact-meta-line'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                '$source · $readiness · 非買賣建議',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                  letterSpacing: 0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _AiCompactDailyInsightLine extends StatelessWidget {
   const _AiCompactDailyInsightLine({required this.text});
 
@@ -12703,9 +12745,8 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
         border: Border.all(color: _marketBlue.withValues(alpha: 0.26)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        child: Row(
           children: [
             Text(
               '今日解讀',
@@ -12718,16 +12759,18 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
                 letterSpacing: 0,
               ),
             ),
-            const SizedBox(height: 2),
-            Text(
-              text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: _marketTextColor(context),
-                fontWeight: FontWeight.w900,
-                height: 1.18,
-                letterSpacing: 0,
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  height: 1.1,
+                  letterSpacing: 0,
+                ),
               ),
             ),
           ],

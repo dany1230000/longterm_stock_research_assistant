@@ -3845,6 +3845,8 @@ void main() {
         find.byKey(const ValueKey('00631l-ai-compact-decision-rail'));
     final compactInsight =
         find.byKey(const ValueKey('00631l-ai-compact-daily-insight'));
+    final compactMeta =
+        find.byKey(const ValueKey('00631l-ai-compact-meta-line'));
     final compactInsightDailyText = find.descendant(
       of: compactInsight,
       matching: find.textContaining('今日資料'),
@@ -3852,9 +3854,18 @@ void main() {
     final hero = find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
 
     expect(hero, findsOneWidget);
-    expect(tester.getRect(hero).height, lessThanOrEqualTo(380));
+    expect(tester.getRect(hero).height, lessThanOrEqualTo(360));
     expect(headline, findsOneWidget);
     expect(primaryAction, findsOneWidget);
+    expect(compactMeta, findsOneWidget);
+    expect(tester.getRect(compactMeta).height, lessThanOrEqualTo(24));
+    expect(
+      find.descendant(
+        of: compactMeta,
+        matching: find.textContaining('非買賣建議'),
+      ),
+      findsOneWidget,
+    );
     expect(detailExpansion, findsNothing);
     expect(fullDetailExpansion, findsOneWidget);
     expect(find.text('完整摘要與資料來源。'), findsOneWidget);
