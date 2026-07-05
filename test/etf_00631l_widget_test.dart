@@ -2130,6 +2130,20 @@ void main() {
       ),
       findsNothing,
     );
+    final compactStrategyToggle = find.byKey(
+      const ValueKey('00631l-backtest-strategy-toggle-compact'),
+    );
+    await tester.scrollUntilVisible(
+      compactStrategyToggle,
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(compactStrategyToggle, findsOneWidget);
+    expect(
+      tester.getRect(compactStrategyToggle).height,
+      lessThanOrEqualTo(34),
+    );
     final parameterStrip =
         find.byKey(const ValueKey('00631l-backtest-parameter-strip'));
     await tester.scrollUntilVisible(

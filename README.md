@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.00 makes the phone backtest controls shorter with a compact strategy
+  toggle and fixed five-column parameter strip.
+
 - v15.99 keeps the phone overview chart expanded but shortens the chart/touch
   detail stack so the first screen reads faster.
 

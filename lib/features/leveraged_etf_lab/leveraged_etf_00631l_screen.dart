@@ -10118,28 +10118,35 @@ class _BacktestSectionState extends State<_BacktestSection> {
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ChoiceChip(
-                          selected: _strategy == EtfBacktestStrategy.lumpSum,
-                          label: const Text('一次投入'),
-                          onSelected: (_) => setState(
-                            () => _strategy = EtfBacktestStrategy.lumpSum,
+                    if (compact)
+                      _BacktestStrategyToggleCompact(
+                        strategy: _strategy,
+                        onChanged: (strategy) =>
+                            setState(() => _strategy = strategy),
+                      )
+                    else
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          ChoiceChip(
+                            selected: _strategy == EtfBacktestStrategy.lumpSum,
+                            label: const Text('一次投入'),
+                            onSelected: (_) => setState(
+                              () => _strategy = EtfBacktestStrategy.lumpSum,
+                            ),
                           ),
-                        ),
-                        ChoiceChip(
-                          selected: _strategy ==
-                              EtfBacktestStrategy.monthlyContribution,
-                          label: const Text('定期定額'),
-                          onSelected: (_) => setState(
-                            () => _strategy =
+                          ChoiceChip(
+                            selected: _strategy ==
                                 EtfBacktestStrategy.monthlyContribution,
+                            label: const Text('定期定額'),
+                            onSelected: (_) => setState(
+                              () => _strategy =
+                                  EtfBacktestStrategy.monthlyContribution,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
                     SizedBox(height: innerGap),
                     _DateRangeControlPanel(
                       key: const ValueKey('00631l-backtest-range-context'),
@@ -10303,6 +10310,91 @@ class _BacktestSectionState extends State<_BacktestSection> {
   }
 }
 
+class _BacktestStrategyToggleCompact extends StatelessWidget {
+  const _BacktestStrategyToggleCompact({
+    required this.strategy,
+    required this.onChanged,
+  });
+
+  final EtfBacktestStrategy strategy;
+  final ValueChanged<EtfBacktestStrategy> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      key: const ValueKey('00631l-backtest-strategy-toggle-compact'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(3),
+        child: Row(
+          children: [
+            Expanded(
+              child: _BacktestStrategyToggleItem(
+                label: '一次投入',
+                selected: strategy == EtfBacktestStrategy.lumpSum,
+                onTap: () => onChanged(EtfBacktestStrategy.lumpSum),
+              ),
+            ),
+            const SizedBox(width: 3),
+            Expanded(
+              child: _BacktestStrategyToggleItem(
+                label: '定期定額',
+                selected: strategy == EtfBacktestStrategy.monthlyContribution,
+                onTap: () => onChanged(EtfBacktestStrategy.monthlyContribution),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BacktestStrategyToggleItem extends StatelessWidget {
+  const _BacktestStrategyToggleItem({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: onTap,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: selected ? _marketBlue : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: selected ? Colors.white : _marketTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                  letterSpacing: 0,
+                ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _BacktestParameterStrip extends StatelessWidget {
   const _BacktestParameterStrip({
     required this.strategy,
@@ -10355,18 +10447,32 @@ class _BacktestParameterStrip extends StatelessWidget {
           horizontal: compact ? 5 : 8,
           vertical: compact ? 4 : 6,
         ),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: [
-              for (var index = 0; index < items.length; index += 1) ...[
-                if (index > 0) const SizedBox(width: 5),
-                _BacktestParameterPill(item: items[index]),
-              ],
-            ],
-          ),
-        ),
+        child: compact
+            ? Row(
+                children: [
+                  for (var index = 0; index < items.length; index += 1) ...[
+                    if (index > 0) const SizedBox(width: 3),
+                    Expanded(
+                      child: _BacktestParameterPill(
+                        item: items[index],
+                        compact: true,
+                      ),
+                    ),
+                  ],
+                ],
+              )
+            : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    for (var index = 0; index < items.length; index += 1) ...[
+                      if (index > 0) const SizedBox(width: 5),
+                      _BacktestParameterPill(item: items[index]),
+                    ],
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -10380,9 +10486,13 @@ class _BacktestParameterItem {
 }
 
 class _BacktestParameterPill extends StatelessWidget {
-  const _BacktestParameterPill({required this.item});
+  const _BacktestParameterPill({
+    required this.item,
+    this.compact = false,
+  });
 
   final _BacktestParameterItem item;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -10394,31 +10504,66 @@ class _BacktestParameterPill extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              item.label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w900,
-                height: 1,
-                letterSpacing: 0,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              item.value,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _marketTextColor(context),
-                fontWeight: FontWeight.w900,
-                height: 1,
-                letterSpacing: 0,
-              ),
-            ),
-          ],
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 3 : 7,
+          vertical: compact ? 3 : 4,
         ),
+        child: compact
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      height: 1,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    item.value,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketTextColor(context),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      height: 1,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    item.label,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      height: 1,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    item.value,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      height: 1,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
