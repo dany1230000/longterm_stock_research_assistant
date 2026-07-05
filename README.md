@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.28 keeps the overview chart open while reducing the phone chart height
+  so the first screen is easier to scan.
+
 - v16.27 lets the phone AI "today insight" use two compact lines so the page
   reads more like an interpretation summary and less like a ticker.
 
