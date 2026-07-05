@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.98 embeds the phone overview AI daily readout and holdings digest inside
+  the main market stack so the first screen reads as one compact market panel.
+
 - v15.97 adds a compact phone backtest parameter strip for strategy, initial
   amount, monthly amount, contribution day, and cost before the editable form.
 

@@ -614,7 +614,7 @@ void main() {
     final marketStackRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-market-stack')),
     );
-    expect(marketStackRect.height, lessThanOrEqualTo(340));
+    expect(marketStackRect.height, lessThanOrEqualTo(405));
     final ribbonRect = tester.getRect(compactRibbon);
     expect(ribbonRect.height, lessThanOrEqualTo(28));
     expect(
@@ -697,6 +697,13 @@ void main() {
       const ValueKey('00631l-overview-mobile-daily-summary-card'),
     );
     expect(mobileDailySummary, findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-overview-market-stack')),
+        matching: mobileDailySummary,
+      ),
+      findsOneWidget,
+    );
     expect(tester.getRect(mobileDailySummary).height, lessThanOrEqualTo(84));
     final aiGlance = find.byKey(
       const ValueKey('00631l-overview-ai-glance-card'),
@@ -864,6 +871,13 @@ void main() {
     expect(touchDetail, findsOneWidget);
     expect(digest, findsOneWidget);
     expect(mobileSummary, findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-overview-market-stack')),
+        matching: mobileSummary,
+      ),
+      findsOneWidget,
+    );
     expect(bottomNav, findsOneWidget);
 
     final quoteRect = tester.getRect(quoteHeader);

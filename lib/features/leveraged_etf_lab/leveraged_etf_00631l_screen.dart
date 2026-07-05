@@ -3965,12 +3965,11 @@ class _OverviewSection extends StatelessWidget {
               const SizedBox(height: 8),
               _SelectedEtfOverviewDigest(selectedEtf: selectedEtf),
             ],
-            SizedBox(height: sectionGap),
             if (selectedEtf.is00631L) ...[
-              if (showMobileHoldingsDigest)
-                _OverviewMobileDailySummaryPanel(data: data)
-              else
+              if (!showMobileHoldingsDigest) ...[
+                SizedBox(height: sectionGap),
                 _OverviewAiGlancePanel(data: data),
+              ],
               SizedBox(height: sectionGap),
             ],
             if (!selectedEtf.is00631L)
@@ -4045,7 +4044,19 @@ class _OverviewMarketStack extends StatelessWidget {
                 const _MarketStackDivider(),
                 SizedBox(height: compact ? 1 : 3),
                 if (compact)
-                  _OverviewCompactDataRibbon(data: data)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _OverviewCompactDataRibbon(data: data),
+                      const SizedBox(height: 3),
+                      const _MarketStackDivider(),
+                      const SizedBox(height: 3),
+                      _OverviewMobileDailySummaryPanel(
+                        data: data,
+                        embedded: true,
+                      ),
+                    ],
+                  )
                 else ...[
                   _OverviewDailySummaryStrip(
                     data: data,
@@ -4304,9 +4315,13 @@ class _OverviewAiGlancePanel extends StatelessWidget {
 }
 
 class _OverviewMobileDailySummaryPanel extends StatelessWidget {
-  const _OverviewMobileDailySummaryPanel({required this.data});
+  const _OverviewMobileDailySummaryPanel({
+    required this.data,
+    this.embedded = false,
+  });
 
   final Etf00631LLabData data;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
@@ -4326,6 +4341,71 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
     final compactLine = _overviewDailyInsight(data) ??
         (bullets.isEmpty ? 'AI 摘要暫無資料' : bullets.first);
 
+    final content = Padding(
+      padding: embedded
+          ? const EdgeInsets.fromLTRB(2, 1, 2, 2)
+          : const EdgeInsets.fromLTRB(6, 3, 6, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            key: const ValueKey('00631l-overview-ai-glance-card'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'AI 摘要',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w900,
+                          height: 1,
+                        ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '非買賣建議',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: _marketMutedTextColor(context),
+                          fontWeight: FontWeight.w900,
+                          height: 1,
+                        ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              Text(
+                compactLine,
+                key: const ValueKey('00631l-overview-ai-compact-line'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      height: 1.12,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 1),
+          const _MarketStackDivider(),
+          const SizedBox(height: 2),
+          _OverviewHoldingsDigestPanel(
+            data: data,
+            embedded: true,
+            showEmbeddedHeader: false,
+          ),
+        ],
+      ),
+    );
+
+    if (embedded) {
+      return KeyedSubtree(
+        key: const ValueKey('00631l-overview-mobile-daily-summary-card'),
+        child: content,
+      );
+    }
+
     return DecoratedBox(
       key: const ValueKey('00631l-overview-mobile-daily-summary-card'),
       decoration: BoxDecoration(
@@ -4333,61 +4413,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _marketBorderColor(context)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(6, 3, 6, 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              key: const ValueKey('00631l-overview-ai-glance-card'),
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'AI 摘要',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: _marketMutedTextColor(context),
-                            fontWeight: FontWeight.w900,
-                            height: 1,
-                          ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '非買賣建議',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: _marketMutedTextColor(context),
-                            fontWeight: FontWeight.w900,
-                            height: 1,
-                          ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  compactLine,
-                  key: const ValueKey('00631l-overview-ai-compact-line'),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: _marketTextColor(context),
-                        fontWeight: FontWeight.w900,
-                        height: 1.12,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 1),
-            const _MarketStackDivider(),
-            const SizedBox(height: 2),
-            _OverviewHoldingsDigestPanel(
-              data: data,
-              embedded: true,
-              showEmbeddedHeader: false,
-            ),
-          ],
-        ),
-      ),
+      child: content,
     );
   }
 }
