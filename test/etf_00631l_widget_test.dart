@@ -901,6 +901,13 @@ void main() {
     expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
     expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));
     expect(chartRect.bottom, lessThanOrEqualTo(384));
+    expect(
+      find.descendant(
+        of: mobileSummary,
+        matching: find.text('非買賣建議'),
+      ),
+      findsNothing,
+    );
     _expectNoTradingActionText();
   });
 

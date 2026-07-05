@@ -4378,30 +4378,8 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
             key: const ValueKey('00631l-overview-ai-glance-card'),
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    'AI 摘要',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: _marketMutedTextColor(context),
-                          fontWeight: FontWeight.w900,
-                          height: 1,
-                        ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '非買賣建議',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: _marketMutedTextColor(context),
-                          fontWeight: FontWeight.w900,
-                          height: 1,
-                        ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 2),
               Text(
-                compactLine,
+                'AI · $compactLine',
                 key: const ValueKey('00631l-overview-ai-compact-line'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.10 removes the extra label row from the phone overview AI/holdings stack
+  so chart, AI summary, and holdings context sit closer together.
+
 - v16.09 folds saved shares and average cost into the phone position title line
   so the account strip shows user-entered context without extra height.
 

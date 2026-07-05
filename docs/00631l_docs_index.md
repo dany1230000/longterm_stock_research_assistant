@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview AI inline v16.10: `docs\00631l_v16_10_overview_ai_inline.md`
 - Position title context v16.09: `docs\00631l_v16_09_position_title_context.md`
 - AI compact insight v16.08: `docs\00631l_v16_08_ai_compact_insight.md`
 - Quote header caption v16.07: `docs\00631l_v16_07_quote_header_caption.md`
