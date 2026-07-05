@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.38 changes the phone overview first-glance cash label from `CASH` to
+  `現金`.
+
 - v16.37 shortens the phone overview chart date axis to `yy/MM/dd` while
   keeping full dates in chart touch details and wider layouts.
 
@@ -44,7 +47,7 @@ Latest mobile UI polish:
   date controls and parameters appear sooner.
 
 - v16.24 compresses the overview phone first screen into a quote/chart block
-  plus a thin `AI / TX / 2330 / CASH` first-glance strip.
+  plus a thin `AI / TX / 2330 / 現金` first-glance strip.
 
 - v16.23 renames the bottom-right app entry from `設定` to `帳戶` so it reads
   like an account and preferences area rather than a system console.

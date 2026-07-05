@@ -4387,7 +4387,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
         isHolding: true,
       ),
       _OverviewFirstGlanceItem(
-        label: 'CASH',
+        label: '現金',
         value: hasUsableHoldings
             ? formatNullablePercent(snapshot.cashAndMarginWeightPct)
             : _sourceStatusBadgeLabel(snapshot.status.label),

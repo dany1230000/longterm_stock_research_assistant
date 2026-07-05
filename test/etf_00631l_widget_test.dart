@@ -752,7 +752,7 @@ void main() {
       const ValueKey('00631l-mobile-holding-digest-chip'),
     );
     expect(mobileDigestChips, findsNWidgets(3));
-    for (final label in const ['TX', '2330', 'CASH']) {
+    for (final label in const ['TX', '2330', '現金']) {
       expect(
         find.descendant(
           of: find.byKey(
@@ -993,12 +993,23 @@ void main() {
     expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
     expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));
     expect(chartRect.bottom, lessThanOrEqualTo(366));
-    for (final label in const ['AI', 'TX', '2330', 'CASH']) {
+    for (final label in const ['AI', 'TX', '2330', '現金']) {
       expect(
         find.descendant(of: firstGlance, matching: find.text(label)),
         findsOneWidget,
       );
     }
+    expect(
+      find.descendant(of: firstGlance, matching: find.text('CASH')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
+        matching: find.text('CASH'),
+      ),
+      findsNothing,
+    );
     expect(
       find.descendant(
         of: mobileSummary,
@@ -1028,12 +1039,16 @@ void main() {
     expect(firstGlance, findsOneWidget);
     expect(aiStatus, findsOneWidget);
     expect((tester.widget<Text>(aiStatus).data ?? '').trim(), isNotEmpty);
-    for (final label in const ['AI', 'TX', '2330', 'CASH']) {
+    for (final label in const ['AI', 'TX', '2330', '現金']) {
       expect(
         find.descendant(of: firstGlance, matching: find.text(label)),
         findsOneWidget,
       );
     }
+    expect(
+      find.descendant(of: firstGlance, matching: find.text('CASH')),
+      findsNothing,
+    );
     _expectNoTradingActionText();
   });
 
@@ -3487,12 +3502,16 @@ void main() {
     );
     final holdingsDigestRect = tester.getRect(holdingsDigest);
     expect(holdingsDigestRect.height, lessThanOrEqualTo(24));
-    for (final label in const ['TX', '2330', 'CASH']) {
+    for (final label in const ['TX', '2330', '現金']) {
       expect(
         find.descendant(of: holdingsDigest, matching: find.text(label)),
         findsWidgets,
       );
     }
+    expect(
+      find.descendant(of: holdingsDigest, matching: find.text('CASH')),
+      findsNothing,
+    );
     expect(
       find.byKey(const ValueKey('00631l-holding-digest-metric-row')),
       findsNothing,
