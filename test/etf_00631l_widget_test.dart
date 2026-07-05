@@ -613,9 +613,15 @@ void main() {
       );
     }
     expect(
-      find.descendant(of: compactRibbon, matching: find.text('mock')),
+      find.descendant(of: compactRibbon, matching: find.text('示範')),
       findsOneWidget,
     );
+    for (final label in const ['mock', 'static', 'live']) {
+      expect(
+        find.descendant(of: compactRibbon, matching: find.text(label)),
+        findsNothing,
+      );
+    }
     for (final label in const ['TX', '2330']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),

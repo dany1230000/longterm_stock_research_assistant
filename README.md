@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.32 changes the phone overview ribbon mode value from internal codes like
+  `mock/static/live` to product labels such as `示範`, `靜態`, and `Live`.
+
 - v16.31 changes the phone overview data ribbon from `DAY / NAV / HIS / MODE`
   to compact Chinese labels: `日 / 盤 / 歷 / 模式`.
 

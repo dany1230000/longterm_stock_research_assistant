@@ -3487,14 +3487,14 @@ String get _frontendSettingsModeLabel {
   return '示範模式';
 }
 
-String get _frontendDataModeShortLabel {
+String get _frontendDataModeRibbonValue {
   if (_use00631LLiveProxy) {
-    return 'live';
+    return 'Live';
   }
   if (_use00631LStaticData) {
-    return 'static';
+    return '靜態';
   }
-  return 'mock';
+  return '示範';
 }
 
 String get _frontendDataModeDisplay {
@@ -4152,7 +4152,7 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
       ),
       _OverviewCompactRibbonItem(
         label: '模式',
-        value: _frontendDataModeShortLabel,
+        value: _frontendDataModeRibbonValue,
       ),
     ];
 
