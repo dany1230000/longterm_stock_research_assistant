@@ -265,7 +265,7 @@ enum _LabSection {
   historyBacktest('歷史', Icons.query_stats_outlined),
   position('持倉', Icons.account_balance_wallet_outlined),
   ai('AI', Icons.psychology_alt_outlined),
-  settings('設定', Icons.settings_outlined);
+  settings('帳戶', Icons.person_outline);
 
   const _LabSection(this.label, this.icon);
   final String label;
@@ -15368,7 +15368,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      '設定',
+                      '帳戶',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),

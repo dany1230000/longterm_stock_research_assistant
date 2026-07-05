@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.23 renames the bottom-right app entry from `設定` to `帳戶` so it reads
+  like an account and preferences area rather than a system console.
+
 - v16.22 clarifies the history/backtest top strip labels and shortens the phone
   title to `00631L yyyy/MM/dd`.
 

@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Account tab label v16.23: `docs\00631l_v16_23_account_tab_label.md`
 - History header labels v16.22: `docs\00631l_v16_22_history_header_labels.md`
 - Overview chart labels v16.21: `docs\00631l_v16_21_overview_chart_labels.md`
 - Phone density regression v16.20: `docs\00631l_v16_20_phone_density_regression.md`
