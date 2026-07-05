@@ -1232,8 +1232,11 @@ void main() {
           .height,
       lessThanOrEqualTo(42),
     );
-    for (final label in const ['HIS', 'LIVE', 'AI']) {
+    for (final label in const ['歷', '盤', '解讀']) {
       expect(find.text(label), findsWidgets);
+    }
+    for (final label in const ['HIS', 'LIVE']) {
+      expect(find.text(label), findsNothing);
     }
   });
 

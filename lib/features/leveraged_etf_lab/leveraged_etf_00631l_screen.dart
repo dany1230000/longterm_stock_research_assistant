@@ -1008,15 +1008,15 @@ class _LoadingSourceRail extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: _LoadingSourceChip(label: 'HIS', value: '公開歷史'),
+              child: _LoadingSourceChip(label: '歷', value: '公開歷史'),
             ),
             SizedBox(width: 5),
             Expanded(
-              child: _LoadingSourceChip(label: 'LIVE', value: '後端檢查'),
+              child: _LoadingSourceChip(label: '盤', value: '後端檢查'),
             ),
             SizedBox(width: 5),
             Expanded(
-              child: _LoadingSourceChip(label: 'AI', value: '摘要準備'),
+              child: _LoadingSourceChip(label: '解讀', value: '摘要準備'),
             ),
           ],
         ),

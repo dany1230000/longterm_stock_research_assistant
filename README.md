@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.35 changes the loading source strip from `HIS / LIVE / AI` to
+  `歷 / 盤 / 解讀`, so the first loading screen no longer reads like debug UI.
+
 - v16.34 changes the AI first-screen fact row from `DAY / LIVE / 曝險` to
   `日 / 盤 / 曝險` so it reads like product UI instead of a debug panel.
 
