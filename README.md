@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v16.17 makes the phone AI page first screen read more like a concise daily
+  interpretation by removing a visual meta capsule and tightening the facts,
+  program action, and insight rows.
+
 - v16.16 tightens the phone overview market stack so the quote, one-year chart,
   date touch detail, source ribbon, and daily digest sit closer together.
 
