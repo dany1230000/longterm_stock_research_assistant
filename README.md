@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.21 makes the overview chart date axis and touch detail labels readable:
+  `起點`, `中段`, `最新`, `日期`, and `收盤`.
+
 - v16.20 adds a cross-tab phone density regression guard so overview, AI,
   position, and settings first screens stay compact together.
 

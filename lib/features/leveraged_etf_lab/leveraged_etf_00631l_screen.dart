@@ -6723,7 +6723,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
             child: _dateCell(
               context,
               key: const ValueKey('00631l-overview-sparkline-date-start'),
-              label: '起',
+              label: '\u8d77\u9ede',
               date: start,
               align: CrossAxisAlignment.start,
               textAlign: TextAlign.left,
@@ -6735,7 +6735,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
             child: _dateCell(
               context,
               key: const ValueKey('00631l-overview-sparkline-date-mid'),
-              label: '中',
+              label: '\u4e2d\u6bb5',
               date: middle,
               align: CrossAxisAlignment.center,
               textAlign: TextAlign.center,
@@ -6747,7 +6747,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
             child: _dateCell(
               context,
               key: const ValueKey('00631l-overview-sparkline-date-end'),
-              label: '迄',
+              label: '\u6700\u65b0',
               date: end,
               align: CrossAxisAlignment.end,
               textAlign: TextAlign.right,
@@ -6765,7 +6765,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
           child: _dateCell(
             context,
             key: const ValueKey('00631l-overview-sparkline-date-start'),
-            label: compact ? '起' : '起點',
+            label: '\u8d77\u9ede',
             date: start,
             align: CrossAxisAlignment.start,
             textAlign: TextAlign.left,
@@ -6777,7 +6777,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
           child: _dateCell(
             context,
             key: const ValueKey('00631l-overview-sparkline-date-mid'),
-            label: compact ? '中' : '中段',
+            label: '\u4e2d\u6bb5',
             date: middle,
             align: CrossAxisAlignment.center,
             textAlign: TextAlign.center,
@@ -6789,7 +6789,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
           child: _dateCell(
             context,
             key: const ValueKey('00631l-overview-sparkline-date-end'),
-            label: compact ? '迄' : '終點',
+            label: '\u6700\u65b0',
             date: end,
             align: CrossAxisAlignment.end,
             textAlign: TextAlign.right,
@@ -17979,7 +17979,7 @@ class _ChartTouchDetail extends StatelessWidget {
               flex: 5,
               child: _ChartTouchInfoPill(
                 key: const ValueKey('00631l-line-chart-touch-date'),
-                label: '日',
+                label: '\u65e5\u671f',
                 value: formatTaiwanDate(point!.date),
                 compact: true,
                 flat: true,
@@ -17990,7 +17990,7 @@ class _ChartTouchDetail extends StatelessWidget {
               flex: 4,
               child: _ChartTouchInfoPill(
                 key: const ValueKey('00631l-line-chart-touch-value'),
-                label: '值',
+                label: '\u6536\u76e4',
                 value: _compactChartValue(value!),
                 compact: true,
                 flat: true,
@@ -18023,7 +18023,7 @@ class _ChartTouchDetail extends StatelessWidget {
                     flex: 5,
                     child: _ChartTouchInfoPill(
                       key: const ValueKey('00631l-line-chart-touch-date'),
-                      label: '日',
+                      label: '\u65e5\u671f',
                       value: formatTaiwanDate(point!.date),
                       compact: compact,
                     ),
@@ -18033,7 +18033,7 @@ class _ChartTouchDetail extends StatelessWidget {
                     flex: 4,
                     child: _ChartTouchInfoPill(
                       key: const ValueKey('00631l-line-chart-touch-value'),
-                      label: '值',
+                      label: '\u6536\u76e4',
                       value: _compactChartValue(value!),
                       compact: compact,
                     ),

@@ -1010,9 +1010,9 @@ void main() {
     expect(find.text('2025/06/03'), findsWidgets);
     expect(find.text('2026/06/01'), findsWidgets);
     expect(find.text('2026/06/03'), findsWidgets);
-    expect(find.text('起點'), findsWidgets);
-    expect(find.text('中段'), findsWidgets);
-    expect(find.text('終點'), findsWidgets);
+    expect(find.text('\u8d77\u9ede'), findsWidgets);
+    expect(find.text('\u4e2d\u6bb5'), findsWidgets);
+    expect(find.text('\u6700\u65b0'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-overview-sparkline-date-start')),
       findsOneWidget,
@@ -1032,6 +1032,20 @@ void main() {
     expect(
       find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
       findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
+        matching: find.text('\u65e5\u671f'),
+      ),
+      findsWidgets,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
+        matching: find.text('\u6536\u76e4'),
+      ),
+      findsWidgets,
     );
     expect(
       tester
