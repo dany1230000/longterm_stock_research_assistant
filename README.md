@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.13 removes the extra phone settings wrapper so account, appearance,
+  current ETF, and local position preferences read like a compact settings row.
+
 - v16.12 keeps the phone position summary cleaner by moving the saved-position
   update action inside the edit panel instead of showing it on the first screen.
 

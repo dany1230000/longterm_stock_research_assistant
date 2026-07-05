@@ -14696,6 +14696,41 @@ class _SettingsSection extends StatelessWidget {
     final status = data.operationsStatus;
     final readiness = status.dailyReadinessSummary;
     final compact = MediaQuery.sizeOf(context).width < 430;
+    final preferenceItems = [
+      const _SettingsPreferenceItem(
+        keySuffix: 'account',
+        icon: Icons.person_outline,
+        label: '帳戶',
+        status: '不需登入',
+        detail: '00631L 正二研究室目前不需要帳號或券商登入。',
+        action: '可直接使用公開 PWA；持倉資料留在本機。',
+      ),
+      const _SettingsPreferenceItem(
+        keySuffix: 'appearance',
+        icon: Icons.contrast_outlined,
+        label: '外觀',
+        status: '可切換',
+        detail: '右上角可切換夜間模式，偏好會保存在本機。',
+        action: '需要切換時點選月亮或太陽圖示。',
+      ),
+      _SettingsPreferenceItem(
+        keySuffix: 'selected-etf',
+        icon: Icons.manage_search_outlined,
+        label: '目前 ETF',
+        status: selectedEtf.code,
+        detail:
+            '${selectedEtf.name}；價格資料 ${_sourceStatusBadgeLabel(selectedEtf.priceHistory.sourceStatusLabel)}。',
+        action: '左上角代號按鈕可搜尋並切換 ETF。',
+      ),
+      _SettingsPreferenceItem(
+        keySuffix: 'position',
+        icon: Icons.account_balance_wallet_outlined,
+        label: '持倉資料',
+        status: _sourceStatusBadgeLabel(status.positionStatus),
+        detail: '${selectedEtf.code} 持倉追蹤採本機保存，不會上傳個人持倉。',
+        action: '可在持倉頁保存、匯出 JSON 或清除。',
+      ),
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -14705,48 +14740,14 @@ class _SettingsSection extends StatelessWidget {
           readinessLabel: readiness.label,
         ),
         SizedBox(height: compact ? 6 : 10),
-        _SectionBlock(
-          title: '帳戶與偏好',
-          subtitle: '一般使用者只需要看這裡：登入、外觀、目前 ETF 與本機持倉狀態。',
-          compactOnPhone: true,
-          child: _SettingsPreferenceGrid(
-            items: [
-              const _SettingsPreferenceItem(
-                keySuffix: 'account',
-                icon: Icons.person_outline,
-                label: '帳戶',
-                status: '不需登入',
-                detail: '00631L 正二研究室目前不需要帳號或券商登入。',
-                action: '可直接使用公開 PWA；持倉資料留在本機。',
-              ),
-              const _SettingsPreferenceItem(
-                keySuffix: 'appearance',
-                icon: Icons.contrast_outlined,
-                label: '外觀',
-                status: '可切換',
-                detail: '右上角可切換夜間模式，偏好會保存在本機。',
-                action: '需要切換時點選月亮或太陽圖示。',
-              ),
-              _SettingsPreferenceItem(
-                keySuffix: 'selected-etf',
-                icon: Icons.manage_search_outlined,
-                label: '目前 ETF',
-                status: selectedEtf.code,
-                detail:
-                    '${selectedEtf.name}；價格資料 ${_sourceStatusBadgeLabel(selectedEtf.priceHistory.sourceStatusLabel)}。',
-                action: '左上角代號按鈕可搜尋並切換 ETF。',
-              ),
-              _SettingsPreferenceItem(
-                keySuffix: 'position',
-                icon: Icons.account_balance_wallet_outlined,
-                label: '持倉資料',
-                status: _sourceStatusBadgeLabel(status.positionStatus),
-                detail: '${selectedEtf.code} 持倉追蹤採本機保存，不會上傳個人持倉。',
-                action: '可在持倉頁保存、匯出 JSON 或清除。',
-              ),
-            ],
+        if (compact)
+          _SettingsPreferenceGrid(items: preferenceItems)
+        else
+          _SectionBlock(
+            title: '帳戶與偏好',
+            subtitle: '一般使用者只需要看這裡：登入、外觀、目前 ETF 與本機持倉狀態。',
+            child: _SettingsPreferenceGrid(items: preferenceItems),
           ),
-        ),
         _CompactExpansionPanel(
           key: const ValueKey('00631l-settings-advanced-settings-panel'),
           title: '進階設定',
@@ -17392,44 +17393,36 @@ class _SectionBlock extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.child,
-    this.compactOnPhone = false,
   });
 
   final String title;
   final String subtitle;
   final Widget child;
-  final bool compactOnPhone;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final compact = compactOnPhone && MediaQuery.sizeOf(context).width < 430;
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(compact ? 8 : 14),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: (compact
-                      ? theme.textTheme.titleSmall
-                      : theme.textTheme.titleLarge)
-                  ?.copyWith(
+              style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w900,
               ),
             ),
-            if (!compact) ...[
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  height: 1.4,
-                ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                height: 1.4,
               ),
-            ],
-            SizedBox(height: compact ? 7 : 12),
+            ),
+            const SizedBox(height: 12),
             child,
           ],
         ),
