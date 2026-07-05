@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- AI compact insight v16.08: `docs\00631l_v16_08_ai_compact_insight.md`
 - Quote header caption v16.07: `docs\00631l_v16_07_quote_header_caption.md`
 - Position time badge v16.06: `docs\00631l_v16_06_position_time_badge.md`
 - History top strip v16.05: `docs\00631l_v16_05_history_top_strip.md`

@@ -3877,7 +3877,7 @@ void main() {
     final hero = find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
 
     expect(hero, findsOneWidget);
-    expect(tester.getRect(hero).height, lessThanOrEqualTo(360));
+    expect(tester.getRect(hero).height, lessThanOrEqualTo(340));
     expect(headline, findsOneWidget);
     expect(primaryAction, findsOneWidget);
     expect(compactMeta, findsOneWidget);
@@ -3902,6 +3902,13 @@ void main() {
     }
     expect(compactInsight, findsOneWidget);
     expect(compactInsightDailyText, findsOneWidget);
+    expect(
+      find.descendant(
+        of: compactInsight,
+        matching: find.textContaining('目前使用'),
+      ),
+      findsOneWidget,
+    );
     expect(
       tester.getRect(compactInsight).height,
       lessThanOrEqualTo(58),

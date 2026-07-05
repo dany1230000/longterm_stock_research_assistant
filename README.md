@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.08 makes the phone AI first screen use the actual rule-based daily bullet
+  and trims the hero spacing so the page reads like an app status brief.
+
 - v16.07 folds quote source state into the phone quote caption so the price row
   only competes with the premium/discount box.
 
