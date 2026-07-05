@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.15 gives the phone app header stronger proportions by increasing the
+  ETF room title and symbol search pill without adding header height.
+
 - v16.14 trims the phone overview data ribbon and holdings digest chips so the
   quote, chart, AI line, and holdings context fit tighter on the first screen.
 

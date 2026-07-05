@@ -1154,10 +1154,10 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: _marketTextColor(context),
-                        fontSize: 23,
+                        fontSize: 24,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0,
-                        height: 1.08,
+                        height: 1.04,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -1223,7 +1223,7 @@ class _MarketIndexPill extends StatelessWidget {
             border: Border.all(color: const Color(0xFF67C58B)),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -1231,8 +1231,9 @@ class _MarketIndexPill extends StatelessWidget {
                   label,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
+                    fontSize: 18,
                     fontWeight: FontWeight.w900,
+                    height: 1.0,
                   ),
                 ),
                 const SizedBox(width: 5),
