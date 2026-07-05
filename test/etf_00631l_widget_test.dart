@@ -2129,9 +2129,12 @@ void main() {
           .height,
       lessThanOrEqualTo(38),
     );
+    expect(find.text('保存'), findsOneWidget);
+    expect(find.text('保存本機資料'), findsNothing);
+    expect(find.text('只保存在此裝置。'), findsNothing);
     final inputCard =
         find.byKey(const ValueKey('00631l-position-compact-input-card'));
-    expect(tester.getRect(inputCard).height, lessThanOrEqualTo(180));
+    expect(tester.getRect(inputCard).height, lessThanOrEqualTo(160));
     expect(
       find.descendant(
         of: inputCard,

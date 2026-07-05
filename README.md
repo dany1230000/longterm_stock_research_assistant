@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.26 tightens the empty-position phone card by keeping the first screen to
+  the two core inputs and a short local save action.
+
 - v16.25 shortens the phone backtest quick result to the four core metrics so
   date controls and parameters appear sooner.
 

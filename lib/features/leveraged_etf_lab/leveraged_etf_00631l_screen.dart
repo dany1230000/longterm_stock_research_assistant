@@ -11643,7 +11643,7 @@ class _PositionCompactEmptyInputCard extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
+        padding: EdgeInsets.fromLTRB(8, compact ? 6 : 8, 8, compact ? 7 : 9),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -11673,23 +11673,25 @@ class _PositionCompactEmptyInputCard extends StatelessWidget {
                   const _CompactTextBadge(label: '本機保存'),
               ],
             ),
-            SizedBox(height: compact ? 1 : 3),
-            Text(
-              compact ? '只保存在此裝置。' : '股數與平均成本只保存在此裝置。',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w800,
+            if (!compact) ...[
+              const SizedBox(height: 3),
+              Text(
+                '股數與平均成本只保存在此裝置。',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
-            const SizedBox(height: 5),
+            ],
+            SizedBox(height: compact ? 4 : 5),
             inputForm,
-            const SizedBox(height: 5),
+            SizedBox(height: compact ? 4 : 5),
             _PositionQuickAction(
               key: const ValueKey('00631l-position-action-save'),
               icon: Icons.save_outlined,
-              label: '保存本機資料',
+              label: compact ? '保存' : '保存本機資料',
               caption: '只保存在此裝置',
               isPrimary: true,
               fillWidth: true,
