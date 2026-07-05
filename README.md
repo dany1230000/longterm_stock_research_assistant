@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.43 localizes the remaining visible data badges from `DAY / LIVE / HIS`
+  to `日 / 盤 / 歷` in overview, holdings, AI, and advanced summary rows.
+
 - v16.42 changes overview detail source-card badges from `DAY / LIVE / HIS`
   to `日 / 盤 / 歷`.
 

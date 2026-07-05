@@ -890,8 +890,7 @@ void main() {
 
     await _tapSection(tester, 'ai');
     await tester.pumpAndSettle();
-    final aiHero =
-        find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
+    final aiHero = find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
     final aiFacts = find.byKey(const ValueKey('00631l-ai-first-screen-facts'));
     expect(aiHero, findsOneWidget);
     expect(aiFacts, findsOneWidget);
@@ -927,8 +926,8 @@ void main() {
     expect(settingsSummary, findsOneWidget);
     expect(settingsPreferenceGrid, findsOneWidget);
     expect(tester.getRect(settingsSummary).height, lessThanOrEqualTo(112));
-    expect(tester.getRect(settingsPreferenceGrid).height,
-        lessThanOrEqualTo(58));
+    expect(
+        tester.getRect(settingsPreferenceGrid).height, lessThanOrEqualTo(58));
     _expectNoTradingActionText();
   });
 
@@ -1089,6 +1088,30 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('overview update clock strip uses localized data badges',
+      (tester) async {
+    await _pumpLab(tester, _OfficialIntradayRepository());
+    await _expandOverviewMore(tester);
+
+    final clockStrip = find.byKey(
+      const ValueKey('00631l-overview-update-clock-strip'),
+    );
+    expect(clockStrip, findsOneWidget);
+    for (final label in const ['日', '盤', '歷']) {
+      expect(
+        find.descendant(of: clockStrip, matching: find.text(label)),
+        findsWidgets,
+      );
+    }
+    for (final label in const ['DAY', 'LIVE', 'HIS']) {
+      expect(
+        find.descendant(of: clockStrip, matching: find.text(label)),
+        findsNothing,
+      );
+    }
+    _expectNoTradingActionText();
+  });
+
   testWidgets('overview chart shows one-year label and date axis',
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());
@@ -1123,14 +1146,16 @@ void main() {
     );
     expect(
       find.descendant(
-        of: find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
+        of: find
+            .byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
         matching: find.text('\u65e5\u671f'),
       ),
       findsWidgets,
     );
     expect(
       find.descendant(
-        of: find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
+        of: find
+            .byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
         matching: find.text('\u6536\u76e4'),
       ),
       findsWidgets,
@@ -1662,8 +1687,10 @@ void main() {
         find.byKey(const ValueKey('00631l-history-backtest-top-strip'));
     expect(topStrip, findsOneWidget);
     expect(tester.getRect(topStrip).height, lessThanOrEqualTo(70));
-    expect(find.descendant(of: topStrip, matching: find.text('歷')), findsOneWidget);
-    expect(find.descendant(of: topStrip, matching: find.text('HIS')), findsNothing);
+    expect(find.descendant(of: topStrip, matching: find.text('歷')),
+        findsOneWidget);
+    expect(find.descendant(of: topStrip, matching: find.text('HIS')),
+        findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-history-top-strip-metrics')),
       findsOneWidget,
@@ -3708,14 +3735,18 @@ void main() {
     for (final label in const ['日', '盤', '曝險']) {
       expect(find.text(label), findsOneWidget);
     }
-    expect(find.descendant(
-      of: find.byKey(const ValueKey('00631l-ai-first-screen-facts')),
-      matching: find.text('DAY'),
-    ), findsNothing);
-    expect(find.descendant(
-      of: find.byKey(const ValueKey('00631l-ai-first-screen-facts')),
-      matching: find.text('LIVE'),
-    ), findsNothing);
+    expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('00631l-ai-first-screen-facts')),
+          matching: find.text('DAY'),
+        ),
+        findsNothing);
+    expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('00631l-ai-first-screen-facts')),
+          matching: find.text('LIVE'),
+        ),
+        findsNothing);
     expect(find.text('今日結論'), findsNothing);
     expect(find.text('HIS'), findsNothing);
     expect(find.text('今日重點'), findsOneWidget);

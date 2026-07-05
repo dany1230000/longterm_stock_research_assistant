@@ -3070,7 +3070,7 @@ class _OverviewActionRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         child: Row(
           children: [
-            const _MiniStatusBadge(label: 'DAY'),
+            const _MiniStatusBadge(label: '日'),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -4937,14 +4937,14 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
     final items = selectedEtf.is00631L
         ? [
             _OverviewClockItem(
-              badge: 'DAY',
+              badge: '日',
               title: '內容物',
               value: formatTaiwanDate(data.snapshot.tradeDate),
               caption: '官方每日快照',
               status: _sourceStatusBadgeLabel(data.snapshot.status.label),
             ),
             _OverviewClockItem(
-              badge: 'LIVE',
+              badge: '盤',
               title: 'NAV',
               value: nav?.dataTime == null
                   ? '暫無'
@@ -4964,7 +4964,7 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
               status: _txOverviewStatusLabel(tx),
             ),
             _OverviewClockItem(
-              badge: 'HIS',
+              badge: '歷',
               title: '歷史',
               value: _dateOrDash(priceSummary.coverageEnd),
               caption: '${formatInteger(priceSummary.rowCount)} 筆',
@@ -4984,7 +4984,7 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
               status: _sourceStatusBadgeLabel(selectedEtf.sourceStatusLabel),
             ),
             _OverviewClockItem(
-              badge: 'HIS',
+              badge: '歷',
               title: '歷史',
               value: _dateOrDash(priceSummary.coverageEnd),
               caption: '${formatInteger(priceSummary.rowCount)} 筆',
@@ -4993,7 +4993,7 @@ class _OverviewUpdateClockStrip extends StatelessWidget {
               ),
             ),
             const _OverviewClockItem(
-              badge: 'DAY',
+              badge: '日',
               title: '內容物',
               value: '00631L only',
               caption: '不套用到其他 ETF',
@@ -5776,7 +5776,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
             Row(
               key: const ValueKey('00631l-overview-holdings-digest-title-row'),
               children: [
-                const _MiniStatusBadge(label: 'DAY'),
+                const _MiniStatusBadge(label: '日'),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -5796,52 +5796,52 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
           ],
           hasUsableHoldings
               ? _HoldingDigestStrip(
-                      items: [
-                        _HoldingDigestItem(
-                          title: '期貨',
-                          value: txLine == null
-                              ? 'unavailable'
-                              : formatNullablePercent(txLine.weightPct),
-                          caption: txLine == null
-                              ? '官方快照未列 TX'
-                              : '${txLine.code} / ${txLine.contractMonth}',
+                  items: [
+                    _HoldingDigestItem(
+                      title: '期貨',
+                      value: txLine == null
+                          ? 'unavailable'
+                          : formatNullablePercent(txLine.weightPct),
+                      caption: txLine == null
+                          ? '官方快照未列 TX'
+                          : '${txLine.code} / ${txLine.contractMonth}',
+                    ),
+                    _HoldingDigestItem(
+                      title: '台積電',
+                      value: tsmcLine == null
+                          ? 'unavailable'
+                          : formatNullablePercent(tsmcLine.weightPct),
+                      caption: tsmcLine == null
+                          ? '官方快照未列 2330'
+                          : '${formatInteger(tsmcLine.quantity)} 股',
+                    ),
+                    _HoldingDigestItem(
+                      title: '曝險結構',
+                      value: '三項比例',
+                      caption: '股票 / 期貨 / 現金',
+                      metrics: [
+                        _HoldingDigestMetric(
+                          label: '股',
+                          value: formatNullablePercent(
+                            snapshot.stockExposureWeightPct,
+                          ),
                         ),
-                        _HoldingDigestItem(
-                          title: '台積電',
-                          value: tsmcLine == null
-                              ? 'unavailable'
-                              : formatNullablePercent(tsmcLine.weightPct),
-                          caption: tsmcLine == null
-                              ? '官方快照未列 2330'
-                              : '${formatInteger(tsmcLine.quantity)} 股',
+                        _HoldingDigestMetric(
+                          label: '期',
+                          value: formatNullablePercent(
+                            snapshot.futuresExposureWeightPct,
+                          ),
                         ),
-                        _HoldingDigestItem(
-                          title: '曝險結構',
-                          value: '三項比例',
-                          caption: '股票 / 期貨 / 現金',
-                          metrics: [
-                            _HoldingDigestMetric(
-                              label: '股',
-                              value: formatNullablePercent(
-                                snapshot.stockExposureWeightPct,
-                              ),
-                            ),
-                            _HoldingDigestMetric(
-                              label: '期',
-                              value: formatNullablePercent(
-                                snapshot.futuresExposureWeightPct,
-                              ),
-                            ),
-                            _HoldingDigestMetric(
-                              label: '現',
-                              value: formatNullablePercent(
-                                snapshot.cashAndMarginWeightPct,
-                              ),
-                            ),
-                          ],
+                        _HoldingDigestMetric(
+                          label: '現',
+                          value: formatNullablePercent(
+                            snapshot.cashAndMarginWeightPct,
+                          ),
                         ),
                       ],
-                    )
+                    ),
+                  ],
+                )
               : _HoldingDigestUnavailable(snapshot: snapshot),
         ],
       ),
@@ -6068,7 +6068,7 @@ class _HoldingDigestUnavailable extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
         child: Row(
           children: [
-            const _MiniStatusBadge(label: 'DAY'),
+            const _MiniStatusBadge(label: '日'),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -6980,7 +6980,7 @@ class _OverviewExposureBlock extends StatelessWidget {
           children: [
             Row(
               children: [
-                const _MiniStatusBadge(label: 'DAY'),
+                const _MiniStatusBadge(label: '日'),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -7562,7 +7562,7 @@ class _HoldingsSection extends StatelessWidget {
           subtitle: '官方每日資料，不是盤中即時內容物；盤中請看 盤中 NAV 與折溢價。',
           icon: Icons.inventory_2_outlined,
           badges: [
-            'DAY',
+            '日',
             'source ${snapshot.status.label}',
             'tradeDate ${formatTaiwanDate(snapshot.tradeDate)}',
           ],
@@ -16227,7 +16227,7 @@ class _HoldingsExposureCompare extends StatelessWidget {
           children: [
             Row(
               children: [
-                const _MiniStatusBadge(label: 'DAY'),
+                const _MiniStatusBadge(label: '日'),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(

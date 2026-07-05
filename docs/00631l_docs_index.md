@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Remaining data badges v16.43: `docs\00631l_v16_43_remaining_data_badges.md`
 - Overview detail badges v16.42: `docs\00631l_v16_42_overview_detail_badges.md`
 - History badge v16.41: `docs\00631l_v16_41_history_badge.md`
 - Overview stack density v16.40: `docs\00631l_v16_40_overview_stack_density.md`
