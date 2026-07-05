@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.33 changes the AI first screen wording from decision-like `今日結論` to
+  `今日解讀`.
+
 - v16.32 changes the phone overview ribbon mode value from internal codes like
   `mock/static/live` to product labels such as `示範`, `靜態`, and `Live`.
 

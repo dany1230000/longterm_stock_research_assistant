@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- AI readout wording v16.33: `docs\00631l_v16_33_ai_readout_wording.md`
 - Overview ribbon mode value v16.32: `docs\00631l_v16_32_overview_ribbon_mode_value.md`
 - Overview ribbon labels v16.31: `docs\00631l_v16_31_overview_ribbon_labels.md`
 - Settings mode label v16.30: `docs\00631l_v16_30_settings_mode_label.md`

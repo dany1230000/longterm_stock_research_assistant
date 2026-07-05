@@ -3633,9 +3633,11 @@ void main() {
       ),
       reason: 'AI should lead with today interpretation before source details.',
     );
-    for (final label in const ['今日結論', 'DAY', 'LIVE', '曝險']) {
+    expect(find.text('今日解讀'), findsWidgets);
+    for (final label in const ['DAY', 'LIVE', '曝險']) {
       expect(find.text(label), findsOneWidget);
     }
+    expect(find.text('今日結論'), findsNothing);
     expect(find.text('HIS'), findsNothing);
     expect(find.text('今日重點'), findsOneWidget);
     expect(
@@ -4076,7 +4078,8 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-compact-daily-insight-title')),
       findsOneWidget,
     );
-    expect(find.text('今日解讀'), findsOneWidget);
+    expect(find.text('今日解讀'), findsWidgets);
+    expect(find.text('今日結論'), findsNothing);
     expect(find.textContaining('歷史'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-ai-first-screen-bullets')),

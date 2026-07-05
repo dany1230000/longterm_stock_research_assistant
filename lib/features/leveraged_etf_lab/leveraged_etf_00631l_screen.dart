@@ -12676,7 +12676,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
                     SizedBox(width: compact ? 6 : 8),
                     Expanded(
                       child: Text(
-                        '今日 AI 判讀',
+                        '今日解讀',
                         style: (compact
                                 ? theme.textTheme.labelLarge
                                 : theme.textTheme.titleMedium)
@@ -13267,7 +13267,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '今日結論',
+                        '今日解讀',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.labelMedium?.copyWith(
