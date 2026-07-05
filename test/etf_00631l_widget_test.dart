@@ -1670,6 +1670,20 @@ void main() {
       ),
       findsOneWidget,
     );
+    final presetStrip = find.descendant(
+      of: rangeContext,
+      matching: find.byKey(const ValueKey('00631l-date-range-preset-scroll')),
+    );
+    for (final label in const ['1 年', '3 年', '全部']) {
+      expect(
+        find.descendant(of: presetStrip, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
+    expect(
+      find.descendant(of: presetStrip, matching: find.text('最近 1 年')),
+      findsNothing,
+    );
     final rangeRect = tester.getRect(rangeContext);
     for (final key in const [
       ValueKey('00631l-history-range-1y'),

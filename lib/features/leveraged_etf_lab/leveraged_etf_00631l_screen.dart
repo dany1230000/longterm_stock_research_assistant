@@ -8765,19 +8765,19 @@ class _CompactDateRangeControlPanel extends StatelessWidget {
                 children: [
                   _RangeActionChip(
                     key: oneYearKey,
-                    label: '最近 1 年',
+                    label: '1 年',
                     selected: activePreset == _DateRangePreset.oneYear,
                     onTap: onOneYearTap,
                   ),
                   _RangeActionChip(
                     key: threeYearsKey,
-                    label: '最近 3 年',
+                    label: '3 年',
                     selected: activePreset == _DateRangePreset.threeYears,
                     onTap: onThreeYearsTap,
                   ),
                   _RangeActionChip(
                     key: allKey,
-                    label: '全部資料',
+                    label: '全部',
                     selected: activePreset == _DateRangePreset.all,
                     onTap: onAllTap,
                   ),

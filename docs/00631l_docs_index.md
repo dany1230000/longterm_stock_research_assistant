@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History range chip density v16.29: `docs\00631l_v16_29_history_range_chip_density.md`
 - Overview chart density v16.28: `docs\00631l_v16_28_overview_chart_density.md`
 - AI insight readability v16.27: `docs\00631l_v16_27_ai_insight_readability.md`
 - Position input density v16.26: `docs\00631l_v16_26_position_input_density.md`

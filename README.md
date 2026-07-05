@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.29 shortens phone history/backtest range chips to `1 年`, `3 年`,
+  and `全部` so date controls fit more cleanly.
+
 - v16.28 keeps the overview chart open while reducing the phone chart height
   so the first screen is easier to scan.
 
