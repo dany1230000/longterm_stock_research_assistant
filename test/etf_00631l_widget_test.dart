@@ -3889,6 +3889,10 @@ void main() {
     expect(preferenceGrid, findsOneWidget);
     expect(preferenceStrip, findsOneWidget);
     expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(58));
+    expect(find.text('示範模式'), findsOneWidget);
+    expect(find.text('示範資料'), findsOneWidget);
+    expect(find.text('mock_default'), findsNothing);
+    expect(find.text('static_public'), findsNothing);
     expect(find.text('帳戶與偏好'), findsNothing);
     expect(find.textContaining('一般使用者只需要看這裡'), findsNothing);
     expect(find.textContaining('目前不需要帳號或券商登入'), findsNothing);
@@ -3943,7 +3947,8 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
-    expect(find.text('靜態資料可用；連線細節在進階'), findsWidgets);
+    expect(find.text('使用靜態備援'), findsWidgets);
+    expect(find.text('靜態資料可用；連線細節在進階'), findsNothing);
     expect(find.text('後端錯誤'), findsNothing);
     expect(find.text('data path not writable'), findsNothing);
     _expectNoTradingActionText();

@@ -3477,6 +3477,16 @@ String get _frontendDataModeLabel {
   return '示範資料';
 }
 
+String get _frontendSettingsModeLabel {
+  if (_use00631LLiveProxy) {
+    return 'Live 連線';
+  }
+  if (_use00631LStaticData) {
+    return '公開靜態模式';
+  }
+  return '示範模式';
+}
+
 String get _frontendDataModeShortLabel {
   if (_use00631LLiveProxy) {
     return 'live';
@@ -15462,7 +15472,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                       ),
                     ),
                   ),
-                  _StatusPill(label: _frontendDataModeLabel),
+                  _StatusPill(label: _frontendSettingsModeLabel),
                 ],
               ),
               if (!compact) ...[
@@ -15498,7 +15508,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
               ),
               SizedBox(height: compact ? 3 : 6),
               Text(
-                _settingsDataModeCaption(status),
+                _settingsDataModeCaption(status, compact: compact),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -15514,20 +15524,23 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
   }
 }
 
-String _settingsDataModeCaption(EtfOperationsStatus status) {
+String _settingsDataModeCaption(
+  EtfOperationsStatus status, {
+  bool compact = false,
+}) {
   if (status.sourceStatusLabel == 'static_public_data') {
-    return '公開靜態資料可用';
+    return compact ? '歷史與回測可用' : '公開靜態資料可用';
   }
   if (status.backendDisconnected ||
       status.sourceStatusLabel == 'error' ||
       status.sourceStatusLabel == 'unavailable') {
-    return '靜態資料可用；連線細節在進階';
+    return compact ? '使用靜態備援' : '靜態資料可用；連線細節在進階';
   }
   if (status.sourceStatusLabel == 'mock') {
-    return '預設示範資料';
+    return compact ? '示範資料' : '預設示範資料';
   }
   if (_use00631LLiveProxy) {
-    return '後端連線細節在進階';
+    return compact ? 'Live 資料連線' : '後端連線細節在進階';
   }
   return status.backendConnectionLabel;
 }

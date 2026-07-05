@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.30 makes the account/settings first screen use friendly mode labels like
+  `公開靜態模式` and `示範模式` instead of internal mode names.
+
 - v16.29 shortens phone history/backtest range chips to `1 年`, `3 年`,
   and `全部` so date controls fit more cleanly.
 
