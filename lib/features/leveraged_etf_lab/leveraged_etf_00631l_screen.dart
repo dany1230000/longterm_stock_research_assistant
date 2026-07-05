@@ -4052,7 +4052,7 @@ class _OverviewMarketStack extends StatelessWidget {
           ),
           child: Padding(
             padding:
-                EdgeInsets.fromLTRB(4, compact ? 3 : 5, 4, compact ? 2 : 6),
+                EdgeInsets.fromLTRB(3, compact ? 2 : 4, 3, compact ? 1 : 5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -4071,9 +4071,9 @@ class _OverviewMarketStack extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _OverviewCompactDataRibbon(data: data),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 2),
                       const _MarketStackDivider(),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 2),
                       _OverviewMobileDailySummaryPanel(
                         data: data,
                         embedded: true,
@@ -6371,7 +6371,7 @@ class _OverviewSignalPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final content = Padding(
       padding: embedded
-          ? const EdgeInsets.fromLTRB(2, 0, 2, 2)
+          ? const EdgeInsets.fromLTRB(1, 0, 1, 1)
           : const EdgeInsets.all(10),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -6563,8 +6563,8 @@ class _SparklineChartState extends State<_SparklineChart> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final chartHeight = compact ? 68.0 : 92.0;
-    final emptyHeight = compact ? 54.0 : 74.0;
+    final chartHeight = compact ? 64.0 : 92.0;
+    final emptyHeight = compact ? 50.0 : 74.0;
     final verticalGap = compact ? 0.0 : 5.0;
     final spots = <FlSpot>[];
     final spotPoints = <EtfPriceHistoryPoint>[];
@@ -6819,8 +6819,8 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: compact ? 5 : 6,
-          vertical: compact ? 1 : 4,
+          horizontal: compact ? 4 : 6,
+          vertical: compact ? 0 : 4,
         ),
         child: Column(
           crossAxisAlignment: align,
@@ -6833,7 +6833,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 color: _marketMutedTextColor(context),
                 fontWeight: FontWeight.w800,
-                fontSize: compact ? 8.5 : 9,
+                fontSize: compact ? 8 : 9,
                 height: 1,
               ),
             ),
@@ -6851,7 +6851,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: _marketTextColor(context),
                   fontWeight: FontWeight.w900,
-                  fontSize: compact ? 9.5 : 10,
+                  fontSize: compact ? 9.3 : 10,
                   height: 1.08,
                 ),
               ),

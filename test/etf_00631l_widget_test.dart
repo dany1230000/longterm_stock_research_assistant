@@ -623,7 +623,7 @@ void main() {
     final marketStackRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-market-stack')),
     );
-    expect(marketStackRect.height, lessThanOrEqualTo(388));
+    expect(marketStackRect.height, lessThanOrEqualTo(374));
     final ribbonRect = tester.getRect(compactRibbon);
     expect(ribbonRect.height, lessThanOrEqualTo(24));
     expect(
@@ -647,9 +647,9 @@ void main() {
     );
     expect(chartFinder, findsOneWidget);
     final chartRect = tester.getRect(chartFinder);
-    expect(chartRect.height, greaterThanOrEqualTo(66));
-    expect(chartRect.height, lessThanOrEqualTo(70));
-    expect(chartRect.bottom, lessThanOrEqualTo(462));
+    expect(chartRect.height, greaterThanOrEqualTo(62));
+    expect(chartRect.height, lessThanOrEqualTo(66));
+    expect(chartRect.bottom, lessThanOrEqualTo(452));
     expect(chartRect.top, lessThan(ribbonRect.top));
     expect(ribbonRect.top, greaterThan(chartRect.bottom));
     final dateStrip = find.byKey(
@@ -762,7 +762,7 @@ void main() {
     );
     expect(
       holdingsDigestRect.bottom - marketStackRect.top,
-      lessThanOrEqualTo(560),
+      lessThanOrEqualTo(540),
     );
     expect(
       find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
@@ -904,7 +904,7 @@ void main() {
     expect(touchRect.bottom, lessThan(summaryRect.top));
     expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
     expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));
-    expect(chartRect.bottom, lessThanOrEqualTo(384));
+    expect(chartRect.bottom, lessThanOrEqualTo(374));
     expect(
       find.descendant(
         of: mobileSummary,

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.16 tightens the phone overview market stack so the quote, one-year chart,
+  date touch detail, source ribbon, and daily digest sit closer together.
+
 - v16.15 gives the phone app header stronger proportions by increasing the
   ETF room title and symbol search pill without adding header height.
 

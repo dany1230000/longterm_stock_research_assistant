@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview market stack density v16.16: `docs\00631l_v16_16_overview_market_stack_density.md`
 - App header proportion v16.15: `docs\00631l_v16_15_app_header_proportion.md`
 - Overview chip density v16.14: `docs\00631l_v16_14_overview_chip_density.md`
 - Settings compact row v16.13: `docs\00631l_v16_13_settings_compact_row.md`
