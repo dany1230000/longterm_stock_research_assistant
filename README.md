@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.36 trims the top app bar from 58 px to 52 px and lowers the title from
+  24 px to 22 px while keeping the left symbol search pill easy to tap.
+
 - v16.35 changes the loading source strip from `HIS / LIVE / AI` to
   `歷 / 盤 / 解讀`, so the first loading screen no longer reads like debug UI.
 

@@ -201,13 +201,14 @@ void main() {
     );
     final topBar = find.byKey(const ValueKey('00631l-market-top-bar'));
     expect(topBar, findsOneWidget);
-    expect(tester.getRect(topBar).height, lessThanOrEqualTo(60));
+    expect(tester.getRect(topBar).height, lessThanOrEqualTo(54));
     expect(
         find.byKey(const ValueKey('00631l-market-top-title')), findsOneWidget);
     final topTitle = tester.widget<Text>(
       find.byKey(const ValueKey('00631l-market-top-title')),
     );
-    expect(topTitle.style?.fontSize, greaterThanOrEqualTo(24));
+    expect(topTitle.style?.fontSize, greaterThanOrEqualTo(22));
+    expect(topTitle.style?.fontSize, lessThanOrEqualTo(23));
     final symbolButton =
         find.byKey(const ValueKey('00631l-symbol-search-button'));
     expect(tester.getRect(symbolButton).height, greaterThanOrEqualTo(32));
@@ -591,7 +592,7 @@ void main() {
         find.byKey(const ValueKey('00631l-symbol-search-button'));
     expect(topBar, findsOneWidget);
     expect(symbolButton, findsOneWidget);
-    expect(tester.getRect(topBar).height, lessThanOrEqualTo(60));
+    expect(tester.getRect(topBar).height, lessThanOrEqualTo(54));
     expect(
         find.byKey(const ValueKey('00631l-market-top-title')), findsOneWidget);
     expect(tester.getRect(symbolButton).height, lessThanOrEqualTo(42));
