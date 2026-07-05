@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position time badge v16.06: `docs\00631l_v16_06_position_time_badge.md`
 - History top strip v16.05: `docs\00631l_v16_05_history_top_strip.md`
 - Overview mode ribbon v16.04: `docs\00631l_v16_04_overview_mode_ribbon.md`
 - Settings mobile account v16.03: `docs\00631l_v16_03_settings_mobile_account.md`

@@ -2091,6 +2091,13 @@ void main() {
     expect(find.text('輸入持倉資料'), findsNothing);
     expect(find.text('工具'), findsOneWidget);
     expect(find.text('持倉工具'), findsNothing);
+    expect(
+      find.descendant(
+        of: accountStrip,
+        matching: find.byKey(const ValueKey('00631l-position-time-badge')),
+      ),
+      findsOneWidget,
+    );
     final metricGrid =
         find.byKey(const ValueKey('00631l-position-account-metric-grid'));
     expect(metricGrid, findsOneWidget);

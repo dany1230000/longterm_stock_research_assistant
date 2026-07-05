@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.06 shows the quote time on the phone position account strip after local
+  holdings are entered, without expanding source details.
+
 - v16.05 makes the phone history/backtest top strip show the active 1Y range
   immediately while keeping latest date, row count, return, and drawdown compact.
 

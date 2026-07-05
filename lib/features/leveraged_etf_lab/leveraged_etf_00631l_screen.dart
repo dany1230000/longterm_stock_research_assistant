@@ -11811,6 +11811,17 @@ class _PositionAccountStrip extends StatelessWidget {
                   ),
                 ),
                 const _CompactTextBadge(label: '本機保存'),
+                if (compact && input.hasPosition) ...[
+                  const SizedBox(width: 5),
+                  KeyedSubtree(
+                    key: const ValueKey('00631l-position-time-badge'),
+                    child: _CompactTextBadge(
+                      label: summary.dataTime == null
+                          ? '時間暫無'
+                          : _summaryTimeMinute(summary.dataTime!),
+                    ),
+                  ),
+                ],
               ],
             ),
             if (!compact || !input.hasPosition) ...[
