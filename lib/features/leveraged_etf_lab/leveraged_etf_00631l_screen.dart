@@ -6466,7 +6466,7 @@ class _OverviewSparklineBlock extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 3),
           _SparklineChart(points: recent),
         ],
       );
@@ -6558,9 +6558,9 @@ class _SparklineChartState extends State<_SparklineChart> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final chartHeight = compact ? 72.0 : 92.0;
-    final emptyHeight = compact ? 58.0 : 74.0;
-    final verticalGap = compact ? 1.0 : 5.0;
+    final chartHeight = compact ? 68.0 : 92.0;
+    final emptyHeight = compact ? 54.0 : 74.0;
+    final verticalGap = compact ? 0.0 : 5.0;
     final spots = <FlSpot>[];
     final spotPoints = <EtfPriceHistoryPoint>[];
     for (var index = 0; index < widget.points.length; index += 1) {
@@ -17574,6 +17574,37 @@ class _ChartTouchDetail extends StatelessWidget {
             : '圖表區間 ${formatTaiwanDate(rangeStart!)} - ${formatTaiwanDate(rangeEnd!)}'
         : '$label ${formatTaiwanDate(point!.date)} · ${_compactChartValue(value!)}';
     final secondary = isManualSelection ? '點擊可切換日期' : '點擊圖表可查看指定日期數值';
+    if (compact && point != null && value != null) {
+      return KeyedSubtree(
+        key: const ValueKey('00631l-line-chart-touch-detail'),
+        child: Row(
+          key: const ValueKey('00631l-line-chart-touch-primary'),
+          children: [
+            Flexible(
+              flex: 5,
+              child: _ChartTouchInfoPill(
+                key: const ValueKey('00631l-line-chart-touch-date'),
+                label: '日',
+                value: formatTaiwanDate(point!.date),
+                compact: true,
+                flat: true,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Flexible(
+              flex: 4,
+              child: _ChartTouchInfoPill(
+                key: const ValueKey('00631l-line-chart-touch-value'),
+                label: '值',
+                value: _compactChartValue(value!),
+                compact: true,
+                flat: true,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return DecoratedBox(
       key: const ValueKey('00631l-line-chart-touch-detail'),
       decoration: BoxDecoration(
@@ -17669,50 +17700,60 @@ class _ChartTouchInfoPill extends StatelessWidget {
     required this.label,
     required this.value,
     this.compact = false,
+    this.flat = false,
   });
 
   final String label;
   final String value;
   final bool compact;
+  final bool flat;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final content = Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: flat ? 1 : (compact ? 4 : 5),
+        vertical: flat ? 0 : (compact ? 1 : 2),
+      ),
+      child: Row(
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: _marketMutedTextColor(context),
+              fontWeight: FontWeight.w700,
+              height: 1,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w900,
+                height: 1,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (flat) {
+      return content;
+    }
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLow.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(compact ? 6 : 7),
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: compact ? 4 : 5,
-          vertical: compact ? 1 : 2,
-        ),
-        child: Row(
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Text(
-                value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      child: content,
     );
   }
 }

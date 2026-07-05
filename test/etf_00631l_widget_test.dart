@@ -614,7 +614,7 @@ void main() {
     final marketStackRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-market-stack')),
     );
-    expect(marketStackRect.height, lessThanOrEqualTo(405));
+    expect(marketStackRect.height, lessThanOrEqualTo(392));
     final ribbonRect = tester.getRect(compactRibbon);
     expect(ribbonRect.height, lessThanOrEqualTo(28));
     expect(
@@ -638,8 +638,8 @@ void main() {
     );
     expect(chartFinder, findsOneWidget);
     final chartRect = tester.getRect(chartFinder);
-    expect(chartRect.height, greaterThanOrEqualTo(70));
-    expect(chartRect.height, lessThanOrEqualTo(76));
+    expect(chartRect.height, greaterThanOrEqualTo(66));
+    expect(chartRect.height, lessThanOrEqualTo(70));
     expect(chartRect.bottom, lessThanOrEqualTo(462));
     expect(chartRect.top, lessThan(ribbonRect.top));
     expect(ribbonRect.top, greaterThan(chartRect.bottom));
@@ -678,8 +678,8 @@ void main() {
       find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
     );
     expect(touchDetailRect.height, lessThanOrEqualTo(34));
-    expect(chartRect.bottom, lessThan(dateStripRect.top));
-    expect(dateStripRect.bottom, lessThan(touchDetailRect.top));
+    expect(chartRect.bottom, lessThanOrEqualTo(dateStripRect.top));
+    expect(dateStripRect.bottom, lessThanOrEqualTo(touchDetailRect.top));
     expect(
       find.descendant(
         of: find
@@ -890,8 +890,8 @@ void main() {
 
     expect(quoteRect.height, lessThanOrEqualTo(60));
     expect(quoteRect.top, lessThan(chartRect.top));
-    expect(chartRect.bottom, lessThan(dateRect.top));
-    expect(dateRect.bottom, lessThan(touchRect.top));
+    expect(chartRect.bottom, lessThanOrEqualTo(dateRect.top));
+    expect(dateRect.bottom, lessThanOrEqualTo(touchRect.top));
     expect(touchRect.bottom, lessThan(summaryRect.top));
     expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
     expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v15.99 keeps the phone overview chart expanded but shortens the chart/touch
+  detail stack so the first screen reads faster.
+
 - v15.98 embeds the phone overview AI daily readout and holdings digest inside
   the main market stack so the first screen reads as one compact market panel.
 
