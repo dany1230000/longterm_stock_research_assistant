@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.07 folds quote source state into the phone quote caption so the price row
+  only competes with the premium/discount box.
+
 - v16.06 shows the quote time on the phone position account strip after local
   holdings are entered, without expanding source details.
 

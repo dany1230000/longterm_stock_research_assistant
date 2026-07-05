@@ -2498,14 +2498,14 @@ class _CompactQuoteHeader extends StatelessWidget {
             IntradayMarketSession.evaluate(sourceAvailable: false)
         : null;
     final quoteCaptionDisplay = usesLiveQuote && selectedEtf.dataTime != null
-        ? '行情 · ${marketSession!.phaseLabel} ${_sourceTimeText(selectedEtf.dataTime!)}'
+        ? '行情 · $quoteStatusDisplay ${marketSession!.phaseLabel} ${_sourceTimeText(selectedEtf.dataTime!)}'
         : usesCatalogQuote && selectedEtf.catalogItem?.dataTime != null
-            ? '行情 · 清單 ${formatTaiwanDateTimeSeconds(selectedEtf.catalogItem!.dataTime!)}'
+            ? '行情 · $quoteStatusDisplay ${formatTaiwanDateTimeSeconds(selectedEtf.catalogItem!.dataTime!)}'
             : usesHistoryQuote
-                ? '行情 · 歷史收盤 ${formatTaiwanDate(latestHistoryPoint.date)}'
+                ? '行情 · $quoteStatusDisplay ${formatTaiwanDate(latestHistoryPoint.date)}'
                 : selectedEtf.dataTime == null
-                    ? '行情 · 資料不可用'
-                    : '行情 · ${_statusDisplay(quoteStatus)} ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
+                    ? '行情 · $quoteStatusDisplay · 資料不可用'
+                    : '行情 · $quoteStatusDisplay ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
     final content = Padding(
       padding: EdgeInsets.fromLTRB(6, embedded ? 0 : 5, 6, embedded ? 0 : 5),
@@ -2556,10 +2556,6 @@ class _CompactQuoteHeader extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (embedded) ...[
-                          const SizedBox(width: 6),
-                          _CompactTextBadge(label: quoteStatusDisplay),
-                        ],
                       ],
                     ),
                     const SizedBox(height: 1),

@@ -170,6 +170,7 @@ void main() {
         chartTitleTop, greaterThan(tester.getRect(compactQuoteHeader).bottom));
     expect(find.text('官方 NAV'), findsNothing);
     expect(find.text('示範'), findsWidgets);
+    expect(find.textContaining('行情 · 示範'), findsWidgets);
     expect(find.textContaining('Mock 預設'), findsNothing);
     final quoteMetaStrip = find.byKey(
       const ValueKey('00631l-quote-meta-strip'),
@@ -326,7 +327,7 @@ void main() {
   testWidgets('00631L live quote uses intraday status wording', (tester) async {
     await _pumpLab(tester, _OfficialIntradayRepository());
 
-    expect(find.text('盤中'), findsWidgets);
+    expect(find.textContaining('行情 · 盤中'), findsWidgets);
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-main-quote-header')),
@@ -773,7 +774,7 @@ void main() {
       findsNothing,
     );
     expect(find.text('Mock'), findsNothing);
-    expect(find.text('示範'), findsWidgets);
+    expect(find.textContaining('示範'), findsWidgets);
     expect(find.text('00631L'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.takeException(), isNull);
