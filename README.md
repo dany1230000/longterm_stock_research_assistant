@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.46 routes settings and maintenance status pills through product labels
+  instead of raw backend status strings.
+
 - v16.45 replaces visible holdings debug wording such as `source`,
   `tradeDate`, and `unavailable` with product labels like `來源`, `日期`, and
   `不可用`.

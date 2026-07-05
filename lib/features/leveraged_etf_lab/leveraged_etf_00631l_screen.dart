@@ -14930,7 +14930,7 @@ class _SettingsSection extends StatelessWidget {
                   items: [
                     _StatusItem(
                       label: '後端連線',
-                      status: status.sourceStatusLabel,
+                      status: _sourceStatusBadgeLabel(status.sourceStatusLabel),
                       detail: status.backendConnectionCaption,
                       action: status.backendDisconnected
                           ? '請啟動後端或檢查公開後端 URL。'
@@ -14966,7 +14966,9 @@ class _SettingsSection extends StatelessWidget {
                     ),
                     _StatusItem(
                       label: '官方每日內容物',
-                      status: status.holdingsHistoryStatus,
+                      status: _sourceStatusBadgeLabel(
+                        status.holdingsHistoryStatus,
+                      ),
                       detail:
                           '歷史筆數 ${status.holdingsHistoryItemCount}，最新 ${_dateOrDash(status.latestHoldingTradeDate)}。',
                       action: status.holdingsHistoryItemCount == 0
@@ -14975,7 +14977,9 @@ class _SettingsSection extends StatelessWidget {
                     ),
                     _StatusItem(
                       label: '盤中 NAV',
-                      status: status.intradayHistoryStatus,
+                      status: _sourceStatusBadgeLabel(
+                        status.intradayHistoryStatus,
+                      ),
                       detail:
                           '樣本 ${status.intradaySampleCount}，最新 ${status.latestIntradayDataTime == null ? '暫無' : formatTaiwanDateTimeSeconds(status.latestIntradayDataTime!)}。',
                       action: status.intradaySampleCount == 0
@@ -14984,7 +14988,9 @@ class _SettingsSection extends StatelessWidget {
                     ),
                     _StatusItem(
                       label: '歷史價格',
-                      status: status.priceHistoryStatus,
+                      status: _sourceStatusBadgeLabel(
+                        status.priceHistoryStatus,
+                      ),
                       detail:
                           '筆數 ${status.priceHistoryRows}，範圍 ${_dateOrDash(status.priceHistoryCoverageStart)} - ${_dateOrDash(status.priceHistoryCoverageEnd)}，產生時間 ${_dateTimeOrDash(status.latestExportUpdatedAt)}。',
                       action: status.priceHistoryRows < 2
@@ -14993,20 +14999,20 @@ class _SettingsSection extends StatelessWidget {
                     ),
                     _StatusItem(
                       label: '回測',
-                      status: status.backtestStatus,
+                      status: _sourceStatusBadgeLabel(status.backtestStatus),
                       detail: status.backtestAvailable ? '價格歷史可用' : '價格歷史不足',
                       action:
                           status.backtestAvailable ? '可在回測區使用。' : '請先更新歷史價格。',
                     ),
                     _StatusItem(
                       label: '本機持倉資料',
-                      status: status.positionStatus,
+                      status: _sourceStatusBadgeLabel(status.positionStatus),
                       detail: '持倉資料保存在瀏覽器本機。',
                       action: '可在持倉區保存、匯出或清除。',
                     ),
                     _StatusItem(
                       label: '日常流程',
-                      status: status.dailyCycleStatus,
+                      status: _sourceStatusBadgeLabel(status.dailyCycleStatus),
                       detail:
                           '提醒 ${status.dailyCycleWarningCount}，失敗 ${status.dailyCycleFailureCount}。',
                       action: status.dailyCycleStatus == 'PASS'
@@ -15598,7 +15604,7 @@ class _EtfResearchRoomReadinessPanel extends StatelessWidget {
             ),
             _StatusItem(
               label: '00631L 核心資料',
-              status: data.status.label,
+              status: _sourceStatusBadgeLabel(data.status.label),
               detail:
                   '內容物 ${formatTaiwanDate(data.snapshot.tradeDate)}；價格筆數 ${formatInteger(price.rowCount)}；盤中 ${_sourceStatusBadgeLabel(data.intradayNav?.status.label)}。',
               action: '每日執行每日流程，確認官方 / 快取 / 過期狀態。',

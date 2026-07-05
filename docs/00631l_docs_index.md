@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings status labels v16.46: `docs\00631l_v16_46_settings_status_labels.md`
 - Holdings wording polish v16.45: `docs\00631l_v16_45_holdings_wording.md`
 - Overview source line v16.44: `docs\00631l_v16_44_overview_source_line.md`
 - Remaining data badges v16.43: `docs\00631l_v16_43_remaining_data_badges.md`
