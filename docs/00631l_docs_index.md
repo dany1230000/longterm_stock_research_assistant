@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position mobile labels v16.01: `docs\00631l_v16_01_position_mobile_labels.md`
 - Backtest mobile controls v16.00: `docs\00631l_v16_00_backtest_mobile_controls.md`
 - Overview chart density v15.99: `docs\00631l_v15_99_overview_chart_density.md`
 - Overview stack summary v15.98: `docs\00631l_v15_98_overview_stack_summary.md`

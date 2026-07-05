@@ -2075,6 +2075,10 @@ void main() {
       find.byKey(const ValueKey('00631l-position-account-metric-strip')),
       findsOneWidget,
     );
+    expect(find.text('修改持倉'), findsOneWidget);
+    expect(find.text('輸入持倉資料'), findsNothing);
+    expect(find.text('工具'), findsOneWidget);
+    expect(find.text('持倉工具'), findsNothing);
     final metricGrid =
         find.byKey(const ValueKey('00631l-position-account-metric-grid'));
     expect(metricGrid, findsOneWidget);

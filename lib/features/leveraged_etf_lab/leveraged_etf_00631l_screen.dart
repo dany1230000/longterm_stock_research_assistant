@@ -11273,8 +11273,10 @@ class _PositionSectionState extends State<_PositionSection> {
                 )
               : input.hasPosition
                   ? _CompactExpansionPanel(
-                      title: '輸入持倉資料',
-                      subtitle: '已保存本機持倉；需要修改股數、成本或備註時再展開。',
+                      title: compact ? '修改持倉' : '輸入持倉資料',
+                      subtitle: compact
+                          ? '需要調整股數、成本或備註時再展開。'
+                          : '已保存本機持倉；需要修改股數、成本或備註時再展開。',
                       child: inputForm,
                     )
                   : _SectionBlock(
@@ -11297,8 +11299,9 @@ class _PositionSectionState extends State<_PositionSection> {
           const SizedBox(height: 8),
           _CompactExpansionPanel(
             key: const ValueKey('00631l-position-tools-panel'),
-            title: '持倉工具',
-            subtitle: '匯出 JSON、清除本機資料與核對細節；低頻動作收在這裡。',
+            title: compact ? '工具' : '持倉工具',
+            subtitle:
+                compact ? 'JSON 匯出與本機資料清除。' : '匯出 JSON、清除本機資料與核對細節；低頻動作收在這裡。',
             child: _PositionActionBar(
               hasPosition: input.hasPosition,
               onSave: _save,

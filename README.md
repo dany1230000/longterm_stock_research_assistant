@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.01 shortens phone position labels so saved holdings open with compact
+  account-style wording.
+
 - v16.00 makes the phone backtest controls shorter with a compact strategy
   toggle and fixed five-column parameter strip.
 
