@@ -696,6 +696,13 @@ void main() {
       ),
       findsOneWidget,
     );
+    expect(
+      find.descendant(
+        of: dateStrip,
+        matching: find.textContaining(RegExp(r'^\d{2}/\d{2}/\d{2}$')),
+      ),
+      findsNWidgets(3),
+    );
     final touchDetailRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
     );

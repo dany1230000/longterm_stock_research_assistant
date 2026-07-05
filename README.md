@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.37 shortens the phone overview chart date axis to `yy/MM/dd` while
+  keeping full dates in chart touch details and wider layouts.
+
 - v16.36 trims the top app bar from 58 px to 52 px and lowers the title from
   24 px to 22 px while keeping the left symbol search pill easy to tap.
 

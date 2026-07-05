@@ -6930,7 +6930,7 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
                       ? Alignment.center
                       : Alignment.centerRight,
               child: Text(
-                formatTaiwanDate(date),
+                _overviewDateAxisLabel(date, compact: compact),
                 maxLines: 1,
                 textAlign: textAlign,
                 style: theme.textTheme.labelSmall?.copyWith(
@@ -6946,6 +6946,16 @@ class _OverviewSparklineDateStrip extends StatelessWidget {
       ),
     );
   }
+}
+
+String _overviewDateAxisLabel(DateTime date, {required bool compact}) {
+  if (!compact) {
+    return formatTaiwanDate(date);
+  }
+  final year = (date.year % 100).toString().padLeft(2, '0');
+  final month = date.month.toString().padLeft(2, '0');
+  final day = date.day.toString().padLeft(2, '0');
+  return '$year/$month/$day';
 }
 
 class _OverviewExposureBlock extends StatelessWidget {
