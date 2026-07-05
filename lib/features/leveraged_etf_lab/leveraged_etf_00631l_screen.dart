@@ -4062,7 +4062,7 @@ class _OverviewMarketStack extends StatelessWidget {
           ),
           child: Padding(
             padding:
-                EdgeInsets.fromLTRB(3, compact ? 2 : 4, 3, compact ? 1 : 5),
+                EdgeInsets.fromLTRB(3, compact ? 1 : 4, 3, compact ? 0 : 5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -4073,7 +4073,7 @@ class _OverviewMarketStack extends StatelessWidget {
                 ),
                 SizedBox(height: compact ? 0 : 2),
                 _OverviewSignalPanel(data: data, embedded: true),
-                SizedBox(height: compact ? 1 : 3),
+                SizedBox(height: compact ? 0 : 3),
                 const _MarketStackDivider(),
                 SizedBox(height: compact ? 1 : 3),
                 if (compact)
@@ -4081,9 +4081,9 @@ class _OverviewMarketStack extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _OverviewCompactDataRibbon(data: data),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 1),
                       const _MarketStackDivider(),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 1),
                       _OverviewMobileDailySummaryPanel(
                         data: data,
                         embedded: true,
@@ -4466,7 +4466,7 @@ class _OverviewFirstGlanceChip extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
         child: Row(
           children: [
             Text(
@@ -6648,7 +6648,7 @@ class _SparklineChartState extends State<_SparklineChart> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final chartHeight = compact ? 56.0 : 92.0;
+    final chartHeight = compact ? 52.0 : 92.0;
     final emptyHeight = compact ? 44.0 : 74.0;
     final verticalGap = compact ? 0.0 : 5.0;
     final spots = <FlSpot>[];

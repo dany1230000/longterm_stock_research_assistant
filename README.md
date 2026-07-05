@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.40 lowers the phone overview market stack height while keeping the
+  one-year chart visible on the first screen.
+
 - v16.39 localizes remaining holdings card badges from `STK / FUT / CASH /
   OTHER` to user-facing labels.
 

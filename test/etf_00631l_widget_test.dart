@@ -636,7 +636,7 @@ void main() {
     final marketStackRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-market-stack')),
     );
-    expect(marketStackRect.height, lessThanOrEqualTo(366));
+    expect(marketStackRect.height, lessThanOrEqualTo(356));
     final ribbonRect = tester.getRect(compactRibbon);
     expect(ribbonRect.height, lessThanOrEqualTo(24));
     expect(
@@ -660,8 +660,8 @@ void main() {
     );
     expect(chartFinder, findsOneWidget);
     final chartRect = tester.getRect(chartFinder);
-    expect(chartRect.height, greaterThanOrEqualTo(54));
-    expect(chartRect.height, lessThanOrEqualTo(58));
+    expect(chartRect.height, greaterThanOrEqualTo(50));
+    expect(chartRect.height, lessThanOrEqualTo(54));
     expect(chartRect.bottom, lessThanOrEqualTo(452));
     expect(chartRect.top, lessThan(ribbonRect.top));
     expect(ribbonRect.top, greaterThan(chartRect.bottom));
@@ -885,7 +885,7 @@ void main() {
     final bottomNav = find.byKey(const ValueKey('00631l-bottom-nav'));
     expect(marketStack, findsOneWidget);
     expect(bottomNav, findsOneWidget);
-    expect(tester.getRect(marketStack).height, lessThanOrEqualTo(366));
+    expect(tester.getRect(marketStack).height, lessThanOrEqualTo(356));
     expect(tester.getRect(bottomNav).height, lessThanOrEqualTo(60));
 
     await _tapSection(tester, 'ai');
@@ -985,7 +985,7 @@ void main() {
     final navRect = tester.getRect(bottomNav);
 
     expect(quoteRect.height, lessThanOrEqualTo(60));
-    expect(chartRect.height, lessThanOrEqualTo(56));
+    expect(chartRect.height, lessThanOrEqualTo(54));
     expect(quoteRect.top, lessThan(chartRect.top));
     expect(chartRect.bottom, lessThanOrEqualTo(dateRect.top));
     expect(dateRect.bottom, lessThanOrEqualTo(touchRect.top));
