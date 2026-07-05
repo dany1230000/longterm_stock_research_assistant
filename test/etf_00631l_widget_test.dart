@@ -2100,6 +2100,10 @@ void main() {
     expect(find.text('工具'), findsOneWidget);
     expect(find.text('持倉工具'), findsNothing);
     expect(
+      find.byKey(const ValueKey('00631l-position-primary-actions')),
+      findsNothing,
+    );
+    expect(
       find.descendant(
         of: accountStrip,
         matching: find.byKey(const ValueKey('00631l-position-title-line')),

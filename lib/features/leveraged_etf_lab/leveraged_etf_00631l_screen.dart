@@ -11439,7 +11439,26 @@ class _PositionSectionState extends State<_PositionSection> {
                       subtitle: compact
                           ? '需要調整股數、成本或備註時再展開。'
                           : '已保存本機持倉；需要修改股數、成本或備註時再展開。',
-                      child: inputForm,
+                      child: compact
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                inputForm,
+                                const SizedBox(height: 8),
+                                _PositionQuickAction(
+                                  key: const ValueKey(
+                                    '00631l-position-action-save',
+                                  ),
+                                  icon: Icons.save_outlined,
+                                  label: '更新本機資料',
+                                  caption: '只保存在此裝置',
+                                  isPrimary: true,
+                                  fillWidth: true,
+                                  onTap: _save,
+                                ),
+                              ],
+                            )
+                          : inputForm,
                     )
                   : _SectionBlock(
                       title: '輸入持倉資料',
@@ -11447,7 +11466,7 @@ class _PositionSectionState extends State<_PositionSection> {
                       child: inputForm,
                     ),
         ),
-        if (!useCompactEmptyInputCard) ...[
+        if (!useCompactEmptyInputCard && !(compact && input.hasPosition)) ...[
           const SizedBox(height: 8),
           _PositionActionBar(
             hasPosition: input.hasPosition,

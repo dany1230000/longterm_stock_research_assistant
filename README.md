@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.12 keeps the phone position summary cleaner by moving the saved-position
+  update action inside the edit panel instead of showing it on the first screen.
+
 - v16.11 tightens the phone history/backtest date controls into one compact
   range strip so the chart and backtest summary appear sooner on small screens.
 
