@@ -319,7 +319,7 @@ void main() {
     final premiumBox = find.byKey(const ValueKey('00631l-quote-premium-box'));
     expect(premiumBox, findsOneWidget);
     expect(
-      find.descendant(of: premiumBox, matching: find.text('unavailable')),
+      find.descendant(of: premiumBox, matching: find.text('不可用')),
       findsOneWidget,
     );
     expect(

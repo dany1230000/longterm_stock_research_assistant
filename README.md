@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v16.45 replaces visible holdings debug wording such as `source`,
+  `tradeDate`, and `unavailable` with product labels like `來源`, `日期`, and
+  `不可用`.
+
 - v16.44 groups the phone overview data-source chips into one compact status
   line, keeping source freshness visible without making the first screen feel
   like a debug panel.

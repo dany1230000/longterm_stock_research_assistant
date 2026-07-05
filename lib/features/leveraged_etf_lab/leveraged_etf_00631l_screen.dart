@@ -2577,14 +2577,14 @@ class _CompactQuoteHeader extends StatelessWidget {
               const SizedBox(width: 10),
               embedded
                   ? _CompactPremiumBoxDense(
-                      value:
-                          formatSignedNullablePercent(quotePremiumDiscountPct),
+                      value: _displaySignedNullablePercent(
+                          quotePremiumDiscountPct),
                       label: _premiumLabel(premiumAssessment),
                       color: premiumColor,
                     )
                   : _CompactPremiumBox(
-                      value:
-                          formatSignedNullablePercent(quotePremiumDiscountPct),
+                      value: _displaySignedNullablePercent(
+                          quotePremiumDiscountPct),
                       label: _premiumLabel(premiumAssessment),
                       color: premiumColor,
                     ),
@@ -3059,7 +3059,7 @@ class _OverviewActionRow extends StatelessWidget {
     final latest = history.latest;
     final label = latest == null
         ? '內容物紀錄尚未累積'
-        : 'holdings ${formatTaiwanDate(latest.tradeDate)} | TX ${formatNullablePercent(latest.txWeightPct)} | 台積電 ${formatNullablePercent(latest.tsmcWeightPct)}';
+        : '內容物 ${formatTaiwanDate(latest.tradeDate)} | TX ${formatNullablePercent(latest.txWeightPct)} | 台積電 ${formatNullablePercent(latest.tsmcWeightPct)}';
     return DecoratedBox(
       decoration: BoxDecoration(
         color: _marketPanelAltColor(context),
@@ -3267,7 +3267,7 @@ class _QuoteHeader extends StatelessWidget {
                             ),
                           ),
                           _HeaderPill(
-                            label: nav?.status.label ?? 'unavailable',
+                            label: _sourceStatusBadgeLabel(nav?.status.label),
                             foreground: headerForeground,
                           ),
                           if (nav?.sourceContract != null)
@@ -3299,7 +3299,7 @@ class _QuoteHeader extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            formatSignedNullablePercent(
+                            _displaySignedNullablePercent(
                               nav?.resolvedPremiumDiscountPct,
                             ),
                             style: theme.textTheme.titleLarge?.copyWith(
@@ -3377,10 +3377,10 @@ class _QuoteHeader extends StatelessWidget {
                         _QuoteStatTile(
                           label: '資料時間',
                           value: nav?.dataTime == null
-                              ? 'unavailable'
+                              ? '不可用'
                               : formatTimeSeconds(nav!.dataTime!),
                           caption: nav?.dataDate == null
-                              ? 'intraday unavailable'
+                              ? '盤中資料不可用'
                               : formatTaiwanDate(nav!.dataDate!),
                           foreground: headerForeground,
                         ),
@@ -4529,7 +4529,7 @@ String? _overviewDailyInsight(Etf00631LLabData data) {
       ? nav == null
           ? '盤中 NAV 暫無資料'
           : '盤中 NAV ${_sourceStatusBadgeLabel(nav.status.label)}'
-      : '折溢價 ${formatSignedNullablePercent(premium)}，${_premiumShortAssessmentText(premium)}';
+      : '折溢價 ${_displaySignedNullablePercent(premium)}，${_premiumShortAssessmentText(premium)}';
 
   final timeText = nav?.dataTime == null
       ? '資料時間待確認'
@@ -5806,7 +5806,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                     _HoldingDigestItem(
                       title: '期貨',
                       value: txLine == null
-                          ? 'unavailable'
+                          ? '不可用'
                           : formatNullablePercent(txLine.weightPct),
                       caption: txLine == null
                           ? '官方快照未列 TX'
@@ -5815,7 +5815,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
                     _HoldingDigestItem(
                       title: '台積電',
                       value: tsmcLine == null
-                          ? 'unavailable'
+                          ? '不可用'
                           : formatNullablePercent(tsmcLine.weightPct),
                       caption: tsmcLine == null
                           ? '官方快照未列 2330'
@@ -7457,7 +7457,7 @@ class _OverviewModeCards extends StatelessWidget {
           title: '盤中 NAV',
           primary: _price(nav?.marketPrice),
           secondary:
-              '折溢價 ${formatSignedNullablePercent(nav?.resolvedPremiumDiscountPct)}',
+              '折溢價 ${_displaySignedNullablePercent(nav?.resolvedPremiumDiscountPct)}',
           caption: '公開後端可連線時更新；靜態模式不提供盤中資料',
           progressValue: nav?.resolvedPremiumDiscountPct == null
               ? null
@@ -7569,20 +7569,20 @@ class _HoldingsSection extends StatelessWidget {
           icon: Icons.inventory_2_outlined,
           badges: [
             '日',
-            'source ${snapshot.status.label}',
-            'tradeDate ${formatTaiwanDate(snapshot.tradeDate)}',
+            '來源 ${_sourceStatusBadgeLabel(snapshot.status.label)}',
+            '日期 ${formatTaiwanDate(snapshot.tradeDate)}',
           ],
           metrics: [
             _SectionHeaderMetric(
               label: 'TX 權重',
               value: txLine == null
-                  ? 'unavailable'
+                  ? '不可用'
                   : formatNullablePercent(txLine.weightPct),
             ),
             _SectionHeaderMetric(
               label: '台積電權重',
               value: tsmcLine == null
-                  ? 'unavailable'
+                  ? '不可用'
                   : formatNullablePercent(tsmcLine.weightPct),
             ),
             _SectionHeaderMetric(
@@ -7602,7 +7602,7 @@ class _HoldingsSection extends StatelessWidget {
         _SectionBlock(
           title: '官方每日內容物',
           subtitle:
-              'tradeDate ${formatTaiwanDate(snapshot.tradeDate)}，每日揭露資料，不代表盤中即時變動。',
+              '日期 ${formatTaiwanDate(snapshot.tradeDate)}，每日揭露資料，不代表盤中即時變動。',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -14556,7 +14556,7 @@ class _AiSignalGrid extends StatelessWidget {
         ),
         _MetricCard(
           label: '折溢價',
-          value: formatSignedNullablePercent(nav?.resolvedPremiumDiscountPct),
+          value: _displaySignedNullablePercent(nav?.resolvedPremiumDiscountPct),
           caption: nav?.premiumDiscountAssessment.label ?? '資料不足',
           icon: Icons.price_change_outlined,
         ),
@@ -19523,16 +19523,21 @@ EtfPriceHistory _filteredPriceHistory(
   );
 }
 
+String _displaySignedNullablePercent(num? value, {int decimals = 2}) {
+  final formatted = formatSignedNullablePercent(value, decimals: decimals);
+  return formatted == 'unavailable' ? '不可用' : formatted;
+}
+
 String _price(num? value) {
   if (value == null) {
-    return 'unavailable';
+    return '不可用';
   }
   return value.toStringAsFixed(2);
 }
 
 String _compactNumber(num? value) {
   if (value == null) {
-    return 'unavailable';
+    return '不可用';
   }
   final absValue = value.abs();
   if (absValue >= 1000000000) {
@@ -19548,19 +19553,17 @@ String _compactNumber(num? value) {
 }
 
 String _dateOrDash(DateTime? date) {
-  return date == null ? 'unavailable' : formatTaiwanDate(date);
+  return date == null ? '不可用' : formatTaiwanDate(date);
 }
 
 String _dateTimeOrDash(DateTime? dateTime) {
-  return dateTime == null
-      ? 'unavailable'
-      : formatTaiwanDateTimeSeconds(dateTime);
+  return dateTime == null ? '不可用' : formatTaiwanDateTimeSeconds(dateTime);
 }
 
 String _shortGitSha(String value) {
   final normalized = value.trim();
   if (normalized.length <= 12) {
-    return normalized.isEmpty ? 'unavailable' : normalized;
+    return normalized.isEmpty ? '不可用' : normalized;
   }
   return normalized.substring(0, 12);
 }
@@ -19936,8 +19939,7 @@ List<_StatusItem> _holdingsCoverageItems(Etf00631LLabData data) {
     _StatusItem(
       label: '當日官方快照',
       status: snapshot.status.label,
-      detail:
-          'tradeDate ${formatTaiwanDate(snapshot.tradeDate)}；這是 Yuanta official ratio 每日資料。',
+      detail: '日期 ${formatTaiwanDate(snapshot.tradeDate)}；這是元大官方 ratio 每日資料。',
       action: snapshot.isStale(data.lastFetchedAt)
           ? '請執行每日流程並確認官方 ratio 來源。'
           : '請以官方內容物日期為準。',
@@ -20325,7 +20327,7 @@ String _premiumDescription(PremiumDiscountAssessment assessment) {
     return '即時淨值資料可能過期，請以資料時間與官方來源為準。';
   }
   final relation = value >= 0 ? '市價高於預估淨值' : '市價低於預估淨值';
-  final formatted = formatSignedNullablePercent(value);
+  final formatted = _displaySignedNullablePercent(value);
   if (assessment.level == PremiumDiscountLevel.normal) {
     return '目前$relation $formatted，屬於正常區間。這是價格偏離提示。';
   }
@@ -20340,5 +20342,5 @@ String _premiumCompactDescription(PremiumDiscountAssessment assessment) {
   if (assessment.level == PremiumDiscountLevel.stale) {
     return 'NAV 可能過期';
   }
-  return '${formatSignedNullablePercent(value)} ${_premiumLabel(assessment)}';
+  return '${_displaySignedNullablePercent(value)} ${_premiumLabel(assessment)}';
 }
