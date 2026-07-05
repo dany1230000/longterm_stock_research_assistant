@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.25 shortens the phone backtest quick result to the four core metrics so
+  date controls and parameters appear sooner.
+
 - v16.24 compresses the overview phone first screen into a quote/chart block
   plus a thin `AI / TX / 2330 / CASH` first-glance strip.
 

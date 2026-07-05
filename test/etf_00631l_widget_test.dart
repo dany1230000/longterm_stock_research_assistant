@@ -2267,11 +2267,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(quickResultStrip, findsOneWidget);
-    expect(tester.getRect(quickResultStrip).height, lessThanOrEqualTo(106));
+    expect(tester.getRect(quickResultStrip).height, lessThanOrEqualTo(78));
     expect(
       find.descendant(
         of: quickResultStrip,
         matching: find.textContaining('source'),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: quickResultStrip,
+        matching: find.text('非買賣建議'),
       ),
       findsNothing,
     );

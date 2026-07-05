@@ -10169,7 +10169,7 @@ class _BacktestQuickResultStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final items = [
+    final allItems = [
       _InlineQualityPill(
         label: '期末',
         value: formatNtdAmount(result.finalValue),
@@ -10195,6 +10195,14 @@ class _BacktestQuickResultStrip extends StatelessWidget {
         value: formatNullablePercent(result.volatilityPct),
       ),
     ];
+    final items = compact
+        ? [
+            allItems[0],
+            allItems[2],
+            allItems[4],
+            allItems[5],
+          ]
+        : allItems;
     return DecoratedBox(
       key: const ValueKey('00631l-backtest-quick-result-strip'),
       decoration: BoxDecoration(
@@ -10234,20 +10242,17 @@ class _BacktestQuickResultStrip extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               child: Row(children: items),
             ),
-            SizedBox(height: compact ? 4 : 6),
-            _StatusWrap(
-              labels: compact
-                  ? [
-                      strategyLabel,
-                      '非買賣建議',
-                    ]
-                  : [
-                      strategyLabel,
-                      'source $sourceStatusLabel',
-                      '回測不代表未來表現',
-                      '非買賣建議',
-                    ],
-            ),
+            if (!compact) ...[
+              const SizedBox(height: 6),
+              _StatusWrap(
+                labels: [
+                  strategyLabel,
+                  'source $sourceStatusLabel',
+                  '回測不代表未來表現',
+                  '非買賣建議',
+                ],
+              ),
+            ],
           ],
         ),
       ),
