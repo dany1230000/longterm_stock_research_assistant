@@ -3763,7 +3763,7 @@ void main() {
             find.byKey(const ValueKey('00631l-settings-quick-summary-compact')),
           )
           .height,
-      lessThanOrEqualTo(124),
+      lessThanOrEqualTo(112),
       reason: 'Settings should open with a compact account-style summary.',
     );
     final preferenceGrid =
@@ -3780,7 +3780,7 @@ void main() {
         find.byKey(const ValueKey('00631l-settings-preference-position'));
     expect(preferenceGrid, findsOneWidget);
     expect(preferenceStrip, findsOneWidget);
-    expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(66));
+    expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(58));
     expect(find.text('帳戶與偏好'), findsNothing);
     expect(find.textContaining('一般使用者只需要看這裡'), findsNothing);
     expect(find.textContaining('目前不需要帳號或券商登入'), findsNothing);

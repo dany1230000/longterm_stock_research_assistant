@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings first screen density v16.19: `docs\00631l_v16_19_settings_first_screen_density.md`
 - Position account strip density v16.18: `docs\00631l_v16_18_position_account_strip_density.md`
 - AI first screen density v16.17: `docs\00631l_v16_17_ai_first_screen_density.md`
 - Overview market stack density v16.16: `docs\00631l_v16_16_overview_market_stack_density.md`

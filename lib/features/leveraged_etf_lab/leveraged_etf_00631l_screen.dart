@@ -15185,7 +15185,7 @@ class _SettingsPreferenceGrid extends StatelessWidget {
           final compact = constraints.maxWidth < 430;
           if (compact && !veryNarrow) {
             return SizedBox(
-              height: 56,
+              height: 50,
               child: SingleChildScrollView(
                 key: const ValueKey('00631l-settings-preference-strip'),
                 scrollDirection: Axis.horizontal,
@@ -15193,7 +15193,7 @@ class _SettingsPreferenceGrid extends StatelessWidget {
                   children: [
                     for (var index = 0; index < items.length; index++) ...[
                       SizedBox(
-                        width: 126,
+                        width: 118,
                         child: _SettingsPreferenceCard(
                           key: ValueKey(
                             '00631l-settings-preference-${items[index].keySuffix}',
@@ -15254,15 +15254,15 @@ class _SettingsPreferenceCard extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 5 : 10),
+        padding: EdgeInsets.all(compact ? 4 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: compact ? 22 : 28,
-                  height: compact ? 22 : 28,
+                  width: compact ? 20 : 28,
+                  height: compact ? 20 : 28,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(8),
@@ -15273,7 +15273,7 @@ class _SettingsPreferenceCard extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Icon(
                     item.icon,
-                    size: compact ? 13 : 16,
+                    size: compact ? 12 : 16,
                     color: theme.colorScheme.primary,
                   ),
                 ),
@@ -15356,8 +15356,11 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
     return KeyedSubtree(
       key: const ValueKey('00631l-settings-quick-summary-compact'),
       child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(10, compact ? 7 : 8, 10, 8),
+          padding:
+              EdgeInsets.fromLTRB(10, compact ? 6 : 8, 10, compact ? 6 : 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -15386,7 +15389,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                   ),
                 ),
               ],
-              SizedBox(height: compact ? 6 : 8),
+              SizedBox(height: compact ? 4 : 8),
               _StatusWrap(
                 labels: compact
                     ? [
@@ -15405,7 +15408,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                         readinessStatus,
                       ],
               ),
-              SizedBox(height: compact ? 4 : 6),
+              SizedBox(height: compact ? 3 : 6),
               Text(
                 _settingsDataModeCaption(status),
                 maxLines: 1,

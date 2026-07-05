@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.19 tightens the phone settings first screen by removing default card
+  margin and shortening the account/preference row.
+
 - v16.18 makes the phone position page account strip shorter, keeping saved
   shares, cost, market value, and local result metrics closer to the top.
 
