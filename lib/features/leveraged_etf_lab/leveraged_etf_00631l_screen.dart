@@ -4352,55 +4352,56 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final summary = data.aiAnalysis;
-    final isMockSummary = summary.sourceStatusLabel.toLowerCase() == 'mock' ||
-        summary.sourceStatuses.values.any(
-          (status) => status.toLowerCase() == 'mock',
-        );
-    final rawBullets = isMockSummary
-        ? const ['目前為示範資料，請以 live 或 static 資料來源為準。']
-        : summary.bullets;
-    final bullets = rawBullets
-        .take(1)
-        .map(_aiDisplayText)
-        .where((text) => text.trim().isNotEmpty)
-        .toList(growable: false);
-    final compactLine = _overviewDailyInsight(data) ??
-        (bullets.isEmpty ? 'AI 摘要暫無資料' : bullets.first);
+    final snapshot = data.snapshot;
+    final hasUsableHoldings = _hasUsableHoldingsSnapshot(snapshot);
+    final txLine = _primaryFuturesLine(snapshot);
+    final tsmcLine = _stockHoldingByCode(snapshot, '2330');
+    final items = [
+      _OverviewFirstGlanceItem(
+        label: 'AI',
+        value: _sourceStatusBadgeLabel(data.aiAnalysis.sourceStatusLabel),
+        isAi: true,
+      ),
+      _OverviewFirstGlanceItem(
+        label: 'TX',
+        value: hasUsableHoldings && txLine != null
+            ? formatNullablePercent(txLine.weightPct)
+            : _sourceStatusBadgeLabel(snapshot.status.label),
+        isHolding: true,
+      ),
+      _OverviewFirstGlanceItem(
+        label: '2330',
+        value: hasUsableHoldings && tsmcLine != null
+            ? formatNullablePercent(tsmcLine.weightPct)
+            : _sourceStatusBadgeLabel(snapshot.status.label),
+        isHolding: true,
+      ),
+      _OverviewFirstGlanceItem(
+        label: 'CASH',
+        value: hasUsableHoldings
+            ? formatNullablePercent(snapshot.cashAndMarginWeightPct)
+            : _sourceStatusBadgeLabel(snapshot.status.label),
+        isHolding: true,
+      ),
+    ];
 
     final content = Padding(
       padding: embedded
           ? const EdgeInsets.fromLTRB(2, 1, 2, 2)
           : const EdgeInsets.fromLTRB(6, 3, 6, 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            key: const ValueKey('00631l-overview-ai-glance-card'),
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'AI · $compactLine',
-                key: const ValueKey('00631l-overview-ai-compact-line'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                      height: 1.12,
-                    ),
+      child: KeyedSubtree(
+        key: const ValueKey('00631l-overview-first-glance-strip'),
+        child: Row(
+          key: const ValueKey('00631l-overview-holdings-digest-strip'),
+          children: [
+            for (var index = 0; index < items.length; index++) ...[
+              Expanded(
+                child: _OverviewFirstGlanceChip(item: items[index]),
               ),
+              if (index != items.length - 1) const SizedBox(width: 4),
             ],
-          ),
-          const SizedBox(height: 1),
-          const _MarketStackDivider(),
-          const SizedBox(height: 2),
-          _OverviewHoldingsDigestPanel(
-            data: data,
-            embedded: true,
-            showEmbeddedHeader: false,
-          ),
-        ],
+          ],
+        ),
       ),
     );
 
@@ -4420,6 +4421,88 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
       ),
       child: content,
     );
+  }
+}
+
+class _OverviewFirstGlanceItem {
+  const _OverviewFirstGlanceItem({
+    required this.label,
+    required this.value,
+    this.isAi = false,
+    this.isHolding = false,
+  });
+
+  final String label;
+  final String value;
+  final bool isAi;
+  final bool isHolding;
+}
+
+class _OverviewFirstGlanceChip extends StatelessWidget {
+  const _OverviewFirstGlanceChip({required this.item});
+
+  final _OverviewFirstGlanceItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final chip = DecoratedBox(
+      key: item.isHolding
+          ? const ValueKey('00631l-mobile-holding-digest-chip')
+          : null,
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        child: Row(
+          children: [
+            Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+                fontSize: item.label.length > 3 ? 8 : 9,
+                height: 1,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(width: 3),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: Text(
+                  item.value,
+                  key: item.isAi
+                      ? const ValueKey('00631l-overview-ai-compact-line')
+                      : null,
+                  maxLines: 1,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: _marketTextColor(context),
+                    fontWeight: FontWeight.w900,
+                    height: 1,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (item.isAi) {
+      return KeyedSubtree(
+        key: const ValueKey('00631l-overview-ai-glance-card'),
+        child: chip,
+      );
+    }
+    return chip;
   }
 }
 
@@ -5619,12 +5702,10 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
   const _OverviewHoldingsDigestPanel({
     required this.data,
     this.embedded = false,
-    this.showEmbeddedHeader = true,
   });
 
   final Etf00631LLabData data;
   final bool embedded;
-  final bool showEmbeddedHeader;
 
   @override
   Widget build(BuildContext context) {
@@ -5636,7 +5717,6 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
     final subtitleText =
         hasUsableHoldings ? '每日快照 · 盤中看 NAV' : '資料來源尚未回傳可用快照；已隱藏 0 值內容物。';
     final theme = Theme.of(context);
-    final compact = MediaQuery.sizeOf(context).width < 430;
     final content = Padding(
       padding: embedded
           ? const EdgeInsets.fromLTRB(2, 2, 2, 2)
@@ -5678,7 +5758,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
             ),
             const SizedBox(height: 7),
           ],
-          if (embedded && showEmbeddedHeader && hasUsableHoldings) ...[
+          if (embedded && hasUsableHoldings) ...[
             Row(
               key: const ValueKey('00631l-overview-holdings-digest-title-row'),
               children: [
@@ -5701,13 +5781,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
             const SizedBox(height: 5),
           ],
           hasUsableHoldings
-              ? embedded && !showEmbeddedHeader && compact
-                  ? _MobileHoldingDigestStrip(
-                      snapshot: snapshot,
-                      txLine: txLine,
-                      tsmcLine: tsmcLine,
-                    )
-                  : _HoldingDigestStrip(
+              ? _HoldingDigestStrip(
                       items: [
                         _HoldingDigestItem(
                           title: '期貨',
@@ -5774,6 +5848,7 @@ class _OverviewHoldingsDigestPanel extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _MobileHoldingDigestStrip extends StatelessWidget {
   const _MobileHoldingDigestStrip({
     required this.snapshot,

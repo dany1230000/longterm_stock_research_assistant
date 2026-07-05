@@ -637,7 +637,7 @@ void main() {
     final firstGlanceStrip = find.byKey(
       const ValueKey('00631l-overview-first-glance-strip'),
     );
-    expect(firstGlanceStrip, findsNothing);
+    expect(firstGlanceStrip, findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-overview-brief-panel')),
       findsNothing,
@@ -935,6 +935,9 @@ void main() {
     final mobileSummary = find.byKey(
       const ValueKey('00631l-overview-mobile-daily-summary-card'),
     );
+    final firstGlance = find.byKey(
+      const ValueKey('00631l-overview-first-glance-strip'),
+    );
     final bottomNav = find.byKey(const ValueKey('00631l-bottom-nav'));
 
     expect(quoteHeader, findsOneWidget);
@@ -943,6 +946,7 @@ void main() {
     expect(touchDetail, findsOneWidget);
     expect(digest, findsOneWidget);
     expect(mobileSummary, findsOneWidget);
+    expect(firstGlance, findsOneWidget);
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-overview-market-stack')),
@@ -968,6 +972,12 @@ void main() {
     expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
     expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));
     expect(chartRect.bottom, lessThanOrEqualTo(374));
+    for (final label in const ['AI', 'TX', '2330', 'CASH']) {
+      expect(
+        find.descendant(of: firstGlance, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
     expect(
       find.descendant(
         of: mobileSummary,
@@ -978,7 +988,7 @@ void main() {
     _expectNoTradingActionText();
   });
 
-  testWidgets('overview AI line reads like a daily interpretation',
+  testWidgets('overview first glance uses compact status chips',
       (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -989,15 +999,20 @@ void main() {
 
     await _pumpLab(tester, _OfficialIntradayRepository());
 
-    final insightLine =
+    final firstGlance = find.byKey(
+      const ValueKey('00631l-overview-first-glance-strip'),
+    );
+    final aiStatus =
         find.byKey(const ValueKey('00631l-overview-ai-compact-line'));
-    expect(insightLine, findsOneWidget);
-    final insightText = tester.widget<Text>(insightLine).data ?? '';
-    expect(insightText, contains('盤中 12:54'));
-    expect(insightText, contains('折溢價 +0.08%'));
-    expect(insightText, contains('接近預估淨值'));
-    expect(insightText, contains('內容物'));
-    expect(insightText, contains('歷史'));
+    expect(firstGlance, findsOneWidget);
+    expect(aiStatus, findsOneWidget);
+    expect((tester.widget<Text>(aiStatus).data ?? '').trim(), isNotEmpty);
+    for (final label in const ['AI', 'TX', '2330', 'CASH']) {
+      expect(
+        find.descendant(of: firstGlance, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
     _expectNoTradingActionText();
   });
 
@@ -3493,35 +3508,26 @@ void main() {
 
     expect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
-      findsNothing,
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-overview-first-glance-strip')),
+      findsOneWidget,
     );
     expect(
       find.byKey(
         const ValueKey('00631l-overview-holdings-digest-unavailable'),
       ),
-      findsOneWidget,
-    );
-    final unavailableRect = tester.getRect(
-      find.byKey(const ValueKey('00631l-overview-holdings-digest-unavailable')),
-    );
-    expect(unavailableRect.height, lessThanOrEqualTo(48));
-    expect(
-      find.descendant(
-        of: find.byKey(
-          const ValueKey('00631l-overview-holdings-digest-unavailable'),
-        ),
-        matching: find.text('error'),
-      ),
       findsNothing,
     );
     expect(
       find.descendant(
         of: find.byKey(
-          const ValueKey('00631l-overview-holdings-digest-unavailable'),
+          const ValueKey('00631l-overview-holdings-digest-strip'),
         ),
         matching: find.text('錯誤'),
       ),
-      findsOneWidget,
+      findsWidgets,
     );
     final compactRibbon = find.byKey(
       const ValueKey('00631l-overview-compact-data-ribbon'),

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.24 compresses the overview phone first screen into a quote/chart block
+  plus a thin `AI / TX / 2330 / CASH` first-glance strip.
+
 - v16.23 renames the bottom-right app entry from `設定` to `帳戶` so it reads
   like an account and preferences area rather than a system console.
 
