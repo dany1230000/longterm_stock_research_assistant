@@ -1003,13 +1003,17 @@ void main() {
       find.descendant(of: firstGlance, matching: find.text('CASH')),
       findsNothing,
     );
-    expect(
-      find.descendant(
-        of: find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
-        matching: find.text('CASH'),
-      ),
-      findsNothing,
-    );
+    for (final internalLabel in const ['STK', 'FUT', 'CASH', 'OTHER']) {
+      expect(
+        find.descendant(
+          of: find.byKey(
+            const ValueKey('00631l-overview-holdings-digest-strip'),
+          ),
+          matching: find.text(internalLabel),
+        ),
+        findsNothing,
+      );
+    }
     expect(
       find.descendant(
         of: mobileSummary,
@@ -3508,10 +3512,12 @@ void main() {
         findsWidgets,
       );
     }
-    expect(
-      find.descendant(of: holdingsDigest, matching: find.text('CASH')),
-      findsNothing,
-    );
+    for (final internalLabel in const ['STK', 'FUT', 'CASH', 'OTHER']) {
+      expect(
+        find.descendant(of: holdingsDigest, matching: find.text(internalLabel)),
+        findsNothing,
+      );
+    }
     expect(
       find.byKey(const ValueKey('00631l-holding-digest-metric-row')),
       findsNothing,

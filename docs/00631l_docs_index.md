@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Holdings badges v16.39: `docs\00631l_v16_39_holdings_badges.md`
 - Overview cash label v16.38: `docs\00631l_v16_38_overview_cash_label.md`
 - Overview date axis v16.37: `docs\00631l_v16_37_overview_date_axis.md`
 - Top bar density v16.36: `docs\00631l_v16_36_top_bar_density.md`

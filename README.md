@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.39 localizes remaining holdings card badges from `STK / FUT / CASH /
+  OTHER` to user-facing labels.
+
 - v16.38 changes the phone overview first-glance cash label from `CASH` to
   `現金`.
 

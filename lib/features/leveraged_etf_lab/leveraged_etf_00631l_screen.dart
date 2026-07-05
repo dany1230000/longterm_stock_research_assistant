@@ -5927,7 +5927,7 @@ class _MobileHoldingDigestChipV2 extends StatelessWidget {
         ? 'TX'
         : item.label == '2330'
             ? '2330'
-            : 'CASH';
+            : '現金';
     return DecoratedBox(
       key: const ValueKey('00631l-mobile-holding-digest-chip'),
       decoration: BoxDecoration(
@@ -16342,28 +16342,28 @@ class _HoldingsCompositionCards extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       _CompositionItem(
-        badge: 'STK',
+        badge: '股票',
         label: '股票資產',
         amount: snapshot.assetSummary.stock,
         weightPct: snapshot.assetWeightPct(EtfAssetClass.stock),
         caption: '現股部位',
       ),
       _CompositionItem(
-        badge: 'FUT',
+        badge: '期貨',
         label: '期貨資產',
         amount: snapshot.assetSummary.futures,
         weightPct: snapshot.assetWeightPct(EtfAssetClass.futures),
         caption: '官方內容物期貨曝險',
       ),
       _CompositionItem(
-        badge: 'CASH',
+        badge: '現金',
         label: '現金與保證金',
         amount: snapshot.cashAndMarginValue,
         weightPct: snapshot.cashAndMarginWeightPct,
         caption: '現金、保證金、附買回債券',
       ),
       _CompositionItem(
-        badge: 'OTHER',
+        badge: '其他',
         label: '其他應收應付',
         amount: snapshot.otherReceivablesPayablesValue,
         weightPct: snapshot.otherReceivablesPayablesWeightPct,
@@ -16404,7 +16404,7 @@ class _KeyHoldingsCards extends StatelessWidget {
     return _InfoCardGrid(
       children: [
         _HoldingInfoCard(
-          badge: 'FUT',
+          badge: '期貨',
           title: txLine?.name ?? 'TX 期貨',
           primary: txLine == null
               ? 'unavailable'
@@ -16418,7 +16418,7 @@ class _KeyHoldingsCards extends StatelessWidget {
               : (txLine.weightPct.abs() / 220).clamp(0, 1).toDouble(),
         ),
         _HoldingInfoCard(
-          badge: 'STK',
+          badge: '股票',
           title: topStock?.name ?? '主要股票',
           primary: topStock == null
               ? 'unavailable'
@@ -16432,7 +16432,7 @@ class _KeyHoldingsCards extends StatelessWidget {
               : (topStock.weightPct.abs() / 100).clamp(0, 1).toDouble(),
         ),
         _HoldingInfoCard(
-          badge: 'CASH',
+          badge: '現金',
           title: topCashLine?.item ?? '現金項目',
           primary: topCashLine == null
               ? 'unavailable'
