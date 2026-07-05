@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.18 makes the phone position page account strip shorter, keeping saved
+  shares, cost, market value, and local result metrics closer to the top.
+
 - v16.17 makes the phone AI page first screen read more like a concise daily
   interpretation by removing a visual meta capsule and tightening the facts,
   program action, and insight rows.

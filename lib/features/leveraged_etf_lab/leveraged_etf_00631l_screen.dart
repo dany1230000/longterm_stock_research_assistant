@@ -11425,7 +11425,7 @@ class _PositionSectionState extends State<_PositionSection> {
             summary: summary,
             selectedEtf: widget.selectedEtf,
           ),
-          SizedBox(height: compact ? 8 : 12),
+          SizedBox(height: compact ? 5 : 12),
         ],
         KeyedSubtree(
           key: const ValueKey('00631l-position-compact-input-card'),
@@ -11965,7 +11965,7 @@ class _PositionAccountStrip extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 5 : 10),
+        padding: EdgeInsets.all(compact ? 4 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -12009,7 +12009,7 @@ class _PositionAccountStrip extends StatelessWidget {
                 ),
               ),
             ],
-            SizedBox(height: compact ? 4 : 8),
+            SizedBox(height: compact ? 3 : 8),
             _PositionAccountMetricStrip(
               items: items,
             ),
@@ -12070,7 +12070,7 @@ class _PositionAccountMetricStrip extends StatelessWidget {
         if (isCompact) {
           return SizedBox(
             key: const ValueKey('00631l-position-account-metric-grid'),
-            height: 40,
+            height: 36,
             child: SingleChildScrollView(
               key: const ValueKey('00631l-position-account-metric-scroll'),
               scrollDirection: Axis.horizontal,
@@ -12080,7 +12080,7 @@ class _PositionAccountMetricStrip extends StatelessWidget {
                   for (var index = 0; index < items.length; index += 1) ...[
                     if (index > 0) const SizedBox(width: 5),
                     SizedBox(
-                      width: 104,
+                      width: 100,
                       child: _PositionAccountMiniTile(
                         item: items[index],
                         emphasis: index < 2,
@@ -12137,7 +12137,7 @@ class _PositionAccountMiniTile extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -12149,7 +12149,7 @@ class _PositionAccountMiniTile extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w800,
-                fontSize: 10,
+                fontSize: 9.5,
                 height: 1.0,
               ),
             ),
@@ -12163,7 +12163,7 @@ class _PositionAccountMiniTile extends StatelessWidget {
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.colorScheme.onSurface,
                   fontWeight: FontWeight.w900,
-                  fontSize: 11,
+                  fontSize: 10.5,
                   height: 1.05,
                 ),
               ),

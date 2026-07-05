@@ -2094,7 +2094,7 @@ void main() {
     final inputCard =
         find.byKey(const ValueKey('00631l-position-compact-input-card'));
     expect(accountStrip, findsOneWidget);
-    expect(tester.getRect(accountStrip).height, lessThanOrEqualTo(100));
+    expect(tester.getRect(accountStrip).height, lessThanOrEqualTo(90));
     expect(
       find.byKey(const ValueKey('00631l-position-account-metric-strip')),
       findsOneWidget,
@@ -2135,7 +2135,7 @@ void main() {
       find.byKey(const ValueKey('00631l-position-account-metric-scroll')),
       findsOneWidget,
     );
-    expect(tester.getRect(metricGrid).height, lessThanOrEqualTo(44));
+    expect(tester.getRect(metricGrid).height, lessThanOrEqualTo(38));
     expect(
       tester.getTopLeft(accountStrip).dy,
       lessThan(tester.getTopLeft(inputCard).dy),
