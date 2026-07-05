@@ -849,6 +849,69 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('phone first-screen density guard covers main app tabs',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, Mock00631LRepository());
+
+    final marketStack =
+        find.byKey(const ValueKey('00631l-overview-market-stack'));
+    final bottomNav = find.byKey(const ValueKey('00631l-bottom-nav'));
+    expect(marketStack, findsOneWidget);
+    expect(bottomNav, findsOneWidget);
+    expect(tester.getRect(marketStack).height, lessThanOrEqualTo(374));
+    expect(tester.getRect(bottomNav).height, lessThanOrEqualTo(60));
+
+    await _tapSection(tester, 'ai');
+    await tester.pumpAndSettle();
+    final aiHero =
+        find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
+    final aiFacts = find.byKey(const ValueKey('00631l-ai-first-screen-facts'));
+    expect(aiHero, findsOneWidget);
+    expect(aiFacts, findsOneWidget);
+    expect(tester.getRect(aiHero).height, lessThanOrEqualTo(320));
+    expect(tester.getRect(aiFacts).height, lessThanOrEqualTo(64));
+
+    await _tapSection(tester, 'position');
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-position-field-shares')),
+      '1000',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('00631l-position-field-average-cost')),
+      '120',
+    );
+    await tester.pumpAndSettle();
+    final positionStrip =
+        find.byKey(const ValueKey('00631l-position-account-strip'));
+    final positionMetrics =
+        find.byKey(const ValueKey('00631l-position-account-metric-grid'));
+    expect(positionStrip, findsOneWidget);
+    expect(positionMetrics, findsOneWidget);
+    expect(tester.getRect(positionStrip).height, lessThanOrEqualTo(90));
+    expect(tester.getRect(positionMetrics).height, lessThanOrEqualTo(38));
+
+    await _tapSection(tester, 'settings');
+    await tester.pumpAndSettle();
+    final settingsSummary =
+        find.byKey(const ValueKey('00631l-settings-quick-summary-compact'));
+    final settingsPreferenceGrid =
+        find.byKey(const ValueKey('00631l-settings-preference-grid'));
+    expect(settingsSummary, findsOneWidget);
+    expect(settingsPreferenceGrid, findsOneWidget);
+    expect(tester.getRect(settingsSummary).height, lessThanOrEqualTo(112));
+    expect(tester.getRect(settingsPreferenceGrid).height,
+        lessThanOrEqualTo(58));
+    _expectNoTradingActionText();
+  });
+
   testWidgets('overview phone first screen keeps market order', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;

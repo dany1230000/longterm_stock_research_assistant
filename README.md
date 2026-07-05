@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.20 adds a cross-tab phone density regression guard so overview, AI,
+  position, and settings first screens stay compact together.
+
 - v16.19 tightens the phone settings first screen by removing default card
   margin and shortening the account/preference row.
 

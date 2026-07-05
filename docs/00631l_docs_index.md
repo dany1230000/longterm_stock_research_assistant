@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Phone density regression v16.20: `docs\00631l_v16_20_phone_density_regression.md`
 - Settings first screen density v16.19: `docs\00631l_v16_19_settings_first_screen_density.md`
 - Position account strip density v16.18: `docs\00631l_v16_18_position_account_strip_density.md`
 - AI first screen density v16.17: `docs\00631l_v16_17_ai_first_screen_density.md`
