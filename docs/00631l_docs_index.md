@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview chip density v16.14: `docs\00631l_v16_14_overview_chip_density.md`
 - Settings compact row v16.13: `docs\00631l_v16_13_settings_compact_row.md`
 - Position compact edit v16.12: `docs\00631l_v16_12_position_compact_edit.md`
 - History range compact v16.11: `docs\00631l_v16_11_history_range_compact.md`

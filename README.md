@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.14 trims the phone overview data ribbon and holdings digest chips so the
+  quote, chart, AI line, and holdings context fit tighter on the first screen.
+
 - v16.13 removes the extra phone settings wrapper so account, appearance,
   current ETF, and local position preferences read like a compact settings row.
 
