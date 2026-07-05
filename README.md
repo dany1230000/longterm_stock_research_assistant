@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v15.96 turns the phone overview AI line into a daily interpretation sentence
+  with intraday time, premium/discount state, holdings date, TX / 2330 exposure,
+  and history row count.
+
 - v15.95 slightly enlarges the phone ETF research room header and symbol search
   pill so the app identity and code switcher feel more deliberate.
 

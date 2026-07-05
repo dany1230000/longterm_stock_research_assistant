@@ -4393,34 +4393,72 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
 }
 
 String? _overviewDailyInsight(Etf00631LLabData data) {
-  final parts = <String>[];
   final nav = data.intradayNav;
   final premium = nav?.resolvedPremiumDiscountPct;
+  final premiumText = premium == null
+      ? nav == null
+          ? '盤中 NAV 暫無資料'
+          : '盤中 NAV ${_sourceStatusBadgeLabel(nav.status.label)}'
+      : '折溢價 ${formatSignedNullablePercent(premium)}，${_premiumShortAssessmentText(premium)}';
+
+  final timeText = nav?.dataTime == null
+      ? '資料時間待確認'
+      : '盤中 ${_summaryTimeMinute(nav!.dataTime!)}';
+
+  final priceSummary = data.priceHistory.completenessSummary();
+  final historyText = priceSummary.rowCount >= 2
+      ? '歷史 ${formatInteger(priceSummary.rowCount)} 筆'
+      : '歷史資料不足';
+
   if (premium != null) {
-    parts.add('折溢 ${formatSignedNullablePercent(premium)}');
-  } else if (nav != null) {
-    parts.add('盤中 NAV ${_sourceStatusBadgeLabel(nav.status.label)}');
+    final snapshot = data.snapshot;
+    if (_hasUsableHoldingsSnapshot(snapshot)) {
+      final txLine = _primaryFuturesLine(snapshot);
+      final tsmcLine = _stockHoldingByCode(snapshot, '2330');
+      final exposures = [
+        if (txLine?.weightPct != null)
+          'TX ${formatNullablePercent(txLine!.weightPct)}',
+        if (tsmcLine?.weightPct != null)
+          '2330 ${formatNullablePercent(tsmcLine!.weightPct)}',
+      ];
+      final exposureText = exposures.isEmpty
+          ? '內容物 ${_summaryMonthDay(snapshot.tradeDate)}'
+          : exposures.join('、');
+      return '$timeText；$premiumText；內容物 ${_summaryMonthDay(snapshot.tradeDate)}，$exposureText；$historyText。';
+    }
+    return '$timeText；$premiumText；內容物 ${_sourceStatusBadgeLabel(data.snapshot.status.label)}；$historyText。';
   }
 
   final snapshot = data.snapshot;
   if (_hasUsableHoldingsSnapshot(snapshot)) {
-    parts.add('DAY ${_summaryMonthDay(snapshot.tradeDate)}');
     final txLine = _primaryFuturesLine(snapshot);
     final tsmcLine = _stockHoldingByCode(snapshot, '2330');
-    if (txLine?.weightPct != null) {
-      parts.add('TX ${formatNullablePercent(txLine!.weightPct)}');
-    }
-    if (tsmcLine?.weightPct != null) {
-      parts.add('2330 ${formatNullablePercent(tsmcLine!.weightPct)}');
-    }
-  } else {
-    parts.add('內容物 ${_sourceStatusBadgeLabel(snapshot.status.label)}');
+    final exposures = [
+      if (txLine?.weightPct != null)
+        'TX ${formatNullablePercent(txLine!.weightPct)}',
+      if (tsmcLine?.weightPct != null)
+        '2330 ${formatNullablePercent(tsmcLine!.weightPct)}',
+    ];
+    final exposureText = exposures.isEmpty ? '主要曝險待確認' : exposures.join('、');
+    return '$timeText；$premiumText；內容物 ${_summaryMonthDay(snapshot.tradeDate)}，$exposureText；$historyText。';
   }
 
-  if (parts.isEmpty) {
-    return null;
+  return '$timeText；$premiumText；內容物 ${_sourceStatusBadgeLabel(snapshot.status.label)}；$historyText。';
+}
+
+String _premiumShortAssessmentText(double premiumDiscountPct) {
+  final absolute = premiumDiscountPct.abs();
+  final direction = premiumDiscountPct >= 0 ? '溢價' : '折價';
+  if (absolute <= 0.20) {
+    return '$direction 接近預估淨值';
   }
-  return parts.join(' · ');
+  if (absolute <= 0.50) {
+    return '$direction 需觀察';
+  }
+  if (absolute <= 1.00) {
+    return '$direction 偏離較高';
+  }
+  return '$direction 極端偏離';
 }
 
 class _OverviewAiGlanceLine extends StatelessWidget {

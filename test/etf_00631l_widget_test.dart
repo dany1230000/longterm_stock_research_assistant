@@ -885,6 +885,29 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('overview AI line reads like a daily interpretation',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _OfficialIntradayRepository());
+
+    final insightLine =
+        find.byKey(const ValueKey('00631l-overview-ai-compact-line'));
+    expect(insightLine, findsOneWidget);
+    final insightText = tester.widget<Text>(insightLine).data ?? '';
+    expect(insightText, contains('盤中 12:54'));
+    expect(insightText, contains('折溢價 +0.08%'));
+    expect(insightText, contains('接近預估淨值'));
+    expect(insightText, contains('內容物'));
+    expect(insightText, contains('歷史'));
+    _expectNoTradingActionText();
+  });
+
   testWidgets('overview chart shows one-year label and date axis',
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());
