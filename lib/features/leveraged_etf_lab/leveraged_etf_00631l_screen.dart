@@ -8128,7 +8128,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const _MiniStatusBadge(label: 'HIS'),
+                    const _MiniStatusBadge(label: '歷'),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(

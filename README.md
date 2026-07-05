@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.41 changes the history tab top badge from `HIS` to `歷`.
+
 - v16.40 lowers the phone overview market stack height while keeping the
   one-year chart visible on the first screen.
 

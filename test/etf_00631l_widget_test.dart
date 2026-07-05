@@ -1629,6 +1629,8 @@ void main() {
         find.byKey(const ValueKey('00631l-history-backtest-top-strip'));
     expect(topStrip, findsOneWidget);
     expect(tester.getRect(topStrip).height, lessThanOrEqualTo(70));
+    expect(find.descendant(of: topStrip, matching: find.text('歷')), findsOneWidget);
+    expect(find.descendant(of: topStrip, matching: find.text('HIS')), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-history-top-strip-metrics')),
       findsOneWidget,

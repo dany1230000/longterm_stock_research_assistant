@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History badge v16.41: `docs\00631l_v16_41_history_badge.md`
 - Overview stack density v16.40: `docs\00631l_v16_40_overview_stack_density.md`
 - Holdings badges v16.39: `docs\00631l_v16_39_holdings_badges.md`
 - Overview cash label v16.38: `docs\00631l_v16_38_overview_cash_label.md`
