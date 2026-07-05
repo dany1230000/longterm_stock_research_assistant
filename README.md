@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.04 adds a compact `MODE` readout to the phone overview data ribbon so
+  static/live/mock frontend state is visible on the first screen.
+
 - v16.03 tightens the phone settings first screen into a compact account and
   preference block while keeping maintenance diagnostics in advanced panels.
 

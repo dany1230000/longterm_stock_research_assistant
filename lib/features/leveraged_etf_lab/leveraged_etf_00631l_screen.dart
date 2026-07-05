@@ -3480,6 +3480,16 @@ String get _frontendDataModeLabel {
   return '示範資料';
 }
 
+String get _frontendDataModeShortLabel {
+  if (_use00631LLiveProxy) {
+    return 'live';
+  }
+  if (_use00631LStaticData) {
+    return 'static';
+  }
+  return 'mock';
+}
+
 String get _frontendDataModeDisplay {
   if (_use00631LLiveProxy) {
     return 'Live 後端';
@@ -4116,6 +4126,10 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
       _OverviewCompactRibbonItem(
         label: 'HIS',
         value: formatInteger(priceSummary.rowCount),
+      ),
+      _OverviewCompactRibbonItem(
+        label: 'MODE',
+        value: _frontendDataModeShortLabel,
       ),
     ];
 

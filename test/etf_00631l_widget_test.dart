@@ -595,12 +595,16 @@ void main() {
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );
     expect(compactRibbon, findsOneWidget);
-    for (final label in const ['DAY', 'NAV', 'HIS']) {
+    for (final label in const ['DAY', 'NAV', 'HIS', 'MODE']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),
         findsWidgets,
       );
     }
+    expect(
+      find.descendant(of: compactRibbon, matching: find.text('mock')),
+      findsOneWidget,
+    );
     for (final label in const ['TX', '2330']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),
