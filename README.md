@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.34 changes the AI first-screen fact row from `DAY / LIVE / 曝險` to
+  `日 / 盤 / 曝險` so it reads like product UI instead of a debug panel.
+
 - v16.33 changes the AI first screen wording from decision-like `今日結論` to
   `今日解讀`.
 

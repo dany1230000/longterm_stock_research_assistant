@@ -3634,9 +3634,17 @@ void main() {
       reason: 'AI should lead with today interpretation before source details.',
     );
     expect(find.text('今日解讀'), findsWidgets);
-    for (final label in const ['DAY', 'LIVE', '曝險']) {
+    for (final label in const ['日', '盤', '曝險']) {
       expect(find.text(label), findsOneWidget);
     }
+    expect(find.descendant(
+      of: find.byKey(const ValueKey('00631l-ai-first-screen-facts')),
+      matching: find.text('DAY'),
+    ), findsNothing);
+    expect(find.descendant(
+      of: find.byKey(const ValueKey('00631l-ai-first-screen-facts')),
+      matching: find.text('LIVE'),
+    ), findsNothing);
     expect(find.text('今日結論'), findsNothing);
     expect(find.text('HIS'), findsNothing);
     expect(find.text('今日重點'), findsOneWidget);
@@ -4114,11 +4122,11 @@ void main() {
     );
     final dayLabel = find.descendant(
       of: firstScreenFacts,
-      matching: find.text('DAY'),
+      matching: find.text('日'),
     );
     final liveLabel = find.descendant(
       of: firstScreenFacts,
-      matching: find.text('LIVE'),
+      matching: find.text('盤'),
     );
     final holdLabel = find.descendant(
       of: firstScreenFacts,
