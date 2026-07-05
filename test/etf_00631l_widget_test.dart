@@ -3732,6 +3732,9 @@ void main() {
     expect(preferenceGrid, findsOneWidget);
     expect(preferenceStrip, findsOneWidget);
     expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(66));
+    expect(find.textContaining('一般使用者只需要看這裡'), findsNothing);
+    expect(find.textContaining('目前不需要帳號或券商登入'), findsNothing);
+    expect(find.textContaining('右上角可切換夜間模式'), findsNothing);
     expect(accountCard, findsOneWidget);
     expect(appearanceCard, findsOneWidget);
     expect(selectedEtfCard, findsOneWidget);

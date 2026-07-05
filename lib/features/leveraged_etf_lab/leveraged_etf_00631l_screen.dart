@@ -14510,6 +14510,7 @@ class _SettingsSection extends StatelessWidget {
         _SectionBlock(
           title: '帳戶與偏好',
           subtitle: '一般使用者只需要看這裡：登入、外觀、目前 ETF 與本機持倉狀態。',
+          compactOnPhone: true,
           child: _SettingsPreferenceGrid(
             items: [
               const _SettingsPreferenceItem(
@@ -17193,36 +17194,44 @@ class _SectionBlock extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.child,
+    this.compactOnPhone = false,
   });
 
   final String title;
   final String subtitle;
   final Widget child;
+  final bool compactOnPhone;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = compactOnPhone && MediaQuery.sizeOf(context).width < 430;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(compact ? 8 : 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: theme.textTheme.titleLarge?.copyWith(
+              style: (compact
+                      ? theme.textTheme.titleSmall
+                      : theme.textTheme.titleLarge)
+                  ?.copyWith(
                 fontWeight: FontWeight.w900,
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                height: 1.4,
+            if (!compact) ...[
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.4,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
+            ],
+            SizedBox(height: compact ? 7 : 12),
             child,
           ],
         ),

@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.03 tightens the phone settings first screen into a compact account and
+  preference block while keeping maintenance diagnostics in advanced panels.
+
 - v16.02 compresses the phone AI first screen into one source/status meta line
   and a single-row daily interpretation readout.
 

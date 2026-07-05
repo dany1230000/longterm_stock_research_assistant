@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings mobile account v16.03: `docs\00631l_v16_03_settings_mobile_account.md`
 - AI mobile meta v16.02: `docs\00631l_v16_02_ai_mobile_meta.md`
 - Position mobile labels v16.01: `docs\00631l_v16_01_position_mobile_labels.md`
 - Backtest mobile controls v16.00: `docs\00631l_v16_00_backtest_mobile_controls.md`
