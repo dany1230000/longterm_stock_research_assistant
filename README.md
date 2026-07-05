@@ -4,6 +4,10 @@
 
 Latest mobile UI polish:
 
+- v16.44 groups the phone overview data-source chips into one compact status
+  line, keeping source freshness visible without making the first screen feel
+  like a debug panel.
+
 - v16.43 localizes the remaining visible data badges from `DAY / LIVE / HIS`
   to `日 / 盤 / 歷` in overview, holdings, AI, and advanced summary rows.
 

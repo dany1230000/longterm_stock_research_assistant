@@ -4156,14 +4156,30 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
       ),
     ];
 
-    return Row(
+    return DecoratedBox(
       key: const ValueKey('00631l-overview-compact-data-ribbon'),
-      children: [
-        for (var index = 0; index < items.length; index++) ...[
-          Expanded(child: _OverviewCompactRibbonChip(item: items[index])),
-          if (index != items.length - 1) const SizedBox(width: 3),
-        ],
-      ],
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        child: Row(
+          children: [
+            for (var index = 0; index < items.length; index++) ...[
+              Expanded(child: _OverviewCompactRibbonChip(item: items[index])),
+              if (index != items.length - 1)
+                Container(
+                  width: 1,
+                  height: 12,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  color: _marketBorderColor(context),
+                ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }
@@ -4186,45 +4202,35 @@ class _OverviewCompactRibbonChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _marketPanelAltColor(context),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-        child: Row(
-          children: [
-            Text(
-              item.label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
+    return Row(
+      children: [
+        Text(
+          item.label,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: _marketMutedTextColor(context),
+            fontWeight: FontWeight.w900,
+            fontSize: 8.5,
+            height: 1,
+          ),
+        ),
+        const SizedBox(width: 3),
+        Expanded(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              item.value,
+              maxLines: 1,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: _marketTextColor(context),
                 fontWeight: FontWeight.w900,
-                fontSize: 8.5,
+                fontSize: 10,
                 height: 1,
               ),
             ),
-            const SizedBox(width: 3),
-            Expanded(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  item.value,
-                  maxLines: 1,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: _marketTextColor(context),
-                    fontWeight: FontWeight.w900,
-                    fontSize: 10,
-                    height: 1,
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
