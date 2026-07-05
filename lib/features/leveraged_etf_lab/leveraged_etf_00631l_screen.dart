@@ -11776,6 +11776,9 @@ class _PositionAccountStrip extends StatelessWidget {
     final assetWeightText = summary.assetWeightPct == null
         ? '未設定'
         : formatNullablePercent(summary.assetWeightPct);
+    final titleText = compact && input.hasPosition
+        ? '${selectedEtf.code} 持倉 · ${formatInteger(input.shares)}股 @ ${_price(input.averageCost)}'
+        : '${selectedEtf.code} 持倉';
     final items = [
       _RangeContextItem(
         label: '市值',
@@ -11814,7 +11817,8 @@ class _PositionAccountStrip extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '${selectedEtf.code} 持倉',
+                    titleText,
+                    key: const ValueKey('00631l-position-title-line'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall?.copyWith(

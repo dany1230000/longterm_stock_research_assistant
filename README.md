@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.09 folds saved shares and average cost into the phone position title line
+  so the account strip shows user-entered context without extra height.
+
 - v16.08 makes the phone AI first screen use the actual rule-based daily bullet
   and trims the hero spacing so the page reads like an app status brief.
 

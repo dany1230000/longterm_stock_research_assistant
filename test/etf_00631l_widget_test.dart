@@ -2095,6 +2095,20 @@ void main() {
     expect(
       find.descendant(
         of: accountStrip,
+        matching: find.byKey(const ValueKey('00631l-position-title-line')),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: accountStrip,
+        matching: find.textContaining('1,000股 @'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: accountStrip,
         matching: find.byKey(const ValueKey('00631l-position-time-badge')),
       ),
       findsOneWidget,
