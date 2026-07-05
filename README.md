@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.11 tightens the phone history/backtest date controls into one compact
+  range strip so the chart and backtest summary appear sooner on small screens.
+
 - v16.10 removes the extra label row from the phone overview AI/holdings stack
   so chart, AI summary, and holdings context sit closer together.
 

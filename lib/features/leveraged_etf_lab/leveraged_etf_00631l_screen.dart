@@ -8459,6 +8459,8 @@ class _RangeActionChip extends StatelessWidget {
     return ChoiceChip(
       label: Text(label),
       selected: selected,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
       avatar: Icon(
         selected ? Icons.check_circle_outline : Icons.date_range_outlined,
         size: 16,
@@ -8518,6 +8520,27 @@ class _DateRangeControlPanel extends StatelessWidget {
       firstDate: firstDate,
       lastDate: lastDate,
     );
+    if (compact) {
+      return _CompactDateRangeControlPanel(
+        title: title,
+        items: items,
+        activePreset: activePreset,
+        startDate: startDate,
+        endDate: endDate,
+        firstDate: firstDate,
+        lastDate: lastDate,
+        onStartTap: onStartTap,
+        onEndTap: onEndTap,
+        onOneYearTap: onOneYearTap,
+        onThreeYearsTap: onThreeYearsTap,
+        onAllTap: onAllTap,
+        chipsKey: chipsKey,
+        oneYearKey: oneYearKey,
+        threeYearsKey: threeYearsKey,
+        allKey: allKey,
+        dateControlsKey: dateControlsKey,
+      );
+    }
     return _RangeContextStrip(
       title: title,
       subtitle: subtitle,
@@ -8564,6 +8587,141 @@ class _DateRangeControlPanel extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CompactDateRangeControlPanel extends StatelessWidget {
+  const _CompactDateRangeControlPanel({
+    required this.title,
+    required this.items,
+    required this.activePreset,
+    required this.startDate,
+    required this.endDate,
+    required this.firstDate,
+    required this.lastDate,
+    required this.onStartTap,
+    required this.onEndTap,
+    required this.onOneYearTap,
+    required this.onThreeYearsTap,
+    required this.onAllTap,
+    required this.chipsKey,
+    required this.oneYearKey,
+    required this.threeYearsKey,
+    required this.allKey,
+    this.dateControlsKey,
+  });
+
+  final String title;
+  final List<_RangeContextItem> items;
+  final _DateRangePreset activePreset;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
+  final VoidCallback onStartTap;
+  final VoidCallback onEndTap;
+  final VoidCallback onOneYearTap;
+  final VoidCallback onThreeYearsTap;
+  final VoidCallback onAllTap;
+  final Key chipsKey;
+  final Key oneYearKey;
+  final Key threeYearsKey;
+  final Key allKey;
+  final Key? dateControlsKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final metricItems = items.take(2).toList();
+    final metricText = metricItems.map((item) => item.text).join(' · ');
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: _marketTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                _CompactTextBadge(label: activePreset.label),
+              ],
+            ),
+            const SizedBox(height: 2),
+            KeyedSubtree(
+              key: const ValueKey('00631l-range-context-metric-strip'),
+              child: Text(
+                metricText,
+                key: const ValueKey('00631l-range-context-wrap'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  height: 1.05,
+                  letterSpacing: 0,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            KeyedSubtree(
+              key: chipsKey,
+              child: _DateRangePresetStrip(
+                compact: true,
+                children: [
+                  _RangeActionChip(
+                    key: oneYearKey,
+                    label: '最近 1 年',
+                    selected: activePreset == _DateRangePreset.oneYear,
+                    onTap: onOneYearTap,
+                  ),
+                  _RangeActionChip(
+                    key: threeYearsKey,
+                    label: '最近 3 年',
+                    selected: activePreset == _DateRangePreset.threeYears,
+                    onTap: onThreeYearsTap,
+                  ),
+                  _RangeActionChip(
+                    key: allKey,
+                    label: '全部資料',
+                    selected: activePreset == _DateRangePreset.all,
+                    onTap: onAllTap,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 3),
+            KeyedSubtree(
+              key: dateControlsKey,
+              child: _BacktestDateRangeControls(
+                startDate: startDate,
+                endDate: endDate,
+                firstDate: firstDate,
+                lastDate: lastDate,
+                onStartTap: onStartTap,
+                onEndTap: onEndTap,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
