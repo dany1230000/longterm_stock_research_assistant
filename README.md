@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.05 makes the phone history/backtest top strip show the active 1Y range
+  immediately while keeping latest date, row count, return, and drawdown compact.
+
 - v16.04 adds a compact `MODE` readout to the phone overview data ribbon so
   static/live/mock frontend state is visible on the first screen.
 

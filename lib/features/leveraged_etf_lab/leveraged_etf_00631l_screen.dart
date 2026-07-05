@@ -7973,10 +7973,10 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 430;
         final compactMetrics = [
-          _HistoryTopMetricItem(
-            key: const ValueKey('00631l-history-top-strip-date-pill'),
-            label: '最新',
-            value: latestDate,
+          const _HistoryTopMetricItem(
+            key: ValueKey('00631l-history-top-strip-date-pill'),
+            label: '期間',
+            value: '1Y',
           ),
           _HistoryTopMetricItem(
             key: const ValueKey('00631l-history-top-strip-row-pill'),
@@ -8050,7 +8050,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            compact ? code : titleText,
+                            compact ? '$code · $latestDate' : titleText,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.labelLarge?.copyWith(
