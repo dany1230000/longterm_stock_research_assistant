@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.22 clarifies the history/backtest top strip labels and shortens the phone
+  title to `00631L yyyy/MM/dd`.
+
 - v16.21 makes the overview chart date axis and touch detail labels readable:
   `起點`, `中段`, `最新`, `日期`, and `收盤`.
 

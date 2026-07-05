@@ -1603,7 +1603,7 @@ void main() {
       find.byKey(const ValueKey('00631l-history-top-strip-drawdown-pill')),
       findsOneWidget,
     );
-    for (final label in const ['期間', '筆數', '報酬', '回撤']) {
+    for (final label in const ['區間', '筆數', '報酬', '回撤']) {
       expect(
         find.descendant(of: topStrip, matching: find.text(label)),
         findsOneWidget,
@@ -1614,7 +1614,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.descendant(of: topStrip, matching: find.text('00631L · 2026/06/03')),
+      find.descendant(of: topStrip, matching: find.text('00631L 2026/06/03')),
       findsOneWidget,
     );
     expect(

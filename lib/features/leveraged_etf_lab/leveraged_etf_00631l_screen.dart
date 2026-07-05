@@ -7966,7 +7966,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
         final compactMetrics = [
           const _HistoryTopMetricItem(
             key: ValueKey('00631l-history-top-strip-date-pill'),
-            label: '期間',
+            label: '區間',
             value: '1Y',
           ),
           _HistoryTopMetricItem(
@@ -8001,7 +8001,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
             ),
           ),
           _InlineQualityPill(label: '來源', value: sourceLabel),
-          _InlineQualityPill(label: '價格', value: adjustmentLabel),
+          _InlineQualityPill(label: '調整', value: adjustmentLabel),
           _InlineQualityPill(
             label: '報酬',
             value: formatSignedNullablePercent(
@@ -8041,7 +8041,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            compact ? '$code · $latestDate' : titleText,
+                            compact ? '$code $latestDate' : titleText,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.labelLarge?.copyWith(
