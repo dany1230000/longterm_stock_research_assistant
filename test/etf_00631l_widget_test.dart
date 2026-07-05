@@ -1056,6 +1056,39 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('overview detail source cards use product badges',
+      (tester) async {
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _PriceHistoryRepository());
+    await _expandOverviewMore(tester);
+
+    final modeExpansionTitle = find.text('資料來源').last;
+    await tester.ensureVisible(modeExpansionTitle);
+    await tester.pumpAndSettle();
+    await tester.tap(modeExpansionTitle);
+    await tester.pumpAndSettle();
+
+    final modeCards = find.byKey(const ValueKey('00631l-overview-mode-cards'));
+    expect(modeCards, findsOneWidget);
+    for (final label in const ['日', '盤', '歷']) {
+      expect(find.descendant(of: modeCards, matching: find.text(label)),
+          findsWidgets);
+    }
+    for (final label in const ['DAY', 'LIVE', 'HIS']) {
+      expect(
+        find.descendant(of: modeCards, matching: find.text(label)),
+        findsNothing,
+      );
+    }
+    _expectNoTradingActionText();
+  });
+
   testWidgets('overview chart shows one-year label and date axis',
       (tester) async {
     await _pumpLab(tester, _PriceHistoryRepository());

@@ -5591,9 +5591,13 @@ class _OverviewMorePanel extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _CompactExpansionPanel(
+          key: const ValueKey('00631l-overview-mode-expansion'),
           title: '資料來源',
           subtitle: '目前模式、官方每日資料、盤中 NAV 與歷史資料來源。',
-          child: _OverviewModeCards(data: data),
+          child: KeyedSubtree(
+            key: const ValueKey('00631l-overview-mode-cards'),
+            child: _OverviewModeCards(data: data),
+          ),
         ),
         const SizedBox(height: 8),
         _CompactExpansionPanel(
@@ -7435,7 +7439,7 @@ class _OverviewModeCards extends StatelessWidget {
     return _InfoCardGrid(
       children: [
         _HoldingInfoCard(
-          badge: 'DAY',
+          badge: '日',
           title: '官方內容物',
           primary: formatTaiwanDate(data.snapshot.tradeDate),
           secondary: data.snapshot.status.label,
@@ -7443,7 +7447,7 @@ class _OverviewModeCards extends StatelessWidget {
           progressValue: null,
         ),
         _HoldingInfoCard(
-          badge: 'LIVE',
+          badge: '盤',
           title: '盤中 NAV',
           primary: _price(nav?.marketPrice),
           secondary:
@@ -7456,7 +7460,7 @@ class _OverviewModeCards extends StatelessWidget {
                   .toDouble(),
         ),
         _HoldingInfoCard(
-          badge: 'HIS',
+          badge: '歷',
           title: '歷史價格',
           primary: '${formatInteger(price.rowCount)} 筆',
           secondary:

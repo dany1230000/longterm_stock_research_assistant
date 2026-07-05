@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.42 changes overview detail source-card badges from `DAY / LIVE / HIS`
+  to `日 / 盤 / 歷`.
+
 - v16.41 changes the history tab top badge from `HIS` to `歷`.
 
 - v16.40 lowers the phone overview market stack height while keeping the
