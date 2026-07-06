@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings more label v16.91: `docs\00631l_v16_91_settings_more_label.md`
 - Overview check panel v16.90: `docs\00631l_v16_90_overview_check_panel.md`
 - Symbol search check label v16.89: `docs\00631l_v16_89_symbol_search_check_label.md`
 - Position entry wording v16.88: `docs\00631l_v16_88_position_entry_wording.md`
