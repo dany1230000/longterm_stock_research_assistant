@@ -2060,7 +2060,7 @@ void main() {
       find.byKey(const ValueKey('00631l-date-range-summary')),
       findsWidgets,
     );
-    expect(find.text('日期與設定'), findsOneWidget);
+    expect(find.text('期間設定'), findsOneWidget);
     expect(find.text('金額與成本參數'), findsOneWidget);
     expect(find.text('初始金額'), findsNothing);
     final backtestAllRange =

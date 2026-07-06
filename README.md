@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.92 renames the backtest input section to `期間設定`, making the date
+  range and parameter area easier to scan.
 - v16.91 renames the settings disclosure to `更多設定`, keeping account and
   appearance controls on the first screen while technical checks stay tucked away.
 - v16.90 renames the overview secondary disclosure to `資料核對`, keeping

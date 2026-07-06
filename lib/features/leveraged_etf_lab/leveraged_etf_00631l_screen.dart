@@ -10598,7 +10598,7 @@ class _BacktestSectionState extends State<_BacktestSection> {
                     SizedBox(height: innerGap),
                     _DateRangeControlPanel(
                       key: const ValueKey('00631l-backtest-range-context'),
-                      title: '日期與設定',
+                      title: '期間設定',
                       subtitle: '預設最近 1 年；結果只套用目前日期區間與下方參數。',
                       items: [
                         _RangeContextItem(
