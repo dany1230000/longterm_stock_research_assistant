@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position panel density v16.49: `docs\00631l_v16_49_position_panel_density.md`
 - History/backtest date panel v16.48: `docs\00631l_v16_48_history_date_panel.md`
 - AI first screen polish v16.47: `docs\00631l_v16_47_ai_first_screen.md`
 - Settings status labels v16.46: `docs\00631l_v16_46_settings_status_labels.md`

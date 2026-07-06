@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.49 makes the phone position edit and tools panels denser with short
+  labels, keeping holdings inputs and account values closer together.
+
 - v16.48 compresses the phone history/backtest date range panel so the selected
   range, presets, and start/end controls sit closer to the chart.
 

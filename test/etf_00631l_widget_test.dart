@@ -2314,8 +2314,12 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('修改持倉'), findsOneWidget);
+    expect(find.text('股數、成本、備註'), findsOneWidget);
+    expect(find.text('需要調整股數、成本或備註時再展開。'), findsNothing);
     expect(find.text('輸入持倉資料'), findsNothing);
     expect(find.text('工具'), findsOneWidget);
+    expect(find.text('JSON / 清除'), findsOneWidget);
+    expect(find.text('JSON 匯出與本機資料清除。'), findsNothing);
     expect(find.text('持倉工具'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-position-primary-actions')),

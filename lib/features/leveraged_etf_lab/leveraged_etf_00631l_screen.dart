@@ -11536,9 +11536,9 @@ class _PositionSectionState extends State<_PositionSection> {
               : input.hasPosition
                   ? _CompactExpansionPanel(
                       title: compact ? '修改持倉' : '輸入持倉資料',
-                      subtitle: compact
-                          ? '需要調整股數、成本或備註時再展開。'
-                          : '已保存本機持倉；需要修改股數、成本或備註時再展開。',
+                      subtitle:
+                          compact ? '股數、成本、備註' : '已保存本機持倉；需要修改股數、成本或備註時再展開。',
+                      dense: compact,
                       child: compact
                           ? Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -11581,8 +11581,8 @@ class _PositionSectionState extends State<_PositionSection> {
           _CompactExpansionPanel(
             key: const ValueKey('00631l-position-tools-panel'),
             title: compact ? '工具' : '持倉工具',
-            subtitle:
-                compact ? 'JSON 匯出與本機資料清除。' : '匯出 JSON、清除本機資料與核對細節；低頻動作收在這裡。',
+            subtitle: compact ? 'JSON / 清除' : '匯出 JSON、清除本機資料與核對細節；低頻動作收在這裡。',
+            dense: compact,
             child: _PositionActionBar(
               hasPosition: input.hasPosition,
               onSave: _save,
@@ -17289,11 +17289,13 @@ class _CompactExpansionPanel extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.child,
+    this.dense = false,
   });
 
   final String title;
   final String subtitle;
   final Widget child;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
@@ -17308,18 +17310,30 @@ class _CompactExpansionPanel extends StatelessWidget {
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-          childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          tilePadding: EdgeInsets.symmetric(horizontal: dense ? 9 : 12),
+          childrenPadding: EdgeInsets.fromLTRB(
+            dense ? 9 : 12,
+            0,
+            dense ? 9 : 12,
+            dense ? 9 : 12,
+          ),
+          visualDensity:
+              dense ? const VisualDensity(horizontal: -2, vertical: -3) : null,
           title: Text(
             title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w900,
             ),
           ),
           subtitle: Text(
             subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
+              height: dense ? 1.05 : null,
             ),
           ),
           children: [child],
