@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- AI first-screen wording v16.84: `docs\00631l_v16_84_ai_first_screen_wording.md`
 - Position source wording v16.83: `docs\00631l_v16_83_position_source_wording.md`
 - History range wording v16.82: `docs\00631l_v16_82_history_range_wording.md`
 - Overview deviation glance v16.81: `docs\00631l_v16_81_overview_deviation_glance.md`

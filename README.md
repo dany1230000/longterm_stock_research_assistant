@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.84 makes the AI page first screen read as `當日判讀`, while source,
+  matrix, and verification details stay inside `完整 AI 明細`.
 - v16.83 renames the position source expansion to `行情與資料時間`, keeping
   quote/history timing checks available without technical wording.
 - v16.82 localizes the history/backtest range labels so the first screen says

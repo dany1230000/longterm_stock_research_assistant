@@ -3949,7 +3949,8 @@ void main() {
     expect(find.text('結構觀察'), findsOneWidget);
     expect(find.text('今日 AI 分析摘要'), findsNothing);
     expect(find.text('重點摘要'), findsNothing);
-    expect(find.text('進階 AI 明細'), findsOneWidget);
+    expect(find.text('完整 AI 明細'), findsOneWidget);
+    expect(find.text('進階 AI 明細'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-ai-today-snapshot')),
       findsNothing,
@@ -3967,12 +3968,12 @@ void main() {
       findsNothing,
     );
     await tester.scrollUntilVisible(
-      find.text('進階 AI 明細'),
+      find.text('完整 AI 明細'),
       220,
       scrollable: find.byType(Scrollable).first,
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('進階 AI 明細'));
+    await tester.tap(find.text('完整 AI 明細'));
     await tester.pumpAndSettle();
     expect(
       find.byKey(const ValueKey('00631l-ai-daily-brief')),
@@ -4292,7 +4293,9 @@ void main() {
     );
     expect(detailExpansion, findsNothing);
     expect(fullDetailExpansion, findsOneWidget);
-    expect(find.text('完整摘要與資料來源。'), findsOneWidget);
+    expect(find.text('完整摘要、來源與核對項目。'), findsOneWidget);
+    expect(find.text('完整摘要與資料來源。'), findsNothing);
+    expect(find.text('當日判讀'), findsOneWidget);
     expect(decisionStrip, findsNothing);
     expect(compactDecisionRail, findsOneWidget);
     expect(tester.getRect(compactDecisionRail).height, lessThanOrEqualTo(42));

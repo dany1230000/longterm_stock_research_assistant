@@ -12567,8 +12567,8 @@ class _AiSectionV2 extends StatelessWidget {
         SizedBox(height: sectionGap),
         _CompactExpansionPanel(
           key: const ValueKey('00631l-ai-full-detail-expansion'),
-          title: '進階 AI 明細',
-          subtitle: compact ? '完整摘要與資料來源。' : '來源、矩陣、資料完整性與更多程式操作；需要核對時再展開。',
+          title: '完整 AI 明細',
+          subtitle: compact ? '完整摘要、來源與核對項目。' : '完整摘要、來源、矩陣與資料完整性；需要核對時再展開。',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -12922,7 +12922,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
                     ),
                     if (compact)
                       Text(
-                        '規則分析',
+                        '當日判讀',
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: _marketMutedTextColor(context),
                           fontWeight: FontWeight.w900,
@@ -12930,7 +12930,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
                         ),
                       )
                     else
-                      const _CompactTextBadge(label: '規則分析'),
+                      const _CompactTextBadge(label: '當日判讀'),
                   ],
                 ),
                 SizedBox(height: compact ? 2 : 8),
