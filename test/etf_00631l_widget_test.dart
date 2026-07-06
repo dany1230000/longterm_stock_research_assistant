@@ -4214,13 +4214,18 @@ void main() {
       lessThan(tester.getTopLeft(fullDetailExpansion).dy),
       reason: 'Compact AI should show daily decision items before details.',
     );
+    expect(
+      tester.getTopLeft(compactMeta).dy,
+      greaterThan(tester.getTopLeft(compactDecisionRail).dy),
+      reason: 'Compact AI source/readiness meta should not lead the page.',
+    );
     final firstScreenFacts =
         find.byKey(const ValueKey('00631l-ai-first-screen-facts'));
     expect(firstScreenFacts, findsOneWidget);
     expect(
       tester.getRect(firstScreenFacts).height,
-      lessThanOrEqualTo(64),
-      reason: 'Phone AI facts should stay in a compact single row.',
+      lessThanOrEqualTo(38),
+      reason: 'Phone AI facts should stay as a thin single-row readout.',
     );
     final dayLabel = find.descendant(
       of: firstScreenFacts,

@@ -12727,22 +12727,19 @@ class _AiDailyBriefingHero extends StatelessWidget {
                   premiumText: premiumText,
                   primaryAction: primaryAction,
                 ),
-                SizedBox(height: compact ? 3 : 8),
-                KeyedSubtree(
-                  key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
-                  child: compact
-                      ? _AiCompactMetaLine(
-                          source: _statusDisplay(summary.source),
-                          readiness: summary.readinessLabel,
-                        )
-                      : _StatusWrap(
-                          labels: [
-                            _statusDisplay(summary.source),
-                            summary.readinessLabel,
-                            summary.disclaimer,
-                          ],
-                        ),
-                ),
+                if (!compact) ...[
+                  const SizedBox(height: 8),
+                  KeyedSubtree(
+                    key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
+                    child: _StatusWrap(
+                      labels: [
+                        _statusDisplay(summary.source),
+                        summary.readinessLabel,
+                        summary.disclaimer,
+                      ],
+                    ),
+                  ),
+                ],
                 if (!compact && briefingBullets.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   _AiFirstScreenBulletList(bullets: briefingBullets),
@@ -12755,6 +12752,14 @@ class _AiDailyBriefingHero extends StatelessWidget {
                     data: data,
                     premiumText: compactPremiumText,
                     primaryAction: primaryAction,
+                  ),
+                  const SizedBox(height: 3),
+                  KeyedSubtree(
+                    key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
+                    child: _AiCompactMetaLine(
+                      source: _statusDisplay(summary.source),
+                      readiness: summary.readinessLabel,
+                    ),
                   ),
                 ],
                 if (!compact) ...[
@@ -13470,6 +13475,45 @@ class _AiInlineFactPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    if (dense) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: _marketPanelColor(context),
+          borderRadius: BorderRadius.circular(9),
+          border: Border.all(color: _marketBorderColor(context)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          child: Row(
+            children: [
+              Text(
+                item.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  item.value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: _marketTextColor(context),
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return DecoratedBox(
       decoration: BoxDecoration(
         color: _marketPanelColor(context),

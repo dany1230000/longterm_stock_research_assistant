@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.47 makes the phone AI tab lead with the daily interpretation, program
+  action, and compact readout before source/readiness metadata.
+
 - v16.46 routes settings and maintenance status pills through product labels
   instead of raw backend status strings.
 
