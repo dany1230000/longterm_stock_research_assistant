@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Account density polish v16.69: `docs\00631l_v16_69_account_density_polish.md`
 - AI daily readout v16.68: `docs\00631l_v16_68_ai_daily_readout.md`
 - History date focus v16.67: `docs\00631l_v16_67_history_date_focus.md`
 - Mobile ribbon polish v16.66: `docs\00631l_v16_66_mobile_ribbon_polish.md`

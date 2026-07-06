@@ -11524,7 +11524,7 @@ class _PositionSectionState extends State<_PositionSection> {
             summary: summary,
             selectedEtf: widget.selectedEtf,
           ),
-          SizedBox(height: compact ? 5 : 12),
+          SizedBox(height: compact ? 4 : 12),
         ],
         KeyedSubtree(
           key: const ValueKey('00631l-position-compact-input-card'),
@@ -12066,7 +12066,7 @@ class _PositionAccountStrip extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 4 : 10),
+        padding: EdgeInsets.all(compact ? 3 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -12085,7 +12085,7 @@ class _PositionAccountStrip extends StatelessWidget {
                 ),
                 const _CompactTextBadge(label: '本機保存'),
                 if (compact && input.hasPosition) ...[
-                  const SizedBox(width: 5),
+                  const SizedBox(width: 4),
                   KeyedSubtree(
                     key: const ValueKey('00631l-position-time-badge'),
                     child: _CompactTextBadge(
@@ -12110,7 +12110,7 @@ class _PositionAccountStrip extends StatelessWidget {
                 ),
               ),
             ],
-            SizedBox(height: compact ? 3 : 8),
+            SizedBox(height: compact ? 2 : 8),
             _PositionAccountMetricStrip(
               items: items,
             ),
@@ -12171,7 +12171,7 @@ class _PositionAccountMetricStrip extends StatelessWidget {
         if (isCompact) {
           return SizedBox(
             key: const ValueKey('00631l-position-account-metric-grid'),
-            height: 36,
+            height: 32,
             child: SingleChildScrollView(
               key: const ValueKey('00631l-position-account-metric-scroll'),
               scrollDirection: Axis.horizontal,
@@ -12179,9 +12179,9 @@ class _PositionAccountMetricStrip extends StatelessWidget {
               child: Row(
                 children: [
                   for (var index = 0; index < items.length; index += 1) ...[
-                    if (index > 0) const SizedBox(width: 5),
+                    if (index > 0) const SizedBox(width: 4),
                     SizedBox(
-                      width: 100,
+                      width: 92,
                       child: _PositionAccountMiniTile(
                         item: items[index],
                         emphasis: index < 2,
@@ -12238,7 +12238,7 @@ class _PositionAccountMiniTile extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -12250,7 +12250,7 @@ class _PositionAccountMiniTile extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w800,
-                fontSize: 9.5,
+                fontSize: 9,
                 height: 1.0,
               ),
             ),
@@ -12264,7 +12264,7 @@ class _PositionAccountMiniTile extends StatelessWidget {
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.colorScheme.onSurface,
                   fontWeight: FontWeight.w900,
-                  fontSize: 10.5,
+                  fontSize: 10,
                   height: 1.05,
                 ),
               ),
@@ -15348,7 +15348,7 @@ class _SettingsPreferenceGrid extends StatelessWidget {
           final compact = constraints.maxWidth < 430;
           if (compact && !veryNarrow) {
             return SizedBox(
-              height: 50,
+              height: 44,
               child: SingleChildScrollView(
                 key: const ValueKey('00631l-settings-preference-strip'),
                 scrollDirection: Axis.horizontal,
@@ -15356,7 +15356,7 @@ class _SettingsPreferenceGrid extends StatelessWidget {
                   children: [
                     for (var index = 0; index < items.length; index++) ...[
                       SizedBox(
-                        width: 118,
+                        width: 106,
                         child: _SettingsPreferenceCard(
                           key: ValueKey(
                             '00631l-settings-preference-${items[index].keySuffix}',
@@ -15364,7 +15364,7 @@ class _SettingsPreferenceGrid extends StatelessWidget {
                           item: items[index],
                         ),
                       ),
-                      if (index != items.length - 1) const SizedBox(width: 6),
+                      if (index != items.length - 1) const SizedBox(width: 5),
                     ],
                   ],
                 ),
@@ -15417,15 +15417,15 @@ class _SettingsPreferenceCard extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 4 : 10),
+        padding: EdgeInsets.all(compact ? 3 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: compact ? 20 : 28,
-                  height: compact ? 20 : 28,
+                  width: compact ? 18 : 28,
+                  height: compact ? 18 : 28,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(8),
@@ -15436,11 +15436,11 @@ class _SettingsPreferenceCard extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Icon(
                     item.icon,
-                    size: compact ? 12 : 16,
+                    size: compact ? 11 : 16,
                     color: theme.colorScheme.primary,
                   ),
                 ),
-                SizedBox(width: compact ? 5 : 6),
+                SizedBox(width: compact ? 4 : 6),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

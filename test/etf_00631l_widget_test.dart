@@ -944,8 +944,8 @@ void main() {
         find.byKey(const ValueKey('00631l-position-account-metric-grid'));
     expect(positionStrip, findsOneWidget);
     expect(positionMetrics, findsOneWidget);
-    expect(tester.getRect(positionStrip).height, lessThanOrEqualTo(90));
-    expect(tester.getRect(positionMetrics).height, lessThanOrEqualTo(38));
+    expect(tester.getRect(positionStrip).height, lessThanOrEqualTo(84));
+    expect(tester.getRect(positionMetrics).height, lessThanOrEqualTo(34));
 
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
@@ -957,7 +957,7 @@ void main() {
     expect(settingsPreferenceGrid, findsOneWidget);
     expect(tester.getRect(settingsSummary).height, lessThanOrEqualTo(112));
     expect(
-        tester.getRect(settingsPreferenceGrid).height, lessThanOrEqualTo(58));
+        tester.getRect(settingsPreferenceGrid).height, lessThanOrEqualTo(46));
     _expectNoTradingActionText();
   });
 
@@ -2348,7 +2348,7 @@ void main() {
     final inputCard =
         find.byKey(const ValueKey('00631l-position-compact-input-card'));
     expect(accountStrip, findsOneWidget);
-    expect(tester.getRect(accountStrip).height, lessThanOrEqualTo(90));
+    expect(tester.getRect(accountStrip).height, lessThanOrEqualTo(84));
     expect(
       find.byKey(const ValueKey('00631l-position-account-metric-strip')),
       findsOneWidget,
@@ -2393,7 +2393,7 @@ void main() {
       find.byKey(const ValueKey('00631l-position-account-metric-scroll')),
       findsOneWidget,
     );
-    expect(tester.getRect(metricGrid).height, lessThanOrEqualTo(38));
+    expect(tester.getRect(metricGrid).height, lessThanOrEqualTo(34));
     expect(
       tester.getTopLeft(accountStrip).dy,
       lessThan(tester.getTopLeft(inputCard).dy),
@@ -4077,7 +4077,7 @@ void main() {
         find.byKey(const ValueKey('00631l-settings-preference-position'));
     expect(preferenceGrid, findsOneWidget);
     expect(preferenceStrip, findsOneWidget);
-    expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(58));
+    expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(46));
     expect(find.text('示範模式'), findsOneWidget);
     expect(find.text('示範資料'), findsOneWidget);
     expect(find.text('mock_default'), findsNothing);

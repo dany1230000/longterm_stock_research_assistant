@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.69 tightens the phone position/account and settings preference strips so
+  key values stay visible without tall cards.
 - v16.68 makes the phone AI first-screen insight use the daily data readout
   directly: holdings date, TX, TSMC, premium/discount, and history row count.
 - v16.67 simplifies the compact history/backtest date summary so the first row
