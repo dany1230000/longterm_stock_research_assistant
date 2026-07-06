@@ -8755,8 +8755,7 @@ class _CompactDateRangeControlPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final metricItems = items.take(2).toList();
-    final metricText = metricItems.map((item) => item.text).join(' · ');
+    final headline = items.isEmpty ? title : items.first.text;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
@@ -8774,7 +8773,7 @@ class _CompactDateRangeControlPanel extends StatelessWidget {
                   child: KeyedSubtree(
                     key: const ValueKey('00631l-range-context-metric-strip'),
                     child: Text(
-                      '$title · $metricText',
+                      headline,
                       key: const ValueKey('00631l-range-context-wrap'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

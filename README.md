@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.67 simplifies the compact history/backtest date summary so the first row
+  focuses on the selected date range instead of mixing secondary parameters.
 - v16.66 makes the phone overview data ribbon use explicit `DAY / LIVE / HIS /
   MODE` labels and trims the app shell height slightly for a cleaner first
   screen.

@@ -1800,6 +1800,14 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.descendant(of: metricStrip, matching: find.textContaining('區間筆數')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: metricStrip, matching: find.textContaining('成本')),
+      findsNothing,
+    );
+    expect(
       find.descendant(
         of: rangeContext,
         matching: find.byKey(const ValueKey('00631l-date-range-preset-scroll')),
