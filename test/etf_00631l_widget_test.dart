@@ -2117,6 +2117,8 @@ void main() {
     final sourceStrip =
         find.byKey(const ValueKey('00631l-position-source-chip-strip'));
     expect(sourceExpansion, findsOneWidget);
+    expect(find.text('行情與資料時間'), findsOneWidget);
+    expect(find.text('更多資料來源'), findsNothing);
     expect(sourceSummary, findsNothing);
     expect(sourceStrip, findsNothing);
     expect(

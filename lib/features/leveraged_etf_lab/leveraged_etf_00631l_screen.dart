@@ -12343,8 +12343,8 @@ class _PositionAccountStrip extends StatelessWidget {
               const SizedBox(height: 8),
               _CompactExpansionPanel(
                 key: const ValueKey('00631l-position-source-expansion'),
-                title: '更多資料來源',
-                subtitle: '行情來源、歷史來源與資料時間；需要核對時展開。',
+                title: '行情與資料時間',
+                subtitle: '行情、歷史與估算時間；需要核對時展開。',
                 child: _PositionSourceChipStrip(
                   selectedEtf: selectedEtf,
                   dataTime: dataTime,

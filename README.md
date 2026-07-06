@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.83 renames the position source expansion to `行情與資料時間`, keeping
+  quote/history timing checks available without technical wording.
 - v16.82 localizes the history/backtest range labels so the first screen says
   `近1年` and `分割調整收盤` instead of internal English labels.
 - v16.81 changes the phone overview first-glance row from an AI source badge to
