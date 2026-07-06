@@ -221,7 +221,7 @@ def main() -> int:
             "backend_tests",
             ["py", "-m", "unittest", "discover", "-s", "backend\\tests"],
         ),
-        _run_command("daily_cycle", ["cmd", "/c", "scripts\\00631l_daily_cycle.cmd"]),
+        _run_command("daily_cycle", ["py", "backend\\scripts\\run_00631l_daily_cycle.py"]),
         _run_command("export", ["cmd", "/c", "scripts\\00631l_export_history.cmd"]),
         _run_command("report", ["cmd", "/c", "scripts\\00631l_generate_daily_report.cmd"]),
         _run_command("integrity", ["cmd", "/c", "scripts\\00631l_check_integrity.cmd"]),

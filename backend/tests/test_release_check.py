@@ -117,6 +117,14 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertTrue(flutter_command[0].endswith("dart.exe"))
         self.assertIn("flutter_tools.snapshot", flutter_command[2])
 
+    def test_release_check_runs_daily_cycle_without_cmd_wrapper(self) -> None:
+        source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
+            encoding="utf-8",
+        )
+
+        self.assertIn("run_00631l_daily_cycle.py", source)
+        self.assertNotIn('["cmd", "/c", "scripts\\\\00631l_daily_cycle.cmd"]', source)
+
     def test_release_check_runs_public_pages_smoke(self) -> None:
         source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
             encoding="utf-8",

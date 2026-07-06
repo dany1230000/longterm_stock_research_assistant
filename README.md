@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.65 makes the Python daily cycle runner call Python entrypoints directly
+  instead of launching the common `.cmd` wrappers.
 - v16.64 makes the release check call core Dart/Flutter tools directly instead
   of wrapping them in `cmd /c`.
 - v16.63 aligns the ETF comparison section title and selected-set wording

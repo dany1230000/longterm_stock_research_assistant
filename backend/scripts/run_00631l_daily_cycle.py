@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -22,11 +23,20 @@ def main() -> int:
     steps = [
         _run_step(
             "collect",
-            ["cmd", "/c", "scripts\\00631l_collect_snapshot.cmd", "--samples", "1"],
+            ["py", "backend\\scripts\\collect_00631l_snapshot.py", "--samples", "1"],
         ),
-        _run_step("export", ["cmd", "/c", "scripts\\00631l_export_history.cmd"]),
-        _run_step("smoke", ["cmd", "/c", "scripts\\00631l_daily_smoke.cmd"]),
-        _run_step("integrity", ["cmd", "/c", "scripts\\00631l_check_integrity.cmd"]),
+        _run_step(
+            "export",
+            ["py", "backend\\scripts\\export_00631l_history.py"],
+        ),
+        _run_step(
+            "smoke",
+            ["py", "backend\\scripts\\smoke_00631l_live.py"],
+        ),
+        _run_step(
+            "integrity",
+            ["py", "backend\\scripts\\check_00631l_data_integrity.py"],
+        ),
     ]
     failures = [
         f"{step['name']} failed with exitCode {step['exitCode']}"
@@ -85,6 +95,7 @@ def _run_step(name: str, command: list[str]) -> dict[str, Any]:
         cwd=ROOT,
         capture_output=True,
         check=False,
+        env=_subprocess_env(),
     )
     stdout = _decode(completed.stdout)
     stderr = _decode(completed.stderr)
@@ -164,6 +175,21 @@ def _decode(data: bytes) -> str:
         except (LookupError, UnicodeDecodeError):
             continue
     return data.decode("utf-8", errors="replace")
+
+
+def _subprocess_env() -> dict[str, str]:
+    env = os.environ.copy()
+    env_path = ROOT / "backend" / ".env"
+    if env_path.exists():
+        for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            if key:
+                env[key] = value.strip().strip('"').strip("'")
+    return env
 
 
 def _tail(text: str, *, max_lines: int = 40) -> str:
