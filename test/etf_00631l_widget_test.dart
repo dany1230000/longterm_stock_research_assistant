@@ -895,7 +895,14 @@ void main() {
     expect(aiHero, findsOneWidget);
     expect(aiFacts, findsOneWidget);
     expect(tester.getRect(aiHero).height, lessThanOrEqualTo(320));
-    expect(tester.getRect(aiFacts).height, lessThanOrEqualTo(64));
+    expect(tester.getRect(aiFacts).height, lessThanOrEqualTo(38));
+
+    await _tapSection(tester, 'historyBacktest');
+    await tester.pumpAndSettle();
+    final historyRange =
+        find.byKey(const ValueKey('00631l-history-range-context'));
+    expect(historyRange, findsOneWidget);
+    expect(tester.getRect(historyRange).height, lessThanOrEqualTo(100));
 
     await _tapSection(tester, 'position');
     await tester.pumpAndSettle();

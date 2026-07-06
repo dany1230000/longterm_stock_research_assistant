@@ -3987,7 +3987,7 @@ class _OverviewSection extends StatelessWidget {
       builder: (context, constraints) {
         final showSecondaryDetails = constraints.maxWidth >= 520;
         final showMobileHoldingsDigest = constraints.maxWidth < 520;
-        final sectionGap = constraints.maxWidth < 430 ? 6.0 : 8.0;
+        final sectionGap = constraints.maxWidth < 430 ? 5.0 : 8.0;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -7761,7 +7761,7 @@ class _HistorySection extends StatelessWidget {
     final selectedName =
         priceHistory.name.trim().isEmpty ? selectedEtfCode : priceHistory.name;
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final sectionGap = compact ? 6.0 : 8.0;
+    final sectionGap = compact ? 5.0 : 8.0;
     final secondaryGap = compact ? 8.0 : 12.0;
 
     return Column(
@@ -10359,7 +10359,7 @@ class _BacktestSectionState extends State<_BacktestSection> {
       history: history.points,
     );
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final sectionGap = compact ? 6.0 : 8.0;
+    final sectionGap = compact ? 5.0 : 8.0;
     final innerGap = compact ? 8.0 : 12.0;
 
     return Column(
@@ -12334,7 +12334,7 @@ class _AiSectionV2 extends StatelessWidget {
     final hiddenActions =
         summary.actionItems.skip(1).map(_aiDisplayText).toList(growable: false);
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final sectionGap = compact ? 6.0 : 10.0;
+    final sectionGap = compact ? 5.0 : 10.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
