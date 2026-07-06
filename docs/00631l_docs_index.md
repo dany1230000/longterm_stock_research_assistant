@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Mobile QA pass v16.63: `docs\00631l_v16_63_mobile_qa_pass.md`
 - Comparison selection v16.62: `docs\00631l_v16_62_comparison_selection.md`
 - Symbol search readiness v16.61: `docs\00631l_v16_61_symbol_search_readiness.md`
 - Mobile design contract v16.60: `docs\00631l_v16_60_mobile_design_contract.md`

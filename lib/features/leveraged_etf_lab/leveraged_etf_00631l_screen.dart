@@ -9124,7 +9124,7 @@ class _EtfHistoryComparisonPanelState
           )
         else
           _SectionHeaderCard(
-            title: 'ETF 歷史比較',
+            title: 'ETF 自選比較',
             subtitle: '預設只看目前 ETF；可用同類型快速帶入，也可清空後自行勾選 1-5 檔。',
             icon: Icons.stacked_line_chart_outlined,
             badges: const [
@@ -9136,7 +9136,7 @@ class _EtfHistoryComparisonPanelState
               _SectionHeaderMetric(
                 label: '比較檔數',
                 value: formatInteger(usableMetrics.length),
-                caption: usableMetrics.isEmpty ? '尚未選擇' : '目前組合',
+                caption: usableMetrics.isEmpty ? '尚未選擇' : '自選組合',
               ),
               _SectionHeaderMetric(
                 label: '區間',
@@ -9473,7 +9473,7 @@ class _ComparisonCompactSummaryStrip extends StatelessWidget {
             : '$codes · $commonRange · ${formatInteger(totalRows)} 筆'
         : selectedMetrics.isEmpty
             ? '尚未選擇比較 ETF · 不設基準 · 可比較 ${formatInteger(readyCount)} / ${formatInteger(candidateCount)} 檔'
-            : '目前組合 $codes · 不設基準 · $commonRange · ${formatInteger(totalRows)} 筆';
+            : '自選組合 $codes · 不設基準 · $commonRange · ${formatInteger(totalRows)} 筆';
     return Container(
       key: const ValueKey('00631l-etf-comparison-compact-summary'),
       width: double.infinity,

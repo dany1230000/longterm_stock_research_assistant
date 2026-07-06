@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.63 aligns the ETF comparison section title and selected-set wording
+  across phone and wider layouts.
 - v16.62 makes the ETF comparison header and controls read as a user-selected
   comparison set instead of a fixed 00631L benchmark view.
 - v16.61 shows ETF history readiness as ready/total plus gap directly in the
