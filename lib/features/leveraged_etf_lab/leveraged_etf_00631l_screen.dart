@@ -8619,8 +8619,9 @@ class _FilterablePriceHistoryBlockState
         ),
         const SizedBox(height: 8),
         _CompactExpansionPanel(
-          title: '目前區間價格表',
-          subtitle: '顯示目前日期區間最近 30 筆。',
+          key: const ValueKey('00631l-history-price-table-expansion'),
+          title: '價格表核對',
+          subtitle: '需要核對 OHLC、NAV 與折溢價時再展開；主畫面先看圖表與回測快覽。',
           child: _HorizontalTable(
             columns: const [
               '日期',

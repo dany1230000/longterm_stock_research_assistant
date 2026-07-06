@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.87 renames the history price table to `價格表核對`, keeping row-level
+  OHLC/NAV checks behind a collapsed panel.
 - v16.86 tightens the phone overview quote header so the chart and daily data
   rows appear sooner on the first screen.
 - v16.85 changes chart touch labels to `點選日` and `收盤價`, making the

@@ -1668,7 +1668,12 @@ void main() {
     expect(find.text('迄 2026/06/03'), findsWidgets);
     expect(find.textContaining('區間筆數 4'), findsOneWidget);
     expect(find.textContaining('完整筆數 5'), findsOneWidget);
-    expect(find.text('目前區間價格表'), findsOneWidget);
+    expect(find.text('價格表核對'), findsOneWidget);
+    expect(find.text('目前區間價格表'), findsNothing);
+    expect(
+      find.byKey(const ValueKey('00631l-history-price-table-expansion')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('00631l-history-holdings-expansion')),
       findsOneWidget,
