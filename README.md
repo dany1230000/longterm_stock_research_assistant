@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.70 keeps the overview chart open while trimming the phone market stack
+  height so the first screen reads faster.
 - v16.69 tightens the phone position/account and settings preference strips so
   key values stay visible without tall cards.
 - v16.68 makes the phone AI first-screen insight use the daily data readout

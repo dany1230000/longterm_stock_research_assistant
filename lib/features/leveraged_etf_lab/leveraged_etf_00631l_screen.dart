@@ -4054,7 +4054,7 @@ class _OverviewMarketStack extends StatelessWidget {
           ),
           child: Padding(
             padding:
-                EdgeInsets.fromLTRB(3, compact ? 1 : 4, 3, compact ? 0 : 5),
+                EdgeInsets.fromLTRB(2, compact ? 0 : 4, 2, compact ? 0 : 5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -6657,8 +6657,8 @@ class _SparklineChartState extends State<_SparklineChart> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final chartHeight = compact ? 52.0 : 92.0;
-    final emptyHeight = compact ? 44.0 : 74.0;
+    final chartHeight = compact ? 48.0 : 92.0;
+    final emptyHeight = compact ? 40.0 : 74.0;
     final verticalGap = compact ? 0.0 : 5.0;
     final spots = <FlSpot>[];
     final spotPoints = <EtfPriceHistoryPoint>[];
@@ -6764,7 +6764,7 @@ class _SparklineChartState extends State<_SparklineChart> {
               lineBarsData: [
                 LineChartBarData(
                   spots: spots,
-                  barWidth: 2.2,
+                  barWidth: compact ? 2.0 : 2.2,
                   isCurved: true,
                   color: _marketBlue,
                   dotData: FlDotData(
