@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.76 balances the phone top bar with a slightly stronger `ETF 研究室`
+  title, shows the current data mode in the compact subtitle, and changes the
+  overview data ribbon to user-facing labels: `日 / 盤中 / 歷史 / 模式`.
 - v16.75 adds a compact local-only privacy strip to the phone position page and
   localizes the desktop position data note.
 - v16.74 shows compact AI interpretation bullets on the phone first screen so

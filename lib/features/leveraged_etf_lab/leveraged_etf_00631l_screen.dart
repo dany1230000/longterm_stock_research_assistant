@@ -1117,7 +1117,7 @@ class _MarketTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final normalizedCode = selectedEtfCode.trim().toUpperCase();
-    final subtitle = normalizedCode == '00631L'
+    final baseSubtitle = normalizedCode == '00631L'
         ? '00631L 正二研究室'
         : selectedEtfName.trim().isEmpty
             ? '$normalizedCode ETF 研究室'
@@ -1128,6 +1128,9 @@ class _MarketTopBar extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 560;
+          final subtitle = showModeBadge
+              ? baseSubtitle
+              : '$baseSubtitle · $_frontendDataModeDisplay';
           return Row(
             children: [
               _MarketIndexPill(
@@ -1154,20 +1157,20 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: _marketTextColor(context),
-                        fontSize: 22,
+                        fontSize: 23,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0,
-                        height: 1.04,
+                        height: 1.0,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 1),
                     Text(
                       subtitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: _marketMutedTextColor(context),
-                        fontSize: 11,
+                        fontSize: 10.8,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0,
                         height: 1.08,
@@ -4140,23 +4143,23 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
     final hasUsableHoldings = _hasUsableHoldingsSnapshot(snapshot);
     final items = [
       _OverviewCompactRibbonItem(
-        label: 'DAY',
+        label: '日',
         value: hasUsableHoldings
             ? _summaryMonthDay(snapshot.tradeDate)
             : _sourceStatusBadgeLabel(snapshot.status.label),
       ),
       _OverviewCompactRibbonItem(
-        label: 'LIVE',
+        label: '盤中',
         value: nav?.dataTime == null
             ? _sourceStatusBadgeLabel(nav?.status.label)
             : _summaryTimeMinute(nav!.dataTime!),
       ),
       _OverviewCompactRibbonItem(
-        label: 'HIS',
+        label: '歷史',
         value: formatInteger(priceSummary.rowCount),
       ),
       _OverviewCompactRibbonItem(
-        label: 'MODE',
+        label: '模式',
         value: _frontendDataModeRibbonValue,
       ),
     ];

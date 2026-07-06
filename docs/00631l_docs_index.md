@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Top bar ribbon polish v16.76: `docs\00631l_v16_76_top_bar_ribbon_polish.md`
 - Position privacy strip v16.75: `docs\00631l_v16_75_position_privacy_strip.md`
 - AI compact interpretation v16.74: `docs\00631l_v16_74_ai_compact_interpretation.md`
 - History/backtest range result v16.73: `docs\00631l_v16_73_history_backtest_range_result.md`
