@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History/backtest nav v16.72: `docs\00631l_v16_72_history_backtest_nav.md`
 - Symbol search focus v16.71: `docs\00631l_v16_71_symbol_search_focus.md`
 - Overview first screen tightening v16.70: `docs\00631l_v16_70_overview_first_screen_tightening.md`
 - Account density polish v16.69: `docs\00631l_v16_69_account_density_polish.md`
