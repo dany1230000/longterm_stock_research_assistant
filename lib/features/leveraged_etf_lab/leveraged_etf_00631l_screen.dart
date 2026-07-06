@@ -1300,11 +1300,23 @@ enum _SymbolSearchHistoryFilter {
 
 class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
   final _controller = TextEditingController();
+  final _focusNode = FocusNode();
   _SymbolSearchHistoryFilter _historyFilter = _SymbolSearchHistoryFilter.all;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _focusNode.requestFocus();
+      }
+    });
+  }
 
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -1417,6 +1429,7 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
             TextField(
               key: const ValueKey('00631l-symbol-search-field'),
               controller: _controller,
+              focusNode: _focusNode,
               autofocus: true,
               onChanged: (_) => setState(() {}),
               textInputAction: TextInputAction.search,

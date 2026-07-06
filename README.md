@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.71 makes the top-left symbol search field request focus when opened so
+  phone users can type immediately.
 - v16.70 keeps the overview chart open while trimming the phone market stack
   height so the first screen reads faster.
 - v16.69 tightens the phone position/account and settings preference strips so

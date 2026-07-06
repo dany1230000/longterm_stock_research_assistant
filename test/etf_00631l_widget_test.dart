@@ -2567,6 +2567,16 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
     await tester.pumpAndSettle();
+    final searchField = find.byKey(
+      const ValueKey('00631l-symbol-search-field'),
+    );
+    expect(searchField, findsOneWidget);
+    final fieldWidget = tester.widget<TextField>(searchField);
+    expect(
+      fieldWidget.focusNode?.hasFocus,
+      isTrue,
+      reason: 'Phone symbol search should be ready for immediate input.',
+    );
     expect(
       find.byKey(const ValueKey('00631l-symbol-current-selection-panel')),
       findsNothing,
