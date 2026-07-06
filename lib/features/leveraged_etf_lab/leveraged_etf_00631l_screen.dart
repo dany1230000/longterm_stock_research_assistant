@@ -13384,7 +13384,7 @@ class _AiCompactDecisionRail extends StatelessWidget {
         detail: '價格偏離提示',
       ),
       _AiCompactDecisionItem(
-        label: '操作',
+        label: '程式',
         value: _compactProgramAction(primaryAction),
         detail: '程式檢查',
       ),
@@ -13644,7 +13644,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          '操作',
+                          '程式',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.labelSmall?.copyWith(

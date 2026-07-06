@@ -4279,7 +4279,7 @@ void main() {
     expect(decisionStrip, findsNothing);
     expect(compactDecisionRail, findsOneWidget);
     expect(tester.getRect(compactDecisionRail).height, lessThanOrEqualTo(42));
-    for (final label in const ['資料', '偏離', '操作']) {
+    for (final label in const ['資料', '偏離', '程式']) {
       expect(
         find.descendant(of: compactDecisionRail, matching: find.text(label)),
         findsOneWidget,
