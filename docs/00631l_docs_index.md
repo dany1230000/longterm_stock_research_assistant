@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Symbol search sheet v16.54: `docs\00631l_v16_54_symbol_search_sheet.md`
 - Loading shell v16.53: `docs\00631l_v16_53_loading_shell.md`
 - Settings wording v16.52: `docs\00631l_v16_52_settings_wording.md`
 - Overview chart header v16.51: `docs\00631l_v16_51_overview_chart_header.md`

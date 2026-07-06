@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.54 moves the phone ETF search sheet directly to the search field and
+  result list, keeping the current symbol as a compact chip.
+
 - v16.53 compresses the startup loading shell and replaces the visible loading
   status with a product-style Chinese label.
 

@@ -2536,6 +2536,11 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
     await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('00631l-symbol-current-selection-panel')),
+      findsNothing,
+    );
+    expect(find.text('目前 00631L'), findsWidgets);
     await tester.enterText(
       find.byKey(const ValueKey('00631l-symbol-search-field')),
       '0050',

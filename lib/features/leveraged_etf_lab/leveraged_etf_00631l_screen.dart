@@ -1411,11 +1411,6 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               ],
             ),
             SizedBox(height: compact ? 7 : 12),
-            _SymbolSearchCurrentSelectionPanel(
-              code: widget.selectedEtfCode,
-              catalogItem: selectedCatalogItem,
-            ),
-            SizedBox(height: compact ? 7 : 10),
             TextField(
               key: const ValueKey('00631l-symbol-search-field'),
               controller: _controller,
@@ -1445,9 +1440,17 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
               ),
             ),
             SizedBox(height: compact ? 7 : 10),
+            if (!compact) ...[
+              _SymbolSearchCurrentSelectionPanel(
+                code: widget.selectedEtfCode,
+                catalogItem: selectedCatalogItem,
+              ),
+              SizedBox(height: compact ? 7 : 10),
+            ],
             _StatusWrap(
               labels: compact
                   ? [
+                      '目前 ${widget.selectedEtfCode}',
                       _historyFilter.label,
                       if (query.isEmpty)
                         '熱門'
