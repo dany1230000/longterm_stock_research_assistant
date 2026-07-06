@@ -8574,10 +8574,10 @@ class _RangeActionChip extends StatelessWidget {
       label: Text(label),
       selected: selected,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 0),
       avatar: Icon(
         selected ? Icons.check_circle_outline : Icons.date_range_outlined,
-        size: 16,
+        size: 14,
       ),
       visualDensity: VisualDensity.compact,
       onSelected: (_) => onTap(),
@@ -8757,7 +8757,7 @@ class _CompactDateRangeControlPanel extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
+        padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -8784,7 +8784,7 @@ class _CompactDateRangeControlPanel extends StatelessWidget {
                 _CompactTextBadge(label: activePreset.label),
               ],
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             KeyedSubtree(
               key: chipsKey,
               child: _DateRangePresetStrip(
@@ -8811,7 +8811,7 @@ class _CompactDateRangeControlPanel extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             KeyedSubtree(
               key: dateControlsKey,
               child: _BacktestDateRangeControls(
@@ -11063,8 +11063,8 @@ class _BacktestDateButton extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: compact ? 6 : 9,
-            vertical: compact ? 5 : 9,
+            horizontal: compact ? 5 : 9,
+            vertical: compact ? 3 : 9,
           ),
           child: compact
               ? Row(

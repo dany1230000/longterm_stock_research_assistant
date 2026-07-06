@@ -1762,7 +1762,7 @@ void main() {
     final rangeContext =
         find.byKey(const ValueKey('00631l-history-range-context'));
     expect(rangeContext, findsOneWidget);
-    expect(tester.getRect(rangeContext).height, lessThanOrEqualTo(100));
+    expect(tester.getRect(rangeContext).height, lessThanOrEqualTo(94));
     expect(
       find.descendant(
         of: rangeContext,
