@@ -8977,14 +8977,14 @@ class _EtfComparisonMobileHeader extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
         child: Row(
           children: [
-            const _MiniStatusBadge(label: 'CMP'),
+            const _MiniStatusBadge(label: '自選'),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'ETF 歷史比較',
+                    'ETF 自選比較',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.labelLarge?.copyWith(
@@ -8995,7 +8995,7 @@ class _EtfComparisonMobileHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '$rangeText · $modeLabel · ${formatInteger(readyCount)} 檔可用',
+                    '$rangeText · $modeLabel · 可比較 ${formatInteger(readyCount)} 檔',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.labelSmall?.copyWith(
@@ -9017,7 +9017,7 @@ class _EtfComparisonMobileHeader extends StatelessWidget {
 }
 
 enum _EtfComparisonFilter {
-  focused('代表'),
+  focused('常用'),
   market('市值型'),
   dividend('高股息'),
   tech('科技'),

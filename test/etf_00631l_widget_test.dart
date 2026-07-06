@@ -3122,7 +3122,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(selectionPanel);
     await tester.pumpAndSettle();
-    expect(find.text('代表'), findsWidgets);
+    expect(find.text('常用'), findsWidgets);
     expect(find.text('高股息'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-etf-compare-chip-0050')),
@@ -3345,6 +3345,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(mobileHeader, findsOneWidget);
     expect(tester.getRect(mobileHeader).height, lessThanOrEqualTo(54));
+    expect(
+      find.descendant(of: mobileHeader, matching: find.text('ETF 自選比較')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: mobileHeader, matching: find.text('自選')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: mobileHeader, matching: find.textContaining('可比較')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: mobileHeader, matching: find.text('CMP')),
+      findsNothing,
+    );
 
     final compactSummary =
         find.byKey(const ValueKey('00631l-etf-comparison-compact-summary'));
