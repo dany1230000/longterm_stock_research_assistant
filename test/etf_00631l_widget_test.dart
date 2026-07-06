@@ -2672,6 +2672,10 @@ void main() {
         find.byKey(const ValueKey('00631l-symbol-result-details-0050'));
     expect(result0050, findsOneWidget);
     expect(detailToggle, findsOneWidget);
+    expect(
+      find.descendant(of: result0050, matching: find.text('核對')),
+      findsOneWidget,
+    );
     expect(tester.getRect(result0050).height, lessThanOrEqualTo(78));
     expect(find.textContaining('篩選'), findsNothing);
     expect(find.textContaining('僅清單'), findsNothing);
@@ -2679,6 +2683,10 @@ void main() {
 
     await tester.tap(detailToggle);
     await tester.pumpAndSettle();
+    expect(
+      find.descendant(of: result0050, matching: find.text('收合核對')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('00631l-symbol-capability-summary-0050')),
       findsOneWidget,

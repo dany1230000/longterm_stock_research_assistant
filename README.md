@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.89 renames the left-top ETF search result detail affordance to `核對`,
+  keeping capability and data-quality details behind an explicit check row.
 - v16.88 shortens the position entry wording to `新增持倉` and keeps the
   local-only note without making the account page feel like a long form.
 - v16.87 renames the history price table to `價格表核對`, keeping row-level

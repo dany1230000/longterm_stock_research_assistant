@@ -2184,10 +2184,10 @@ class _SymbolSearchResultDetailsState
                 Expanded(
                   child: Text(
                     _expanded
-                        ? '收合資料'
+                        ? '收合核對'
                         : widget.compact
-                            ? '詳情'
-                            : '更多資料',
+                            ? '核對'
+                            : '資料核對',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: _marketMutedTextColor(context),
                       fontWeight: FontWeight.w900,
