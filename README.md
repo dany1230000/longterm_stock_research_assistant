@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.48 compresses the phone history/backtest date range panel so the selected
+  range, presets, and start/end controls sit closer to the chart.
+
 - v16.47 makes the phone AI tab lead with the daily interpretation, program
   action, and compact readout before source/readiness metadata.
 

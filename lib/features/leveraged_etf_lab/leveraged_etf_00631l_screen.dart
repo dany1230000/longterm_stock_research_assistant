@@ -8756,36 +8756,25 @@ class _CompactDateRangeControlPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: _marketTextColor(context),
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0,
+                  child: KeyedSubtree(
+                    key: const ValueKey('00631l-range-context-metric-strip'),
+                    child: Text(
+                      '$title · $metricText',
+                      key: const ValueKey('00631l-range-context-wrap'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w900,
+                        height: 1.05,
+                        letterSpacing: 0,
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 6),
                 _CompactTextBadge(label: activePreset.label),
               ],
-            ),
-            const SizedBox(height: 2),
-            KeyedSubtree(
-              key: const ValueKey('00631l-range-context-metric-strip'),
-              child: Text(
-                metricText,
-                key: const ValueKey('00631l-range-context-wrap'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: _marketMutedTextColor(context),
-                  fontWeight: FontWeight.w900,
-                  height: 1.05,
-                  letterSpacing: 0,
-                ),
-              ),
             ),
             const SizedBox(height: 4),
             KeyedSubtree(
