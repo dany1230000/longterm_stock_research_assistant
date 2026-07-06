@@ -1296,7 +1296,7 @@ void main() {
       tester
           .getRect(find.byKey(const ValueKey('00631l-loading-quote-card')))
           .height,
-      lessThanOrEqualTo(210),
+      lessThanOrEqualTo(196),
     );
     expect(
       find.byKey(const ValueKey('00631l-loading-premium-box')),
@@ -1322,8 +1322,10 @@ void main() {
       tester
           .getRect(find.byKey(const ValueKey('00631l-loading-source-rail')))
           .height,
-      lessThanOrEqualTo(42),
+      lessThanOrEqualTo(38),
     );
+    expect(find.text('準備中'), findsOneWidget);
+    expect(find.text('loading'), findsNothing);
     for (final label in const ['歷', '盤', '解讀']) {
       expect(find.text(label), findsWidgets);
     }

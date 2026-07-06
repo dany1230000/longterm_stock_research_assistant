@@ -753,7 +753,7 @@ class _LabLoadingShell extends StatelessWidget {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(10, 6, 10, 12),
+                padding: const EdgeInsets.fromLTRB(10, 4, 10, 12),
                 children: [
                   Align(
                     alignment: Alignment.topCenter,
@@ -763,11 +763,11 @@ class _LabLoadingShell extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _MarketTopBar(onRefresh: onRefresh),
-                          const SizedBox(height: 8),
-                          const _LoadingStatusStrip(),
-                          const SizedBox(height: 8),
-                          const _LoadingQuoteCard(),
                           const SizedBox(height: 6),
+                          const _LoadingStatusStrip(),
+                          const SizedBox(height: 6),
+                          const _LoadingQuoteCard(),
+                          const SizedBox(height: 5),
                           const _LoadingSourceRail(),
                         ],
                       ),
@@ -801,10 +801,10 @@ class _LoadingStatusStrip extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         child: Row(
           children: [
-            const _StatusPill(label: 'loading'),
+            const _StatusPill(label: '準備中'),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -837,7 +837,7 @@ class _LoadingQuoteCard extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: const Padding(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(7),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -859,9 +859,9 @@ class _LoadingQuoteCard extends StatelessWidget {
                 _LoadingPremiumSkeleton(),
               ],
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 6),
             _LoadingChartSkeleton(),
-            SizedBox(height: 5),
+            SizedBox(height: 4),
             Row(
               children: [
                 Expanded(child: _LoadingMiniTile(width: 74)),
@@ -871,7 +871,7 @@ class _LoadingQuoteCard extends StatelessWidget {
                 Expanded(child: _LoadingMiniTile(width: 74)),
               ],
             ),
-            SizedBox(height: 5),
+            SizedBox(height: 4),
             Row(
               children: [
                 Expanded(child: _LoadingMiniTile(width: 42, compact: true)),
@@ -932,14 +932,14 @@ class _LoadingChartSkeleton extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
+        padding: const EdgeInsets.fromLTRB(7, 7, 7, 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const _LoadingBar(width: 86, height: 10),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Container(
-              height: 28,
+              height: 24,
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(color: _marketBorderColor(context)),
@@ -980,7 +980,7 @@ class _LoadingMiniTile extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: compact ? 5 : 6,
-          vertical: compact ? 4 : 5,
+          vertical: compact ? 3 : 4,
         ),
         child: _LoadingBar(
           width: width,
@@ -1004,7 +1004,7 @@ class _LoadingSourceRail extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: Row(
           children: [
             Expanded(
