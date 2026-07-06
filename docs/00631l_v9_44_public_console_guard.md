@@ -10,17 +10,12 @@ Catch public PWA runtime errors before a release is considered healthy.
 
 `scripts\00631l_check_public_console.cmd`
 
-The script opens the public GitHub Pages app at phone width, waits for the first
-screen, and reads browser console output through Playwright CLI.
+The script now delegates to a non-interactive Python smoke check. It fetches
+the public GitHub Pages app and required Flutter/PWA entry assets without
+opening a visible browser window.
 
-It passes only when the console reports:
-
-```text
-Errors: 0, Warnings: 0
-```
-
-If `npx.cmd` is not available, the script prints a WARN and exits without
-blocking local validation.
+It passes only when the root page is reachable, contains the 00631L app marker,
+and the required public assets respond successfully.
 
 ## Release Check
 

@@ -4169,7 +4169,7 @@ void main() {
     final hero = find.byKey(const ValueKey('00631l-ai-daily-briefing-hero'));
 
     expect(hero, findsOneWidget);
-    expect(tester.getRect(hero).height, lessThanOrEqualTo(320));
+    expect(tester.getRect(hero).height, lessThanOrEqualTo(300));
     expect(headline, findsOneWidget);
     expect(primaryAction, findsOneWidget);
     expect(compactMeta, findsOneWidget);
@@ -4186,6 +4186,7 @@ void main() {
     expect(find.text('完整摘要與資料來源。'), findsOneWidget);
     expect(decisionStrip, findsNothing);
     expect(compactDecisionRail, findsOneWidget);
+    expect(tester.getRect(compactDecisionRail).height, lessThanOrEqualTo(42));
     for (final label in const ['資料', '偏離', '操作']) {
       expect(
         find.descendant(of: compactDecisionRail, matching: find.text(label)),
@@ -4204,7 +4205,7 @@ void main() {
     );
     expect(
       tester.getRect(compactInsight).height,
-      lessThanOrEqualTo(72),
+      lessThanOrEqualTo(60),
       reason: 'Phone AI insight should stay compact while allowing two lines.',
     );
     expect(

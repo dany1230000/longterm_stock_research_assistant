@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- AI compact brief v16.59: `docs\00631l_v16_59_ai_compact_brief.md`
 - Position input grid v16.58: `docs\00631l_v16_58_position_input_grid.md`
 - History date controls v16.57: `docs\00631l_v16_57_history_date_controls.md`
 - Overview source ribbon v16.56: `docs\00631l_v16_56_overview_source_ribbon.md`

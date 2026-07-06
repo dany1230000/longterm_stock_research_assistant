@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.59 compresses the phone AI daily brief so the main interpretation,
+  program action, and compact readout stay on the first screen.
+
 - v16.58 tightens the phone position input grid so the two core local-position
   fields and save action take less vertical space.
 

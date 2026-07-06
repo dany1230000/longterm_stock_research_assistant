@@ -73,7 +73,7 @@ def main() -> int:
         ),
         _run_command(
             "public_console",
-            ["cmd", "/c", "scripts\\00631l_check_public_console.cmd"],
+            ["py", "backend\\scripts\\check_public_console_00631l.py"],
         ),
         _run_command(
             "pages_deploy_wait_dry_run",

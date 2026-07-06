@@ -2334,7 +2334,7 @@ class _CompactTextBadge extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
         child: Text(
           label,
           maxLines: 1,
@@ -12665,7 +12665,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 520;
         final heroPadding = compact
-            ? const EdgeInsets.fromLTRB(7, 5, 7, 5)
+            ? const EdgeInsets.fromLTRB(6, 4, 6, 4)
             : const EdgeInsets.fromLTRB(12, 12, 12, 12);
         return DecoratedBox(
           key: const ValueKey('00631l-ai-daily-briefing-hero'),
@@ -12719,7 +12719,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
                       const _CompactTextBadge(label: '規則分析'),
                   ],
                 ),
-                SizedBox(height: compact ? 3 : 8),
+                SizedBox(height: compact ? 2 : 8),
                 _AiDailyHeadlinePanel(
                   data: data,
                   summary: summary,
@@ -12744,15 +12744,15 @@ class _AiDailyBriefingHero extends StatelessWidget {
                   _AiFirstScreenBulletList(bullets: briefingBullets),
                 ],
                 if (compact) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 3),
                   _AiCompactDailyInsightLine(text: compactInsight),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 3),
                   _AiCompactDecisionRail(
                     data: data,
                     premiumText: compactPremiumText,
                     primaryAction: primaryAction,
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 2),
                   KeyedSubtree(
                     key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
                     child: _AiCompactMetaLine(
@@ -13065,11 +13065,11 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 54,
+              width: 48,
               child: Text(
                 '今日解讀',
                 key: const ValueKey('00631l-ai-compact-daily-insight-title'),
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: _marketMutedTextColor(context),
@@ -13163,6 +13163,7 @@ class _AiCompactDecisionPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: _marketPanelAltColor(context),
@@ -13170,7 +13171,10 @@ class _AiCompactDecisionPill extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+        padding: EdgeInsets.symmetric(
+          horizontal: 5,
+          vertical: compact ? 3 : 4,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -13181,10 +13185,10 @@ class _AiCompactDecisionPill extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 color: _marketMutedTextColor(context),
                 fontWeight: FontWeight.w800,
-                fontSize: 10,
+                fontSize: compact ? 9.5 : 10,
               ),
             ),
-            const SizedBox(height: 2),
+            SizedBox(height: compact ? 1 : 2),
             Text(
               item.value,
               maxLines: 1,
@@ -13192,19 +13196,22 @@ class _AiCompactDecisionPill extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 color: _marketTextColor(context),
                 fontWeight: FontWeight.w900,
+                fontSize: compact ? 10.5 : null,
               ),
             ),
-            const SizedBox(height: 1),
-            Text(
-              item.detail,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: _marketMutedTextColor(context),
-                fontWeight: FontWeight.w700,
-                fontSize: 9,
+            if (!compact) ...[
+              const SizedBox(height: 1),
+              Text(
+                item.detail,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketMutedTextColor(context),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 9,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),
@@ -13271,7 +13278,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
         border: Border.all(color: _marketBorderColor(context)),
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 7 : 10),
+        padding: EdgeInsets.all(compact ? 6 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -13279,7 +13286,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
               children: [
                 Container(
                   width: 8,
-                  height: compact ? 28 : 32,
+                  height: compact ? 24 : 32,
                   decoration: BoxDecoration(
                     color: statusColor,
                     borderRadius: BorderRadius.circular(99),
@@ -13316,7 +13323,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: compact ? 6 : 10),
+            SizedBox(height: compact ? 5 : 10),
             LayoutBuilder(
               builder: (context, constraints) {
                 final singleRow = constraints.maxWidth < 460;
@@ -13357,7 +13364,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                 );
               },
             ),
-            SizedBox(height: compact ? 6 : 10),
+            SizedBox(height: compact ? 5 : 10),
             Container(
               key: const ValueKey('00631l-ai-primary-action-block'),
               width: double.infinity,
@@ -13367,7 +13374,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                 border: Border.all(color: statusColor.withValues(alpha: 0.35)),
               ),
               padding: compact
-                  ? const EdgeInsets.symmetric(horizontal: 7, vertical: 5)
+                  ? const EdgeInsets.symmetric(horizontal: 7, vertical: 4)
                   : const EdgeInsets.all(9),
               child: compact
                   ? Row(
