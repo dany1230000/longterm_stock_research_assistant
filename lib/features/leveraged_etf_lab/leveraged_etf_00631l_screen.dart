@@ -11440,6 +11440,7 @@ class _PositionSectionState extends State<_PositionSection> {
           const SizedBox(height: 8),
         ],
         _InputGrid(
+          dense: compact,
           children: [
             _NumberField(
               key: const ValueKey('00631l-position-field-shares'),
@@ -11465,6 +11466,7 @@ class _PositionSectionState extends State<_PositionSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _InputGrid(
+                  dense: compact,
                   children: [
                     _NumberField(
                       key: const ValueKey('00631l-position-field-assets'),
@@ -17730,9 +17732,10 @@ class _MetricCard extends StatelessWidget {
 }
 
 class _InputGrid extends StatelessWidget {
-  const _InputGrid({required this.children});
+  const _InputGrid({required this.children, this.dense = false});
 
   final List<Widget> children;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
@@ -17743,9 +17746,10 @@ class _InputGrid extends StatelessWidget {
           crossAxisCount: veryNarrow ? 1 : 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-          childAspectRatio: veryNarrow ? 3.9 : 2.55,
+          mainAxisSpacing: dense ? 5 : 8,
+          crossAxisSpacing: dense ? 6 : 8,
+          childAspectRatio:
+              veryNarrow ? (dense ? 4.35 : 3.9) : (dense ? 3.05 : 2.55),
           children: children,
         );
       },

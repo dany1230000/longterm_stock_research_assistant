@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.58 tightens the phone position input grid so the two core local-position
+  fields and save action take less vertical space.
+
 - v16.57 tightens the phone history/backtest date controls so charts and
   metrics appear sooner.
 
