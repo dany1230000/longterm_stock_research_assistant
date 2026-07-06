@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.80 renames the advanced settings diagnostics area to user-facing service
+  and data status, keeping the account tab first screen focused on preferences.
 - v16.79 tightens the phone position metric strip so account values sit in a
   shorter horizontal row.
 - v16.78 changes the compact AI first-screen action label from a generic action

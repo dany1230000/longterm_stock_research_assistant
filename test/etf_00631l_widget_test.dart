@@ -4020,7 +4020,7 @@ void main() {
       findsNothing,
     );
     expect(find.text('資料模式與完整度'), findsNothing);
-    expect(find.text('進階維護診斷'), findsNothing);
+    expect(find.text('服務與資料狀態'), findsNothing);
     expect(find.text('進階設定'), findsOneWidget);
     expect(find.text('Android'), findsNothing);
     expect(find.text('iOS'), findsNothing);
@@ -4039,7 +4039,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('ETF 資料與比較能力'), findsOneWidget);
     expect(find.text('資料模式與完整度'), findsOneWidget);
-    expect(find.text('進階維護診斷'), findsOneWidget);
+    expect(find.text('服務與資料狀態'), findsOneWidget);
     expect(find.text('App 上架準備'), findsOneWidget);
 
     await tester.ensureVisible(find.text('ETF 資料與比較能力'));
@@ -4162,7 +4162,8 @@ void main() {
     expect(find.text('進階檢查'), findsNothing);
     expect(find.text('進階設定'), findsOneWidget);
     expect(find.text('資料模式與完整度'), findsNothing);
-    expect(find.text('進階維護診斷'), findsNothing);
+    expect(find.text('服務與資料狀態'), findsNothing);
+    expect(find.textContaining('維護診斷'), findsNothing);
     expect(find.text('ETF 資料與比較能力'), findsNothing);
     expect(find.text('App 上架準備'), findsNothing);
     expect(find.text('需要處理'), findsNothing);
@@ -4214,7 +4215,7 @@ void main() {
         .byKey(const ValueKey('00631l-settings-advanced-maintenance-panel'));
     await tester.ensureVisible(advancedPanel);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('進階維護診斷'));
+    await tester.tap(find.text('服務與資料狀態'));
     await tester.pumpAndSettle();
     expect(find.text('version drift'), findsWidgets);
     _expectNoTradingActionText();
@@ -4649,7 +4650,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('帳戶'), findsWidgets);
     expect(find.text('進階設定'), findsOneWidget);
-    expect(find.text('進階維護診斷'), findsNothing);
+    expect(find.text('服務與資料狀態'), findsNothing);
     expect(find.textContaining('示範'), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });

@@ -15178,7 +15178,7 @@ class _SettingsSection extends StatelessWidget {
         _CompactExpansionPanel(
           key: const ValueKey('00631l-settings-advanced-settings-panel'),
           title: '進階設定',
-          subtitle: '資料庫、維護診斷與上架準備；日常使用通常不用打開。',
+          subtitle: '資料庫、服務狀態與上架準備；日常使用通常不用打開。',
           child: Column(
             children: [
               _CompactExpansionPanel(
@@ -15232,7 +15232,7 @@ class _SettingsSection extends StatelessWidget {
               _CompactExpansionPanel(
                 key: const ValueKey(
                     '00631l-settings-advanced-maintenance-panel'),
-                title: '進階維護診斷',
+                title: '服務與資料狀態',
                 subtitle: '後端、歷史、日報、匯出、備份與部署設定。',
                 child: _StatusList(
                   items: [
@@ -15812,7 +15812,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
               if (!compact) ...[
                 const SizedBox(height: 3),
                 Text(
-                  '帳戶、外觀、目前 ETF 與本機資料；維護細節需要時再展開。',
+                  '帳戶、外觀、目前 ETF 與本機資料；進階細節需要時再展開。',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -15874,7 +15874,7 @@ String _settingsDataModeCaption(
     return compact ? '示範資料' : '預設示範資料';
   }
   if (_use00631LLiveProxy) {
-    return compact ? 'Live 連線中' : '後端連線細節在進階';
+    return compact ? 'Live 連線中' : 'Live 資料可用';
   }
   return status.backendConnectionLabel;
 }
