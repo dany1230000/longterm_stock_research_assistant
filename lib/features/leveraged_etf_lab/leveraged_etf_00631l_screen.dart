@@ -1124,7 +1124,7 @@ class _MarketTopBar extends StatelessWidget {
             : selectedEtfName.trim();
     return SizedBox(
       key: const ValueKey('00631l-market-top-bar'),
-      height: 52,
+      height: 50,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 560;
@@ -1167,7 +1167,7 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: _marketMutedTextColor(context),
-                        fontSize: 11.5,
+                        fontSize: 11,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0,
                         height: 1.08,
@@ -3894,7 +3894,7 @@ class _MarketBottomNav extends StatelessWidget {
           child: SafeArea(
             top: false,
             child: SizedBox(
-              height: 56,
+              height: 54,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -4143,23 +4143,23 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
     final hasUsableHoldings = _hasUsableHoldingsSnapshot(snapshot);
     final items = [
       _OverviewCompactRibbonItem(
-        label: '日',
+        label: 'DAY',
         value: hasUsableHoldings
             ? _summaryMonthDay(snapshot.tradeDate)
             : _sourceStatusBadgeLabel(snapshot.status.label),
       ),
       _OverviewCompactRibbonItem(
-        label: '盤',
+        label: 'LIVE',
         value: nav?.dataTime == null
             ? _sourceStatusBadgeLabel(nav?.status.label)
             : _summaryTimeMinute(nav!.dataTime!),
       ),
       _OverviewCompactRibbonItem(
-        label: '歷',
+        label: 'HIS',
         value: formatInteger(priceSummary.rowCount),
       ),
       _OverviewCompactRibbonItem(
-        label: '源',
+        label: 'MODE',
         value: _frontendDataModeRibbonValue,
       ),
     ];
@@ -4216,10 +4216,12 @@ class _OverviewCompactRibbonChip extends StatelessWidget {
       children: [
         Text(
           item.label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: theme.textTheme.labelSmall?.copyWith(
             color: _marketMutedTextColor(context),
             fontWeight: FontWeight.w900,
-            fontSize: 8.5,
+            fontSize: 8,
             height: 1,
           ),
         ),

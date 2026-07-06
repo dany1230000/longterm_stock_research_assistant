@@ -620,7 +620,7 @@ void main() {
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );
     expect(compactRibbon, findsOneWidget);
-    for (final label in const ['日', '盤', '歷', '源']) {
+    for (final label in const ['DAY', 'LIVE', 'HIS', 'MODE']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),
         findsWidgets,
@@ -630,7 +630,7 @@ void main() {
       find.descendant(of: compactRibbon, matching: find.text('模式')),
       findsNothing,
     );
-    for (final label in const ['DAY', 'NAV', 'HIS', 'MODE']) {
+    for (final label in const ['日', '盤', '歷', '源', 'NAV']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),
         findsNothing,
@@ -3652,7 +3652,7 @@ void main() {
     expect(compactRibbon, findsOneWidget);
     final ribbonRect = tester.getRect(compactRibbon);
     expect(ribbonRect.height, lessThanOrEqualTo(28));
-    for (final label in const ['日', '盤', '歷']) {
+    for (final label in const ['DAY', 'LIVE', 'HIS']) {
       final labelFinder = find.descendant(
         of: compactRibbon,
         matching: find.text(label),
@@ -3725,7 +3725,7 @@ void main() {
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );
     expect(compactRibbon, findsOneWidget);
-    for (final label in const ['日', '盤', '歷']) {
+    for (final label in const ['DAY', 'LIVE', 'HIS']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),
         findsWidgets,

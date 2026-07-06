@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.66 makes the phone overview data ribbon use explicit `DAY / LIVE / HIS /
+  MODE` labels and trims the app shell height slightly for a cleaner first
+  screen.
 - v16.65 makes the Python daily cycle runner call Python entrypoints directly
   instead of launching the common `.cmd` wrappers.
 - v16.64 makes the release check call core Dart/Flutter tools directly instead

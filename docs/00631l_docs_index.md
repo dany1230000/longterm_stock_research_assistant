@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Mobile ribbon polish v16.66: `docs\00631l_v16_66_mobile_ribbon_polish.md`
 - Noninteractive daily cycle v16.65: `docs\00631l_v16_65_noninteractive_daily_cycle.md`
 - Noninteractive release check v16.64: `docs\00631l_v16_64_noninteractive_release_check.md`
 - Mobile QA pass v16.63: `docs\00631l_v16_63_mobile_qa_pass.md`
