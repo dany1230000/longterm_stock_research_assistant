@@ -4386,9 +4386,9 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
     final tsmcLine = _stockHoldingByCode(snapshot, '2330');
     final items = [
       _OverviewFirstGlanceItem(
-        label: 'AI',
-        value: _sourceStatusBadgeLabel(data.aiAnalysis.sourceStatusLabel),
-        isAi: true,
+        label: '偏離',
+        value: _overviewPremiumGlanceValue(data.intradayNav),
+        isDeviation: true,
       ),
       _OverviewFirstGlanceItem(
         label: 'TX',
@@ -4456,13 +4456,13 @@ class _OverviewFirstGlanceItem {
   const _OverviewFirstGlanceItem({
     required this.label,
     required this.value,
-    this.isAi = false,
+    this.isDeviation = false,
     this.isHolding = false,
   });
 
   final String label;
   final String value;
-  final bool isAi;
+  final bool isDeviation;
   final bool isHolding;
 }
 
@@ -4506,8 +4506,10 @@ class _OverviewFirstGlanceChip extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: Text(
                   item.value,
-                  key: item.isAi
-                      ? const ValueKey('00631l-overview-ai-compact-line')
+                  key: item.isDeviation
+                      ? const ValueKey(
+                          '00631l-overview-deviation-compact-line',
+                        )
                       : null,
                   maxLines: 1,
                   style: theme.textTheme.labelLarge?.copyWith(
@@ -4524,13 +4526,32 @@ class _OverviewFirstGlanceChip extends StatelessWidget {
       ),
     );
 
-    if (item.isAi) {
+    if (item.isDeviation) {
       return KeyedSubtree(
-        key: const ValueKey('00631l-overview-ai-glance-card'),
+        key: const ValueKey('00631l-overview-deviation-glance-card'),
         child: chip,
       );
     }
     return chip;
+  }
+}
+
+String _overviewPremiumGlanceValue(EtfIntradayNav? nav) {
+  if (nav == null) {
+    return '暫無';
+  }
+  final assessment = nav.premiumDiscountAssessment;
+  switch (assessment.level) {
+    case PremiumDiscountLevel.unavailable:
+      return '暫無';
+    case PremiumDiscountLevel.stale:
+      return '過期';
+    case PremiumDiscountLevel.normal:
+      return '正常';
+    case PremiumDiscountLevel.watch:
+    case PremiumDiscountLevel.elevated:
+    case PremiumDiscountLevel.extreme:
+      return assessment.label;
   }
 }
 

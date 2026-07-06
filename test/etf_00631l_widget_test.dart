@@ -753,17 +753,17 @@ void main() {
       findsOneWidget,
     );
     expect(tester.getRect(mobileDailySummary).height, lessThanOrEqualTo(80));
-    final aiGlance = find.byKey(
-      const ValueKey('00631l-overview-ai-glance-card'),
+    final deviationGlance = find.byKey(
+      const ValueKey('00631l-overview-deviation-glance-card'),
     );
-    expect(aiGlance, findsOneWidget);
-    final aiRect = tester.getRect(aiGlance);
+    expect(deviationGlance, findsOneWidget);
+    final deviationRect = tester.getRect(deviationGlance);
     final bottomNavRect = tester.getRect(
       find.byKey(const ValueKey('00631l-bottom-nav')),
     );
     expect(bottomNavRect.height, lessThanOrEqualTo(62));
-    expect(aiRect.top, lessThan(bottomNavRect.top));
-    expect(aiRect.height, lessThanOrEqualTo(76));
+    expect(deviationRect.top, lessThan(bottomNavRect.top));
+    expect(deviationRect.height, lessThanOrEqualTo(76));
     final holdingsDigestRect = tester.getRect(
       find.byKey(const ValueKey('00631l-overview-holdings-digest-strip')),
     );
@@ -786,7 +786,10 @@ void main() {
         tester.getRect(mobileDigestChips.first).height, lessThanOrEqualTo(22));
     final mobileDailySummaryRect = tester.getRect(mobileDailySummary);
     expect(mobileDailySummaryRect.height, lessThanOrEqualTo(112));
-    expect(aiRect.top, greaterThanOrEqualTo(mobileDailySummaryRect.top));
+    expect(
+      deviationRect.top,
+      greaterThanOrEqualTo(mobileDailySummaryRect.top),
+    );
     expect(
       holdingsDigestRect.bottom,
       lessThanOrEqualTo(mobileDailySummaryRect.bottom),
@@ -804,7 +807,7 @@ void main() {
       lessThanOrEqualTo(540),
     );
     expect(
-      find.byKey(const ValueKey('00631l-overview-ai-compact-line')),
+      find.byKey(const ValueKey('00631l-overview-deviation-compact-line')),
       findsOneWidget,
     );
     expect(
@@ -1022,7 +1025,7 @@ void main() {
     expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
     expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));
     expect(chartRect.bottom, lessThanOrEqualTo(362));
-    for (final label in const ['AI', 'TX', '2330', '現金']) {
+    for (final label in const ['偏離', 'TX', '2330', '現金']) {
       expect(
         find.descendant(of: firstGlance, matching: find.text(label)),
         findsOneWidget,
@@ -1042,6 +1045,10 @@ void main() {
     }
     expect(
       find.descendant(of: firstGlance, matching: find.text('CASH')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: firstGlance, matching: find.text('AI')),
       findsNothing,
     );
     for (final internalLabel in const ['STK', 'FUT', 'CASH', 'OTHER']) {
@@ -1079,12 +1086,13 @@ void main() {
     final firstGlance = find.byKey(
       const ValueKey('00631l-overview-first-glance-strip'),
     );
-    final aiStatus =
-        find.byKey(const ValueKey('00631l-overview-ai-compact-line'));
+    final deviationStatus =
+        find.byKey(const ValueKey('00631l-overview-deviation-compact-line'));
     expect(firstGlance, findsOneWidget);
-    expect(aiStatus, findsOneWidget);
-    expect((tester.widget<Text>(aiStatus).data ?? '').trim(), isNotEmpty);
-    for (final label in const ['AI', 'TX', '2330', '現金']) {
+    expect(deviationStatus, findsOneWidget);
+    expect(
+        (tester.widget<Text>(deviationStatus).data ?? '').trim(), isNotEmpty);
+    for (final label in const ['偏離', 'TX', '2330', '現金']) {
       expect(
         find.descendant(of: firstGlance, matching: find.text(label)),
         findsOneWidget,

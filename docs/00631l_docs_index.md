@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Overview deviation glance v16.81: `docs\00631l_v16_81_overview_deviation_glance.md`
 - Account settings polish v16.80: `docs\00631l_v16_80_account_settings_polish.md`
 - Position metric density v16.79: `docs\00631l_v16_79_position_metric_density.md`
 - AI compact program label v16.78: `docs\00631l_v16_78_ai_program_label.md`

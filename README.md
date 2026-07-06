@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.81 changes the phone overview first-glance row from an AI source badge to
+  a premium/discount deviation status alongside TX, 2330, and cash.
 - v16.80 renames the advanced settings diagnostics area to user-facing service
   and data status, keeping the account tab first screen focused on preferences.
 - v16.79 tightens the phone position metric strip so account values sit in a
