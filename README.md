@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.73 adds a compact range-result strip to the history/backtest page and
+  moves detailed annualized metrics into an expandable panel.
 - v16.72 labels the combined history/backtest bottom tab as `歷回` while
   keeping ETF comparison inside that page instead of adding a separate tab.
 - v16.71 makes the top-left symbol search field request focus when opened so

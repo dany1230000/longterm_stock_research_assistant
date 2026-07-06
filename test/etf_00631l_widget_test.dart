@@ -1580,6 +1580,16 @@ void main() {
     );
     expect(find.text('日期區間'), findsOneWidget);
     expect(
+      find.byKey(const ValueKey('00631l-history-range-result-strip')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('00631l-history-metrics-expansion')),
+      findsOneWidget,
+    );
+    expect(find.text('區間結果'), findsOneWidget);
+    expect(find.text('區間指標明細'), findsOneWidget);
+    expect(
       find.byKey(const ValueKey('00631l-history-date-controls-visible')),
       findsOneWidget,
     );
@@ -1972,7 +1982,13 @@ void main() {
     expect(find.text('結束日期'), findsWidgets);
     expect(find.textContaining('回測區間'), findsOneWidget);
     expect(find.textContaining('策略 定期定額'), findsOneWidget);
-    expect(find.textContaining('樣本'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-backtest-range-context')),
+        matching: find.textContaining('樣本'),
+      ),
+      findsOneWidget,
+    );
     final backtestView = find.byKey(const ValueKey('00631l-backtest-view'));
     final comparisonPanel =
         find.byKey(const ValueKey('00631l-etf-history-comparison'));

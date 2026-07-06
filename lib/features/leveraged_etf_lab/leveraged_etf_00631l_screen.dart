@@ -8310,6 +8310,135 @@ class _HistoryTopMetricItem extends StatelessWidget {
   }
 }
 
+class _HistoryRangeResultStrip extends StatelessWidget {
+  const _HistoryRangeResultStrip({
+    required this.performance,
+    required this.summary,
+  });
+
+  final EtfPerformanceSummary performance;
+  final EtfPriceHistoryCompletenessSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final latest = summary.latest;
+    final items = [
+      _HistoryRangeResultItem(
+        label: '區間報酬',
+        value: formatSignedNullablePercent(performance.totalReturnPct),
+      ),
+      _HistoryRangeResultItem(
+        label: '最大回撤',
+        value: formatSignedNullablePercent(performance.maxDrawdownPct),
+      ),
+      _HistoryRangeResultItem(
+        label: '樣本',
+        value: formatInteger(summary.rowCount),
+      ),
+      _HistoryRangeResultItem(
+        label: '最新',
+        value: latest == null ? '--' : _price(latest.performanceClose),
+      ),
+    ];
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-history-range-result-strip'),
+      decoration: BoxDecoration(
+        color: _marketPanelColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '區間結果',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontWeight: FontWeight.w900,
+                height: 1,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                for (var index = 0; index < items.length; index += 1) ...[
+                  Expanded(child: items[index]),
+                  if (index != items.length - 1) const SizedBox(width: 4),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HistoryRangeResultItem extends StatelessWidget {
+  const _HistoryRangeResultItem({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: _marketMutedTextColor(context),
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                height: 1,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 2),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _marketTextColor(context),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                  letterSpacing: 0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _FilterablePriceHistoryBlockState
     extends State<_FilterablePriceHistoryBlock> {
   DateTime? _startDate;
@@ -8388,6 +8517,11 @@ class _FilterablePriceHistoryBlockState
           dateControlsKey:
               const ValueKey('00631l-history-date-controls-visible'),
         ),
+        const SizedBox(height: 6),
+        _HistoryRangeResultStrip(
+          performance: performance,
+          summary: selectedSummary,
+        ),
         const SizedBox(height: 8),
         _PriceTrendCharts(priceHistory: filteredHistory),
         const SizedBox(height: 8),
@@ -8398,41 +8532,47 @@ class _FilterablePriceHistoryBlockState
           ],
         ),
         const SizedBox(height: 8),
-        _ResponsiveMetricGrid(
-          cards: [
-            _MetricCard(
-              label: '區間報酬',
-              value: formatSignedNullablePercent(
-                performance.totalReturnPct,
+        _CompactExpansionPanel(
+          key: const ValueKey('00631l-history-metrics-expansion'),
+          title: '區間指標明細',
+          subtitle: '年化、波動與回撤；需要核對時展開。',
+          dense: true,
+          child: _ResponsiveMetricGrid(
+            cards: [
+              _MetricCard(
+                label: '區間報酬',
+                value: formatSignedNullablePercent(
+                  performance.totalReturnPct,
+                ),
+                caption: '目前日期區間',
+                icon: Icons.trending_up_outlined,
               ),
-              caption: '目前日期區間',
-              icon: Icons.trending_up_outlined,
-            ),
-            _MetricCard(
-              label: '年化報酬',
-              value: formatSignedNullablePercent(
-                performance.annualizedReturnPct,
+              _MetricCard(
+                label: '年化報酬',
+                value: formatSignedNullablePercent(
+                  performance.annualizedReturnPct,
+                ),
+                caption: '以區間資料計算',
+                icon: Icons.functions_outlined,
               ),
-              caption: '以區間資料計算',
-              icon: Icons.functions_outlined,
-            ),
-            _MetricCard(
-              label: '最大回撤',
-              value: formatSignedNullablePercent(
-                performance.maxDrawdownPct,
+              _MetricCard(
+                label: '最大回撤',
+                value: formatSignedNullablePercent(
+                  performance.maxDrawdownPct,
+                ),
+                caption: '目前日期區間',
+                icon: Icons.trending_down_outlined,
               ),
-              caption: '目前日期區間',
-              icon: Icons.trending_down_outlined,
-            ),
-            _MetricCard(
-              label: '年化波動',
-              value: formatNullablePercent(
-                performance.annualizedVolatilityPct,
+              _MetricCard(
+                label: '年化波動',
+                value: formatNullablePercent(
+                  performance.annualizedVolatilityPct,
+                ),
+                caption: '收盤價日報酬',
+                icon: Icons.multiline_chart_outlined,
               ),
-              caption: '收盤價日報酬',
-              icon: Icons.multiline_chart_outlined,
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 12),
         _CompactExpansionPanel(
