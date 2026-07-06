@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.88 shortens the position entry wording to `新增持倉` and keeps the
+  local-only note without making the account page feel like a long form.
 - v16.87 renames the history price table to `價格表核對`, keeping row-level
   OHLC/NAV checks behind a collapsed panel.
 - v16.86 tightens the phone overview quote header so the chart and daily data

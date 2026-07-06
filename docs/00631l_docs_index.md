@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position entry wording v16.88: `docs\00631l_v16_88_position_entry_wording.md`
 - History price table disclosure v16.87: `docs\00631l_v16_87_history_price_table_disclosure.md`
 - Overview quote density v16.86: `docs\00631l_v16_86_overview_quote_density.md`
 - Chart touch labels v16.85: `docs\00631l_v16_85_chart_touch_labels.md`

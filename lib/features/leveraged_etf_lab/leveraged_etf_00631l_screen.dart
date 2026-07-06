@@ -11727,7 +11727,7 @@ class _PositionSectionState extends State<_PositionSection> {
                 )
               : input.hasPosition
                   ? _CompactExpansionPanel(
-                      title: compact ? '修改持倉' : '輸入持倉資料',
+                      title: compact ? '修改持倉' : '持倉資料',
                       subtitle:
                           compact ? '股數、成本、備註' : '已保存本機持倉；需要修改股數、成本或備註時再展開。',
                       dense: compact,
@@ -11753,8 +11753,8 @@ class _PositionSectionState extends State<_PositionSection> {
                           : inputForm,
                     )
                   : _SectionBlock(
-                      title: '輸入持倉資料',
-                      subtitle: '本機保存；先填股數與平均成本即可估算。',
+                      title: '新增持倉',
+                      subtitle: '本機保存；填股數與平均成本即可估算。',
                       child: inputForm,
                     ),
         ),
@@ -11906,7 +11906,7 @@ class _PositionCompactEmptyInputCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '輸入持倉',
+                    '新增持倉',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall?.copyWith(

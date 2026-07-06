@@ -2183,7 +2183,8 @@ void main() {
       find.byKey(const ValueKey('00631l-position-empty-hint-strip')),
       findsOneWidget,
     );
-    expect(find.text('輸入持倉資料'), findsOneWidget);
+    expect(find.text('新增持倉'), findsOneWidget);
+    expect(find.text('輸入持倉資料'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-position-compact-input-card')),
       findsOneWidget,
@@ -2432,6 +2433,7 @@ void main() {
     expect(find.text('修改持倉'), findsOneWidget);
     expect(find.text('股數、成本、備註'), findsOneWidget);
     expect(find.text('需要調整股數、成本或備註時再展開。'), findsNothing);
+    expect(find.text('新增持倉'), findsNothing);
     expect(find.text('輸入持倉資料'), findsNothing);
     expect(find.text('工具'), findsOneWidget);
     expect(find.text('JSON / 清除'), findsOneWidget);
