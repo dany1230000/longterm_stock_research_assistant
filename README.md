@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.79 tightens the phone position metric strip so account values sit in a
+  shorter horizontal row.
 - v16.78 changes the compact AI first-screen action label from a generic action
   word to `程式`, keeping the AI page focused on app checks and data review.
 - v16.77 renames the combined history/backtest bottom tab to `歷測` and makes

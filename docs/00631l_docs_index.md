@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Position metric density v16.79: `docs\00631l_v16_79_position_metric_density.md`
 - AI compact program label v16.78: `docs\00631l_v16_78_ai_program_label.md`
 - Overview chart nav polish v16.77: `docs\00631l_v16_77_overview_chart_nav_polish.md`
 - Top bar ribbon polish v16.76: `docs\00631l_v16_76_top_bar_ribbon_polish.md`

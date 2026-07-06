@@ -941,7 +941,7 @@ void main() {
     expect(positionStrip, findsOneWidget);
     expect(positionMetrics, findsOneWidget);
     expect(tester.getRect(positionStrip).height, lessThanOrEqualTo(84));
-    expect(tester.getRect(positionMetrics).height, lessThanOrEqualTo(34));
+    expect(tester.getRect(positionMetrics).height, lessThanOrEqualTo(32));
 
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
@@ -2430,7 +2430,7 @@ void main() {
       find.byKey(const ValueKey('00631l-position-account-metric-scroll')),
       findsOneWidget,
     );
-    expect(tester.getRect(metricGrid).height, lessThanOrEqualTo(34));
+    expect(tester.getRect(metricGrid).height, lessThanOrEqualTo(32));
     expect(
       tester.getTopLeft(accountStrip).dy,
       lessThan(tester.getTopLeft(inputCard).dy),

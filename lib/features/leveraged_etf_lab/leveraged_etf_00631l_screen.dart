@@ -12375,7 +12375,7 @@ class _PositionAccountMetricStrip extends StatelessWidget {
         if (isCompact) {
           return SizedBox(
             key: const ValueKey('00631l-position-account-metric-grid'),
-            height: 32,
+            height: 30,
             child: SingleChildScrollView(
               key: const ValueKey('00631l-position-account-metric-scroll'),
               scrollDirection: Axis.horizontal,
@@ -12385,7 +12385,7 @@ class _PositionAccountMetricStrip extends StatelessWidget {
                   for (var index = 0; index < items.length; index += 1) ...[
                     if (index > 0) const SizedBox(width: 4),
                     SizedBox(
-                      width: 92,
+                      width: 88,
                       child: _PositionAccountMiniTile(
                         item: items[index],
                         emphasis: index < 2,
@@ -12442,7 +12442,7 @@ class _PositionAccountMiniTile extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -12454,7 +12454,7 @@ class _PositionAccountMiniTile extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w800,
-                fontSize: 9,
+                fontSize: 8.8,
                 height: 1.0,
               ),
             ),
@@ -12468,7 +12468,7 @@ class _PositionAccountMiniTile extends StatelessWidget {
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.colorScheme.onSurface,
                   fontWeight: FontWeight.w900,
-                  fontSize: 10,
+                  fontSize: 10.2,
                   height: 1.05,
                 ),
               ),
