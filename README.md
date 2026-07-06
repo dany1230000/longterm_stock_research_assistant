@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.60 records the mobile app design contract and guards the release check
+  against visible browser-window console validation.
+
 - v16.59 compresses the phone AI daily brief so the main interpretation,
   program action, and compact readout stay on the first screen.
 

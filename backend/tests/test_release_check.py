@@ -101,6 +101,14 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertIn('"public_pages"', source)
         self.assertIn("scripts\\\\00631l_check_public_pages.cmd", source)
 
+    def test_release_check_uses_noninteractive_public_console_smoke(self) -> None:
+        source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
+            encoding="utf-8",
+        )
+
+        self.assertIn('"public_console"', source)
+        self.assertIn("check_public_console_00631l.py", source)
+
     def test_release_check_requires_no_unclassified_public_etf_gap(self) -> None:
         source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
             encoding="utf-8",
