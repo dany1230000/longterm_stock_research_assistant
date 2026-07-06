@@ -4154,7 +4154,7 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
         value: formatInteger(priceSummary.rowCount),
       ),
       _OverviewCompactRibbonItem(
-        label: '模式',
+        label: '源',
         value: _frontendDataModeRibbonValue,
       ),
     ];
@@ -4162,12 +4162,14 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
     return DecoratedBox(
       key: const ValueKey('00631l-overview-compact-data-ribbon'),
       decoration: BoxDecoration(
-        color: _marketPanelAltColor(context),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: _marketBorderColor(context)),
+        color: _marketPanelAltColor(context).withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(7),
+        border: Border.all(
+          color: _marketBorderColor(context).withValues(alpha: 0.58),
+        ),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
         child: Row(
           children: [
             for (var index = 0; index < items.length; index++) ...[
@@ -4175,8 +4177,8 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
               if (index != items.length - 1)
                 Container(
                   width: 1,
-                  height: 12,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  height: 10,
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
                   color: _marketBorderColor(context),
                 ),
             ],

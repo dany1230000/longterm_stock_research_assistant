@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.56 trims the overview data ribbon into a lighter source/status line.
+
 - v16.55 tightens the phone app shell spacing so each tab starts closer to the
   top bar.
 

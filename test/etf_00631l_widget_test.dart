@@ -601,12 +601,16 @@ void main() {
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );
     expect(compactRibbon, findsOneWidget);
-    for (final label in const ['日', '盤', '歷', '模式']) {
+    for (final label in const ['日', '盤', '歷', '源']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),
         findsWidgets,
       );
     }
+    expect(
+      find.descendant(of: compactRibbon, matching: find.text('模式')),
+      findsNothing,
+    );
     for (final label in const ['DAY', 'NAV', 'HIS', 'MODE']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),
@@ -638,7 +642,7 @@ void main() {
     );
     expect(marketStackRect.height, lessThanOrEqualTo(356));
     final ribbonRect = tester.getRect(compactRibbon);
-    expect(ribbonRect.height, lessThanOrEqualTo(24));
+    expect(ribbonRect.height, lessThanOrEqualTo(22));
     expect(
       find.byKey(const ValueKey('00631l-overview-sparkline-summary-row')),
       findsNothing,
