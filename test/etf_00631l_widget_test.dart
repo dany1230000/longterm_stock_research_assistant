@@ -155,7 +155,7 @@ void main() {
     expect(find.text('後端'), findsNothing);
     expect(find.text('覆蓋型態'), findsNothing);
     expect(find.text('ETF歷史'), findsNothing);
-    expect(find.text('歷回'), findsWidgets);
+    expect(find.text('歷測'), findsWidgets);
     expect(find.text('近一年走勢'), findsOneWidget);
     expect(find.text('HIS'), findsNothing);
     final compactQuoteHeader =
@@ -191,7 +191,7 @@ void main() {
       findsNothing,
     );
     expect(find.text('總覽'), findsWidgets);
-    expect(find.text('歷回'), findsWidgets);
+    expect(find.text('歷測'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI'), findsWidgets);
     expect(find.text('帳戶'), findsWidgets);
@@ -294,7 +294,7 @@ void main() {
       findsNothing,
     );
     expect(
-      find.descendant(of: bottomNav, matching: find.text('歷回')),
+      find.descendant(of: bottomNav, matching: find.text('歷測')),
       findsOneWidget,
     );
     for (final section in const [
@@ -680,7 +680,7 @@ void main() {
     expect(chartFinder, findsOneWidget);
     final chartRect = tester.getRect(chartFinder);
     expect(chartRect.height, greaterThanOrEqualTo(46));
-    expect(chartRect.height, lessThanOrEqualTo(50));
+    expect(chartRect.height, lessThanOrEqualTo(64));
     expect(chartRect.bottom, lessThanOrEqualTo(448));
     expect(chartRect.top, lessThan(ribbonRect.top));
     expect(ribbonRect.top, greaterThan(chartRect.bottom));
@@ -1014,7 +1014,7 @@ void main() {
     final navRect = tester.getRect(bottomNav);
 
     expect(quoteRect.height, lessThanOrEqualTo(60));
-    expect(chartRect.height, lessThanOrEqualTo(50));
+    expect(chartRect.height, lessThanOrEqualTo(64));
     expect(quoteRect.top, lessThan(chartRect.top));
     expect(chartRect.bottom, lessThanOrEqualTo(dateRect.top));
     expect(dateRect.bottom, lessThanOrEqualTo(touchRect.top));

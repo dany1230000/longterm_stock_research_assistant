@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.77 renames the combined history/backtest bottom tab to `歷測` and makes
+  the phone overview chart taller so the one-year movement reads as a primary
+  panel on the home screen.
 - v16.76 balances the phone top bar with a slightly stronger `ETF 研究室`
   title, shows the current data mode in the compact subtitle, and changes the
   overview data ribbon to user-facing labels: `日 / 盤中 / 歷史 / 模式`.

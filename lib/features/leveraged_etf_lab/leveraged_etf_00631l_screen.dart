@@ -262,7 +262,7 @@ const liveCoreWarmupRetryInterval = Duration(seconds: 8);
 
 enum _LabSection {
   overview('總覽', Icons.dashboard_outlined),
-  historyBacktest('歷回', Icons.query_stats_outlined),
+  historyBacktest('歷測', Icons.query_stats_outlined),
   position('持倉', Icons.account_balance_wallet_outlined),
   ai('AI', Icons.psychology_alt_outlined),
   settings('帳戶', Icons.person_outline);
@@ -6673,8 +6673,8 @@ class _SparklineChartState extends State<_SparklineChart> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final chartHeight = compact ? 48.0 : 92.0;
-    final emptyHeight = compact ? 40.0 : 74.0;
+    final chartHeight = compact ? 62.0 : 92.0;
+    final emptyHeight = compact ? 52.0 : 74.0;
     final verticalGap = compact ? 0.0 : 5.0;
     final spots = <FlSpot>[];
     final spotPoints = <EtfPriceHistoryPoint>[];

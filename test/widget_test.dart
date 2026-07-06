@@ -14,7 +14,7 @@ void main() {
     expect(find.textContaining('ETF 研究室'), findsWidgets);
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     expect(find.text('總覽'), findsWidgets);
-    expect(find.text('歷回'), findsWidgets);
+    expect(find.text('歷測'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI'), findsWidgets);
     expect(find.text('帳戶'), findsWidgets);
