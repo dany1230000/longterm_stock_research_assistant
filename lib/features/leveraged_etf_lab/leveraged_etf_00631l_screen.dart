@@ -355,7 +355,7 @@ class _LabContent extends StatelessWidget {
                       child: ListView(
                         padding: EdgeInsets.fromLTRB(
                           horizontalPadding,
-                          6,
+                          isCompact ? 4 : 6,
                           horizontalPadding,
                           isCompact ? 84 : 92,
                         ),
@@ -374,13 +374,13 @@ class _LabContent extends StatelessWidget {
                                     onEtfSelected: onEtfSelected,
                                     onRefresh: onRefresh,
                                   ),
-                                  const SizedBox(height: 8),
+                                  SizedBox(height: isCompact ? 6 : 8),
                                   if (showDetailsLoadState) ...[
                                     _DetailsLoadStateStrip(
                                       isLoading: detailsLoading,
                                       errorMessage: detailsError,
                                     ),
-                                    const SizedBox(height: 8),
+                                    SizedBox(height: isCompact ? 6 : 8),
                                   ],
                                   _sectionWidget(data, selectedEtf),
                                 ],

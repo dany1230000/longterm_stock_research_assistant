@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.55 tightens the phone app shell spacing so each tab starts closer to the
+  top bar.
+
 - v16.54 moves the phone ETF search sheet directly to the search field and
   result list, keeping the current symbol as a compact chip.
 
