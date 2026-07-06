@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.90 renames the overview secondary disclosure to `資料核對`, keeping
+  source, completeness, comparison, and maintenance details out of the main read.
 - v16.89 renames the left-top ETF search result detail affordance to `核對`,
   keeping capability and data-quality details behind an explicit check row.
 - v16.88 shortens the position entry wording to `新增持倉` and keeps the

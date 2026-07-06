@@ -135,7 +135,7 @@ void main() {
     expect(find.text('回測'), findsNothing);
     expect(find.text('可用'), findsNothing);
     expect(find.text('圖表與曝險'), findsNothing);
-    expect(find.text('更多資料'), findsOneWidget);
+    expect(find.text('資料核對'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('00631l-quote-readiness-strip')),
       findsNothing,
@@ -347,9 +347,9 @@ void main() {
       (tester) async {
     await _pumpLab(tester, _NoTxQuoteRepository());
 
-    await tester.ensureVisible(find.text('更多資料'));
+    await tester.ensureVisible(find.text('資料核對'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('更多資料'));
+    await tester.tap(find.text('資料核對'));
     await tester.pumpAndSettle();
 
     final txClockStatus = tester.widget<Text>(
@@ -1392,7 +1392,7 @@ void main() {
     expect(find.text('核心資料'), findsNothing);
     expect(find.textContaining('背景更新中'), findsNothing);
     expect(find.text('圖表與曝險'), findsNothing);
-    expect(find.text('更多資料'), findsOneWidget);
+    expect(find.text('資料核對'), findsOneWidget);
     expect(find.text('完整數字比較'), findsNothing);
     expect(find.text('7 / 30 日內容物變化'), findsNothing);
     final readinessStrip = find.byKey(
