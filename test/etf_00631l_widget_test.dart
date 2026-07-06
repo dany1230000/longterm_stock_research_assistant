@@ -4227,6 +4227,8 @@ void main() {
         find.byKey(const ValueKey('00631l-ai-compact-decision-rail'));
     final compactInsight =
         find.byKey(const ValueKey('00631l-ai-compact-daily-insight'));
+    final compactBulletStrip =
+        find.byKey(const ValueKey('00631l-ai-compact-bullet-strip'));
     final compactMeta =
         find.byKey(const ValueKey('00631l-ai-compact-meta-line'));
     final compactInsightText =
@@ -4265,6 +4267,20 @@ void main() {
     expect(compactInsight, findsOneWidget);
     expect(compactInsightText, findsOneWidget);
     expect(compactInsightDailyText, findsOneWidget);
+    expect(compactBulletStrip, findsOneWidget);
+    expect(
+      tester.getRect(compactBulletStrip).height,
+      lessThanOrEqualTo(58),
+      reason: 'Phone AI interpretation bullets should stay compact.',
+    );
+    expect(
+      find.descendant(of: compactBulletStrip, matching: find.text('判讀')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: compactBulletStrip, matching: find.text('補充')),
+      findsOneWidget,
+    );
     expect(
       find.descendant(
         of: compactInsight,

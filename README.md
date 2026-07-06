@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.74 shows compact AI interpretation bullets on the phone first screen so
+  the AI tab reads like a daily data explanation instead of only source status.
 - v16.73 adds a compact range-result strip to the history/backtest page and
   moves detailed annualized metrics into an expandable panel.
 - v16.72 labels the combined history/backtest bottom tab as `歷回` while

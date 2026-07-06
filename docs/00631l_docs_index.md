@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- AI compact interpretation v16.74: `docs\00631l_v16_74_ai_compact_interpretation.md`
 - History/backtest range result v16.73: `docs\00631l_v16_73_history_backtest_range_result.md`
 - History/backtest nav v16.72: `docs\00631l_v16_72_history_backtest_nav.md`
 - Symbol search focus v16.71: `docs\00631l_v16_71_symbol_search_focus.md`

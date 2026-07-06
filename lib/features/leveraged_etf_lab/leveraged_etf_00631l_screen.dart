@@ -12888,6 +12888,10 @@ class _AiDailyBriefingHero extends StatelessWidget {
                 if (compact) ...[
                   const SizedBox(height: 3),
                   _AiCompactDailyInsightLine(text: compactInsight),
+                  if (briefingBullets.isNotEmpty) ...[
+                    const SizedBox(height: 3),
+                    _AiCompactBulletStrip(bullets: briefingBullets),
+                  ],
                   const SizedBox(height: 3),
                   _AiCompactDecisionRail(
                     data: data,
@@ -13136,6 +13140,67 @@ class _AiFirstScreenBulletList extends StatelessWidget {
                 text: bullet,
                 icon: Icons.analytics_outlined,
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiCompactBulletStrip extends StatelessWidget {
+  const _AiCompactBulletStrip({required this.bullets});
+
+  final List<String> bullets;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final visible = bullets.take(2).toList(growable: false);
+    return DecoratedBox(
+      key: const ValueKey('00631l-ai-compact-bullet-strip'),
+      decoration: BoxDecoration(
+        color: _marketPanelAltColor(context),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _marketBorderColor(context)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var index = 0; index < visible.length; index += 1) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    index == 0 ? '判讀' : '補充',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _marketMutedTextColor(context),
+                      fontWeight: FontWeight.w900,
+                      height: 1.15,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      visible[index],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: _marketTextColor(context),
+                        fontWeight: FontWeight.w800,
+                        height: 1.15,
+                        letterSpacing: 0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (index != visible.length - 1) const SizedBox(height: 3),
+            ],
           ],
         ),
       ),
