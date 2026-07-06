@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Chart touch labels v16.85: `docs\00631l_v16_85_chart_touch_labels.md`
 - AI first-screen wording v16.84: `docs\00631l_v16_84_ai_first_screen_wording.md`
 - Position source wording v16.83: `docs\00631l_v16_83_position_source_wording.md`
 - History range wording v16.82: `docs\00631l_v16_82_history_range_wording.md`

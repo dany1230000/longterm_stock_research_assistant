@@ -1198,7 +1198,7 @@ void main() {
       find.descendant(
         of: find
             .byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
-        matching: find.text('\u65e5\u671f'),
+        matching: find.text('點選日'),
       ),
       findsWidgets,
     );
@@ -1206,7 +1206,7 @@ void main() {
       find.descendant(
         of: find
             .byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
-        matching: find.text('\u6536\u76e4'),
+        matching: find.text('收盤價'),
       ),
       findsWidgets,
     );
@@ -1720,6 +1720,20 @@ void main() {
     expect(
       find.byKey(const ValueKey('00631l-line-chart-touch-value')),
       findsWidgets,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-line-chart-touch-detail')).first,
+        matching: find.text('點選日'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('00631l-line-chart-touch-detail')).first,
+        matching: find.text('收盤價'),
+      ),
+      findsOneWidget,
     );
     await tester.ensureVisible(
       find.byKey(const ValueKey('00631l-history-holdings-expansion')),

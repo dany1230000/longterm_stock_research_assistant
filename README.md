@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.85 changes chart touch labels to `點選日` and `收盤價`, making the
+  selected chart date/value clearer on overview, history, and backtest charts.
 - v16.84 makes the AI page first screen read as `當日判讀`, while source,
   matrix, and verification details stay inside `完整 AI 明細`.
 - v16.83 renames the position source expansion to `行情與資料時間`, keeping

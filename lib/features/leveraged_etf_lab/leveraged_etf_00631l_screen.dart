@@ -18451,7 +18451,7 @@ class _ChartTouchDetail extends StatelessWidget {
               flex: 5,
               child: _ChartTouchInfoPill(
                 key: const ValueKey('00631l-line-chart-touch-date'),
-                label: '\u65e5\u671f',
+                label: '點選日',
                 value: formatTaiwanDate(point!.date),
                 compact: true,
                 flat: true,
@@ -18462,7 +18462,7 @@ class _ChartTouchDetail extends StatelessWidget {
               flex: 4,
               child: _ChartTouchInfoPill(
                 key: const ValueKey('00631l-line-chart-touch-value'),
-                label: '\u6536\u76e4',
+                label: '收盤價',
                 value: _compactChartValue(value!),
                 compact: true,
                 flat: true,
@@ -18495,7 +18495,7 @@ class _ChartTouchDetail extends StatelessWidget {
                     flex: 5,
                     child: _ChartTouchInfoPill(
                       key: const ValueKey('00631l-line-chart-touch-date'),
-                      label: '\u65e5\u671f',
+                      label: '點選日',
                       value: formatTaiwanDate(point!.date),
                       compact: compact,
                     ),
@@ -18505,7 +18505,7 @@ class _ChartTouchDetail extends StatelessWidget {
                     flex: 4,
                     child: _ChartTouchInfoPill(
                       key: const ValueKey('00631l-line-chart-touch-value'),
-                      label: '\u6536\u76e4',
+                      label: '收盤價',
                       value: _compactChartValue(value!),
                       compact: compact,
                     ),
