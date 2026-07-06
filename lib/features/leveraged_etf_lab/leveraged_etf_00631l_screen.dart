@@ -6527,10 +6527,13 @@ class _OverviewSparklineBlock extends StatelessWidget {
             ? null
             : (latest.performanceClose / first.performanceClose - 1) * 100;
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
-          color: _marketTextColor(context),
-          fontWeight: FontWeight.w900,
-        );
+    final titleStyle = (compact
+            ? Theme.of(context).textTheme.labelLarge
+            : Theme.of(context).textTheme.titleSmall)
+        ?.copyWith(
+      color: _marketTextColor(context),
+      fontWeight: FontWeight.w900,
+    );
     final changeStyle = Theme.of(context).textTheme.labelLarge?.copyWith(
           color: (changePct ?? 0) >= 0 ? _marketRed : _marketGreen,
           fontWeight: FontWeight.w900,
@@ -6566,7 +6569,7 @@ class _OverviewSparklineBlock extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 2),
           _SparklineChart(points: recent),
         ],
       );

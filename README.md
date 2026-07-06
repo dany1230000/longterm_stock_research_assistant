@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.51 trims the phone overview chart header so the one-year chart appears
+  sooner on the first screen.
+
 - v16.50 aligns compact section gaps across overview, history/backtest,
   position, AI, and settings density guards.
 

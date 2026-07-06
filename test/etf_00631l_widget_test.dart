@@ -998,7 +998,7 @@ void main() {
     expect(touchRect.bottom, lessThan(summaryRect.top));
     expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
     expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));
-    expect(chartRect.bottom, lessThanOrEqualTo(366));
+    expect(chartRect.bottom, lessThanOrEqualTo(362));
     for (final label in const ['AI', 'TX', '2330', '現金']) {
       expect(
         find.descendant(of: firstGlance, matching: find.text(label)),
