@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.68 makes the phone AI first-screen insight use the daily data readout
+  directly: holdings date, TX, TSMC, premium/discount, and history row count.
 - v16.67 simplifies the compact history/backtest date summary so the first row
   focuses on the selected date range instead of mixing secondary parameters.
 - v16.66 makes the phone overview data ribbon use explicit `DAY / LIVE / HIS /

@@ -4242,7 +4242,18 @@ void main() {
     expect(
       find.descendant(
         of: compactInsight,
-        matching: find.textContaining('目前使用'),
+        matching: find.textContaining('內容物'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: compactInsight, matching: find.textContaining('TX')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: compactInsight,
+        matching: find.textContaining('台積電'),
       ),
       findsOneWidget,
     );

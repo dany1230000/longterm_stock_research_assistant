@@ -3692,22 +3692,6 @@ String _compactProgramAction(String text) {
   return '檢查資料';
 }
 
-String _compactAiInsight({
-  required EtfAiAnalysisSummary summary,
-  required String fallback,
-}) {
-  final raw = _findAnalysisBullet(summary, '當日重點') ??
-      (summary.bullets.isEmpty ? fallback : summary.bullets.first);
-  final display = _aiDisplayText(raw)
-      .replaceFirst(RegExp(r'^當日重點[:：]\s*'), '')
-      .replaceFirst(RegExp(r'^今日重點[:：]\s*'), '')
-      .trim();
-  if (display.isEmpty) {
-    return '今日資料：$fallback';
-  }
-  return '今日資料：$display';
-}
-
 class _HeaderPill extends StatelessWidget {
   const _HeaderPill({
     required this.label,
@@ -12648,8 +12632,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
     final fallbackInsight =
         '內容物 ${_dateOrDash(snapshot.tradeDate)}，TX ${formatNullablePercent(txWeight)}，'
         '台積電 ${formatNullablePercent(tsmcWeight)}；$compactPremiumText；歷史 ${formatInteger(priceSummary.rowCount)} 筆。';
-    final compactInsight =
-        _compactAiInsight(summary: summary, fallback: fallbackInsight);
+    final compactInsight = '今日資料：$fallbackInsight';
     final todayReadouts = [
       _AiTodayReadoutItem(
         label: '當日資料',
