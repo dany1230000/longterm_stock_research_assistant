@@ -13,6 +13,8 @@ from backend.scripts.deploy_precheck_00631l import run_deploy_precheck
 from backend.scripts.release_check_00631l import (
     ROOT,
     _compact_release_check_payload,
+    _dart_command,
+    _flutter_command,
     _has_overall,
     _iter_text_files,
     _required_files_check,
@@ -92,6 +94,28 @@ class ReleaseCheckTests(unittest.TestCase):
 
         self.assertIn('"dart_format_check"', source)
         self.assertIn('"--set-exit-if-changed"', source)
+
+    def test_release_check_runs_core_flutter_tools_without_cmd_wrapper(self) -> None:
+        source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(
+            encoding="utf-8",
+        )
+
+        self.assertIn('_dart_command("format", "--set-exit-if-changed", ".")', source)
+        self.assertIn('_flutter_command("analyze")', source)
+        self.assertIn('_flutter_command("test")', source)
+        self.assertIn('_flutter_command("build", "web")', source)
+        self.assertNotIn('["cmd", "/c", "dart", "format"', source)
+        self.assertNotIn('["cmd", "/c", "flutter", "analyze"', source)
+        self.assertNotIn('["cmd", "/c", "flutter", "test"', source)
+        self.assertNotIn('["cmd", "/c", "flutter", "build"', source)
+
+    def test_release_check_resolves_core_flutter_tools_to_executables(self) -> None:
+        dart_command = _dart_command("--version")
+        flutter_command = _flutter_command("--version")
+
+        self.assertTrue(dart_command[0].endswith("dart.exe"))
+        self.assertTrue(flutter_command[0].endswith("dart.exe"))
+        self.assertIn("flutter_tools.snapshot", flutter_command[2])
 
     def test_release_check_runs_public_pages_smoke(self) -> None:
         source = (ROOT / "backend" / "scripts" / "release_check_00631l.py").read_text(

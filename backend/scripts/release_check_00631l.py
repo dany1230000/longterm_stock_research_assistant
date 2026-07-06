@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -27,6 +28,55 @@ FORBIDDEN_TERMS = [
     "\u4fbf\u5b9c\u53ef\u4ee5\u8cb7",
     "\u592a\u8cb4\u4e0d\u8981\u8cb7",
 ]
+
+
+def _resolve_flutter_root() -> Path:
+    candidates: list[Path] = []
+    for value in [
+        os.environ.get("FLUTTER_ROOT"),
+        os.environ.get("FLUTTER_HOME"),
+        r"C:\src\flutter-clean",
+        r"C:\src\flutter",
+    ]:
+        if value:
+            candidates.append(Path(value))
+
+    for executable_name in ["flutter.bat", "flutter"]:
+        located = shutil.which(executable_name)
+        if located:
+            candidates.append(Path(located).resolve().parents[1])
+
+    for candidate in candidates:
+        if _flutter_dart_exe(candidate).exists() and _flutter_snapshot(candidate).exists():
+            return candidate
+    return Path(r"C:\src\flutter-clean")
+
+
+def _flutter_dart_exe(flutter_root: Path) -> Path:
+    return flutter_root / "bin" / "cache" / "dart-sdk" / "bin" / "dart.exe"
+
+
+def _flutter_snapshot(flutter_root: Path) -> Path:
+    return flutter_root / "bin" / "cache" / "flutter_tools.snapshot"
+
+
+def _flutter_package_config(flutter_root: Path) -> Path:
+    return flutter_root / "packages" / "flutter_tools" / ".dart_tool" / "package_config.json"
+
+
+def _dart_command(*args: str) -> list[str]:
+    flutter_root = _resolve_flutter_root()
+    return [str(_flutter_dart_exe(flutter_root)), *args]
+
+
+def _flutter_command(*args: str) -> list[str]:
+    flutter_root = _resolve_flutter_root()
+    return [
+        str(_flutter_dart_exe(flutter_root)),
+        f"--packages={_flutter_package_config(flutter_root)}",
+        str(_flutter_snapshot(flutter_root)),
+        *args,
+    ]
 
 
 def main() -> int:
@@ -162,11 +212,11 @@ def main() -> int:
         ),
         _run_command(
             "dart_format_check",
-            ["cmd", "/c", "dart", "format", "--set-exit-if-changed", "."],
+            _dart_command("format", "--set-exit-if-changed", "."),
         ),
-        _run_command("flutter_analyze", ["cmd", "/c", "flutter", "analyze"]),
-        _run_command("flutter_test", ["cmd", "/c", "flutter", "test"]),
-        _run_command("flutter_build_web", ["cmd", "/c", "flutter", "build", "web"]),
+        _run_command("flutter_analyze", _flutter_command("analyze")),
+        _run_command("flutter_test", _flutter_command("test")),
+        _run_command("flutter_build_web", _flutter_command("build", "web")),
         _run_command(
             "backend_tests",
             ["py", "-m", "unittest", "discover", "-s", "backend\\tests"],

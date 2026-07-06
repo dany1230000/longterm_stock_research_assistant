@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.64 makes the release check call core Dart/Flutter tools directly instead
+  of wrapping them in `cmd /c`.
 - v16.63 aligns the ETF comparison section title and selected-set wording
   across phone and wider layouts.
 - v16.62 makes the ETF comparison header and controls read as a user-selected
