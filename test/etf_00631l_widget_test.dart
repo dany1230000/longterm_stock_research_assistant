@@ -1792,8 +1792,12 @@ void main() {
       );
     }
     expect(
-      find.descendant(of: topStrip, matching: find.text('1Y')),
+      find.descendant(of: topStrip, matching: find.text('近1年')),
       findsOneWidget,
+    );
+    expect(
+      find.descendant(of: topStrip, matching: find.text('1Y')),
+      findsNothing,
     );
     expect(
       find.descendant(of: topStrip, matching: find.text('00631L 2026/06/03')),
@@ -1807,6 +1811,8 @@ void main() {
       find.descendant(of: topStrip, matching: find.text('來源')),
       findsNothing,
     );
+    expect(find.textContaining('adjusted close'), findsNothing);
+    expect(find.textContaining('split-adjusted'), findsNothing);
 
     final rangeContext =
         find.byKey(const ValueKey('00631l-history-range-context'));

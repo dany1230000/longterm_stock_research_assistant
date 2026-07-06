@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.82 localizes the history/backtest range labels so the first screen says
+  `近1年` and `分割調整收盤` instead of internal English labels.
 - v16.81 changes the phone overview first-glance row from an AI source badge to
   a premium/discount deviation status alongside TX, 2330, and cash.
 - v16.80 renames the advanced settings diagnostics area to user-facing service

@@ -8108,7 +8108,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
           const _HistoryTopMetricItem(
             key: ValueKey('00631l-history-top-strip-date-pill'),
             label: '區間',
-            value: '1Y',
+            value: '近1年',
           ),
           _HistoryTopMetricItem(
             key: const ValueKey('00631l-history-top-strip-row-pill'),
@@ -8194,7 +8194,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
                           if (!compact) ...[
                             const SizedBox(height: 2),
                             Text(
-                              '$coverage - 1Y default - adjusted close',
+                              '$coverage · 預設近一年 · 分割調整收盤',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.labelSmall?.copyWith(
@@ -8552,7 +8552,7 @@ class _FilterablePriceHistoryBlockState
         const _StatusWrap(
           labels: [
             '回測不代表未來表現',
-            'split-adjusted close',
+            '分割調整收盤',
           ],
         ),
         const SizedBox(height: 8),

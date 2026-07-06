@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- History range wording v16.82: `docs\00631l_v16_82_history_range_wording.md`
 - Overview deviation glance v16.81: `docs\00631l_v16_81_overview_deviation_glance.md`
 - Account settings polish v16.80: `docs\00631l_v16_80_account_settings_polish.md`
 - Position metric density v16.79: `docs\00631l_v16_79_position_metric_density.md`
