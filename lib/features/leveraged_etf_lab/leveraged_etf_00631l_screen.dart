@@ -15510,7 +15510,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = data.operationsStatus;
-    final readinessStatus = readinessLabel == '就緒' ? '就緒' : '進階檢查';
+    final readinessStatus = readinessLabel == '就緒' ? '狀態正常' : '需檢查';
     final theme = Theme.of(context);
     final compact = MediaQuery.sizeOf(context).width < 430;
     return KeyedSubtree(
@@ -15591,7 +15591,7 @@ String _settingsDataModeCaption(
   bool compact = false,
 }) {
   if (status.sourceStatusLabel == 'static_public_data') {
-    return compact ? '歷史與回測可用' : '公開靜態資料可用';
+    return compact ? '歷史/回測可用' : '公開靜態資料可用';
   }
   if (status.backendDisconnected ||
       status.sourceStatusLabel == 'error' ||
@@ -15602,7 +15602,7 @@ String _settingsDataModeCaption(
     return compact ? '示範資料' : '預設示範資料';
   }
   if (_use00631LLiveProxy) {
-    return compact ? 'Live 資料連線' : '後端連線細節在進階';
+    return compact ? 'Live 連線中' : '後端連線細節在進階';
   }
   return status.backendConnectionLabel;
 }

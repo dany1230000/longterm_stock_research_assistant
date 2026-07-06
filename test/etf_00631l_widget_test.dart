@@ -4057,7 +4057,8 @@ void main() {
       findsNothing,
     );
     expect(find.textContaining('目前 00631L'), findsWidgets);
-    expect(find.text('進階檢查'), findsWidgets);
+    expect(find.text('需檢查'), findsWidgets);
+    expect(find.text('進階檢查'), findsNothing);
     expect(find.text('進階設定'), findsOneWidget);
     expect(find.text('資料模式與完整度'), findsNothing);
     expect(find.text('進階維護診斷'), findsNothing);

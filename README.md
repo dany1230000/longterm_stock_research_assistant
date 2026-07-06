@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.52 softens the account/settings first screen wording from maintenance
+  language to user-facing status labels.
+
 - v16.51 trims the phone overview chart header so the one-year chart appears
   sooner on the first screen.
 
