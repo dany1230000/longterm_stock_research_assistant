@@ -2482,6 +2482,7 @@ class _CompactQuoteHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 430;
     final quotePremiumDiscountPct = selectedEtf.is00631L
         ? data.intradayNav?.resolvedPremiumDiscountPct
         : selectedEtf.premiumDiscountPct;
@@ -2532,8 +2533,15 @@ class _CompactQuoteHeader extends StatelessWidget {
                     ? '行情 · $quoteStatusDisplay · 資料不可用'
                     : '行情 · $quoteStatusDisplay ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
+    final horizontalPadding = compact ? 4.0 : 6.0;
+    final verticalPadding = embedded ? 0.0 : (compact ? 3.0 : 5.0);
     final content = Padding(
-      padding: EdgeInsets.fromLTRB(6, embedded ? 0 : 5, 6, embedded ? 0 : 5),
+      padding: EdgeInsets.fromLTRB(
+        horizontalPadding,
+        verticalPadding,
+        horizontalPadding,
+        verticalPadding,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -2556,6 +2564,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                                 color: _marketMutedTextColor(context),
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 0,
+                                fontSize: compact ? 11 : null,
                               ),
                             ),
                           ),
@@ -2578,6 +2587,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                               fontWeight: FontWeight.w900,
                               letterSpacing: 0,
                               height: 0.96,
+                              fontSize: compact ? 20 : null,
                             ),
                           ),
                         ),
@@ -2591,14 +2601,14 @@ class _CompactQuoteHeader extends StatelessWidget {
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: _marketMutedTextColor(context),
                         fontWeight: FontWeight.w700,
-                        fontSize: 10.5,
+                        fontSize: compact ? 9.5 : 10.5,
                         height: 1.0,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: compact ? 7 : 10),
               embedded
                   ? _CompactPremiumBoxDense(
                       value: _displaySignedNullablePercent(

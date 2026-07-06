@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.86 tightens the phone overview quote header so the chart and daily data
+  rows appear sooner on the first screen.
 - v16.85 changes chart touch labels to `點選日` and `收盤價`, making the
   selected chart date/value clearer on overview, history, and backtest charts.
 - v16.84 makes the AI page first screen read as `當日判讀`, while source,

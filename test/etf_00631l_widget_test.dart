@@ -1016,7 +1016,11 @@ void main() {
     final summaryRect = tester.getRect(mobileSummary);
     final navRect = tester.getRect(bottomNav);
 
-    expect(quoteRect.height, lessThanOrEqualTo(60));
+    expect(
+      quoteRect.height,
+      lessThanOrEqualTo(54),
+      reason: 'Phone quote header should stay compact so the chart is visible.',
+    );
     expect(chartRect.height, lessThanOrEqualTo(64));
     expect(quoteRect.top, lessThan(chartRect.top));
     expect(chartRect.bottom, lessThanOrEqualTo(dateRect.top));
