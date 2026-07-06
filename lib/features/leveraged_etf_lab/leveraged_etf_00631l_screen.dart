@@ -11654,7 +11654,7 @@ class _PositionSectionState extends State<_PositionSection> {
           const SizedBox(height: 10),
           const KeyedSubtree(
             key: ValueKey('00631l-position-local-note'),
-            child: Text('Local position data stays in this browser.'),
+            child: Text('持倉資料只保存在此瀏覽器，不需要登入，也不會上傳。'),
           ),
         ],
       ],
@@ -11677,6 +11677,10 @@ class _PositionSectionState extends State<_PositionSection> {
             summary: summary,
             selectedEtf: widget.selectedEtf,
           ),
+          if (compact && input.hasPosition) ...[
+            const SizedBox(height: 4),
+            const _PositionPrivacyStrip(),
+          ],
           SizedBox(height: compact ? 4 : 12),
         ],
         KeyedSubtree(
@@ -11792,6 +11796,50 @@ class _PositionSectionState extends State<_PositionSection> {
       'feeAndTax': input.feeAndTax,
       'note': input.note,
     });
+  }
+}
+
+class _PositionPrivacyStrip extends StatelessWidget {
+  const _PositionPrivacyStrip();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      key: const ValueKey('00631l-position-privacy-strip'),
+      decoration: BoxDecoration(
+        color:
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.36),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+        child: Row(
+          children: [
+            Icon(
+              Icons.lock_outline,
+              size: 13,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 5),
+            Expanded(
+              child: Text(
+                '本機保存 · 不登入 · 不上傳',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                  letterSpacing: 0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

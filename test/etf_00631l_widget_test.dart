@@ -2295,6 +2295,10 @@ void main() {
       findsNothing,
     );
     expect(
+      find.byKey(const ValueKey('00631l-position-privacy-strip')),
+      findsNothing,
+    );
+    expect(
       find.byKey(const ValueKey('00631l-position-action-save')),
       findsOneWidget,
     );
@@ -2369,6 +2373,11 @@ void main() {
       find.byKey(const ValueKey('00631l-position-account-metric-strip')),
       findsOneWidget,
     );
+    final privacyStrip =
+        find.byKey(const ValueKey('00631l-position-privacy-strip'));
+    expect(privacyStrip, findsOneWidget);
+    expect(tester.getRect(privacyStrip).height, lessThanOrEqualTo(26));
+    expect(find.text('本機保存 · 不登入 · 不上傳'), findsOneWidget);
     expect(find.text('修改持倉'), findsOneWidget);
     expect(find.text('股數、成本、備註'), findsOneWidget);
     expect(find.text('需要調整股數、成本或備註時再展開。'), findsNothing);
