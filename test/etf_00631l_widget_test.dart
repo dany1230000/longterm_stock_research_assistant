@@ -555,6 +555,25 @@ void main() {
     _expectNoTradingActionText();
   });
 
+  testWidgets('phone symbol search shows readiness denominator and gap',
+      (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await _pumpLab(tester, _EtfCatalogGapOperationsRepository());
+
+    await tester.tap(find.byKey(const ValueKey('00631l-symbol-search-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('歷史 228 / 344'), findsOneWidget);
+    expect(find.text('缺口 116'), findsOneWidget);
+    _expectNoTradingActionText();
+  });
+
   testWidgets('00631L lab remains readable on phone width', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;

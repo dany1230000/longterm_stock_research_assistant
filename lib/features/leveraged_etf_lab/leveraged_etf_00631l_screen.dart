@@ -1335,6 +1335,9 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
     );
     final historyGap =
         (historyTotal - readyHistoryCount).clamp(0, historyTotal).toInt();
+    final compactHistoryLabel =
+        '歷史 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}';
+    final compactGapLabel = '缺口 ${formatInteger(historyGap)}';
     final baseItems = query.isEmpty
         ? catalog.focusItems
         : _rankedSymbolSearchItems([
@@ -1457,6 +1460,8 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                       else
                         'ETF ${formatInteger(items.length)} / ${formatInteger(baseItems.length)}',
                       '可用 ${formatInteger(readyHistoryCount)}',
+                      compactHistoryLabel,
+                      if (historyGap > 0) compactGapLabel,
                       if (query.isNotEmpty && stockItems.isNotEmpty)
                         '個股 ${stockItems.length}',
                     ]

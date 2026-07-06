@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.61 shows ETF history readiness as ready/total plus gap directly in the
+  phone symbol search sheet.
+
 - v16.60 records the mobile app design contract and guards the release check
   against visible browser-window console validation.
 
