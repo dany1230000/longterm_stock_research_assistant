@@ -1906,7 +1906,7 @@ class _SymbolSearchReadinessNotice extends StatelessWidget {
             const SizedBox(height: 6),
             _StatusWrap(
               labels: [
-                '可回測/比較 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
+                '歷史可用 ${formatInteger(readyHistoryCount)} / ${formatInteger(historyTotal)}',
                 if (missingCount > 0) '僅清單 ${formatInteger(missingCount)}',
                 if (missingCount > 0) _etfGapReasonCompactLabel(status),
                 if (hasQuery) '本次可用 ${formatInteger(visibleReadyCount)}',
@@ -9319,7 +9319,7 @@ class _EtfHistoryComparisonPanelState
         else
           _SectionHeaderCard(
             title: 'ETF 自選比較',
-            subtitle: '預設只看目前 ETF；可用同類型快速帶入，也可清空後自行勾選 1-5 檔。',
+            subtitle: '不設固定基準；可手動勾選 1-5 檔，也可用同類型快速帶入。',
             icon: Icons.stacked_line_chart_outlined,
             badges: const [
               '自選組合',

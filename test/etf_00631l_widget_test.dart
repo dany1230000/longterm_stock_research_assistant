@@ -395,7 +395,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('資料可用性'), findsOneWidget);
-    expect(find.text('可回測/比較 15 / 16'), findsOneWidget);
+    expect(find.text('歷史可用 15 / 16'), findsWidgets);
     expect(find.text('僅清單 1'), findsOneWidget);
     expect(find.text('資料細節'), findsOneWidget);
     await tester.tap(find.text('資料庫狀態'));
@@ -496,7 +496,7 @@ void main() {
     expect(find.text('資料可用性'), findsOneWidget);
     expect(find.text('目前清單 16'), findsNothing);
     expect(find.text('統計母數 228'), findsNothing);
-    expect(find.text('可回測/比較 228 / 228'), findsOneWidget);
+    expect(find.text('歷史可用 228 / 228'), findsWidgets);
     expect(find.text('長期資料 8'), findsNothing);
     expect(find.text('近期資料 220'), findsNothing);
     await tester.tap(find.text('資料細節'));
@@ -526,7 +526,7 @@ void main() {
     await tester.tap(find.text('資料庫狀態'));
     await tester.pumpAndSettle();
 
-    expect(find.text('可回測/比較 228 / 344'), findsOneWidget);
+    expect(find.text('歷史可用 228 / 344'), findsWidgets);
     expect(find.text('僅清單 116'), findsOneWidget);
     await tester.tap(find.text('資料細節'));
     await tester.pumpAndSettle();
@@ -3213,7 +3213,15 @@ void main() {
     );
     expect(find.text('自選比較組合檢查'), findsOneWidget);
     expect(find.textContaining('共同資料區間'), findsOneWidget);
-    expect(find.textContaining('固定基準'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(
+          const ValueKey('00631l-etf-comparison-basket-context'),
+        ),
+        matching: find.textContaining('固定基準'),
+      ),
+      findsOneWidget,
+    );
     final initialComparisonSummary = tester.widget<Text>(
       find.byKey(
         const ValueKey('00631l-etf-comparison-compact-summary-text'),
@@ -3370,7 +3378,7 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-comparison-compact-summary-text')),
     );
     expect(initialCompactSummary.data, contains('不設基準'));
-    expect(find.textContaining('預設只看目前 ETF'), findsWidgets);
+    expect(find.textContaining('不設固定基準'), findsWidgets);
     expect(find.textContaining('資料筆數足夠才會進入圖表'), findsNothing);
     expect(find.textContaining('basket'), findsNothing);
     final selectionPanel =
