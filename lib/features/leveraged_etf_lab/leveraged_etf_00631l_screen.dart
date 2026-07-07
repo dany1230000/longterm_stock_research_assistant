@@ -4396,7 +4396,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
     final tsmcLine = _stockHoldingByCode(snapshot, '2330');
     final items = [
       _OverviewFirstGlanceItem(
-        label: '偏離',
+        label: '折溢價',
         value: _overviewPremiumGlanceValue(data.intradayNav),
         isDeviation: true,
       ),

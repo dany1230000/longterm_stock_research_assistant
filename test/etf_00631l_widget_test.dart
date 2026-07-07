@@ -1029,7 +1029,7 @@ void main() {
     expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
     expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));
     expect(chartRect.bottom, lessThanOrEqualTo(362));
-    for (final label in const ['偏離', 'TX', '2330', '現金']) {
+    for (final label in const ['折溢價', 'TX', '2330', '現金']) {
       expect(
         find.descendant(of: firstGlance, matching: find.text(label)),
         findsOneWidget,
@@ -1096,7 +1096,7 @@ void main() {
     expect(deviationStatus, findsOneWidget);
     expect(
         (tester.widget<Text>(deviationStatus).data ?? '').trim(), isNotEmpty);
-    for (final label in const ['偏離', 'TX', '2330', '現金']) {
+    for (final label in const ['折溢價', 'TX', '2330', '現金']) {
       expect(
         find.descendant(of: firstGlance, matching: find.text(label)),
         findsOneWidget,

@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.98 changes the overview first-glance label from `偏離` to `折溢價`,
+  making the home screen metric easier to understand at a glance.
 - v16.97 changes the overview compact ribbon label from `模式` to `來源`,
   keeping live/static/mock status visible without sounding like an internal mode.
 - v16.96 changes the account/settings fallback caption to `靜態歷史可用`,
