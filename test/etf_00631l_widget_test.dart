@@ -4182,6 +4182,7 @@ void main() {
     expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(46));
     expect(find.text('示範模式'), findsOneWidget);
     expect(find.text('示範資料'), findsOneWidget);
+    expect(find.text('設定'), findsOneWidget);
     expect(find.text('mock_default'), findsNothing);
     expect(find.text('static_public'), findsNothing);
     expect(find.text('帳戶與偏好'), findsNothing);
@@ -4192,6 +4193,8 @@ void main() {
     expect(appearanceCard, findsOneWidget);
     expect(selectedEtfCard, findsOneWidget);
     expect(positionCard, findsOneWidget);
+    expect(find.text('ETF'), findsWidgets);
+    expect(find.text('持倉'), findsWidgets);
     expect(
       (tester.getTopLeft(accountCard).dy - tester.getTopLeft(appearanceCard).dy)
           .abs(),
@@ -4212,7 +4215,7 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-room-readiness-panel')),
       findsNothing,
     );
-    expect(find.textContaining('目前 00631L'), findsWidgets);
+    expect(find.textContaining('ETF 00631L'), findsWidgets);
     expect(find.text('需檢查'), findsWidgets);
     expect(find.text('進階檢查'), findsNothing);
     expect(find.text('進階'), findsOneWidget);

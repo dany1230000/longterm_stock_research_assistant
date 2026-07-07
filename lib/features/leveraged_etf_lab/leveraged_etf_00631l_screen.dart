@@ -15106,18 +15106,18 @@ class _SettingsSection extends StatelessWidget {
       _SettingsPreferenceItem(
         keySuffix: 'selected-etf',
         icon: Icons.manage_search_outlined,
-        label: '目前 ETF',
+        label: 'ETF',
         status: selectedEtf.code,
         detail:
             '${selectedEtf.name}；價格資料 ${_sourceStatusBadgeLabel(selectedEtf.priceHistory.sourceStatusLabel)}。',
-        action: '左上角代號按鈕可搜尋並切換 ETF。',
+        action: '左上搜尋可切換 ETF。',
       ),
       _SettingsPreferenceItem(
         keySuffix: 'position',
         icon: Icons.account_balance_wallet_outlined,
-        label: '持倉資料',
+        label: '持倉',
         status: _sourceStatusBadgeLabel(status.positionStatus),
-        detail: '${selectedEtf.code} 持倉追蹤採本機保存，不會上傳個人持倉。',
+        detail: '${selectedEtf.code} 持倉追蹤採本機保存，不會上傳。',
         action: '可在持倉頁保存、匯出 JSON 或清除。',
       ),
     ];
@@ -15588,7 +15588,7 @@ class _SettingsPreferenceGrid extends StatelessWidget {
                   children: [
                     for (var index = 0; index < items.length; index++) ...[
                       SizedBox(
-                        width: 106,
+                        width: 96,
                         child: _SettingsPreferenceCard(
                           key: ValueKey(
                             '00631l-settings-preference-${items[index].keySuffix}',
@@ -15763,7 +15763,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      '帳戶',
+                      '設定',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
@@ -15775,7 +15775,7 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
               if (!compact) ...[
                 const SizedBox(height: 3),
                 Text(
-                  '帳戶、外觀、目前 ETF 與本機資料；進階細節需要時再展開。',
+                  '帳戶、外觀、ETF 與本機持倉；進階細節需要時再展開。',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -15790,13 +15790,13 @@ class _SettingsQuickSummaryGrid extends StatelessWidget {
                     ? [
                         '免登入',
                         '本機保存',
-                        '目前 ${selectedEtf.code}',
+                        'ETF ${selectedEtf.code}',
                         readinessStatus,
                       ]
                     : [
                         '免登入',
                         '本機保存',
-                        '目前 ${selectedEtf.code}',
+                        'ETF ${selectedEtf.code}',
                         _sourceStatusBadgeLabel(
                           selectedEtf.priceHistory.sourceStatusLabel,
                         ),
