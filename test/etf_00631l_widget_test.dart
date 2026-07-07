@@ -3904,7 +3904,8 @@ void main() {
       reason: 'AI should lead with today interpretation before source details.',
     );
     expect(find.text('AI 當日摘要'), findsOneWidget);
-    expect(find.text('資料狀態'), findsOneWidget);
+    expect(find.text('今日結論'), findsOneWidget);
+    expect(find.text('資料狀態'), findsNothing);
     expect(find.text('今日解讀'), findsNothing);
     for (final label in const ['內容', '盤中', '曝險']) {
       expect(find.text(label), findsOneWidget);
@@ -3921,7 +3922,6 @@ void main() {
           matching: find.text('LIVE'),
         ),
         findsNothing);
-    expect(find.text('今日結論'), findsNothing);
     expect(find.text('HIS'), findsNothing);
     expect(find.text('今日重點'), findsOneWidget);
     expect(
@@ -4349,7 +4349,7 @@ void main() {
     expect(decisionStrip, findsNothing);
     expect(compactDecisionRail, findsOneWidget);
     expect(tester.getRect(compactDecisionRail).height, lessThanOrEqualTo(42));
-    for (final label in const ['資料', '折溢價', '操作']) {
+    for (final label in const ['內容物', '偏離', '程式']) {
       expect(
         find.descendant(of: compactDecisionRail, matching: find.text(label)),
         findsOneWidget,
@@ -4388,7 +4388,7 @@ void main() {
     );
     expect(find.text('今日解讀'), findsNothing);
     expect(find.text('摘要'), findsOneWidget);
-    expect(find.text('今日結論'), findsNothing);
+    expect(find.text('今日結論'), findsOneWidget);
     expect(find.textContaining('歷史'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-ai-first-screen-bullets')),

@@ -12886,7 +12886,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
         summary.bullets.take(2).map(_aiDisplayText).toList(growable: false);
     final priceSummary = data.priceHistory.completenessSummary();
     final fallbackInsight =
-        '內容物 ${_dateOrDash(snapshot.tradeDate)}；TX ${formatNullablePercent(txWeight)} / '
+        '今日重點：內容物 ${_dateOrDash(snapshot.tradeDate)}；TX ${formatNullablePercent(txWeight)} / '
         '台積電 ${formatNullablePercent(tsmcWeight)}；$compactPremiumText；歷史 ${formatInteger(priceSummary.rowCount)} 筆。';
     final compactInsight = fallbackInsight;
     final todayReadouts = [
@@ -13361,17 +13361,17 @@ class _AiCompactDecisionRail extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       _AiCompactDecisionItem(
-        label: '資料',
+        label: '內容物',
         value: _dateOrDash(data.snapshot.tradeDate),
         detail: _intradayDataTimeText(data.intradayNav),
       ),
       _AiCompactDecisionItem(
-        label: '折溢價',
+        label: '偏離',
         value: premiumText,
         detail: '價格偏離提示',
       ),
       _AiCompactDecisionItem(
-        label: '操作',
+        label: '程式',
         value: _compactProgramAction(primaryAction),
         detail: '程式檢查',
       ),
@@ -13543,7 +13543,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '資料狀態',
+                        '今日結論',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.labelMedium?.copyWith(
