@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.94 changes the history/backtest compact strip from `區間 近1年` to
+  `預設 近1年`, making it clear that the editable date range is in the
+  controls below.
 - v16.93 labels the overview compact ribbon's daily snapshot as `內容`, so the
   first row reads as content / intraday / history / mode instead of a cryptic
   one-character badge.

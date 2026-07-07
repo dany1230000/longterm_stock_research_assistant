@@ -8117,7 +8117,7 @@ class _HistoryBacktestTopStrip extends StatelessWidget {
         final compactMetrics = [
           const _HistoryTopMetricItem(
             key: ValueKey('00631l-history-top-strip-date-pill'),
-            label: '區間',
+            label: '預設',
             value: '近1年',
           ),
           _HistoryTopMetricItem(
