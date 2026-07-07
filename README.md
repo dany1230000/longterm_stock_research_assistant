@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v17.03 removes duplicate compact chips from the phone ETF search sheet while
+  keeping the history denominator and gap count visible.
 - v17.02 changes the overview holdings strip from code-style labels (`TX`,
   `2330`) to user-facing labels (`台指期`, `台積電`).
 - v17.01 tightens the mobile overview quote header so the first screen keeps the

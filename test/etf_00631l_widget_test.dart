@@ -571,6 +571,7 @@ void main() {
 
     expect(find.text('歷史 228 / 344'), findsOneWidget);
     expect(find.text('缺口 116'), findsOneWidget);
+    expect(find.text('可用 228'), findsNothing);
     _expectNoTradingActionText();
   });
 

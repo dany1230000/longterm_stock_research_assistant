@@ -1475,7 +1475,6 @@ class _SymbolSearchSheetState extends ConsumerState<_SymbolSearchSheet> {
                         '熱門'
                       else
                         'ETF ${formatInteger(items.length)} / ${formatInteger(baseItems.length)}',
-                      '可用 ${formatInteger(readyHistoryCount)}',
                       compactHistoryLabel,
                       if (historyGap > 0) compactGapLabel,
                       if (query.isNotEmpty && stockItems.isNotEmpty)
