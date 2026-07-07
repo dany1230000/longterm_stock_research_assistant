@@ -681,7 +681,7 @@ void main() {
     expect(chartFinder, findsOneWidget);
     final chartRect = tester.getRect(chartFinder);
     expect(chartRect.height, greaterThanOrEqualTo(46));
-    expect(chartRect.height, lessThanOrEqualTo(64));
+    expect(chartRect.height, lessThanOrEqualTo(58));
     expect(chartRect.bottom, lessThanOrEqualTo(448));
     expect(chartRect.top, lessThan(ribbonRect.top));
     expect(ribbonRect.top, greaterThan(chartRect.bottom));

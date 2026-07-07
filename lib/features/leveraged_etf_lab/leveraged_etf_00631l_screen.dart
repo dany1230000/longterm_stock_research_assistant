@@ -6701,8 +6701,8 @@ class _SparklineChartState extends State<_SparklineChart> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final chartHeight = compact ? 62.0 : 92.0;
-    final emptyHeight = compact ? 52.0 : 74.0;
+    final chartHeight = compact ? 56.0 : 92.0;
+    final emptyHeight = compact ? 48.0 : 74.0;
     final verticalGap = compact ? 0.0 : 5.0;
     final spots = <FlSpot>[];
     final spotPoints = <EtfPriceHistoryPoint>[];
