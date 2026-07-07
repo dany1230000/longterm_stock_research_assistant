@@ -1203,7 +1203,7 @@ void main() {
       find.descendant(
         of: find
             .byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
-        matching: find.text('點選日'),
+        matching: find.text('最新日'),
       ),
       findsWidgets,
     );
@@ -1663,7 +1663,7 @@ void main() {
     );
     expect(find.textContaining('點擊圖表可查看指定日期數值'), findsWidgets);
     expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsWidgets);
-    expect(find.textContaining('圖表、指標與下方回測快覽'), findsWidgets);
+    expect(find.textContaining('圖表與回測快覽同步'), findsWidgets);
     expect(find.text('開始 2025/06/03'), findsWidgets);
     expect(find.text('中段 2026/06/01'), findsWidgets);
     expect(find.text('結束 2026/06/03'), findsWidgets);
@@ -1734,7 +1734,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-line-chart-touch-detail')).first,
-        matching: find.text('點選日'),
+        matching: find.text('最新日'),
       ),
       findsOneWidget,
     );

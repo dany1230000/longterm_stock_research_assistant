@@ -8510,7 +8510,7 @@ class _FilterablePriceHistoryBlockState
         _DateRangeControlPanel(
           key: const ValueKey('00631l-history-range-context'),
           title: '日期區間',
-          subtitle: '預設最近 1 年；圖表、指標與下方回測快覽都套用同一段日期。',
+          subtitle: '預設 1 年，可改起迄日；圖表與回測快覽同步。',
           items: [
             _RangeContextItem(
               label: '目前區間',
@@ -8924,7 +8924,7 @@ class _CompactDateRangeControlPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final headline = items.isEmpty ? title : items.first.text;
+    final headline = _compactDateRangeHeadline(title: title, items: items);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
@@ -9003,6 +9003,30 @@ class _CompactDateRangeControlPanel extends StatelessWidget {
       ),
     );
   }
+}
+
+String _compactDateRangeHeadline({
+  required String title,
+  required List<_RangeContextItem> items,
+}) {
+  if (items.isEmpty) {
+    return title;
+  }
+  final range = items.first.value.trim().isEmpty
+      ? items.first.text
+      : items.first.value.trim();
+  String? count;
+  for (final item in items) {
+    if (item.label != '區間筆數' && item.label != '樣本') {
+      continue;
+    }
+    final value = item.value.trim();
+    if (value.isNotEmpty) {
+      count = value;
+      break;
+    }
+  }
+  return count == null ? range : '$range · $count 筆';
 }
 
 class _DateRangePresetStrip extends StatelessWidget {
@@ -10596,7 +10620,7 @@ class _BacktestSectionState extends State<_BacktestSection> {
                     _DateRangeControlPanel(
                       key: const ValueKey('00631l-backtest-range-context'),
                       title: '期間設定',
-                      subtitle: '預設最近 1 年；結果只套用目前日期區間與下方參數。',
+                      subtitle: '預設 1 年，可改起迄日；結果套用同一段日期。',
                       items: [
                         _RangeContextItem(
                           label: '回測區間',
@@ -18377,6 +18401,7 @@ class _ChartTouchDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final label = isManualSelection ? '選取日期' : '最新資料';
+    final compactDateLabel = isManualSelection ? '點選日' : '最新日';
     final primary = point == null || value == null
         ? rangeStart == null || rangeEnd == null
             ? '點擊圖表可查看完整日期與數值'
@@ -18393,7 +18418,7 @@ class _ChartTouchDetail extends StatelessWidget {
               flex: 5,
               child: _ChartTouchInfoPill(
                 key: const ValueKey('00631l-line-chart-touch-date'),
-                label: '點選日',
+                label: compactDateLabel,
                 value: formatTaiwanDate(point!.date),
                 compact: true,
                 flat: true,
@@ -18437,7 +18462,7 @@ class _ChartTouchDetail extends StatelessWidget {
                     flex: 5,
                     child: _ChartTouchInfoPill(
                       key: const ValueKey('00631l-line-chart-touch-date'),
-                      label: '點選日',
+                      label: compactDateLabel,
                       value: formatTaiwanDate(point!.date),
                       compact: compact,
                     ),
