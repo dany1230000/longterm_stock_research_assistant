@@ -4,6 +4,9 @@
 
 Latest mobile UI polish:
 
+- v16.93 labels the overview compact ribbon's daily snapshot as `內容`, so the
+  first row reads as content / intraday / history / mode instead of a cryptic
+  one-character badge.
 - v16.92 renames the backtest input section to `期間設定`, making the date
   range and parameter area easier to scan.
 - v16.91 renames the settings disclosure to `更多設定`, keeping account and

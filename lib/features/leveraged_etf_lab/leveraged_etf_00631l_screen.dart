@@ -4153,7 +4153,7 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
     final hasUsableHoldings = _hasUsableHoldingsSnapshot(snapshot);
     final items = [
       _OverviewCompactRibbonItem(
-        label: '日',
+        label: '內容',
         value: hasUsableHoldings
             ? _summaryMonthDay(snapshot.tradeDate)
             : _sourceStatusBadgeLabel(snapshot.status.label),
