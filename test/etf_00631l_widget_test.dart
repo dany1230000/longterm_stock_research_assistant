@@ -1203,7 +1203,7 @@ void main() {
       find.descendant(
         of: find
             .byKey(const ValueKey('00631l-overview-sparkline-touch-detail')),
-        matching: find.text('最新日'),
+        matching: find.text('最新交易日'),
       ),
       findsWidgets,
     );
@@ -1224,7 +1224,7 @@ void main() {
           .height,
       lessThanOrEqualTo(44),
     );
-    expect(find.textContaining('點擊圖表可查看指定日期數值'), findsWidgets);
+    expect(find.textContaining('點擊圖表查看指定日期'), findsWidgets);
   });
 
   testWidgets(
@@ -1661,12 +1661,12 @@ void main() {
       find.byKey(const ValueKey('00631l-history-range-all')),
       findsOneWidget,
     );
-    expect(find.textContaining('點擊圖表可查看指定日期數值'), findsWidgets);
+    expect(find.textContaining('點擊圖表查看指定日期'), findsWidgets);
     expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsWidgets);
     expect(find.textContaining('圖表與回測快覽同步'), findsWidgets);
-    expect(find.text('開始 2025/06/03'), findsWidgets);
-    expect(find.text('中段 2026/06/01'), findsWidgets);
-    expect(find.text('結束 2026/06/03'), findsWidgets);
+    expect(find.text('起日 2025/06/03'), findsWidgets);
+    expect(find.text('中間 2026/06/01'), findsWidgets);
+    expect(find.text('迄日 2026/06/03'), findsWidgets);
     expect(find.textContaining('區間筆數 4'), findsOneWidget);
     expect(find.textContaining('完整筆數 5'), findsOneWidget);
     expect(find.text('價格表核對'), findsOneWidget);
@@ -1734,7 +1734,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-line-chart-touch-detail')).first,
-        matching: find.text('最新日'),
+        matching: find.text('最新交易日'),
       ),
       findsOneWidget,
     );
@@ -1930,21 +1930,21 @@ void main() {
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-chart-axis-start-label')).first,
-        matching: find.text('開始'),
+        matching: find.text('起日'),
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-chart-axis-middle-label')).first,
-        matching: find.text('中段'),
+        matching: find.text('中間'),
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-chart-axis-end-label')).first,
-        matching: find.text('結束'),
+        matching: find.text('迄日'),
       ),
       findsOneWidget,
     );

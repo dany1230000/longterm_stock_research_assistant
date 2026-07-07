@@ -18281,9 +18281,9 @@ class _ChartAxisDateStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: _axisLabel(context, '開始', start, TextAlign.left)),
-        Expanded(child: _axisLabel(context, '中段', middle, TextAlign.center)),
-        Expanded(child: _axisLabel(context, '結束', end, TextAlign.right)),
+        Expanded(child: _axisLabel(context, '起日', start, TextAlign.left)),
+        Expanded(child: _axisLabel(context, '中間', middle, TextAlign.center)),
+        Expanded(child: _axisLabel(context, '迄日', end, TextAlign.right)),
       ],
     );
   }
@@ -18401,13 +18401,13 @@ class _ChartTouchDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final label = isManualSelection ? '選取日期' : '最新資料';
-    final compactDateLabel = isManualSelection ? '點選日' : '最新日';
+    final compactDateLabel = isManualSelection ? '選取日期' : '最新交易日';
     final primary = point == null || value == null
         ? rangeStart == null || rangeEnd == null
             ? '點擊圖表可查看完整日期與數值'
             : '圖表區間 ${formatTaiwanDate(rangeStart!)} - ${formatTaiwanDate(rangeEnd!)}'
         : '$label ${formatTaiwanDate(point!.date)} · ${_compactChartValue(value!)}';
-    final secondary = isManualSelection ? '點擊可切換日期' : '點擊圖表可查看指定日期數值';
+    final secondary = isManualSelection ? '可再點選其他日期' : '點擊圖表查看指定日期';
     if (compact && point != null && value != null) {
       return KeyedSubtree(
         key: const ValueKey('00631l-line-chart-touch-detail'),
