@@ -207,7 +207,7 @@ void main() {
     final topTitle = tester.widget<Text>(
       find.byKey(const ValueKey('00631l-market-top-title')),
     );
-    expect(topTitle.style?.fontSize, greaterThanOrEqualTo(22));
+    expect(topTitle.style?.fontSize, greaterThanOrEqualTo(21));
     expect(topTitle.style?.fontSize, lessThanOrEqualTo(23));
     final symbolButton =
         find.byKey(const ValueKey('00631l-symbol-search-button'));

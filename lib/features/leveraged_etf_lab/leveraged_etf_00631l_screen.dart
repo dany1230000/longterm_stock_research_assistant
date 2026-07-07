@@ -1122,9 +1122,10 @@ class _MarketTopBar extends StatelessWidget {
         : selectedEtfName.trim().isEmpty
             ? '$normalizedCode ETF 研究室'
             : selectedEtfName.trim();
+    final compact = MediaQuery.sizeOf(context).width < 430;
     return SizedBox(
       key: const ValueKey('00631l-market-top-bar'),
-      height: 50,
+      height: compact ? 46 : 50,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final showModeBadge = constraints.maxWidth >= 560;
@@ -1135,6 +1136,7 @@ class _MarketTopBar extends StatelessWidget {
             children: [
               _MarketIndexPill(
                 label: selectedEtfCode,
+                compact: compact,
                 onTap: data == null
                     ? null
                     : () => _showSymbolSearchSheet(
@@ -1157,7 +1159,7 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: _marketTextColor(context),
-                        fontSize: 23,
+                        fontSize: compact ? 21.5 : 23,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0,
                         height: 1.0,
@@ -1170,7 +1172,7 @@ class _MarketTopBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: _marketMutedTextColor(context),
-                        fontSize: 10.8,
+                        fontSize: compact ? 10.2 : 10.8,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0,
                         height: 1.08,
@@ -1205,9 +1207,14 @@ class _MarketTopBar extends StatelessWidget {
 }
 
 class _MarketIndexPill extends StatelessWidget {
-  const _MarketIndexPill({required this.label, this.onTap});
+  const _MarketIndexPill({
+    required this.label,
+    this.compact = false,
+    this.onTap,
+  });
 
   final String label;
+  final bool compact;
   final VoidCallback? onTap;
 
   @override
@@ -1226,7 +1233,10 @@ class _MarketIndexPill extends StatelessWidget {
             border: Border.all(color: const Color(0xFF67C58B)),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? 11 : 13,
+              vertical: compact ? 6 : 7,
+            ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
