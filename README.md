@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.95 updates the AI first-screen fact labels to `內容 / 盤中 / 曝險`,
+  avoiding one-character internal shorthand on the main readout.
 - v16.94 changes the history/backtest compact strip from `區間 近1年` to
   `預設 近1年`, making it clear that the editable date range is in the
   controls below.

@@ -13544,12 +13544,12 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
         '請以官方資料時間判讀。';
     final factItems = [
       _AiInlineFactItem(
-        label: '日',
+        label: '內容',
         value: _dateOrDash(snapshot.tradeDate),
         detail: '官方內容物',
       ),
       _AiInlineFactItem(
-        label: '盤',
+        label: '盤中',
         value: _intradayDataTimeText(nav),
         detail: '盤中 NAV',
       ),
