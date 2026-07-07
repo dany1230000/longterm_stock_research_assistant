@@ -4099,8 +4099,6 @@ class _OverviewMarketStack extends StatelessWidget {
                     children: [
                       _OverviewCompactDataRibbon(data: data),
                       const SizedBox(height: 1),
-                      const _MarketStackDivider(),
-                      const SizedBox(height: 1),
                       _OverviewMobileDailySummaryPanel(
                         data: data,
                         embedded: true,
@@ -4424,7 +4422,7 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
 
     final content = Padding(
       padding: embedded
-          ? const EdgeInsets.fromLTRB(2, 1, 2, 2)
+          ? const EdgeInsets.fromLTRB(2, 0, 2, 1)
           : const EdgeInsets.fromLTRB(6, 3, 6, 4),
       child: KeyedSubtree(
         key: const ValueKey('00631l-overview-first-glance-strip'),
