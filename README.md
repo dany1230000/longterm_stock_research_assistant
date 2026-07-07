@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v17.01 tightens the mobile overview quote header so the first screen keeps the
+  price, premium/discount, chart, and key data in a denser stock-app layout.
 - v17.00 changes the combined history/backtest page title to `歷史與回測`;
   the bottom navigation stays compact as `歷史`.
 - v16.99 changes the combined history/backtest bottom tab to `歷史`; the page

@@ -2533,7 +2533,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                     ? '行情 · $quoteStatusDisplay · 資料不可用'
                     : '行情 · $quoteStatusDisplay ${formatTaiwanDateTimeSeconds(selectedEtf.dataTime!)}';
 
-    final horizontalPadding = compact ? 4.0 : 6.0;
+    final horizontalPadding = embedded && compact ? 3.0 : (compact ? 4.0 : 6.0);
     final verticalPadding = embedded ? 0.0 : (compact ? 3.0 : 5.0);
     final content = Padding(
       padding: EdgeInsets.fromLTRB(
@@ -2587,7 +2587,7 @@ class _CompactQuoteHeader extends StatelessWidget {
                               fontWeight: FontWeight.w900,
                               letterSpacing: 0,
                               height: 0.96,
-                              fontSize: compact ? 20 : null,
+                              fontSize: compact ? (embedded ? 18 : 20) : null,
                             ),
                           ),
                         ),
@@ -2601,14 +2601,14 @@ class _CompactQuoteHeader extends StatelessWidget {
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: _marketMutedTextColor(context),
                         fontWeight: FontWeight.w700,
-                        fontSize: compact ? 9.5 : 10.5,
+                        fontSize: compact ? (embedded ? 9 : 9.5) : 10.5,
                         height: 1.0,
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(width: compact ? 7 : 10),
+              SizedBox(width: embedded && compact ? 5 : (compact ? 7 : 10)),
               embedded
                   ? _CompactPremiumBoxDense(
                       value: _displaySignedNullablePercent(
@@ -2958,7 +2958,7 @@ class _CompactPremiumBoxDense extends StatelessWidget {
     final theme = Theme.of(context);
     return ConstrainedBox(
       key: const ValueKey('00631l-quote-premium-box'),
-      constraints: const BoxConstraints(minWidth: 78, maxWidth: 98),
+      constraints: const BoxConstraints(minWidth: 72, maxWidth: 88),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.14),
@@ -2966,7 +2966,7 @@ class _CompactPremiumBoxDense extends StatelessWidget {
           border: Border.all(color: color.withValues(alpha: 0.46)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -2980,7 +2980,7 @@ class _CompactPremiumBoxDense extends StatelessWidget {
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: _marketMutedTextColor(context),
                         fontWeight: FontWeight.w900,
-                        fontSize: 9,
+                        fontSize: 8,
                         height: 1,
                         letterSpacing: 0,
                       ),
@@ -2993,14 +2993,14 @@ class _CompactPremiumBoxDense extends StatelessWidget {
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: color,
                       fontWeight: FontWeight.w900,
-                      fontSize: 9,
+                      fontSize: 8,
                       height: 1,
                       letterSpacing: 0,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 1),
               Text(
                 value,
                 maxLines: 1,
