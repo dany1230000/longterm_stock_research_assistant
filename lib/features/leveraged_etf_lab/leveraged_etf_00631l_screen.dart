@@ -11802,8 +11802,8 @@ class _PositionSectionState extends State<_PositionSection> {
           const SizedBox(height: 8),
           _CompactExpansionPanel(
             key: const ValueKey('00631l-position-tools-panel'),
-            title: compact ? 'JSON / 清除' : '持倉工具',
-            subtitle: compact ? '低頻工具' : '匯出 JSON、清除本機資料與核對細節；低頻動作收在這裡。',
+            title: compact ? '備份 / 清除' : '持倉工具',
+            subtitle: compact ? '低頻工具' : '匯出持倉 JSON、清除本機資料與核對細節；低頻動作收在這裡。',
             dense: compact,
             child: _PositionActionBar(
               hasPosition: input.hasPosition,
@@ -12085,8 +12085,8 @@ class _PositionActionBar extends StatelessWidget {
                     _PositionQuickAction(
                       key: const ValueKey('00631l-position-action-export'),
                       icon: Icons.ios_share_outlined,
-                      label: 'JSON',
-                      caption: '匯出',
+                      label: '匯出',
+                      caption: 'JSON',
                       onTap: onExport,
                     ),
                     const SizedBox(width: 8),
@@ -12130,8 +12130,8 @@ class _PositionActionBar extends StatelessWidget {
             _PositionQuickAction(
               key: const ValueKey('00631l-position-action-export'),
               icon: Icons.ios_share_outlined,
-              label: 'JSON',
-              caption: '匯出',
+              label: '匯出',
+              caption: 'JSON',
               onTap: onExport,
             ),
             const SizedBox(width: 8),

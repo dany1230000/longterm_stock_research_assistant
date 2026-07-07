@@ -2438,7 +2438,7 @@ void main() {
     expect(find.text('新增持倉'), findsNothing);
     expect(find.text('輸入持倉資料'), findsNothing);
     expect(find.text('工具'), findsNothing);
-    expect(find.text('JSON / 清除'), findsOneWidget);
+    expect(find.text('備份 / 清除'), findsOneWidget);
     expect(find.text('低頻工具'), findsOneWidget);
     expect(find.text('JSON 匯出與本機資料清除。'), findsNothing);
     expect(find.text('持倉工具'), findsNothing);
