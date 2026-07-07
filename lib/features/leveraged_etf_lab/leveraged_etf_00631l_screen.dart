@@ -10560,7 +10560,7 @@ class _BacktestSectionState extends State<_BacktestSection> {
         ),
         SizedBox(height: sectionGap),
         _SectionBlock(
-          title: '歷史回測',
+          title: '歷史與回測',
           subtitle: '只使用已保存的歷史收盤價。回測不代表未來表現，非買賣建議。',
           child: history.hasData
               ? Column(

@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v17.00 changes the combined history/backtest page title to `歷史與回測`;
+  the bottom navigation stays compact as `歷史`.
 - v16.99 changes the combined history/backtest bottom tab to `歷史`; the page
   still contains backtest tools, but the bottom nav now reads more like a stock app.
 - v16.98 changes the overview first-glance label from `偏離` to `折溢價`,

@@ -1553,7 +1553,7 @@ void main() {
     await _tapSection(tester, 'historyBacktest');
     await tester.pumpAndSettle();
 
-    expect(find.text('歷史回測'), findsWidgets);
+    expect(find.text('歷史與回測'), findsWidgets);
     expect(find.textContaining('預設 1 年，可調日期'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-history-range-context')),
@@ -2025,7 +2025,7 @@ void main() {
 
     expect(find.text('回測快覽'), findsOneWidget);
     expect(find.textContaining('回測不代表未來表現'), findsWidgets);
-    expect(find.text('歷史回測'), findsWidgets);
+    expect(find.text('歷史與回測'), findsWidgets);
     expect(find.text('日期區間'), findsOneWidget);
     expect(find.text('開始日期'), findsWidgets);
     expect(find.text('結束日期'), findsWidgets);
