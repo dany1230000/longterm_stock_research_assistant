@@ -265,7 +265,7 @@ enum _LabSection {
   historyBacktest('歷史', Icons.query_stats_outlined),
   position('持倉', Icons.account_balance_wallet_outlined),
   ai('AI', Icons.psychology_alt_outlined),
-  settings('帳戶', Icons.person_outline);
+  settings('設定', Icons.tune_outlined);
 
   const _LabSection(this.label, this.icon);
   final String label;
@@ -15114,7 +15114,7 @@ class _SettingsSection extends StatelessWidget {
       const _SettingsPreferenceItem(
         keySuffix: 'account',
         icon: Icons.person_outline,
-        label: '帳戶',
+        label: '本機',
         status: '不需登入',
         detail: '00631L 正二研究室目前不需要帳號或券商登入。',
         action: '可直接使用公開 PWA；持倉資料留在本機。',

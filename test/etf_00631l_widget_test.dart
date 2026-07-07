@@ -194,7 +194,7 @@ void main() {
     expect(find.text('歷史'), findsWidgets);
     expect(find.text('持倉'), findsWidgets);
     expect(find.text('AI'), findsWidgets);
-    expect(find.text('帳戶'), findsWidgets);
+    expect(find.text('設定'), findsWidgets);
     expect(
       find.byKey(const ValueKey('00631l-symbol-search-button')),
       findsOneWidget,
@@ -4066,7 +4066,7 @@ void main() {
       find.byKey(const ValueKey('00631l-etf-room-readiness-panel')),
       findsNothing,
     );
-    expect(find.text('帳戶'), findsWidgets);
+    expect(find.text('本機'), findsWidgets);
     expect(find.text('我的總覽'), findsNothing);
     expect(find.text('帳戶與偏好'), findsOneWidget);
     expect(find.text('免登入'), findsOneWidget);
@@ -4190,7 +4190,7 @@ void main() {
     expect(tester.getRect(preferenceGrid).height, lessThanOrEqualTo(46));
     expect(find.text('示範模式'), findsOneWidget);
     expect(find.text('示範資料'), findsOneWidget);
-    expect(find.text('設定'), findsOneWidget);
+    expect(find.text('設定'), findsWidgets);
     expect(find.text('mock_default'), findsNothing);
     expect(find.text('static_public'), findsNothing);
     expect(find.text('帳戶與偏好'), findsNothing);
@@ -4705,7 +4705,8 @@ void main() {
     expect(find.textContaining('00631L 正二研究室'), findsWidgets);
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
-    expect(find.text('帳戶'), findsWidgets);
+    expect(find.text('設定'), findsWidgets);
+    expect(find.text('本機'), findsWidgets);
     expect(find.text('進階'), findsOneWidget);
     expect(find.text('服務與資料狀態'), findsNothing);
     expect(find.textContaining('示範'), findsWidgets);
