@@ -4169,7 +4169,7 @@ class _OverviewCompactDataRibbon extends StatelessWidget {
         value: formatInteger(priceSummary.rowCount),
       ),
       _OverviewCompactRibbonItem(
-        label: '模式',
+        label: '來源',
         value: _frontendDataModeRibbonValue,
       ),
     ];

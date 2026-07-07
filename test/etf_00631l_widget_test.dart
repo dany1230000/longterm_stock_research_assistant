@@ -620,7 +620,7 @@ void main() {
       const ValueKey('00631l-overview-compact-data-ribbon'),
     );
     expect(compactRibbon, findsOneWidget);
-    for (final label in const ['內容', '盤中', '歷史', '模式']) {
+    for (final label in const ['內容', '盤中', '歷史', '來源']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),
         findsWidgets,
@@ -1035,7 +1035,7 @@ void main() {
         findsOneWidget,
       );
     }
-    for (final label in const ['內容', '盤中', '歷史', '模式']) {
+    for (final label in const ['內容', '盤中', '歷史', '來源']) {
       expect(
         find.descendant(of: compactRibbon, matching: find.text(label)),
         findsOneWidget,

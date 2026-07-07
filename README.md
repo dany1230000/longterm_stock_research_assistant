@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.97 changes the overview compact ribbon label from `模式` to `來源`,
+  keeping live/static/mock status visible without sounding like an internal mode.
 - v16.96 changes the account/settings fallback caption to `靜態歷史可用`,
   making the first screen describe what still works when live data is offline.
 - v16.95 updates the AI first-screen fact labels to `內容 / 盤中 / 曝險`,
