@@ -4235,8 +4235,8 @@ void main() {
     await _tapSection(tester, 'settings');
     await tester.pumpAndSettle();
 
-    expect(find.text('使用靜態備援'), findsWidgets);
-    expect(find.text('靜態資料可用；連線細節在進階'), findsNothing);
+    expect(find.text('靜態歷史可用'), findsWidgets);
+    expect(find.text('靜態歷史可用；Live 連線細節在進階'), findsNothing);
     expect(find.text('後端錯誤'), findsNothing);
     expect(find.text('data path not writable'), findsNothing);
     _expectNoTradingActionText();

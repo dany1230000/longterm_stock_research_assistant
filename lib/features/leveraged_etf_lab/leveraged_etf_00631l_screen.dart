@@ -15900,7 +15900,7 @@ String _settingsDataModeCaption(
   if (status.backendDisconnected ||
       status.sourceStatusLabel == 'error' ||
       status.sourceStatusLabel == 'unavailable') {
-    return compact ? '使用靜態備援' : '靜態資料可用；連線細節在進階';
+    return compact ? '靜態歷史可用' : '靜態歷史可用；Live 連線細節在進階';
   }
   if (status.sourceStatusLabel == 'mock') {
     return compact ? '示範資料' : '預設示範資料';

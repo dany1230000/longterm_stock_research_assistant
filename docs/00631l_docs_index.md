@@ -4,6 +4,7 @@ This is the main entry point for 00631L lab documentation.
 
 ## Start Here
 
+- Settings static history caption v16.96: `docs\00631l_v16_96_settings_static_history_caption.md`
 - AI fact labels v16.95: `docs\00631l_v16_95_ai_fact_labels.md`
 - History default range label v16.94: `docs\00631l_v16_94_history_default_range_label.md`
 - Overview ribbon content label v16.93: `docs\00631l_v16_93_overview_ribbon_content_label.md`

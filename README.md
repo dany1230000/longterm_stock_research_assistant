@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.96 changes the account/settings fallback caption to `靜態歷史可用`,
+  making the first screen describe what still works when live data is offline.
 - v16.95 updates the AI first-screen fact labels to `內容 / 盤中 / 曝險`,
   avoiding one-character internal shorthand on the main readout.
 - v16.94 changes the history/backtest compact strip from `區間 近1年` to
