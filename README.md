@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v17.04 changes history chart axis labels to `開始 / 中段 / 結束`, making date
+  context clearer on mobile.
 - v17.03 removes duplicate compact chips from the phone ETF search sheet while
   keeping the history denominator and gap count visible.
 - v17.02 changes the overview holdings strip from code-style labels (`TX`,

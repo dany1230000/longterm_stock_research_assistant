@@ -1664,9 +1664,9 @@ void main() {
     expect(find.textContaining('點擊圖表可查看指定日期數值'), findsWidgets);
     expect(find.textContaining('目前區間：2025/06/03 - 2026/06/03'), findsWidgets);
     expect(find.textContaining('圖表、指標與下方回測快覽'), findsWidgets);
-    expect(find.text('起 2025/06/03'), findsWidgets);
-    expect(find.text('中 2026/06/01'), findsWidgets);
-    expect(find.text('迄 2026/06/03'), findsWidgets);
+    expect(find.text('開始 2025/06/03'), findsWidgets);
+    expect(find.text('中段 2026/06/01'), findsWidgets);
+    expect(find.text('結束 2026/06/03'), findsWidgets);
     expect(find.textContaining('區間筆數 4'), findsOneWidget);
     expect(find.textContaining('完整筆數 5'), findsOneWidget);
     expect(find.text('價格表核對'), findsOneWidget);
@@ -1930,21 +1930,21 @@ void main() {
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-chart-axis-start-label')).first,
-        matching: find.text('起'),
+        matching: find.text('開始'),
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-chart-axis-middle-label')).first,
-        matching: find.text('中'),
+        matching: find.text('中段'),
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('00631l-chart-axis-end-label')).first,
-        matching: find.text('迄'),
+        matching: find.text('結束'),
       ),
       findsOneWidget,
     );
