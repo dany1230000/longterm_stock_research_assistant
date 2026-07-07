@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v16.99 changes the combined history/backtest bottom tab to `歷史`; the page
+  still contains backtest tools, but the bottom nav now reads more like a stock app.
 - v16.98 changes the overview first-glance label from `偏離` to `折溢價`,
   making the home screen metric easier to understand at a glance.
 - v16.97 changes the overview compact ribbon label from `模式` to `來源`,

@@ -262,7 +262,7 @@ const liveCoreWarmupRetryInterval = Duration(seconds: 8);
 
 enum _LabSection {
   overview('總覽', Icons.dashboard_outlined),
-  historyBacktest('歷測', Icons.query_stats_outlined),
+  historyBacktest('歷史', Icons.query_stats_outlined),
   position('持倉', Icons.account_balance_wallet_outlined),
   ai('AI', Icons.psychology_alt_outlined),
   settings('帳戶', Icons.person_outline);
