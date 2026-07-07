@@ -2123,7 +2123,7 @@ void main() {
     await _tapSection(tester, 'position');
     await tester.pumpAndSettle();
 
-    expect(find.text('本機持倉'), findsNothing);
+    expect(find.text('本機持倉'), findsOneWidget);
     expect(find.text('持倉狀態'), findsNothing);
     expect(find.text('00631L 持倉'), findsOneWidget);
     expect(
@@ -2184,7 +2184,8 @@ void main() {
       find.byKey(const ValueKey('00631l-position-empty-hint-strip')),
       findsOneWidget,
     );
-    expect(find.text('新增持倉'), findsOneWidget);
+    expect(find.text('本機持倉'), findsOneWidget);
+    expect(find.text('新增持倉'), findsNothing);
     expect(find.text('輸入持倉資料'), findsNothing);
     expect(
       find.byKey(const ValueKey('00631l-position-compact-input-card')),
@@ -2432,12 +2433,13 @@ void main() {
     expect(tester.getRect(privacyStrip).height, lessThanOrEqualTo(26));
     expect(find.text('本機保存 · 不登入 · 不上傳'), findsOneWidget);
     expect(find.text('修改持倉'), findsOneWidget);
-    expect(find.text('股數、成本、備註'), findsOneWidget);
+    expect(find.text('股數、成本'), findsOneWidget);
     expect(find.text('需要調整股數、成本或備註時再展開。'), findsNothing);
     expect(find.text('新增持倉'), findsNothing);
     expect(find.text('輸入持倉資料'), findsNothing);
-    expect(find.text('工具'), findsOneWidget);
+    expect(find.text('工具'), findsNothing);
     expect(find.text('JSON / 清除'), findsOneWidget);
+    expect(find.text('低頻工具'), findsOneWidget);
     expect(find.text('JSON 匯出與本機資料清除。'), findsNothing);
     expect(find.text('持倉工具'), findsNothing);
     expect(

@@ -11637,8 +11637,8 @@ class _PositionSectionState extends State<_PositionSection> {
           const SizedBox(height: 8),
           _CompactExpansionPanel(
             key: const ValueKey('00631l-position-advanced-inputs'),
-            title: '進階持倉欄位',
-            subtitle: '總資產、費用與備註，可選填。',
+            title: '更多欄位',
+            subtitle: '總資產、費用、備註',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -11727,8 +11727,7 @@ class _PositionSectionState extends State<_PositionSection> {
               : input.hasPosition
                   ? _CompactExpansionPanel(
                       title: compact ? '修改持倉' : '持倉資料',
-                      subtitle:
-                          compact ? '股數、成本、備註' : '已保存本機持倉；需要修改股數、成本或備註時再展開。',
+                      subtitle: compact ? '股數、成本' : '已保存本機持倉；需要修改股數、成本或備註時再展開。',
                       dense: compact,
                       child: compact
                           ? Column(
@@ -11741,7 +11740,7 @@ class _PositionSectionState extends State<_PositionSection> {
                                     '00631l-position-action-save',
                                   ),
                                   icon: Icons.save_outlined,
-                                  label: '更新本機資料',
+                                  label: '更新',
                                   caption: '只保存在此裝置',
                                   isPrimary: true,
                                   fillWidth: true,
@@ -11752,8 +11751,8 @@ class _PositionSectionState extends State<_PositionSection> {
                           : inputForm,
                     )
                   : _SectionBlock(
-                      title: '新增持倉',
-                      subtitle: '本機保存；填股數與平均成本即可估算。',
+                      title: '本機持倉',
+                      subtitle: '填股數與平均成本即可估算；資料只留在本機。',
                       child: inputForm,
                     ),
         ),
@@ -11771,8 +11770,8 @@ class _PositionSectionState extends State<_PositionSection> {
           const SizedBox(height: 8),
           _CompactExpansionPanel(
             key: const ValueKey('00631l-position-tools-panel'),
-            title: compact ? '工具' : '持倉工具',
-            subtitle: compact ? 'JSON / 清除' : '匯出 JSON、清除本機資料與核對細節；低頻動作收在這裡。',
+            title: compact ? 'JSON / 清除' : '持倉工具',
+            subtitle: compact ? '低頻工具' : '匯出 JSON、清除本機資料與核對細節；低頻動作收在這裡。',
             dense: compact,
             child: _PositionActionBar(
               hasPosition: input.hasPosition,
@@ -11905,7 +11904,7 @@ class _PositionCompactEmptyInputCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '新增持倉',
+                    '本機持倉',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall?.copyWith(
@@ -12037,7 +12036,7 @@ class _PositionActionBar extends StatelessWidget {
               _PositionQuickAction(
                 key: const ValueKey('00631l-position-action-save'),
                 icon: Icons.save_outlined,
-                label: hasPosition ? '更新本機資料' : '保存本機資料',
+                label: hasPosition ? '更新' : '保存',
                 caption: '只保存在此裝置',
                 isPrimary: true,
                 fillWidth: true,
