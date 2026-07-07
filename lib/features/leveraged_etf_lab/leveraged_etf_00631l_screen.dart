@@ -4401,14 +4401,14 @@ class _OverviewMobileDailySummaryPanel extends StatelessWidget {
         isDeviation: true,
       ),
       _OverviewFirstGlanceItem(
-        label: 'TX',
+        label: '台指期',
         value: hasUsableHoldings && txLine != null
             ? formatNullablePercent(txLine.weightPct)
             : _sourceStatusBadgeLabel(snapshot.status.label),
         isHolding: true,
       ),
       _OverviewFirstGlanceItem(
-        label: '2330',
+        label: '台積電',
         value: hasUsableHoldings && tsmcLine != null
             ? formatNullablePercent(tsmcLine.weightPct)
             : _sourceStatusBadgeLabel(snapshot.status.label),

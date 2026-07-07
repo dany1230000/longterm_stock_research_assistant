@@ -771,7 +771,7 @@ void main() {
       const ValueKey('00631l-mobile-holding-digest-chip'),
     );
     expect(mobileDigestChips, findsNWidgets(3));
-    for (final label in const ['TX', '2330', '現金']) {
+    for (final label in const ['台指期', '台積電', '現金']) {
       expect(
         find.descendant(
           of: find.byKey(
@@ -1029,7 +1029,7 @@ void main() {
     expect(digestRect.bottom, lessThanOrEqualTo(summaryRect.bottom));
     expect(summaryRect.bottom, lessThanOrEqualTo(navRect.top - 8));
     expect(chartRect.bottom, lessThanOrEqualTo(362));
-    for (final label in const ['折溢價', 'TX', '2330', '現金']) {
+    for (final label in const ['折溢價', '台指期', '台積電', '現金']) {
       expect(
         find.descendant(of: firstGlance, matching: find.text(label)),
         findsOneWidget,
@@ -1096,7 +1096,7 @@ void main() {
     expect(deviationStatus, findsOneWidget);
     expect(
         (tester.widget<Text>(deviationStatus).data ?? '').trim(), isNotEmpty);
-    for (final label in const ['折溢價', 'TX', '2330', '現金']) {
+    for (final label in const ['折溢價', '台指期', '台積電', '現金']) {
       expect(
         find.descendant(of: firstGlance, matching: find.text(label)),
         findsOneWidget,
@@ -3729,7 +3729,7 @@ void main() {
     );
     final holdingsDigestRect = tester.getRect(holdingsDigest);
     expect(holdingsDigestRect.height, lessThanOrEqualTo(24));
-    for (final label in const ['TX', '2330', '現金']) {
+    for (final label in const ['台指期', '台積電', '現金']) {
       expect(
         find.descendant(of: holdingsDigest, matching: find.text(label)),
         findsWidgets,

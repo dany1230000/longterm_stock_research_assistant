@@ -4,6 +4,8 @@
 
 Latest mobile UI polish:
 
+- v17.02 changes the overview holdings strip from code-style labels (`TX`,
+  `2330`) to user-facing labels (`台指期`, `台積電`).
 - v17.01 tightens the mobile overview quote header so the first screen keeps the
   price, premium/discount, chart, and key data in a denser stock-app layout.
 - v17.00 changes the combined history/backtest page title to `歷史與回測`;
