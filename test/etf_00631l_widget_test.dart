@@ -3895,7 +3895,9 @@ void main() {
       ),
       reason: 'AI should lead with today interpretation before source details.',
     );
-    expect(find.text('今日解讀'), findsWidgets);
+    expect(find.text('AI 當日摘要'), findsOneWidget);
+    expect(find.text('資料狀態'), findsOneWidget);
+    expect(find.text('今日解讀'), findsNothing);
     for (final label in const ['內容', '盤中', '曝險']) {
       expect(find.text(label), findsOneWidget);
     }
@@ -4331,11 +4333,12 @@ void main() {
     expect(fullDetailExpansion, findsOneWidget);
     expect(find.text('完整摘要、來源與核對項目。'), findsOneWidget);
     expect(find.text('完整摘要與資料來源。'), findsNothing);
-    expect(find.text('當日判讀'), findsOneWidget);
+    expect(find.text('當日判讀'), findsNothing);
+    expect(find.text('AI 當日摘要'), findsOneWidget);
     expect(decisionStrip, findsNothing);
     expect(compactDecisionRail, findsOneWidget);
     expect(tester.getRect(compactDecisionRail).height, lessThanOrEqualTo(42));
-    for (final label in const ['資料', '偏離', '程式']) {
+    for (final label in const ['資料', '折溢價', '操作']) {
       expect(
         find.descendant(of: compactDecisionRail, matching: find.text(label)),
         findsOneWidget,
@@ -4343,21 +4346,8 @@ void main() {
     }
     expect(compactInsight, findsOneWidget);
     expect(compactInsightText, findsOneWidget);
-    expect(compactInsightDailyText, findsOneWidget);
-    expect(compactBulletStrip, findsOneWidget);
-    expect(
-      tester.getRect(compactBulletStrip).height,
-      lessThanOrEqualTo(58),
-      reason: 'Phone AI interpretation bullets should stay compact.',
-    );
-    expect(
-      find.descendant(of: compactBulletStrip, matching: find.text('判讀')),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: compactBulletStrip, matching: find.text('補充')),
-      findsOneWidget,
-    );
+    expect(compactInsightDailyText, findsNothing);
+    expect(compactBulletStrip, findsNothing);
     expect(
       find.descendant(
         of: compactInsight,
@@ -4385,7 +4375,8 @@ void main() {
       find.byKey(const ValueKey('00631l-ai-compact-daily-insight-title')),
       findsOneWidget,
     );
-    expect(find.text('今日解讀'), findsWidgets);
+    expect(find.text('今日解讀'), findsNothing);
+    expect(find.text('摘要'), findsOneWidget);
     expect(find.text('今日結論'), findsNothing);
     expect(find.textContaining('歷史'), findsWidgets);
     expect(

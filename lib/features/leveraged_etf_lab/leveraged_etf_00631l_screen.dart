@@ -12864,9 +12864,9 @@ class _AiDailyBriefingHero extends StatelessWidget {
         summary.bullets.take(2).map(_aiDisplayText).toList(growable: false);
     final priceSummary = data.priceHistory.completenessSummary();
     final fallbackInsight =
-        '內容物 ${_dateOrDash(snapshot.tradeDate)}，TX ${formatNullablePercent(txWeight)}，'
+        '內容物 ${_dateOrDash(snapshot.tradeDate)}；TX ${formatNullablePercent(txWeight)} / '
         '台積電 ${formatNullablePercent(tsmcWeight)}；$compactPremiumText；歷史 ${formatInteger(priceSummary.rowCount)} 筆。';
-    final compactInsight = '今日資料：$fallbackInsight';
+    final compactInsight = fallbackInsight;
     final todayReadouts = [
       _AiTodayReadoutItem(
         label: '當日資料',
@@ -12918,7 +12918,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
                     SizedBox(width: compact ? 6 : 8),
                     Expanded(
                       child: Text(
-                        '今日解讀',
+                        'AI 當日摘要',
                         style: (compact
                                 ? theme.textTheme.labelLarge
                                 : theme.textTheme.titleMedium)
@@ -12931,7 +12931,7 @@ class _AiDailyBriefingHero extends StatelessWidget {
                     ),
                     if (compact)
                       Text(
-                        '當日判讀',
+                        _statusDisplay(summary.source),
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: _marketMutedTextColor(context),
                           fontWeight: FontWeight.w900,
@@ -12968,17 +12968,13 @@ class _AiDailyBriefingHero extends StatelessWidget {
                 ],
                 if (compact) ...[
                   const SizedBox(height: 3),
-                  _AiCompactDailyInsightLine(text: compactInsight),
-                  if (briefingBullets.isNotEmpty) ...[
-                    const SizedBox(height: 3),
-                    _AiCompactBulletStrip(bullets: briefingBullets),
-                  ],
-                  const SizedBox(height: 3),
                   _AiCompactDecisionRail(
                     data: data,
                     premiumText: compactPremiumText,
                     primaryAction: primaryAction,
                   ),
+                  const SizedBox(height: 3),
+                  _AiCompactDailyInsightLine(text: compactInsight),
                   const SizedBox(height: 2),
                   KeyedSubtree(
                     key: const ValueKey('00631l-ai-daily-briefing-disclaimer'),
@@ -13228,67 +13224,6 @@ class _AiFirstScreenBulletList extends StatelessWidget {
   }
 }
 
-class _AiCompactBulletStrip extends StatelessWidget {
-  const _AiCompactBulletStrip({required this.bullets});
-
-  final List<String> bullets;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final visible = bullets.take(2).toList(growable: false);
-    return DecoratedBox(
-      key: const ValueKey('00631l-ai-compact-bullet-strip'),
-      decoration: BoxDecoration(
-        color: _marketPanelAltColor(context),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _marketBorderColor(context)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (var index = 0; index < visible.length; index += 1) ...[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    index == 0 ? '判讀' : '補充',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: _marketMutedTextColor(context),
-                      fontWeight: FontWeight.w900,
-                      height: 1.15,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      visible[index],
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _marketTextColor(context),
-                        fontWeight: FontWeight.w800,
-                        height: 1.15,
-                        letterSpacing: 0,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              if (index != visible.length - 1) const SizedBox(height: 3),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _AiCompactMetaLine extends StatelessWidget {
   const _AiCompactMetaLine({
     required this.source,
@@ -13353,9 +13288,9 @@ class _AiCompactDailyInsightLine extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 48,
+              width: 32,
               child: Text(
-                '今日解讀',
+                '摘要',
                 key: const ValueKey('00631l-ai-compact-daily-insight-title'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -13409,12 +13344,12 @@ class _AiCompactDecisionRail extends StatelessWidget {
         detail: _intradayDataTimeText(data.intradayNav),
       ),
       _AiCompactDecisionItem(
-        label: '偏離',
+        label: '折溢價',
         value: premiumText,
         detail: '價格偏離提示',
       ),
       _AiCompactDecisionItem(
-        label: '程式',
+        label: '操作',
         value: _compactProgramAction(primaryAction),
         detail: '程式檢查',
       ),
@@ -13586,7 +13521,7 @@ class _AiDailyHeadlinePanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '今日解讀',
+                        '資料狀態',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.labelMedium?.copyWith(
