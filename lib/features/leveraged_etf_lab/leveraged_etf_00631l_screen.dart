@@ -15208,7 +15208,7 @@ class _SettingsSection extends StatelessWidget {
           ),
         _CompactExpansionPanel(
           key: const ValueKey('00631l-settings-advanced-settings-panel'),
-          title: '更多設定',
+          title: '進階',
           subtitle: '資料庫、服務狀態與上架準備；日常使用通常不用打開。',
           child: Column(
             children: [
